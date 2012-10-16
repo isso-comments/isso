@@ -20,9 +20,17 @@ class TestSQLite(unittest.TestCase):
         self.db = SQLite()
         self.db.initialize({'SQLITE': self.path})
 
+    def test_get(self):
+
+        rv = self.db.add('/', comment(text='Spam'))
+        c = self.db.get(*rv)
+
+        assert c.id == 1
+        assert c.text == 'Spam'
+
     def test_add(self):
 
-        self.db.add('/', comment(text='Foo'))
+        x = self.db.add('/', comment(text='Foo'))
         self.db.add('/', comment(text='Bar'))
         self.db.add('/path/', comment(text='Baz'))
 
@@ -36,6 +44,28 @@ class TestSQLite(unittest.TestCase):
         rv = list(self.db.retrieve('/path/'))
         assert rv[0].id == 1
         assert rv[0].text == 'Baz'
+
+    def test_update(self):
+
+        path, id = self.db.add('/', comment(text='Foo'))
+        path, id = self.db.update(path, id, comment(text='Bla'))
+        c = self.db.get(path, id)
+
+        assert c.id == 1
+        assert c.text == 'Foo'
+
+    def test_delete(self):
+
+        path, id = self.db.add('/', comment(
+            text='F**CK', author='P*NIS', website='http://somebadhost.org/'))
+
+        self.db.delete(path, id)
+        c = self.db.get(path, id)
+
+        assert c.id == 1
+        assert c.text == ''
+        assert c.author is None
+        assert c.website is None
 
     def tearDown(self):
         os.unlink(self.path)

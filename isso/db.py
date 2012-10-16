@@ -81,23 +81,39 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             keys = ','.join(self.fields)
             values = ','.join('?'*len(self.fields))
-            con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
+            x = con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
                 0, path, c.created, c.modified, c.text, c.author, c.email, c.website,
                 c.parent, self.mode)
             )
 
+        with sqlite3.connect(self.dbpath) as con:
+            return con.execute('SELECT path, MAX(id) FROM comments;').fetchone()
+
     def update(self, path, id, comment):
         with sqlite3.connect(self.dbpath) as con:
             for field, value in comment.iteritems():
-                con.execute('UPDATE comments SET ?=? WHERE id=?;', (field, value, id))
+                con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?;' % field,
+                    (value, id, path))
+        return path, id
+
+    def get(self, path, id):
+        with sqlite3.connect(self.dbpath) as con:
+            return self.query2comment(con.execute(
+                'SELECT * FROM comments WHERE path=? AND id=?;', (path, id)).fetchone())
 
     def delete(self, path, id):
-        return
+        with sqlite3.connect(self.dbpath) as con:
+            con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
+            for field in Comment.fields:
+                if field == 'text': continue
+                con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,
+                    (None, path, id))
+        return path, id
 
     def retrieve(self, path, limit=20):
         with sqlite3.connect(self.dbpath) as con:
             rv = con.execute("SELECT * FROM comments WHERE path = ?" \
-               + " ORDER BY id DESC;", (path, )).fetchall()
+               + " ORDER BY id DESC LIMIT ?;", (path, limit)).fetchall()
 
         for item in rv:
             yield self.query2comment(item)
