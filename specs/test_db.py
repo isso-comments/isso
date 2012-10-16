@@ -1,10 +1,15 @@
 
 import os
+import json
 import tempfile
 import unittest
 
 from isso.comments import Comment
 from isso.db import SQLite
+
+
+def comment(**kw):
+    return Comment.fromjson(json.dumps(kw))
 
 
 class TestSQLite(unittest.TestCase):
@@ -17,9 +22,9 @@ class TestSQLite(unittest.TestCase):
 
     def test_add(self):
 
-        self.db.add('/', Comment(text='Foo'))
-        self.db.add('/', Comment(text='Bar'))
-        self.db.add('/path/', Comment(text='Baz'))
+        self.db.add('/', comment(text='Foo'))
+        self.db.add('/', comment(text='Bar'))
+        self.db.add('/path/', comment(text='Baz'))
 
         rv = list(self.db.retrieve('/'))
         assert rv[0].id == 2

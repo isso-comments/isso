@@ -1,6 +1,5 @@
 
 import abc
-import time
 import sqlite3
 
 from os.path import join
@@ -25,15 +24,15 @@ class Abstract:
         return
 
     @abc.abstractmethod
-    def update(self, path, comment):
+    def update(self, path, id, comment):
         return
 
     @abc.abstractmethod
-    def delete(self, path, comment):
+    def delete(self, path):
         return
 
     @abc.abstractmethod
-    def retrieve(self, path, limit=20):
+    def retrieve(self, path, limit):
         return
 
 
@@ -44,7 +43,7 @@ class SQLite(Abstract):
     post) are ordered by that id."""
 
     fields = [
-        'id', 'path', 'timestamp',
+        'id', 'path', 'created', 'modified',
         'text', 'author', 'email', 'website', 'parent', 'mode'
     ]
 
@@ -55,9 +54,9 @@ class SQLite(Abstract):
 
         with sqlite3.connect(self.dbpath) as con:
             sql = ('main.comments (id INTEGER NOT NULL, path VARCHAR(255) NOT NULL,'
-                   'timestamp FLOAT NOT NULL, text VARCHAR, author VARCHAR(64),'
-                   'email VARCHAR(64), website VARCHAR(64), parent INTEGER, mode INTEGER,'
-                   'PRIMARY KEY (id, path))')
+                   'created FLOAT NOT NULL, modified FLOAT, text VARCHAR,'
+                   'author VARCHAR(64), email VARCHAR(64), website VARCHAR(64),'
+                   'parent INTEGER, mode INTEGER, PRIMARY KEY (id, path))')
             con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
 
             # increment id if (id, path) is no longer unique
@@ -74,8 +73,8 @@ class SQLite(Abstract):
 
     def query2comment(self, query):
         return Comment(
-            text=query[3], author=query[4], email=query[5], website=query[6],
-            parent=query[7], timestamp=query[2], id=query[0], mode=query[8]
+            text=query[4], author=query[5], email=query[6], website=query[7],
+            parent=query[8], mode=query[9], id=query[0], created=query[2], modified=query[3]
         )
 
     def add(self, path, c):
@@ -83,14 +82,16 @@ class SQLite(Abstract):
             keys = ','.join(self.fields)
             values = ','.join('?'*len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
-                0, path, time.time(), c.text, c.author, c.email, c.website,
+                0, path, c.created, c.modified, c.text, c.author, c.email, c.website,
                 c.parent, self.mode)
             )
 
-    def update(self, path, comment):
-        return
+    def update(self, path, id, comment):
+        with sqlite3.connect(self.dbpath) as con:
+            for field, value in comment.iteritems():
+                con.execute('UPDATE comments SET ?=? WHERE id=?;', (field, value, id))
 
-    def delete(self, path, comment):
+    def delete(self, path, id):
         return
 
     def retrieve(self, path, limit=20):
