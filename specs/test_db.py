@@ -5,7 +5,7 @@ import time
 import tempfile
 import unittest
 
-from isso.comments import Comment
+from isso.models import Comment
 from isso.db import SQLite
 
 

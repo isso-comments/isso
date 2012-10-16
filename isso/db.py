@@ -5,7 +5,7 @@ import sqlite3
 
 from os.path import join
 
-from isso.comments import Comment
+from isso.models import Comment
 
 
 class Abstract:
