@@ -26,7 +26,7 @@ from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import HTTPException, NotFound, NotImplemented, InternalServerError
 
-from isso import admin, comments
+from isso import admin, comments, db
 
 url_map = Map([
     # moderation panel
@@ -42,8 +42,8 @@ url_map = Map([
 class Isso:
 
     def __init__(self, conf):
-
         self.conf = conf
+        self.db = db.SQLite(conf)
 
     def dispatch(self, request, start_response):
         adapter = url_map.bind_to_environ(request.environ)

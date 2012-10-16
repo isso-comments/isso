@@ -18,8 +18,7 @@ class TestSQLite(unittest.TestCase):
     def setUp(self):
 
         fd, self.path = tempfile.mkstemp()
-        self.db = SQLite()
-        self.db.initialize({'SQLITE': self.path})
+        self.db = SQLite({'SQLITE': self.path})
 
     def test_get(self):
 

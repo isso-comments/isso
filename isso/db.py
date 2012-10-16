@@ -3,8 +3,6 @@ import abc
 import time
 import sqlite3
 
-from os.path import join
-
 from isso.models import Comment
 
 
@@ -13,7 +11,7 @@ class Abstract:
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def initialize(self, conf):
+    def __init__(self, conf):
         return
 
     @abc.abstractmethod
@@ -48,7 +46,7 @@ class SQLite(Abstract):
         'text', 'author', 'email', 'website', 'parent', 'mode'
     ]
 
-    def initialize(self, conf):
+    def __init__(self, conf):
 
         self.dbpath = conf['SQLITE']
         self.mode = 1 if conf.get('MODERATION') else 0
@@ -82,7 +80,7 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             keys = ','.join(self.fields)
             values = ','.join('?'*len(self.fields))
-            x = con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
+            con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
                 0, path, c.created, c.modified, c.text, c.author, c.email, c.website,
                 c.parent, self.mode)
             )
