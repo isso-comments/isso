@@ -1,5 +1,5 @@
 
-import shutil
+import os
 import tempfile
 import unittest
 
@@ -11,9 +11,9 @@ class TestSQLite(unittest.TestCase):
 
     def setUp(self):
 
-        self.path = tempfile.mkdtemp()
+        fd, self.path = tempfile.mkstemp()
         self.db = SQLite()
-        self.db.initialize({'DATA_DIR': self.path})
+        self.db.initialize({'SQLITE': self.path})
 
     def test_add(self):
 
@@ -33,4 +33,4 @@ class TestSQLite(unittest.TestCase):
         assert rv[0].text == 'Baz'
 
     def tearDown(self):
-        shutil.rmtree(self.path)
+        os.unlink(self.path)
