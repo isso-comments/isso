@@ -1,6 +1,7 @@
 
 import os
 import json
+import time
 import tempfile
 import unittest
 
@@ -48,11 +49,13 @@ class TestSQLite(unittest.TestCase):
     def test_update(self):
 
         path, id = self.db.add('/', comment(text='Foo'))
+        time.sleep(0.1)
         path, id = self.db.update(path, id, comment(text='Bla'))
         c = self.db.get(path, id)
 
         assert c.id == 1
         assert c.text == 'Foo'
+        assert c.created < c.modified
 
     def test_delete(self):
 

@@ -1,5 +1,6 @@
 
 import abc
+import time
 import sqlite3
 
 from os.path import join
@@ -94,6 +95,10 @@ class SQLite(Abstract):
             for field, value in comment.iteritems():
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?;' % field,
                     (value, id, path))
+
+        with sqlite3.connect(self.dbpath) as con:
+            con.execute('UPDATE comments SET modified=? WHERE path=? AND id=?',
+                (time.time(), path, id))
         return path, id
 
     def get(self, path, id):

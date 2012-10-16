@@ -63,6 +63,5 @@ class Comment(object):
         return self.mode == 2
 
 
-
 def comment(app, environ, request, path, id=None):
     return Response('', 200)
