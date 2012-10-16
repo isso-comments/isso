@@ -28,7 +28,7 @@ setup(
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7"
     ],
-    install_requires=['werkzeug'],
+    install_requires=['werkzeug', 'itsdangerous'],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],

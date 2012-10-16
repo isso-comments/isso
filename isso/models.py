@@ -22,7 +22,7 @@ class Comment(object):
         for field in self.protected + self.fields:
             self.__dict__[field] = kw.get(field)
 
-    def iteritems(self, protected=False):
+    def iteritems(self, protected=True):
         for field in self.fields:
             yield field, getattr(self, field)
         if protected:
@@ -41,10 +41,6 @@ class Comment(object):
             comment.__dict__[field] = data.get(field)
 
         return comment
-
-    @property
-    def json(self):
-        return ''
 
     @property
     def pending(self):

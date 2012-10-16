@@ -21,21 +21,30 @@
 
 __version__ = '0.1'
 
+import json
+
 from werkzeug.routing import Map, Rule
 from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import HTTPException, NotFound, NotImplemented, InternalServerError
 
-from isso import admin, comments, db
+from isso import admin, comment, db, utils
+
+
+_dumps = json.dumps
+setattr(json, 'dumps', lambda obj: _dumps(obj, cls=utils.IssoEncoder))
+
 
 url_map = Map([
     # moderation panel
     Rule('/', endpoint='admin.index', methods=['GET', 'POST']),
 
     # comments API
-    Rule('/comment/<string:path>/', endpoint='comments.comment', methods=['POST']),
-    Rule('/comment/<string:path>/<int:id>', endpoint='comments.comment',
-        methods=['GET', 'PUT', 'DELETE']),
+    Rule('/comment/<string:path>/', endpoint='comment.get'),
+    Rule('/comment/<string:path>/new', endpoint='comment.create', methods=['POST']),
+    Rule('/comment/<string:path>/<int:id>', endpoint='comment.get'),
+    Rule('/comment/<string:path>/<int:id>', endpoint='comment.modify',
+        methods=['PUT', 'DELETE']),
 ])
 
 
@@ -70,5 +79,5 @@ class Isso:
 
 def main():
 
-    app = Isso(123)
+    app = Isso({'SQLITE': '/tmp/sqlite.db'})
     run_simple('127.0.0.1', 8080, app)

@@ -90,7 +90,7 @@ class SQLite(Abstract):
 
     def update(self, path, id, comment):
         with sqlite3.connect(self.dbpath) as con:
-            for field, value in comment.iteritems():
+            for field, value in comment.iteritems(False):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?;' % field,
                     (value, id, path))
 
