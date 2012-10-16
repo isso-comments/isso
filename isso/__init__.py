@@ -21,6 +21,54 @@
 
 __version__ = '0.1'
 
+from werkzeug.routing import Map, Rule
+from werkzeug.serving import run_simple
+from werkzeug.wrappers import Request, Response
+from werkzeug.exceptions import HTTPException, NotFound, NotImplemented, InternalServerError
+
+from isso import admin, comments
+
+url_map = Map([
+    # moderation panel
+    Rule('/', endpoint='admin.index', methods=['GET', 'POST']),
+
+    # comments API
+    Rule('/comment/<string:path>/', endpoint='comments.comment', methods=['POST']),
+    Rule('/comment/<string:path>/<int:id>', endpoint='comments.comment',
+        methods=['GET', 'PUT', 'DELETE']),
+])
+
+
+class Isso:
+
+    def __init__(self, conf):
+
+        self.conf = conf
+
+    def dispatch(self, request, start_response):
+        adapter = url_map.bind_to_environ(request.environ)
+        try:
+            endpoint, values = adapter.match()
+            module, function = endpoint.split('.', 1)
+            handler = getattr(globals()[module], function)
+            return handler(self, request.environ, request, **values)
+        except NotFound, e:
+            return Response('Not Found', 404)
+        except HTTPException, e:
+            return e
+        except InternalServerError, e:
+            return Response(e, 500)
+
+    def wsgi_app(self, environ, start_response):
+        request = Request(environ)
+        response = self.dispatch(request, start_response)
+        return response(environ, start_response)
+
+    def __call__(self, environ, start_response):
+        return self.wsgi_app(environ, start_response)
+
 
 def main():
-    print "Hallo Welt!"
+
+    app = Isso(123)
+    run_simple('127.0.0.1', 8080, app)
