@@ -57,3 +57,9 @@ class TestComments(unittest.TestCase):
 
         rv = json.loads(r.data)
         assert len(rv) == 20
+
+    def testGetInvalid(self):
+
+        assert self.get('/comment/path/123').status_code == 404
+        assert self.get('/comment/path/spam').status_code == 404
+        assert self.get('/comment/foo/').status_code == 404

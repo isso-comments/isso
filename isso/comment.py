@@ -18,4 +18,6 @@ def create(app, environ, request, path):
 def get(app, environ, request, path, id=None):
 
     rv = list(app.db.retrieve(path)) if id is None else app.db.get(path, id)
+    if not rv:
+        abort(404)
     return Response(json.dumps(rv), 200, content_type='application/json')

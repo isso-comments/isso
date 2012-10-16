@@ -71,6 +71,9 @@ class SQLite(Abstract):
         return
 
     def query2comment(self, query):
+        if query is None:
+            return None
+
         return Comment(
             text=query[4], author=query[5], email=query[6], website=query[7],
             parent=query[8], mode=query[9], id=query[0], created=query[2], modified=query[3]
