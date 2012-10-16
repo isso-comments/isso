@@ -45,16 +45,18 @@ class SQLite(Abstract):
 
     fields = [
         'id', 'path', 'timestamp',
-        'text', 'author', 'email', 'website', 'parent'
+        'text', 'author', 'email', 'website', 'parent', 'mode'
     ]
 
     def initialize(self, conf):
+
         self.dbpath = conf['SQLITE']
+        self.mode = 1 if conf.get('MODERATION') else 0
 
         with sqlite3.connect(self.dbpath) as con:
             sql = ('main.comments (id INTEGER NOT NULL, path VARCHAR(255) NOT NULL,'
                    'timestamp FLOAT NOT NULL, text VARCHAR, author VARCHAR(64),'
-                   'email VARCHAR(64), website VARCHAR(64), parent INTEGER,'
+                   'email VARCHAR(64), website VARCHAR(64), parent INTEGER, mode INTEGER,'
                    'PRIMARY KEY (id, path))')
             con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
 
@@ -73,15 +75,17 @@ class SQLite(Abstract):
     def query2comment(self, query):
         return Comment(
             text=query[3], author=query[4], email=query[5], website=query[6],
-            parent=query[7], timestamp=query[2], id=query[0]
+            parent=query[7], timestamp=query[2], id=query[0], mode=query[8]
         )
 
     def add(self, path, c):
         with sqlite3.connect(self.dbpath) as con:
             keys = ','.join(self.fields)
             values = ','.join('?'*len(self.fields))
-            con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values),
-                (0, path, time.time(), c.text, c.author, c.email, c.website, c.parent))
+            con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
+                0, path, time.time(), c.text, c.author, c.email, c.website,
+                c.parent, self.mode)
+            )
 
     def update(self, path, comment):
         return
