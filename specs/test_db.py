@@ -5,6 +5,7 @@ import time
 import tempfile
 import unittest
 
+import isso
 from isso.models import Comment
 from isso.db import SQLite
 
@@ -18,7 +19,7 @@ class TestSQLite(unittest.TestCase):
     def setUp(self):
 
         fd, self.path = tempfile.mkstemp()
-        self.db = SQLite({'SQLITE': self.path})
+        self.db = SQLite(isso.Isso({'SQLITE': self.path}))
 
     def test_get(self):
 

@@ -50,9 +50,16 @@ url_map = Map([
 
 class Isso:
 
+    SECRET_KEY = ',\x1e\xbaY\xbb\xdf\xe7@\x85\xe3\xd9\xb4A9\xe4G\xa6O'
+    MODERATION = False
+    SQLITE = None
+
     def __init__(self, conf):
-        self.conf = conf
-        self.db = db.SQLite(conf)
+
+        self.__dict__.update(dict((k, v) for k, v in conf.iteritems() if k.isupper()))
+
+        if self.SQLITE:
+            self.db = db.SQLite(self)
 
     def dispatch(self, request, start_response):
         adapter = url_map.bind_to_environ(request.environ)
