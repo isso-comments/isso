@@ -118,9 +118,9 @@ class SQLite(Abstract):
 
     def delete(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
-            refs = con.execute('SELECT id FROM comments WHERE id=?', (id, )).fetchone()
+            refs = con.execute('SELECT * FROM comments WHERE parent=?', (id, )).fetchone()
 
-            if len(refs) == 0:
+            if refs is None:
                 con.execute('DELETE FROM comments WHERE path=? AND id=?', (path, id))
                 return None
 

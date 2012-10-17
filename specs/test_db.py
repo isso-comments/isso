@@ -60,14 +60,7 @@ class TestSQLite(unittest.TestCase):
 
         rv = self.db.add('/', comment(
             text='F**CK', author='P*NIS', website='http://somebadhost.org/'))
-
-        self.db.delete('/', rv.id)
-        c = self.db.get('/', rv.id)
-
-        assert c.id == 1
-        assert c.text == ''
-        assert c.author is None
-        assert c.website is None
+        assert self.db.delete('/', rv.id) == None
 
     def tearDown(self):
         os.unlink(self.path)
