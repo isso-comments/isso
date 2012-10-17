@@ -23,14 +23,14 @@ class TestSQLite(unittest.TestCase):
     def test_get(self):
 
         rv = self.db.add('/', comment(text='Spam'))
-        c = self.db.get(*rv)
+        c = self.db.get('/', rv.id)
 
         assert c.id == 1
         assert c.text == 'Spam'
 
     def test_add(self):
 
-        x = self.db.add('/', comment(text='Foo'))
+        self.db.add('/', comment(text='Foo'))
         self.db.add('/', comment(text='Bar'))
         self.db.add('/path/', comment(text='Baz'))
 
@@ -47,10 +47,10 @@ class TestSQLite(unittest.TestCase):
 
     def test_update(self):
 
-        path, id = self.db.add('/', comment(text='Foo'))
+        rv = self.db.add('/', comment(text='Foo'))
         time.sleep(0.1)
-        path, id = self.db.update(path, id, comment(text='Bla'))
-        c = self.db.get(path, id)
+        rv = self.db.update('/', rv.id, comment(text='Bla'))
+        c = self.db.get('/', rv.id)
 
         assert c.id == 1
         assert c.text == 'Bla'
@@ -58,11 +58,11 @@ class TestSQLite(unittest.TestCase):
 
     def test_delete(self):
 
-        path, id = self.db.add('/', comment(
+        rv = self.db.add('/', comment(
             text='F**CK', author='P*NIS', website='http://somebadhost.org/'))
 
-        self.db.delete(path, id)
-        c = self.db.get(path, id)
+        self.db.delete('/', rv.id)
+        c = self.db.get('/', rv.id)
 
         assert c.id == 1
         assert c.text == ''

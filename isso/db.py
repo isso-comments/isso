@@ -97,7 +97,8 @@ class SQLite(Abstract):
             )
 
         with sqlite3.connect(self.dbpath) as con:
-            return con.execute('SELECT path, MAX(id) FROM comments;').fetchone()
+            return self.query2comment(
+                con.execute('SELECT *, MAX(id) FROM comments;').fetchone())
 
     def update(self, path, id, comment):
         with sqlite3.connect(self.dbpath) as con:
@@ -108,7 +109,7 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             con.execute('UPDATE comments SET modified=? WHERE path=? AND id=?',
                 (time.time(), path, id))
-        return path, id
+        return self.get(path, id)
 
     def get(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
@@ -117,14 +118,20 @@ class SQLite(Abstract):
 
     def delete(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
+            refs = con.execute('SELECT id FROM comments WHERE id=?', (id, )).fetchone()
+
+            if len(refs) == 0:
+                con.execute('DELETE FROM comments WHERE path=? AND id=?', (path, id))
+                return None
+
             con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
             con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (2, path, id))
             for field in set(Comment.fields) - set(['text', 'parent']):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,
                     (None, path, id))
-        return path, id
+        return self.get(path, id)
 
-    def retrieve(self, path, limit=20):
+    def retrieve(self, path, limit=20, mode=None):
         with sqlite3.connect(self.dbpath) as con:
             rv = con.execute("SELECT * FROM comments WHERE path = ?" \
                + " ORDER BY id DESC LIMIT ?;", (path, limit)).fetchall()

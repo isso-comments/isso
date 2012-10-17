@@ -12,7 +12,7 @@ def create(app, environ, request, path):
     except ValueError as e:
         return Response(unicode(e), 400)
 
-    return Response(json.dumps(app.db.get(*rv)), 201, content_type='application/json')
+    return Response(json.dumps(rv), 201, content_type='application/json')
 
 
 def get(app, environ, request, path, id=None):
@@ -32,4 +32,4 @@ def modify(app, environ, request, path, id):
             return Response(unicode(e), 400)
     else:
         rv = app.db.delete(path, id)
-    return Response(json.dumps(app.db.get(*rv)), 200, content_type='application/json')
+    return Response(json.dumps(rv), 200, content_type='application/json')

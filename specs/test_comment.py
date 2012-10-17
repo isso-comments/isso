@@ -84,9 +84,14 @@ class TestComments(unittest.TestCase):
     def testDelete(self):
 
         self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+        assert self.delete('/comment/path/1').status_code == 200
+        assert self.get('/comment/path/1').status_code == 404
 
-        r = self.delete('/comment/path/1')
+    def testDeleteWithReference(self):
+
+        self.post('/comment/path/new', data=json.dumps(comment(text='First')))
+        self.post('/comment/path/new', data=json.dumps(comment(text='Second', parent=1)))
+
+        r = self.delete('/comment/path/2')
         assert r.status_code == 200
-
-        c = Comment(**json.loads(r.data))
-        assert c.deleted
+        assert Comment(**json.loads(r.data)).deleted
