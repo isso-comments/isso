@@ -2,6 +2,8 @@
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort
 
+from itsdangerous import SignatureExpired, BadSignature
+
 from isso import json, models
 
 
@@ -12,7 +14,9 @@ def create(app, environ, request, path):
     except ValueError as e:
         return Response(unicode(e), 400)
 
-    return Response(json.dumps(rv), 201, content_type='application/json')
+    response = Response(json.dumps(rv), 201, content_type='application/json')
+    response.set_cookie('session', app.signer.dumps([path, rv.id]), max_age=app.MAX_AGE)
+    return response
 
 
 def get(app, environ, request, path, id=None):
@@ -24,6 +28,14 @@ def get(app, environ, request, path, id=None):
 
 
 def modify(app, environ, request, path, id):
+
+    try:
+        rv = app.unsign(request.cookies.get('session', ''))
+    except (SignatureExpired, BadSignature):
+        return abort(403)
+
+    if not (rv[0] == '*' or rv == [path, id]):
+        abort(401)
 
     if request.method == 'PUT':
         try:

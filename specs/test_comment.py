@@ -15,14 +15,15 @@ def comment(**kw):
 
 class TestComments(unittest.TestCase):
 
-    get = lambda self, *x, **z: Client(self.app, Response).get(*x, **z)
-    put = lambda self, *x, **z: Client(self.app, Response).put(*x, **z)
-    post = lambda self, *x, **z: Client(self.app, Response).post(*x, **z)
-    delete = lambda self, *x, **z: Client(self.app, Response).delete(*x, **z)
-
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
         self.app = Isso({'SQLITE': self.path})
+
+        self.client = Client(self.app, Response)
+        self.get = lambda *x, **z: self.client.get(*x, **z)
+        self.put = lambda *x, **z: self.client.put(*x, **z)
+        self.post = lambda *x, **z: self.client.post(*x, **z)
+        self.delete = lambda *x, **z: self.client.delete(*x, **z)
 
     def testGet(self):
 
@@ -40,7 +41,7 @@ class TestComments(unittest.TestCase):
         rv = self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
 
         assert rv.status_code == 201
-        # XXX assert cookie
+        assert len(filter(lambda header: header[0] == 'Set-Cookie', rv.headers)) == 1
 
         c = Comment.fromjson(rv.data)
 
@@ -91,10 +92,11 @@ class TestComments(unittest.TestCase):
 
     def testDeleteWithReference(self):
 
-        self.post('/comment/path/new', data=json.dumps(comment(text='First')))
+        client = Client(self.app, Response)
+        resp = client.post('/comment/path/new', data=json.dumps(comment(text='First')))
         self.post('/comment/path/new', data=json.dumps(comment(text='Second', parent=1)))
 
-        r = self.delete('/comment/path/1')
+        r = client.delete('/comment/path/1')
         assert r.status_code == 200
         assert Comment(**json.loads(r.data)).deleted
 

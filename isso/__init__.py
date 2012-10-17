@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 #
-# Copyright 2012 posativ <info@posativ.org>. All rights reserved.
+# Copyright 2012, Martin Zimmermann <info@posativ.org>.
+# All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -17,11 +18,13 @@
 # those of the authors and should not be interpreted as representing official
 # policies, either expressed or implied, of posativ <info@posativ.org>.
 #
-# lightweight Disqus alternative
+# Isso – a lightweight Disqus alternative
 
 __version__ = '0.1'
 
 import json
+
+from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map, Rule
 from werkzeug.serving import run_simple
@@ -32,7 +35,7 @@ from isso import admin, comment, db, utils
 
 
 _dumps = json.dumps
-setattr(json, 'dumps', lambda obj: _dumps(obj, cls=utils.IssoEncoder))
+setattr(json, 'dumps', lambda obj, **kw: _dumps(obj, cls=utils.IssoEncoder, **kw))
 
 
 url = lambda path, endpoint, methods: Rule(path, endpoint=endpoint, methods=methods)
@@ -54,12 +57,21 @@ class Isso:
     MODERATION = False
     SQLITE = None
 
+    MAX_AGE = 15*60
+
     def __init__(self, conf):
 
         self.__dict__.update(dict((k, v) for k, v in conf.iteritems() if k.isupper()))
+        self.signer = URLSafeTimedSerializer(self.SECRET_KEY)
 
         if self.SQLITE:
             self.db = db.SQLite(self)
+
+    def sign(self, obj):
+        return self.signer.dumps(obj)
+
+    def unsign(self, obj):
+        return self.signer.loads(obj, max_age=self.MAX_AGE)
 
     def dispatch(self, request, start_response):
         adapter = url_map.bind_to_environ(request.environ)
