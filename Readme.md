@@ -11,7 +11,7 @@ a comment system that is under your control. This is, were Isso comes into play.
 
 Current status: `nosetests specs/`. Ran 11 tests in 0.570s.
 
-# Features/Roadmap
+## Features/Roadmap
 
 - transparent and lightweight backend (SQLite or plain text files)
 - simple JSON API (hence comments are JavaScript-only)
@@ -21,17 +21,17 @@ Current status: `nosetests specs/`. Ran 11 tests in 0.570s.
 - easy integration, similar to Disqus (not implemented yet)
 - spam filtering using [http:bl](https://www.projecthoneypot.org/) (not implemented yet)
 
-# Installation
+## Installation
 
 TODO
 
-# API
+## API
 
-## fetch comments for /foo-bar/
+### fetch comments for /foo-bar/
 
     $ curl -H "Accept: application/json" http://example.org/comment/foo-bar/
 
-## comment at /foo-bar/
+### comment at /foo-bar/
 
     $ curl -H "Accept: application/json" -X POST -d \
         '{
@@ -39,15 +39,15 @@ TODO
 
             # optional
             "name": "Hans", "email": "foo@bla.org", "website": "http://blog/log/"
-        }' \ http://example.org/comment/foo-bar/new
+        }' http://example.org/comment/foo-bar/new
 
-## modify 12. comment at /foo-bar/
+### modify 12. comment at /foo-bar/
 
     $ curl -H "Accept: application/json" -X PUT -d ... http://example.org/comment/foo-bar/12
 
 You can only modify your own comment in a given time range (defaults to 15 minutes).
 
-## delete 2nd comment at /foo-bar/
+### delete 2nd comment at /foo-bar/
 
     $ curl -H ... -X DELETE http://example.org/comment/foo-bar/2
 
@@ -55,7 +55,7 @@ You can only delete your own comment in a given time range (defaults to 15 minut
 your comment has been referenced by another comment, your comment will be cleared but not
 deleted to maintain depending comments.
 
-# Alternatives
+## Alternatives
 
 - [Juvia](https://github.com/phusion/juvia) – Ruby on Rails
 - [Tildehash.com](http://www.tildehash.com/?article=why-im-reinventing-disqus) – PHP
