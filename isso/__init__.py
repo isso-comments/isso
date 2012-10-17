@@ -35,16 +35,16 @@ _dumps = json.dumps
 setattr(json, 'dumps', lambda obj: _dumps(obj, cls=utils.IssoEncoder))
 
 
+url = lambda path, endpoint, methods: Rule(path, endpoint=endpoint, methods=methods)
 url_map = Map([
     # moderation panel
-    Rule('/', endpoint='admin.index', methods=['GET', 'POST']),
+    url('/', 'admin.index', ['GET', 'POST']),
 
     # comments API
-    Rule('/comment/<string:path>/', endpoint='comment.get'),
-    Rule('/comment/<string:path>/new', endpoint='comment.create', methods=['POST']),
-    Rule('/comment/<string:path>/<int:id>', endpoint='comment.get'),
-    Rule('/comment/<string:path>/<int:id>', endpoint='comment.modify',
-        methods=['PUT', 'DELETE']),
+    url('/comment/<string:path>/', 'comment.get', ['GET']),
+    url('/comment/<string:path>/new', 'comment.create', ['POST']),
+    url('/comment/<string:path>/<int:id>', 'comment.get', ['GET']),
+    url('/comment/<string:path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
 ])
 
 

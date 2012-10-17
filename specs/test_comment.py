@@ -18,6 +18,7 @@ class TestComments(unittest.TestCase):
     get = lambda self, *x, **z: Client(self.app, Response).get(*x, **z)
     put = lambda self, *x, **z: Client(self.app, Response).put(*x, **z)
     post = lambda self, *x, **z: Client(self.app, Response).post(*x, **z)
+    delete = lambda self, *x, **z: Client(self.app, Response).delete(*x, **z)
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
@@ -57,9 +58,35 @@ class TestComments(unittest.TestCase):
 
         rv = json.loads(r.data)
         assert len(rv) == 20
+        # XXX limit=100
 
     def testGetInvalid(self):
 
         assert self.get('/comment/path/123').status_code == 404
         assert self.get('/comment/path/spam').status_code == 404
         assert self.get('/comment/foo/').status_code == 404
+
+    def testUpdate(self):
+
+        self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+        self.put('/comment/path/1', data=json.dumps(comment(
+            text='Hello World', author='me', website='http://example.com/')))
+
+        r = self.get('/comment/path/1')
+        assert r.status_code == 200
+
+        rv = json.loads(r.data)
+        assert rv['text'] == 'Hello World'
+        assert rv['author'] == 'me'
+        assert rv['website'] == 'http://example.com/'
+        assert 'modified' in rv
+
+    def testDelete(self):
+
+        self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+
+        r = self.delete('/comment/path/1')
+        assert r.status_code == 200
+
+        c = Comment(**json.loads(r.data))
+        assert c.deleted

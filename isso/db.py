@@ -110,6 +110,7 @@ class SQLite(Abstract):
     def delete(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
             con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
+            con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (2, path, id))
             for field in Comment.fields:
                 if field == 'text': continue
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,

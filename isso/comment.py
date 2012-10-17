@@ -21,3 +21,15 @@ def get(app, environ, request, path, id=None):
     if not rv:
         abort(404)
     return Response(json.dumps(rv), 200, content_type='application/json')
+
+
+def modify(app, environ, request, path, id):
+
+    if request.method == 'PUT':
+        try:
+            rv = app.db.update(path, id, models.Comment.fromjson(request.data))
+        except ValueError as e:
+            return Response(unicode(e), 400)
+    else:
+        rv = app.db.delete(path, id)
+    return Response(json.dumps(app.db.get(*rv)), 200, content_type='application/json')
