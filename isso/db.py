@@ -15,23 +15,34 @@ class Abstract:
         return
 
     @abc.abstractmethod
-    def shutdown(self):
-        return
-
-    @abc.abstractmethod
     def add(path, comment):
+        """Add a new comment to the database. Returns a Comment object."""
         return
 
     @abc.abstractmethod
     def update(self, path, id, comment):
+        """
+        Update an existing comment, but only writeable fields such as text,
+        author, email, website and parent. This method should set the modified
+        field to the current time.
+        """
         return
 
     @abc.abstractmethod
-    def delete(self, path):
+    def delete(self, path, id):
+        """
+        Delete a comment. There are two distinctions: a comment is referenced
+        by another valid comment's parent attribute or stand-a-lone. In this
+        case the comment can't be removed without losing depending comments.
+        Hence, delete removes all visible data such as text, author, email,
+        website sets the mode field to 2.
+
+        In the second case this comment can be safely removed without any side
+        effects."""
         return
 
     @abc.abstractmethod
-    def retrieve(self, path, limit):
+    def retrieve(self, path, limit=20):
         return
 
 
@@ -66,9 +77,6 @@ class SQLite(Abstract):
                        id=(SELECT MAX(id)+1 FROM comments WHERE path=NEW.path)
                     WHERE rowid=NEW.rowid;
                 END;""")
-
-    def shutdown(self):
-        return
 
     def query2comment(self, query):
         if query is None:
@@ -111,8 +119,7 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
             con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (2, path, id))
-            for field in Comment.fields:
-                if field == 'text': continue
+            for field in set(Comment.fields) - set(['text', 'parent']):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,
                     (None, path, id))
         return path, id
