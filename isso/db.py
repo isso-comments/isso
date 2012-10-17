@@ -95,7 +95,7 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             for field, value in comment.iteritems(False):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?;' % field,
-                    (value, id, path))
+                    (value, path, id))
 
         with sqlite3.connect(self.dbpath) as con:
             con.execute('UPDATE comments SET modified=? WHERE path=? AND id=?',

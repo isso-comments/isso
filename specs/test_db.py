@@ -53,7 +53,7 @@ class TestSQLite(unittest.TestCase):
         c = self.db.get(path, id)
 
         assert c.id == 1
-        assert c.text == 'Foo'
+        assert c.text == 'Bla'
         assert c.created < c.modified
 
     def test_delete(self):
