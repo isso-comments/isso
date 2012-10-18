@@ -8,15 +8,18 @@ from werkzeug.exceptions import abort
 
 from itsdangerous import SignatureExpired, BadSignature
 
-from isso import json, models
+from isso import json, models, utils
 
 
 def create(app, environ, request, path):
 
+    if app.PRODUCTION and not utils.urlexists(app.HOST, path):
+        return abort(404)
+
     try:
         rv = app.db.add(path, models.Comment.fromjson(request.data))
-    except ValueError as e:
-        return Response(unicode(e), 400)
+    except ValueError:
+        return abort(400)
 
     response = Response(json.dumps(rv), 201, content_type='application/json')
     response.set_cookie('session', app.signer.dumps([path, rv.id]), max_age=app.MAX_AGE)

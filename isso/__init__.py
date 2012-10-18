@@ -53,16 +53,19 @@ url_map = Map([
 
 class Isso:
 
+    PRODUCTION = True
     SECRET_KEY = ',\x1e\xbaY\xbb\xdf\xe7@\x85\xe3\xd9\xb4A9\xe4G\xa6O'
     MODERATION = False
     SQLITE = None
 
+    HOST = 'http://localhost:8000/'
     MAX_AGE = 15*60
 
     def __init__(self, conf):
 
         self.__dict__.update(dict((k, v) for k, v in conf.iteritems() if k.isupper()))
         self.signer = URLSafeTimedSerializer(self.SECRET_KEY)
+        self.HOST = utils.determine(self.HOST)
 
         if self.SQLITE:
             self.db = db.SQLite(self)
