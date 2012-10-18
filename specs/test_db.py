@@ -65,3 +65,28 @@ class TestSQLite(unittest.TestCase):
 
     def tearDown(self):
         os.unlink(self.path)
+
+
+class TestSQLitePending(unittest.TestCase):
+
+    def setUp(self):
+
+        fd, self.path = tempfile.mkstemp()
+        self.db = SQLite(isso.Isso({'SQLITE': self.path, 'MODERATION': True}))
+
+    def test_retrieve(self):
+
+        self.db.add('/', comment(text='Foo'))
+        assert len(list(self.db.retrieve('/'))) == 0
+
+    def test_activate(self):
+
+        self.db.add('/', comment(text='Foo'))
+        self.db.add('/', comment(text='Bar'))
+        self.db.activate('/', 2)
+
+        assert len(list(self.db.retrieve('/'))) == 1
+        assert len(list(self.db.retrieve('/', mode=3))) == 2
+
+    def tearDown(self):
+        os.unlink(self.path)

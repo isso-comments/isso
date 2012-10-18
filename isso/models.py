@@ -13,9 +13,12 @@ class Comment(object):
 
     The field `mode` has a special meaning:
 
-    0: normal
-    1: in moderation queue
-    2: deleted
+    1: normal
+    2: in moderation queue
+    4: deleted
+
+    You can query for them like with UNIX permission bits, so you get both
+    normal and queued using MODE=3.
     """
 
     protected = ['id', 'mode', 'created', 'modified']
@@ -48,8 +51,8 @@ class Comment(object):
 
     @property
     def pending(self):
-        return self.mode == 1
+        return self.mode == 2
 
     @property
     def deleted(self):
-        return self.mode == 2
+        return self.mode == 4

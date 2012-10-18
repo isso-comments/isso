@@ -19,8 +19,13 @@ class Abstract:
         return
 
     @abc.abstractmethod
-    def add(path, comment):
+    def add(self, path, comment):
         """Add a new comment to the database. Returns a Comment object."""
+        return
+
+    @abc.abstractmethod
+    def activate(self, path, id):
+        """Activate comment id if pending and return comment for (path, id)."""
         return
 
     @abc.abstractmethod
@@ -64,7 +69,7 @@ class SQLite(Abstract):
     def __init__(self, app):
 
         self.dbpath = app.SQLITE
-        self.mode = 1 if app.MODERATION else 0
+        self.mode = 2 if app.MODERATION else 1
 
         with sqlite3.connect(self.dbpath) as con:
             sql = ('main.comments (id INTEGER NOT NULL, path VARCHAR(255) NOT NULL,'
@@ -104,6 +109,11 @@ class SQLite(Abstract):
             return self.query2comment(
                 con.execute('SELECT *, MAX(id) FROM comments;').fetchone())
 
+    def activate(self, path, id):
+        with sqlite3.connect(self.dbpath) as con:
+            con.execute("UPDATE comments SET mode=1 WHERE path=? AND id=? AND mode=2", (path, id))
+        return self.get(path, id)
+
     def update(self, path, id, comment):
         with sqlite3.connect(self.dbpath) as con:
             for field, value in comment.iteritems(False):
@@ -129,16 +139,16 @@ class SQLite(Abstract):
                 return None
 
             con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
-            con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (2, path, id))
+            con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (4, path, id))
             for field in set(Comment.fields) - set(['text', 'parent']):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,
                     (None, path, id))
         return self.get(path, id)
 
-    def retrieve(self, path, limit=20, mode=None):
+    def retrieve(self, path, limit=20, mode=1):
         with sqlite3.connect(self.dbpath) as con:
-            rv = con.execute("SELECT * FROM comments WHERE path = ?" \
-               + " ORDER BY id DESC LIMIT ?;", (path, limit)).fetchall()
+            rv = con.execute("SELECT * FROM comments WHERE path=? AND (? | mode) = ?" \
+               + " ORDER BY id DESC LIMIT ?;", (path, mode, mode, limit)).fetchall()
 
         for item in rv:
             yield self.query2comment(item)
