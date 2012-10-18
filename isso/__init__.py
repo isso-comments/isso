@@ -29,7 +29,7 @@ from itsdangerous import URLSafeTimedSerializer
 from werkzeug.routing import Map, Rule
 from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
-from werkzeug.exceptions import HTTPException, NotFound, NotImplemented, InternalServerError
+from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
 
 from isso import admin, comment, db, utils
 

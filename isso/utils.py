@@ -1,16 +1,10 @@
+# -*- encoding: utf-8 -*-
+#
+# Copyright 2012, Martin Zimmermann <info@posativ.org>. All rights reserved.
+# License: BSD Style, 2 clauses. see isso/__init__.py
 
 import json
 from isso.models import Comment
-
-# def prove(f):
-
-#     def dec(app, env, req, *args, **kwargs):
-
-#         pass
-
-
-# def sign(response):
-#     pass
 
 
 class IssoEncoder(json.JSONEncoder):
