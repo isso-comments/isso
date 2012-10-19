@@ -148,7 +148,7 @@ class SQLite(Abstract):
     def retrieve(self, path, limit=20, mode=1):
         with sqlite3.connect(self.dbpath) as con:
             rv = con.execute("SELECT * FROM comments WHERE path=? AND (? | mode) = ?" \
-               + " ORDER BY id DESC LIMIT ?;", (path, mode, mode, limit)).fetchall()
+               + " ORDER BY id ASC LIMIT ?;", (path, mode, mode, limit)).fetchall()
 
         for item in rv:
             yield self.query2comment(item)

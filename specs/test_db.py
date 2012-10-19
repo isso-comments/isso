@@ -36,11 +36,11 @@ class TestSQLite(unittest.TestCase):
         self.db.add('/path/', comment(text='Baz'))
 
         rv = list(self.db.retrieve('/'))
-        assert rv[0].id == 2
-        assert rv[0].text == 'Bar'
+        assert rv[0].id == 1
+        assert rv[0].text == 'Foo'
 
-        assert rv[1].id == 1
-        assert rv[1].text == 'Foo'
+        assert rv[1].id == 2
+        assert rv[1].text == 'Bar'
 
         rv = list(self.db.retrieve('/path/'))
         assert rv[0].id == 1
