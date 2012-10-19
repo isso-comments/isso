@@ -1,4 +1,5 @@
 
+import urllib
 import tempfile
 import unittest
 
@@ -64,7 +65,7 @@ class TestComments(unittest.TestCase):
     def testGetInvalid(self):
 
         assert self.get('/comment/path/123').status_code == 404
-        assert self.get('/comment/path/spam').status_code == 404
+        assert self.get('/comment/path/spam/123').status_code == 404
         assert self.get('/comment/foo/').status_code == 404
 
     def testUpdate(self):
@@ -102,3 +103,15 @@ class TestComments(unittest.TestCase):
 
         assert self.get('/comment/path/1').status_code == 200
         assert self.get('/comment/path/2').status_code == 200
+
+    def testPathVariations(self):
+
+        paths = ['/sub/path/', '/path.html', '/sub/path.html', '%2Fpath/%2F']
+
+        for path in paths:
+            assert self.post('/comment/' + path + '/new',
+                             data=json.dumps(comment(text='...'))).status_code == 201
+
+        for path in paths:
+            assert self.get('/comment/' + path)
+            assert self.get('/comment/' + path + '/1')

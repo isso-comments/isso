@@ -99,7 +99,7 @@ class SQLite(Abstract):
     def add(self, path, c):
         with sqlite3.connect(self.dbpath) as con:
             keys = ','.join(self.fields)
-            values = ','.join('?'*len(self.fields))
+            values = ','.join('?' * len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
                 0, path, c.created, c.modified, c.text, c.author, c.email, c.website,
                 c.parent, self.mode)

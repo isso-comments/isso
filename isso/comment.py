@@ -13,7 +13,7 @@ from isso import json, models, utils
 
 def create(app, environ, request, path):
 
-    if app.PRODUCTION and not utils.urlexists(app.HOST, path):
+    if app.PRODUCTION and not utils.urlexists(app.HOST, '/' + path):
         return abort(404)
 
     try:

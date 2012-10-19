@@ -20,7 +20,7 @@
 #
 # Isso – a lightweight Disqus alternative
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 import json
 
@@ -33,22 +33,24 @@ from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
 
 from isso import admin, comment, db, utils
 
-
+# override default json :func:`dumps`.
 _dumps = json.dumps
 setattr(json, 'dumps', lambda obj, **kw: _dumps(obj, cls=utils.IssoEncoder, **kw))
 
-
+# yep. lazy.
 url = lambda path, endpoint, methods: Rule(path, endpoint=endpoint, methods=methods)
+
 url_map = Map([
     # moderation panel
     url('/', 'admin.index', ['GET', 'POST']),
 
-    # comments API
-    url('/comment/<string:path>/', 'comment.get', ['GET']),
-    url('/comment/<string:path>/new', 'comment.create', ['POST']),
-    url('/comment/<string:path>/<int:id>', 'comment.get', ['GET']),
-    url('/comment/<string:path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
-])
+    # comment API, note that the client side quotes the URL, but this is
+    # actually unnecessary. PEP 333 aka WSGI always unquotes PATH_INFO.
+    url('/comment/<re(".+"):path>/', 'comment.get', ['GET']),
+    url('/comment/<re(".+"):path>/new', 'comment.create', ['POST']),
+    url('/comment/<re(".+"):path>/<int:id>', 'comment.get', ['GET']),
+    url('/comment/<re(".+"):path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
+], converters={'re': utils.RegexConverter})
 
 
 class Isso:
@@ -59,7 +61,7 @@ class Isso:
     SQLITE = None
 
     HOST = 'http://localhost:8000/'
-    MAX_AGE = 15*60
+    MAX_AGE = 15 * 60
 
     def __init__(self, conf):
 
@@ -101,5 +103,10 @@ class Isso:
 
 def main():
 
-    app = Isso({'SQLITE': '/tmp/sqlite.db'})
-    run_simple('127.0.0.1', 8080, app)
+    from os.path import join, dirname
+    from werkzeug.wsgi import SharedDataMiddleware
+
+    app = Isso({'SQLITE': '/tmp/sqlite.db', 'PRODUCTION': False})
+    app = SharedDataMiddleware(app,{
+        '/static': join(dirname(__file__), 'static')})
+    run_simple('127.0.0.1', 8000, app, use_reloader=True)
