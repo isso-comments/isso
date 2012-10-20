@@ -31,11 +31,12 @@ from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
 
-from isso import admin, comment, db, utils
+from isso import admin, comment, db
+from isso.utils import determine, import_object, RegexConverter, IssoEncoder
 
 # override default json :func:`dumps`.
 _dumps = json.dumps
-setattr(json, 'dumps', lambda obj, **kw: _dumps(obj, cls=utils.IssoEncoder, **kw))
+setattr(json, 'dumps', lambda obj, **kw: _dumps(obj, cls=IssoEncoder, **kw))
 
 # yep. lazy.
 url = lambda path, endpoint, methods: Rule(path, endpoint=endpoint, methods=methods)
@@ -50,7 +51,7 @@ url_map = Map([
     url('/comment/<re(".+"):path>/new', 'comment.create', ['POST']),
     url('/comment/<re(".+"):path>/<int:id>', 'comment.get', ['GET']),
     url('/comment/<re(".+"):path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
-], converters={'re': utils.RegexConverter})
+], converters={'re': RegexConverter})
 
 
 class Isso:
@@ -67,10 +68,12 @@ class Isso:
 
         self.__dict__.update(dict((k, v) for k, v in conf.iteritems() if k.isupper()))
         self.signer = URLSafeTimedSerializer(self.SECRET_KEY)
-        self.HOST = utils.determine(self.HOST)
+        self.HOST = determine(self.HOST)
 
         if self.SQLITE:
             self.db = db.SQLite(self)
+
+        self.markup = import_object(conf.get('MARKUP', 'isso.markup.Markdown'))(conf)
 
     def sign(self, obj):
         return self.signer.dumps(obj)

@@ -9,7 +9,6 @@ import httplib
 import urlparse
 import contextlib
 
-import misaka
 import werkzeug.routing
 
 from isso.models import Comment
@@ -48,7 +47,10 @@ def determine(host):
     return (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
 
 
-def markdown(text):
-    return misaka.html(text,
-        extensions = misaka.EXT_STRIKETHROUGH | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK \
-                   | misaka.HTML_SKIP_HTML | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
+def import_object(name):
+    if '.' not in name:
+        return __import__(name)
+
+    parts = name.split('.')
+    obj = __import__('.'.join(parts[:-1]), None, None, [parts[-1]], 0)
+    return getattr(obj, parts[-1])

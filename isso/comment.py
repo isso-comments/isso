@@ -21,7 +21,7 @@ def create(app, environ, request, path):
     except ValueError:
         return abort(400)
 
-    rv.text = utils.markdown(rv.text)
+    rv.text = app.markup.convert(rv.text)
     response = Response(json.dumps(rv), 201, content_type='application/json')
     response.set_cookie('session', app.signer.dumps([path, rv.id]), max_age=app.MAX_AGE)
     return response
@@ -35,9 +35,9 @@ def get(app, environ, request, path, id=None):
 
     if isinstance(rv, list):
         for item in rv:
-            item.text = utils.markdown(item.text)
+            item.text = app.markup.convert(item.text)
     else:
-        rv.text = utils.markdown(rv.text)
+        rv.text = app.markup.convert(rv.text)
 
     return Response(json.dumps(rv), 200, content_type='application/json')
 
