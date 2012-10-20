@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<head>
+
+    <title>Hello World</title>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="/static/ender.js"></script>
+    <script type="text/javascript">
+
+        var initialize = function(thread) {
+
+            var comments = '<ul id="comments"></ul>';
+            var form =
+            '<div id="comment_form">' +
+                '<div>' +
+                '    <input type="text" name="name" id="author" value="" placeholder="Name">' +
+                '</div>' +
+                '<div>' +
+                '    <input type="email" name="email" id="email" value="" placeholder="Email">' +
+                '</div>' +
+                '<div>' +
+                    '<input type="url" name="website" id="website" value="" placeholder="Website URL">' +
+                '</div>' +
+                '<div>' +
+                '    <textarea rows="10" name="comment" id="comment" placeholder="Comment"></textarea>' +
+                '</div>' +
+                '<div>' +
+                    '<input type="submit" name="submit" value="Add Comment">' +
+                '</div>' +
+            '</div>';
+
+            // load our css
+            $('head').append('<link rel="stylesheet" href="/static/style.css" />');
+
+            // append our HTML
+            thread.append(comments)
+            thread.append(form);
+
+            // register events
+            $('input[type="submit"]').on('click', function() {
+
+                var text = $('textarea[id="comment"]').val() || null;
+
+                if (text == null) {
+                    // alert("You must write a comment!");
+                    return;
+                }
+
+                $.ajax({
+                    url: '/comment/' + encodeURIComponent(window.location.pathname) + '/new',
+                    method: 'POST',
+                    type: 'json',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    data: JSON.stringify({
+                        text: text,
+                        author: $('input[id="author"]').val() || null,
+                        email: $('input[id="email"]').val() || null,
+                        website: $('input[id="website"]').val() || null
+                    }),
+                    error: function(resp) {
+                        alert("Mööp.");
+                    },
+                    success: function(rv) {
+                        //$('#isso_thread').html(resp.content);
+                        insert(thread, rv)
+                    },
+                });
+            });
+        };
+
+        var insert = function(thread, post) {
+
+            post['author'] = post['author'] || 'Anonymous';
+
+            $('ul', thread).append(
+                '<article class="comment">' +
+                '  <header><em>' + post['author'] + '</em> schrieb am <em>1234567</em>' +
+                '  </header>' + post['text'] +
+                '</article>');
+        };
+
+        var fetch = function(thread) {
+            var rv = $.ajax({
+                url: '/comment/' + encodeURIComponent(window.location.pathname) + '/',
+                method: 'GET',
+                type: 'json',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                error: function(resp) {
+                    return;
+                },
+                success: function(resp) {
+                    console.log(resp);
+                    for (var item in resp) {
+                        insert(thread, resp[item]);
+                    }
+                }
+            });
+        };
+
+        $.domReady(function() {
+
+            // initialize comment form and css
+            initialize($('#isso_thread'));
+
+            // fetch comments for path
+            fetch($('#isso_thread'));
+
+            // REMOVE ME
+            $('input[id="author"]').val("Peter");
+            $('textarea[id="comment"]').val("Lorem ipsum ...");
+
+        });
+
+    </script>
+    <style type="text/css">
+        body {
+          margin: 0 auto;
+          width: 700px;
+        }
+
+        hr {
+          border: 0;
+          height: 1px;
+          background-image: -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0));
+        }
+    </style>
+
+</head>
+
+<body>
+
+<article>
+
+    <header>
+        <h1>Hello World. Finally!</h1>
+    </header>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+    <footer>
+        <hr />
+        <div id="isso_thread"></div>
+        <noscript>
+            <p>Please enable JavaScript to view the comments powered by Isso™.</a></p>
+        </noscript>
+    </footer>
+
+</article>
+
+</body>
