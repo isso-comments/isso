@@ -8,6 +8,8 @@ import socket
 import httplib
 import urlparse
 import contextlib
+
+import misaka
 import werkzeug.routing
 
 from isso.models import Comment
@@ -44,3 +46,9 @@ def determine(host):
         host = 'http://' + host
     rv = urlparse.urlparse(host)
     return (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
+
+
+def markdown(text):
+    return misaka.html(text,
+        extensions = misaka.EXT_STRIKETHROUGH | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK \
+                   | misaka.HTML_SKIP_HTML | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
