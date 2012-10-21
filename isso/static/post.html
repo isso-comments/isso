@@ -6,27 +6,27 @@
     <script type="text/javascript" src="/static/ender.js"></script>
     <script type="text/javascript">
 
+        var form = '<div id="comment_form">' +
+            '<div>' +
+            '    <input type="text" name="name" id="author" value="" placeholder="Name">' +
+            '</div>' +
+            '<div>' +
+            '    <input type="email" name="email" id="email" value="" placeholder="Email">' +
+            '</div>' +
+            '<div>' +
+                '<input type="url" name="website" id="website" value="" placeholder="Website URL">' +
+            '</div>' +
+            '<div>' +
+            '    <textarea rows="10" name="comment" id="comment" placeholder="Comment"></textarea>' +
+            '</div>' +
+            '<div>' +
+                '<input type="submit" name="submit" value="Add Comment">' +
+            '</div>' +
+        '</div>';
+
         var initialize = function(thread) {
 
             var comments = '<ul id="comments"></ul>';
-            var form =
-            '<div id="comment_form">' +
-                '<div>' +
-                '    <input type="text" name="name" id="author" value="" placeholder="Name">' +
-                '</div>' +
-                '<div>' +
-                '    <input type="email" name="email" id="email" value="" placeholder="Email">' +
-                '</div>' +
-                '<div>' +
-                    '<input type="url" name="website" id="website" value="" placeholder="Website URL">' +
-                '</div>' +
-                '<div>' +
-                '    <textarea rows="10" name="comment" id="comment" placeholder="Comment"></textarea>' +
-                '</div>' +
-                '<div>' +
-                    '<input type="submit" name="submit" value="Add Comment">' +
-                '</div>' +
-            '</div>';
 
             // load our css
             $('head').append('<link rel="stylesheet" href="/static/style.css" />');
@@ -71,13 +71,50 @@
 
         var insert = function(thread, post) {
 
-            post['author'] = post['author'] || 'Anonymous';
+            // pythonic strftime
+            var format = function(date, lang, fmt) {
+
+                var months = {'de': [
+                    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli',
+                    'August', 'September', 'Oktober', 'November', 'Dezember'],
+                              'en': [
+                    'January', 'February', 'March', 'April', 'May', 'June', 'July',
+                    'August', 'September', 'October', 'November', 'December'],
+                };
+
+                var conversions = [
+                    ['%Y', date.getFullYear()], ['%m', date.getMonth()],
+                    ['%B', months[lang][date.getMonth() - 1]],
+                    ['%d', date.getDate()], ['%H', date.getHours()],
+                    ['%H', date.getHours()], ['%M', date.getMinutes()],
+                ];
+
+                conversions.map(function(item) { fmt = fmt.replace(item[0], item[1]) });
+                return fmt;
+            };
+
+            var author = post['author'] || 'Anonymous';
+            if (post['website']) {
+                author = '<a href="' + post['website'] + '" rel="nofollow">' + author + '</a>';
+            }
+
+
+            var date = new Date(parseInt(post['created']) * 1000);
 
             $('ul', thread).append(
                 '<article class="comment">' +
-                '  <header><em>' + post['author'] + '</em> schrieb am <em>1234567</em>' +
+                '  <header><span class="author">' + author + '</span> schrieb am' +
+                '    <span class="date">' + format(date, 'de', '%d. %B %Y um %H:%M') + ':' +
+                '    </span>' +
                 '  </header>' + post['text'] +
+                '  <footer>' +
+                '    <a href="#" id="comment_' + post['id'] + '">Antworten</a>' +
+                '  </footer>' +
                 '</article>');
+
+            $('#comment_' + post['id']).on('click', function() {
+
+            })
         };
 
         var fetch = function(thread) {
@@ -92,7 +129,6 @@
                     return;
                 },
                 success: function(resp) {
-                    console.log(resp);
                     for (var item in resp) {
                         insert(thread, resp[item]);
                     }

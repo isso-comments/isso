@@ -1,3 +1,25 @@
+#comments {
+    margin: 0;
+    padding: 0;
+}
+
+.comment {
+    margin-bottom: 18px;
+    margin-top: 18px;
+}
+
+.comment .author {
+    font-weight: bold;
+}
+
+.comment .date {
+    color: gray;
+}
+
+.comment header {
+    border-bottom: solid 1px lightgray;
+}
+
 #comment_form input, #comment_form textarea {
     border: 4px solid rgba(0,0,0,0.1);
     padding: 8px 10px;
