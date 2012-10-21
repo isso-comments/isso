@@ -51,7 +51,7 @@ class Abstract:
         return
 
     @abc.abstractmethod
-    def retrieve(self, path, limit=20):
+    def retrieve(self, path, mode):
         return
 
 
@@ -145,10 +145,10 @@ class SQLite(Abstract):
                     (None, path, id))
         return self.get(path, id)
 
-    def retrieve(self, path, limit=20, mode=1):
+    def retrieve(self, path, mode=1):
         with sqlite3.connect(self.dbpath) as con:
             rv = con.execute("SELECT * FROM comments WHERE path=? AND (? | mode) = ?" \
-               + " ORDER BY id ASC LIMIT ?;", (path, mode, mode, limit)).fetchall()
+               + " ORDER BY id ASC;", (path, mode, mode)).fetchall()
 
         for item in rv:
             yield self.query2comment(item)

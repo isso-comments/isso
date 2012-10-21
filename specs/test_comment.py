@@ -53,7 +53,7 @@ class TestComments(unittest.TestCase):
 
     def testCreateAndGetMultiple(self):
 
-        for i in range(100):
+        for i in range(20):
             self.post('/comment/path/new', data=json.dumps(comment(text='Spam')))
 
         r = self.get('/comment/path/')
@@ -61,7 +61,6 @@ class TestComments(unittest.TestCase):
 
         rv = json.loads(r.data)
         assert len(rv) == 20
-        # XXX limit=100
 
     def testGetInvalid(self):
 
