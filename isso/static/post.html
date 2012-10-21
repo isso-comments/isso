@@ -127,7 +127,7 @@
             $('#isso_' + post['parent']).append('<ul></ul>');
         }
 
-        $(post['parent'] ? '#isso_' + post['parent'] + ' ul' : '#isso_thread ul').append(
+        $(post['parent'] ? '#isso_' + post['parent'] + ' > ul:last-child' : '#isso_thread > ul').append(
             '<article class="isso" id="isso_' + post['id'] + '">' +
             '  <header><span class="author">' + author + '</span>' +
             '  </header>' + post['text'] +
