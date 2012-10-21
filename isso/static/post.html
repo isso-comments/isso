@@ -61,7 +61,8 @@
                     text: text,
                     author: $('input[id="author"]').val() || null,
                     email: $('input[id="email"]').val() || null,
-                    website: $('input[id="website"]').val() || null
+                    website: $('input[id="website"]').val() || null,
+                    parent: id
                 }),
                 error: function(resp) {
                     alert("Mööp.");
@@ -114,22 +115,27 @@
             author = '<a href="' + post['website'] + '" rel="nofollow">' + author + '</a>';
         }
 
-
         var date = new Date(parseInt(post['created']) * 1000);
 
-        $('#isso_thread ul').append(
-            '<article class="isso">' +
-            '  <header><span class="author">' + author + '</span> schrieb am' +
-            '    <span class="date">' + format(date, 'de', '%d. %B %Y um %H:%M') + ':' +
-            '    </span>' +
+        // create <ul /> for parent, if used
+        if (post['parent']) {
+            $('#isso_' + post['parent']).append('<ul></ul>');
+        }
+
+        $(post['parent'] ? '#isso_' + post['parent'] + ' ul' : '#isso_thread ul').append(
+            '<article class="isso" id="isso_' + post['id'] + '">' +
+            '  <header><span class="author">' + author + '</span>' +
             '  </header>' + post['text'] +
             '  <footer>' +
-            '    <a href="#" id="isso_' + post['id'] + '">Antworten</a>' +
+            '    <a href="#">Antworten</a>' +
+            '    <a href="#isso_' + post['id'] + '">#' + post['id'] + '</a>' +
+            '    <span class="date">' + format(date, 'de', '%d.%m.%Y um %H:%M') +
+            '    </span>' +
             '  </footer>' +
             '</article>');
 
         // ability to answer directly to a comment
-        $('#isso_' + post['id']).on('click', function(event) {
+        $('footer > a:first-child', '#isso_' + post['id']).on('click', function(event) {
 
             if ($('#issoform_' + post['id']).length == 0) {
                 createForm(post['id'], function(html) {$('#isso_' + post['id']).after(html)});

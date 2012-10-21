@@ -13,11 +13,16 @@
 }
 
 .isso .date {
-    color: gray;
+    color: lightgray;
+    padding-left: 12px;
 }
 
 .isso header {
     border-bottom: solid 1px lightgray;
+}
+
+.isso + .issoform {
+    margin-left: 20px;
 }
 
 .issoform input, .issoform textarea {
