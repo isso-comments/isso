@@ -3,6 +3,8 @@
 # Copyright 2012, Martin Zimmermann <info@posativ.org>. All rights reserved.
 # License: BSD Style, 2 clauses. see isso/__init__.py
 
+import cgi
+
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort
 
@@ -17,7 +19,19 @@ def create(app, environ, request, path):
         return abort(404)
 
     try:
-        rv = app.db.add(path, models.Comment.fromjson(request.data))
+        comment = models.Comment.fromjson(request.data)
+    except ValueError:
+        return abort(400)
+
+    for attr in 'author', 'email', 'website':
+        if getattr(comment, attr) is not None:
+            try:
+                setattr(comment, attr, cgi.escape(getattr(comment, attr)))
+            except AttributeError:
+                abort(400)
+
+    try:
+        rv = app.db.add(path, comment)
     except ValueError:
         return abort(400)
 
