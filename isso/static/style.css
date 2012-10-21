@@ -17,8 +17,12 @@
     padding-left: 12px;
 }
 
-.isso header {
+.isso > header {
     border-bottom: solid 1px lightgray;
+}
+
+.isso > footer > a {
+    padding: 0 10px 10px 0;
 }
 
 .isso + .issoform {

@@ -6,6 +6,22 @@
     <script type="text/javascript" src="/static/ender.js"></script>
     <script type="text/javascript">
 
+    /* utility functions -- JS Y U SO STUPID? */
+    function read(cookie){
+        return(document.cookie.match('(^|; )' + cookie + '=([^;]*)') || 0)[2]
+    };
+
+    function zfill(arg, i) {
+        var res = String(arg);
+        if (res.length < i) {
+            for (var j = 0; j <= (i - res.length); j++) {
+                res = '0' + res;
+            };
+        }
+
+        return res;
+    }
+
     var createForm = function(id, func) {
         /*
         Returns HTML for form and registers submit call.
@@ -92,6 +108,12 @@
     };
 
     var insert = function(thread, post) {
+        /*
+        Insert a comment into #isso_thread.
+
+        :param thread: XXX remove this
+        :param post: JSON from API call
+        */
 
         // pythonic strftime
         var format = function(date, lang, fmt) {
@@ -105,10 +127,10 @@
             };
 
             var conversions = [
-                ['%Y', date.getFullYear()], ['%m', date.getMonth()],
+                ['%Y', date.getFullYear()], ['%m', zfill(date.getMonth(), 2)],
                 ['%B', months[lang][date.getMonth() - 1]],
-                ['%d', date.getDate()], ['%H', date.getHours()],
-                ['%H', date.getHours()], ['%M', date.getMinutes()],
+                ['%d', zfill(date.getDate(), 2)], ['%H', zfill(date.getHours(), 2)],
+                ['%H', zfill(date.getHours(), 2)], ['%M', zfill(date.getMinutes(), 2)],
             ];
 
             conversions.map(function(item) { fmt = fmt.replace(item[0], item[1]) });
@@ -138,6 +160,12 @@
             '    </span>' +
             '  </footer>' +
             '</article>');
+
+        if (read('session-' + encodeURIComponent(window.location.pathname) + '-' + post['id'])) {
+            var node = $('#isso_' + post['id'] + '> footer > a:first-child')
+                .after('<a href="#">Bearbeiten</a>');
+
+        }
 
         // ability to answer directly to a comment
         $('footer > a:first-child', '#isso_' + post['id']).on('click', function(event) {
