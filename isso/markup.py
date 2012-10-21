@@ -1,7 +1,5 @@
 # XXX: BBCode -- http://pypi.python.org/pypi/bbcode
 
-import abc
-
 try:
     import misaka
 except ImportError:
@@ -10,13 +8,9 @@ except ImportError:
 
 class Markup:
 
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
     def __init__(self, conf):
         return
 
-    @abc.abstractmethod
     def convert(self, text):
         return text
 

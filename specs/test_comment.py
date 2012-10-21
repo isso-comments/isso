@@ -18,7 +18,8 @@ class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        self.app = Isso({'SQLITE': self.path, 'PRODUCTION': False})
+        self.app = Isso({'SQLITE': self.path, 'PRODUCTION': False,
+                         'MARKUP': 'isso.markup.Markup'})
 
         self.client = Client(self.app, Response)
         self.get = lambda *x, **z: self.client.get(*x, **z)
