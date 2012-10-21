@@ -162,9 +162,24 @@
             '</article>');
 
         if (read('session-' + encodeURIComponent(window.location.pathname) + '-' + post['id'])) {
-            var node = $('#isso_' + post['id'] + '> footer > a:first-child')
-                .after('<a href="#">Bearbeiten</a>');
+            $('#isso_' + post['id'] + '> footer > a:first-child')
+                .after('<a class="delete" href="#">Löschen</a>')
+                .after('<a class="edit" href="#">Bearbeiten</a>');
 
+            $('#isso_' + post['id'] + ' > footer .delete').on('click', function(event) {
+                $.ajax({
+                    url: '/comment/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
+                    method: 'DELETE',
+                    error: function(resp) {
+                        alert('Mööp!');
+                    },
+                    success: function(res) {
+                        // XXX comment might not actually deleted
+                        $('#isso_' + post['id']).remove();
+                    },
+                });
+                event.stop();
+            });
         }
 
         // ability to answer directly to a comment

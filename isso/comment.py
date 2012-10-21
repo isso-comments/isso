@@ -61,7 +61,7 @@ def get(app, environ, request, path, id=None):
 def modify(app, environ, request, path, id):
 
     try:
-        rv = app.unsign(request.cookies.get('session-%s-%s' % (urllib.unquote(path), id), ''))
+        rv = app.unsign(request.cookies.get('session-%s-%s' % (urllib.quote(path, ''), id), ''))
     except (SignatureExpired, BadSignature):
         return abort(403)
 
