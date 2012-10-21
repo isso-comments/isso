@@ -4,6 +4,7 @@
 # License: BSD Style, 2 clauses. see isso/__init__.py
 
 import cgi
+import urllib
 
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort
@@ -37,7 +38,8 @@ def create(app, environ, request, path):
 
     rv.text = app.markup.convert(rv.text)
     response = Response(json.dumps(rv), 201, content_type='application/json')
-    response.set_cookie('session', app.signer.dumps([path, rv.id]), max_age=app.MAX_AGE)
+    response.set_cookie('session-%s-%s' % (urllib.quote(path, ''), rv.id),
+        app.signer.dumps([path, rv.id]), max_age=app.MAX_AGE)
     return response
 
 
@@ -59,7 +61,7 @@ def get(app, environ, request, path, id=None):
 def modify(app, environ, request, path, id):
 
     try:
-        rv = app.unsign(request.cookies.get('session', ''))
+        rv = app.unsign(request.cookies.get('session-%s-%s' % (urllib.unquote(path), id), ''))
     except (SignatureExpired, BadSignature):
         return abort(403)
 
