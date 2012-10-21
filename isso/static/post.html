@@ -71,6 +71,11 @@
                     insert($('#isso_thread'), rv)
                 },
             });
+
+            // close form after reply
+            if (id) {
+                $('#' + formid).remove();
+            }
         });
     };
 
