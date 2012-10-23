@@ -36,10 +36,12 @@ def create(app, environ, request, path):
     except ValueError:
         return abort(400)
 
+    md5 = rv.md5
     rv.text = app.markup.convert(rv.text)
+
     response = Response(json.dumps(rv), 201, content_type='application/json')
     response.set_cookie('session-%s-%s' % (urllib.quote(path, ''), rv.id),
-        app.signer.dumps([path, rv.id]), max_age=app.MAX_AGE)
+        app.signer.dumps([path, rv.id, md5]), max_age=app.MAX_AGE)
     return response
 
 
@@ -65,14 +67,23 @@ def modify(app, environ, request, path, id):
     except (SignatureExpired, BadSignature):
         return abort(403)
 
-    if not (rv[0] == '*' or rv == [path, id]):
+    # verify checksum, mallory might skip cookie deletion when he deletes a comment
+    if app.db.get(path, id).md5 != rv[2]:
+        abort(403)
+
+    if not (rv[0] == '*' or rv[0:2] == [path, id]):
         abort(401)
 
     if request.method == 'PUT':
         try:
             rv = app.db.update(path, id, models.Comment.fromjson(request.data))
+            return Response(json.dumps(rv), 200, content_type='application/json')
         except ValueError as e:
             return Response(unicode(e), 400)
-    else:
+
+    if request.method == 'DELETE':
         rv = app.db.delete(path, id)
-    return Response(json.dumps(rv), 200, content_type='application/json')
+
+        response = Response(json.dumps(rv), 200, content_type='application/json')
+        response.delete_cookie('session-%s-%s' % (urllib.quote(path, ''), id))
+        return response

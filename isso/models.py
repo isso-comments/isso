@@ -5,6 +5,7 @@
 
 import json
 import time
+import hashlib
 
 class Comment(object):
     """This class represents a regular comment. It needs at least a text
@@ -56,3 +57,10 @@ class Comment(object):
     @property
     def deleted(self):
         return self.mode == 4
+
+    @property
+    def md5(self):
+        hv = hashlib.md5()
+        for key in set(self.fields) - set(['parent', ]):
+            hv.update(getattr(self, key) or '')
+        return hv.hexdigest()

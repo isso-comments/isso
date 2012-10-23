@@ -115,3 +115,15 @@ class TestComments(unittest.TestCase):
         for path in paths:
             assert self.get('/comment/' + path)
             assert self.get('/comment/' + path + '/1')
+
+    def testDeleteAndCreateByDifferentUsersButSamePostId(self):
+
+        mallory = Client(self.app, Response)
+        mallory.post('/comment/path/new', data=json.dumps(comment(text='Foo')))
+        mallory.delete('/comment/path/1')
+
+        bob = Client(self.app, Response)
+        bob.post('/comment/path/new', data=json.dumps(comment(text='Bar')))
+
+        assert mallory.delete('/comment/path/1').status_code == 403
+        assert bob.delete('/comment/path/1').status_code == 200
