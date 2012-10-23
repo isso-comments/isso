@@ -29,8 +29,8 @@ class TestComments(unittest.TestCase):
 
     def testGet(self):
 
-        self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
-        r = self.get('/comment/path/1')
+        self.post('/1.0/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+        r = self.get('/1.0/path/1')
         assert r.status_code == 200
 
         rv = json.loads(r.data)
@@ -40,7 +40,7 @@ class TestComments(unittest.TestCase):
 
     def testCreate(self):
 
-        rv = self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+        rv = self.post('/1.0/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
 
         assert rv.status_code == 201
         assert len(filter(lambda header: header[0] == 'Set-Cookie', rv.headers)) == 1
@@ -54,9 +54,9 @@ class TestComments(unittest.TestCase):
     def testCreateAndGetMultiple(self):
 
         for i in range(20):
-            self.post('/comment/path/new', data=json.dumps(comment(text='Spam')))
+            self.post('/1.0/path/new', data=json.dumps(comment(text='Spam')))
 
-        r = self.get('/comment/path/')
+        r = self.get('/1.0/path/')
         assert r.status_code == 200
 
         rv = json.loads(r.data)
@@ -64,17 +64,17 @@ class TestComments(unittest.TestCase):
 
     def testGetInvalid(self):
 
-        assert self.get('/comment/path/123').status_code == 404
-        assert self.get('/comment/path/spam/123').status_code == 404
-        assert self.get('/comment/foo/').status_code == 404
+        assert self.get('/1.0/path/123').status_code == 404
+        assert self.get('/1.0/path/spam/123').status_code == 404
+        assert self.get('/1.0/foo/').status_code == 404
 
     def testUpdate(self):
 
-        self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
-        self.put('/comment/path/1', data=json.dumps(comment(
+        self.post('/1.0/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+        self.put('/1.0/path/1', data=json.dumps(comment(
             text='Hello World', author='me', website='http://example.com/')))
 
-        r = self.get('/comment/path/1')
+        r = self.get('/1.0/path/1')
         assert r.status_code == 200
 
         rv = json.loads(r.data)
@@ -85,45 +85,45 @@ class TestComments(unittest.TestCase):
 
     def testDelete(self):
 
-        self.post('/comment/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
-        r = self.delete('/comment/path/1')
+        self.post('/1.0/path/new', data=json.dumps(comment(text='Lorem ipsum ...')))
+        r = self.delete('/1.0/path/1')
         assert r.status_code == 200
         assert json.loads(r.data) == None
-        assert self.get('/comment/path/1').status_code == 404
+        assert self.get('/1.0/path/1').status_code == 404
 
     def testDeleteWithReference(self):
 
         client = Client(self.app, Response)
-        resp = client.post('/comment/path/new', data=json.dumps(comment(text='First')))
-        self.post('/comment/path/new', data=json.dumps(comment(text='Second', parent=1)))
+        resp = client.post('/1.0/path/new', data=json.dumps(comment(text='First')))
+        self.post('/1.0/path/new', data=json.dumps(comment(text='Second', parent=1)))
 
-        r = client.delete('/comment/path/1')
+        r = client.delete('/1.0/path/1')
         assert r.status_code == 200
         assert Comment(**json.loads(r.data)).deleted
 
-        assert self.get('/comment/path/1').status_code == 200
-        assert self.get('/comment/path/2').status_code == 200
+        assert self.get('/1.0/path/1').status_code == 200
+        assert self.get('/1.0/path/2').status_code == 200
 
     def testPathVariations(self):
 
-        paths = ['/sub/path/', '/path.html', '/sub/path.html', '%2Fpath/%2F']
+        paths = ['/sub/path/', '/path.html', '/sub/path.html', '%2Fpath/%2F', '/']
 
         for path in paths:
-            assert self.post('/comment/' + path + '/new',
+            assert self.post('/1.0/' + path + '/new',
                              data=json.dumps(comment(text='...'))).status_code == 201
 
         for path in paths:
-            assert self.get('/comment/' + path)
-            assert self.get('/comment/' + path + '/1')
+            assert self.get('/1.0/' + path)
+            assert self.get('/1.0/' + path + '/1')
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
 
         mallory = Client(self.app, Response)
-        mallory.post('/comment/path/new', data=json.dumps(comment(text='Foo')))
-        mallory.delete('/comment/path/1')
+        mallory.post('/1.0/path/new', data=json.dumps(comment(text='Foo')))
+        mallory.delete('/1.0/path/1')
 
         bob = Client(self.app, Response)
-        bob.post('/comment/path/new', data=json.dumps(comment(text='Bar')))
+        bob.post('/1.0/path/new', data=json.dumps(comment(text='Bar')))
 
-        assert mallory.delete('/comment/path/1').status_code == 403
-        assert bob.delete('/comment/path/1').status_code == 200
+        assert mallory.delete('/1.0/path/1').status_code == 403
+        assert bob.delete('/1.0/path/1').status_code == 200

@@ -38,33 +38,33 @@ please file in a bug report \*including\* your dump.
 
 ## API
 
-### fetch comments for /foo-bar/
+To fetch all comments for a path, run
 
     $ curl -H "Accept: application/json" http://example.org/comment/foo-bar/
 
-### comment at /foo-bar/
+To write a comment, you have to POST a JSON dictionary with the following key-value
+pairs. Text is mandatory otherwise you'll get a 400 Bad Request. You'll also get
+a 400 when your JSON is invalid.
 
-    $ curl -H "Accept: application/json" -X POST -d \
+Let's say you want to comment on /foo-bar/
+
+    $ curl http://example.org/comment/foo-bar/new -H "Accept: application/json" -X POST -d \
         '{
             "text": "Lorem ipsum ...",
-
-            # optional
             "name": "Hans", "email": "foo@bla.org", "website": "http://blog/log/"
-        }' http://example.org/comment/foo-bar/new
+        }'
 
-### modify 12. comment at /foo-bar/
+This will set a cookie, that expires in a few minutes (15 minutes per default). This
+cookie allows you do modify or delete your comment. Don't try to modify that cookie,
+it is cryptographically signed. If your cookie is outdated or modified, you'll get
+a 403 Forbidden.
 
-    $ curl -H "Accept: application/json" -X PUT -d ... http://example.org/comment/foo-bar/12
+For each comment you'll post, you get an unique cookie. Let's try to remove your comment:
 
-You can only modify your own comment in a given time range (defaults to 15 minutes).
+    $ curl -H ... -X DELETE http://example.org/comment/foo-bar/1
 
-### delete 2nd comment at /foo-bar/
-
-    $ curl -H ... -X DELETE http://example.org/comment/foo-bar/2
-
-You can only delete your own comment in a given time range (defaults to 15 minutes). If
-your comment has been referenced by another comment, your comment will be cleared but not
-deleted to maintain depending comments.
+If your comment has been referenced by another comment, your comment will be cleared but
+not deleted to retain depending comments.
 
 ## Alternatives
 

@@ -55,10 +55,10 @@ url_map = Map([
 
     # comment API, note that the client side quotes the URL, but this is
     # actually unnecessary. PEP 333 aka WSGI always unquotes PATH_INFO.
-    url('/comment/<re(".+"):path>/', 'comment.get', ['GET']),
-    url('/comment/<re(".+"):path>/new', 'comment.create', ['POST']),
-    url('/comment/<re(".+"):path>/<int:id>', 'comment.get', ['GET']),
-    url('/comment/<re(".+"):path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
+    url('/1.0/<re(".+"):path>/', 'comment.get', ['GET']),
+    url('/1.0/<re(".+"):path>/new', 'comment.create', ['POST']),
+    url('/1.0/<re(".+"):path>/<int:id>', 'comment.get', ['GET']),
+    url('/1.0/<re(".+"):path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
 ], converters={'re': RegexConverter})
 
 

@@ -72,7 +72,7 @@ def modify(app, environ, request, path, id):
         abort(403)
 
     if not (rv[0] == '*' or rv[0:2] == [path, id]):
-        abort(401)
+        abort(403)
 
     if request.method == 'PUT':
         try:

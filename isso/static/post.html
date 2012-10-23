@@ -67,7 +67,7 @@
             }
 
             $.ajax({
-                url: '/comment/' + encodeURIComponent(window.location.pathname) + '/new',
+                url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/new',
                 method: 'POST',
                 type: 'json',
                 headers: {
@@ -168,7 +168,7 @@
 
             $('#isso_' + post['id'] + ' > footer .delete').on('click', function(event) {
                 $.ajax({
-                    url: '/comment/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
+                    url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
                     method: 'DELETE',
                     error: function(resp) {
                         alert('Mööp!');
@@ -196,7 +196,7 @@
 
     var fetch = function(thread) {
         var rv = $.ajax({
-            url: '/comment/' + encodeURIComponent(window.location.pathname) + '/',
+            url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/',
             method: 'GET',
             type: 'json',
             headers: {
