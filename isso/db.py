@@ -107,7 +107,7 @@ class SQLite(Abstract):
 
         with sqlite3.connect(self.dbpath) as con:
             return self.query2comment(
-                con.execute('SELECT *, MAX(id) FROM comments;').fetchone())
+                con.execute('SELECT *, MAX(id) FROM comments WHERE path=?;', (path, )).fetchone())
 
     def activate(self, path, id):
         with sqlite3.connect(self.dbpath) as con:

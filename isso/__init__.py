@@ -22,16 +22,24 @@
 
 __version__ = '0.2'
 
+import sys; reload(sys)
+sys.setdefaultencoding('utf-8')  # we only support UTF-8 and python 2.X :-)
+
+import io
 import json
+
+from os.path import join, dirname
+from optparse import OptionParser, make_option, SUPPRESS_HELP
 
 from itsdangerous import URLSafeTimedSerializer
 
+from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.routing import Map, Rule
 from werkzeug.serving import run_simple
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
 
-from isso import admin, comment, db
+from isso import admin, comment, db, migrate
 from isso.utils import determine, import_object, RegexConverter, IssoEncoder
 
 # override default json :func:`dumps`.
@@ -106,10 +114,32 @@ class Isso:
 
 def main():
 
-    from os.path import join, dirname
-    from werkzeug.wsgi import SharedDataMiddleware
+    options = [
+        make_option("--version", action="store_true", help="print version info and exit"),
+        make_option("--sqlite", dest="sqlite", metavar='FILE', default="/tmp/sqlite.db",
+            help="use SQLite3 database"),
+        make_option("--port", dest="port", default=8000, help="webserver port"),
+        make_option("--test", dest="production", action="store_false", default=True,
+            help=SUPPRESS_HELP),
+    ]
 
-    app = Isso({'SQLITE': '/tmp/sqlite.db', 'PRODUCTION': False})
-    app = SharedDataMiddleware(app,{
-        '/static': join(dirname(__file__), 'static')})
-    run_simple('127.0.0.1', 8000, app, use_reloader=True)
+    parser = OptionParser(option_list=options)
+    options, args = parser.parse_args()
+
+    if options.version:
+        print 'isso', __version__
+        sys.exit(0)
+
+    app = Isso({'SQLITE': options.sqlite, 'PRODUCTION': options.production})
+
+    if len(args) > 0 and args[0] == 'import':
+        if len(args) < 2:
+            print 'usage: isso import FILE'
+            sys.exit(2)
+
+        with io.open(args[1], encoding='utf-8') as fp:
+            migrate.disqus(app.db, fp.read())
+    else:
+        app = SharedDataMiddleware(app, {
+            '/static': join(dirname(__file__), 'static')})
+        run_simple('127.0.0.1', 8000, app, use_reloader=True)

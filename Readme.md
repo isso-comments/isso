@@ -17,13 +17,24 @@ Current status: `nosetests specs/`. Ran 11 tests in 0.570s.
 - simple JSON API (hence comments are JavaScript-only)
 - create comments and modify/delete within a time range
 - Ping/Trackback support (not implemented yet)
-- simple admin interface (not implemented yet)
-- easy integration, similar to Disqus (not implemented yet)
+- simple admin interface (work in progress)
+- easy integration, similar to Disqus (work in progress)
 - spam filtering using [http:bl](https://www.projecthoneypot.org/) (not implemented yet)
 
 ## Installation
 
 TODO
+
+## Migrating from Disqus
+
+Go to [disqus.com](https://disqus.com/) and export your "forum" as XML. If you
+use Firefox and you get a 403, try a webkit browser, Disqus did something very
+weird with that download link. Next:
+
+    $ isso import /path/to/ur/dump.xml
+
+That's it. Visit your admin page to see all threads. If it doesn't work for you,
+please file in a bug report \*including\* your dump.
 
 ## API
 

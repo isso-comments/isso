@@ -46,6 +46,13 @@ class TestSQLite(unittest.TestCase):
         assert rv[0].id == 1
         assert rv[0].text == 'Baz'
 
+    def test_add_return(self):
+
+        self.db.add('/', comment(text='1'))
+        self.db.add('/', comment(text='2'))
+
+        assert self.db.add('/path/', comment(text='1')).id == 1
+
     def test_update(self):
 
         rv = self.db.add('/', comment(text='Foo'))
