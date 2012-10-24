@@ -168,7 +168,7 @@ class SQLite(Abstract):
 
     def recent(self, mode=7, limit=None):
 
-        sql = 'SELECT * FROM comments WHERE (? | mode) = ? ORDER BY created ASC'
+        sql = 'SELECT * FROM comments WHERE (? | mode) = ? ORDER BY created DESC'
         args = [mode, mode]
 
         if limit:
