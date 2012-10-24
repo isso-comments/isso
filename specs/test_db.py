@@ -37,6 +37,7 @@ class TestSQLite(unittest.TestCase):
 
         rv = list(self.db.retrieve('/'))
         assert rv[0].id == 1
+        assert rv[0].path == '/'
         assert rv[0].text == 'Foo'
 
         assert rv[1].id == 2
@@ -44,6 +45,7 @@ class TestSQLite(unittest.TestCase):
 
         rv = list(self.db.retrieve('/path/'))
         assert rv[0].id == 1
+        assert rv[0].path == '/path/'
         assert rv[0].text == 'Baz'
 
     def test_add_return(self):

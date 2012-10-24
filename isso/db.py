@@ -75,7 +75,7 @@ class SQLite(Abstract):
     post) are ordered by that id."""
 
     fields = [
-        'id', 'path', 'created', 'modified',
+        'path', 'id', 'created', 'modified',
         'text', 'author', 'email', 'website', 'parent', 'mode'
     ]
 
@@ -85,7 +85,7 @@ class SQLite(Abstract):
         self.mode = 2 if app.MODERATION else 1
 
         with sqlite3.connect(self.dbpath) as con:
-            sql = ('main.comments (id INTEGER NOT NULL, path VARCHAR(255) NOT NULL,'
+            sql = ('main.comments (path VARCHAR(255) NOT NULL, id INTEGER NOT NULL,'
                    'created FLOAT NOT NULL, modified FLOAT, text VARCHAR,'
                    'author VARCHAR(64), email VARCHAR(64), website VARCHAR(64),'
                    'parent INTEGER, mode INTEGER, PRIMARY KEY (id, path))')
@@ -105,8 +105,8 @@ class SQLite(Abstract):
             return None
 
         return Comment(
-            text=query[4], author=query[5], email=query[6], website=query[7],
-            parent=query[8], mode=query[9], id=query[0], created=query[2], modified=query[3]
+            text=query[4], author=query[5], email=query[6], website=query[7], parent=query[8],
+            path=query[0], id=query[1], created=query[2], modified=query[3], mode=query[9],
         )
 
     def add(self, path, c):
@@ -114,7 +114,7 @@ class SQLite(Abstract):
             keys = ','.join(self.fields)
             values = ','.join('?' * len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
-                0, path, c.created, c.modified, c.text, c.author, c.email, c.website,
+                path, 0, c.created, c.modified, c.text, c.author, c.email, c.website,
                 c.parent, self.mode)
             )
 
