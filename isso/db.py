@@ -52,7 +52,20 @@ class Abstract:
 
     @abc.abstractmethod
     def retrieve(self, path, mode):
+        """
+        Return all comments for `path` with `mode`.
+        """
         return
+
+    @abc.abstractmethod
+    def recent(self, mode=7, limit=None):
+        """
+        Return most recent comments with `mode`. If `limit` is None, return
+        *all* comments that are currently stored, otherwise limit by `limit`.
+        """
+        return
+
+
 
 
 class SQLite(Abstract):
@@ -149,6 +162,21 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             rv = con.execute("SELECT * FROM comments WHERE path=? AND (? | mode) = ?" \
                + " ORDER BY id ASC;", (path, mode, mode)).fetchall()
+
+        for item in rv:
+            yield self.query2comment(item)
+
+    def recent(self, mode=7, limit=None):
+
+        sql = 'SELECT * FROM comments WHERE (? | mode) = ? ORDER BY created ASC'
+        args = [mode, mode]
+
+        if limit:
+            sql += ' LIMIT ?'
+            args.append(limit)
+
+        with sqlite3.connect(self.dbpath) as con:
+            rv = con.execute(sql + ';', args).fetchall()
 
         for item in rv:
             yield self.query2comment(item)

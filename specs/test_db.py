@@ -70,6 +70,16 @@ class TestSQLite(unittest.TestCase):
             text='F**CK', author='P*NIS', website='http://somebadhost.org/'))
         assert self.db.delete('/', rv.id) == None
 
+    def test_recent(self):
+
+        self.db.add('/path/', comment(text='2'))
+
+        for x in range(5):
+            self.db.add('/', comment(text='%i' % (x+1)))
+
+        assert len(list(self.db.recent(mode=7))) == 6
+        assert len(list(self.db.recent(mode=7, limit=5))) == 5
+
     def tearDown(self):
         os.unlink(self.path)
 
