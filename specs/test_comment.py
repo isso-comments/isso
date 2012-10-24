@@ -94,8 +94,8 @@ class TestComments(unittest.TestCase):
     def testDeleteWithReference(self):
 
         client = Client(self.app, Response)
-        resp = client.post('/1.0/path/new', data=json.dumps(comment(text='First')))
-        self.post('/1.0/path/new', data=json.dumps(comment(text='Second', parent=1)))
+        client.post('/1.0/path/new', data=json.dumps(comment(text='First')))
+        client.post('/1.0/path/new', data=json.dumps(comment(text='First', parent=1)))
 
         r = client.delete('/1.0/path/1')
         assert r.status_code == 200

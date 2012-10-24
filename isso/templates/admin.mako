@@ -61,7 +61,7 @@
     <span class="limit">
         [ <a href="?${query(pendinglimit=10)}">10</a>
         | <a href="?${query(pendinglimit=20)}">20</a>
-        | <a href="?${query(pendinglimit=0)}">All</a> ]
+        | <a href="?${query(pendinglimit=100000)}">All</a> ]
     </span>
 
     % for comment in app.db.recent(limit=get('pendinglimit', int), mode=2):
@@ -74,10 +74,10 @@
     <span class="limit">
         [<a href="?${query(recentlimit=10)}">10</a>
         | <a href="?${query(recentlimit=20)}">20</a>
-        | <a href="?${query(recentlimit=0)}">All</a>]
+        | <a href="?${query(recentlimit=100000)}">All</a>]
     </span>
 
-    % for comment in app.db.recent(limit=get('recentlimit', int), mode=5):
+    % for comment in app.db.recent(limit=get('recentlimit', int) or 20, mode=5):
         ${make(comment)}
     % endfor
 
