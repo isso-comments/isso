@@ -33,7 +33,6 @@ def insert(db, thread, comments):
                           author=item['author'], email=item['email'], parent=parent)
 
         rv = db.add(path, comment)
-        print rv.id, rv.text[:25], rv.author
         remap[item['dsq:id']] = rv.id
 
 
@@ -62,5 +61,3 @@ def disqus(db, xml):
         id = thread.attrib.get(dsq + 'id')
         if id in res:
             insert(db, thread, res[id])
-            # for comment in res[_id]:
-            #     print '  ', comment['author'], comment['text'][:25]

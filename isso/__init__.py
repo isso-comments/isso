@@ -51,7 +51,8 @@ url = lambda path, endpoint, methods: Rule(path, endpoint=endpoint, methods=meth
 
 url_map = Map([
     # moderation panel
-    url('/', 'admin.index', ['GET', 'POST']),
+    url('/', 'admin.login', ['GET', 'POST']),
+    url('/admin/', 'admin.index', ['GET', 'POST']),
 
     # comment API, note that the client side quotes the URL, but this is
     # actually unnecessary. PEP 333 aka WSGI always unquotes PATH_INFO.
@@ -65,6 +66,7 @@ url_map = Map([
 class Isso:
 
     PRODUCTION = True
+    SECRET = 'secret'
     SECRET_KEY = ',\x1e\xbaY\xbb\xdf\xe7@\x85\xe3\xd9\xb4A9\xe4G\xa6O'
     MODERATION = False
     SQLITE = None
@@ -134,7 +136,7 @@ def main():
 
     if len(args) > 0 and args[0] == 'import':
         if len(args) < 2:
-            print 'usage: isso import FILE'
+            print 'Usage: isso import FILE'
             sys.exit(2)
 
         with io.open(args[1], encoding='utf-8') as fp:
