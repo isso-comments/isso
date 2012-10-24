@@ -31,4 +31,5 @@ def index(app, environ, request):
     except (SignatureExpired, BadSignature):
         return redirect('/')
 
-    return Response(render('admin.mako'), content_type='text/html')
+    ctx = {'app': app, 'request': request}
+    return Response(render('admin.mako', **ctx), content_type='text/html')

@@ -65,13 +65,13 @@ def modify(app, environ, request, path, id):
     try:
         rv = app.unsign(request.cookies.get('session-%s-%s' % (urllib.quote(path, ''), id), ''))
     except (SignatureExpired, BadSignature):
-        return abort(403)
+        try:
+            rv = app.unsign(request.cookies.get('session-admin', ''))
+        except (SignatureExpired, BadSignature):
+            return abort(403)
 
     # verify checksum, mallory might skip cookie deletion when he deletes a comment
-    if app.db.get(path, id).md5 != rv[2]:
-        abort(403)
-
-    if not (rv[0] == '*' or rv[0:2] == [path, id]):
+    if not (rv == '*' or rv[0:2] == [path, id] or app.db.get(path, id).md5 != rv[2]):
         abort(403)
 
     if request.method == 'PUT':

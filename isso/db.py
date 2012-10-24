@@ -44,7 +44,7 @@ class Abstract:
         by another valid comment's parent attribute or stand-a-lone. In this
         case the comment can't be removed without losing depending comments.
         Hence, delete removes all visible data such as text, author, email,
-        website sets the mode field to 2.
+        website sets the mode field to 4.
 
         In the second case this comment can be safely removed without any side
         effects."""
@@ -145,7 +145,7 @@ class SQLite(Abstract):
 
     def delete(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
-            refs = con.execute('SELECT * FROM comments WHERE parent=?', (id, )).fetchone()
+            refs = con.execute('SELECT * FROM comments WHERE path=? AND parent=?', (path, id)).fetchone()
 
             if refs is None:
                 con.execute('DELETE FROM comments WHERE path=? AND id=?', (path, id))
