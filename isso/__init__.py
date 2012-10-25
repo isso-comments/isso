@@ -143,5 +143,6 @@ def main():
             migrate.disqus(app.db, fp.read())
     else:
         app = SharedDataMiddleware(app, {
-            '/static': join(dirname(__file__), 'static')})
+            '/static': join(dirname(__file__), 'static'),
+            '/js': join(dirname(__file__), 'js')})
         run_simple('127.0.0.1', 8000, app, use_reloader=True)
