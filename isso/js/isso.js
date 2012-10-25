@@ -34,6 +34,29 @@ function zfill(arg, i) {
 };
 
 
+// pythonic strftime
+var format = function(date, lang, fmt) {
+
+    var months = {'de': [
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli',
+        'August', 'September', 'Oktober', 'November', 'Dezember'],
+                  'en': [
+        'January', 'February', 'March', 'April', 'May', 'June', 'July',
+        'August', 'September', 'October', 'November', 'December'],
+    };
+
+    var conversions = [
+        ['%Y', date.getFullYear()], ['%m', zfill(date.getMonth(), 2)],
+        ['%B', months[lang][date.getMonth() - 1]],
+        ['%d', zfill(date.getDate(), 2)], ['%H', zfill(date.getHours(), 2)],
+        ['%H', zfill(date.getHours(), 2)], ['%M', zfill(date.getMinutes(), 2)],
+    ];
+
+    conversions.map(function(item) { fmt = fmt.replace(item[0], item[1]) });
+    return fmt;
+};
+
+
 /*
  * isso specific helpers to create, modify, delete and receive comments
  */
@@ -118,35 +141,19 @@ function form(id, appendfunc, eventfunc) {
 };
 
 
-function insert(thread, post) {
+function update(post) {
+
+    var node = $('#isso_' + post['id']);
+    $('div.text', node).html(post['text']);
+};
+
+
+function insert(post) {
     /*
     Insert a comment into #isso_thread.
 
-    :param thread: XXX remove this
     :param post: JSON from API call
     */
-
-    // pythonic strftime
-    var format = function(date, lang, fmt) {
-
-        var months = {'de': [
-            'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli',
-            'August', 'September', 'Oktober', 'November', 'Dezember'],
-                      'en': [
-            'January', 'February', 'March', 'April', 'May', 'June', 'July',
-            'August', 'September', 'October', 'November', 'December'],
-        };
-
-        var conversions = [
-            ['%Y', date.getFullYear()], ['%m', zfill(date.getMonth(), 2)],
-            ['%B', months[lang][date.getMonth() - 1]],
-            ['%d', zfill(date.getDate(), 2)], ['%H', zfill(date.getHours(), 2)],
-            ['%H', zfill(date.getHours(), 2)], ['%M', zfill(date.getMinutes(), 2)],
-        ];
-
-        conversions.map(function(item) { fmt = fmt.replace(item[0], item[1]) });
-        return fmt;
-    };
 
     var author = post['author'] || 'Anonymous';
     if (post['website']) {
@@ -163,7 +170,9 @@ function insert(thread, post) {
     $(post['parent'] ? '#isso_' + post['parent'] + ' > ul:last-child' : '#isso_thread > ul').append(
         '<article class="isso" id="isso_' + post['id'] + '">' +
         '  <header><span class="author">' + author + '</span>' +
-        '  </header>' + post['text'] +
+        '  </header>' +
+        '  <div class="text">' + post['text'] +
+        '  </div>' +
         '  <footer>' +
         '    <a href="#">Antworten</a>' +
         '    <a href="#isso_' + post['id'] + '">#' + post['id'] + '</a>' +
@@ -188,33 +197,74 @@ function insert(thread, post) {
                 success: function(res) {
                     // XXX comment might not actually deleted
                     $('#isso_' + post['id']).remove();
-                },
+                }
             });
             event.stop();
         });
 
         // EDIT
         $('#isso_' + post['id'] + ' > footer .edit').on('click', function(event) {
-            $.ajax({
-                url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
-                method: 'PUT',
-                error: function(resp) {
-                    alert('Mööp!');
-                },
-                success: function(res) {
-                    // XXX comment might not actually deleted
-                    $('#isso_' + post['id']).remove();
-                },
-            });
+
+            if ($('#issoform_' + post['id']).length == 0) {
+
+                $.ajax({
+                    url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
+                    type: 'json',
+                    data: {'plain': '1'},
+                    success: function(rv) {
+                        form(post['id'],
+                            function(html) {
+                                $('#isso_' + post['id']).after(html);
+
+                                var node = $("#issoform_" + post['id']);
+                                $('textarea[id="comment"]', node).val(rv['text']);
+                                $('input[id="author"]', node).val(rv['author']);
+                                $('input[id="email"]', node).val(rv['email']);
+                                $('input[id="website"]', node).val(rv['website']);
+                                $('input[name="submit"]', node).val('Bestätigen.')
+                            },
+                            function(event) {
+                                var node = $("#issoform_" + post['id']);
+                                modify(post['id'], {
+                                    text: $('textarea[id="comment"]', node).val() || null,
+                                    author: $('input[id="author"]', node).val() || null,
+                                    email: $('input[id="email"]', node).val() || null,
+                                    website: $('input[id="website"]', node).val() || null,
+                                    parent: post['parent']
+                                }, function(rv) {
+                                    update(rv);
+                                    $('#issoform_' + post['id']).remove();
+                                });
+                            });
+                        }
+                    });
+            } else {
+                $('#issoform_' + post['id']).remove();
+            };
             event.stop();
         });
-    }
+    };
 
     // ability to answer directly to a comment
     $('footer > a:first-child', '#isso_' + post['id']).on('click', function(event) {
 
         if ($('#issoform_' + post['id']).length == 0) {
-            form(post['id'], function(html) {$('#isso_' + post['id']).after(html)});
+            form(post['id'],
+                function(html) {
+                    $('#isso_' + post['id']).after(html)
+                },
+                function(event) {
+                    create({
+                        text: $('textarea[id="comment"]').val() || null,
+                        author: $('input[id="author"]').val() || null,
+                        email: $('input[id="email"]').val() || null,
+                        website: $('input[id="website"]').val() || null,
+                        parent: post['id']
+                    }, function(rv) {
+                        insert(rv);
+                        $('#issoform_' + post['id']).remove();
+                    });
+                });
         } else {
             $('#issoform_' + post['id']).remove();
         };
@@ -244,7 +294,7 @@ function initialize(thread) {
             website: $('input[id="website"]').val() || null,
             parent: null
         }, function(rv) {
-            insert($('#isso_thread'), rv);
+            insert(rv);
         });
     });
 };
@@ -263,7 +313,7 @@ function fetch(thread) {
         },
         success: function(resp) {
             for (var item in resp) {
-                insert(thread, resp[item]);
+                insert(resp[item]);
             }
         }
     });
