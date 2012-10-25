@@ -21,9 +21,21 @@ Current status: `nosetests specs/`. Ran 11 tests in 0.570s.
 - easy integration, similar to Disqus (work in progress)
 - spam filtering using [http:bl](https://www.projecthoneypot.org/) (not implemented yet)
 
+## Hacking
+
+You'll need [2.6 ≤ python ≤ 2.7](http://python.org), [ender.js](http://ender.no.de/) and
+[YUI Compressor](http://developer.yahoo.com/yui/compressor/). Then run:
+
+    $ git clone https://github.com/posativ/isso.git && cd isso/
+    $ make init
+    $ make js
+    $ isso --test
+
+Then go to <http://localhost:8000/static/post.html> to write a comment.
+
 ## Installation
 
-TODO
+Still a TODO, but later on it's simply `easy_install isso`.
 
 ## Migrating from Disqus
 
