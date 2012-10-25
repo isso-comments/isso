@@ -51,11 +51,12 @@ def get(app, environ, request, path, id=None):
     if not rv:
         abort(404)
 
-    if isinstance(rv, list):
-        for item in rv:
-            item.text = app.markup.convert(item.text)
-    else:
-        rv.text = app.markup.convert(rv.text)
+    if request.args.get('plain', '0') == '0':
+        if isinstance(rv, list):
+            for item in rv:
+                item.text = app.markup.convert(item.text)
+        else:
+            rv.text = app.markup.convert(rv.text)
 
     return Response(json.dumps(rv), 200, content_type='application/json')
 
@@ -77,6 +78,7 @@ def modify(app, environ, request, path, id):
     if request.method == 'PUT':
         try:
             rv = app.db.update(path, id, models.Comment.fromjson(request.data))
+            rv.text = app.markup.convert(rv.text)
             return Response(json.dumps(rv), 200, content_type='application/json')
         except ValueError as e:
             return Response(unicode(e), 400)
