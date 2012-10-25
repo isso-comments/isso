@@ -61,46 +61,29 @@ var format = function(date, lang, fmt) {
  * isso specific helpers to create, modify, delete and receive comments
  */
 
-function isso(method, path, data, success, error) {
-    $.ajax({
-        url: path,
-        method: method,
-        type: 'json',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(data),
-        error: function(rv) {
-            error(rv) || alert("Mööp.");
-        },
-        success: function(rv) {
-            success(rv);
-        }
-    });
-};
-
-
 function verify(data) {
     return data['text'] == null ? false : true
 };
 
 
-function create(data, success) {
+function create(data, func) {
 
     if (!verify(data)) {
         return;
     }
 
-    isso('POST', '/1.0/' + encodeURIComponent(window.location.pathname) + '/new', data, success);
+    $.ajax('POST', '/1.0/' + encodeURIComponent(window.location.pathname) + '/new',
+        JSON.stringify(data), {'Content-Type': 'application/json'}).then(func);
 };
 
 
-function modify(id, data, success) {
+function modify(id, data, func) {
     if (!verify(data)) {
         return;
     }
 
-    isso('PUT', '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + id, data, success);
+    $.ajax('PUT', '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + id,
+    JSON.stringify(data), {'Content-Type': 'application/json'}).then(func)
 };
 
 
@@ -155,7 +138,9 @@ function insert(post) {
     :param post: JSON from API call
     */
 
+    var path = encodeURIComponent(window.location.pathname);
     var author = post['author'] || 'Anonymous';
+
     if (post['website']) {
         author = '<a href="' + post['website'] + '" rel="nofollow">' + author + '</a>';
     }
@@ -181,23 +166,16 @@ function insert(post) {
         '  </footer>' +
         '</article>');
 
-    if (read('session-' + encodeURIComponent(window.location.pathname) + '-' + post['id'])) {
+    if (read('session-' + path + '-' + post['id'])) {
         $('#isso_' + post['id'] + '> footer > a:first-child')
             .after('<a class="delete" href="#">Löschen</a>')
             .after('<a class="edit" href="#">Bearbeiten</a>');
 
         // DELETE
         $('#isso_' + post['id'] + ' > footer .delete').on('click', function(event) {
-            $.ajax({
-                url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
-                method: 'DELETE',
-                error: function(resp) {
-                    alert('Mööp!');
-                },
-                success: function(res) {
-                    // XXX comment might not actually deleted
-                    $('#isso_' + post['id']).remove();
-                }
+            $.ajax('DELETE', '/1.0/' + path + '/' + post['id']).then(function(status, rv) {
+                // XXX comment might not actually deleted
+                $('#isso_' + post['id']).remove();
             });
             event.stop();
         });
@@ -207,36 +185,33 @@ function insert(post) {
 
             if ($('#issoform_' + post['id']).length == 0) {
 
-                $.ajax({
-                    url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + post['id'],
-                    type: 'json',
-                    data: {'plain': '1'},
-                    success: function(rv) {
-                        form(post['id'],
-                            function(html) {
-                                $('#isso_' + post['id']).after(html);
+                $.ajax('GET', '/1.0/' + path + '/' + post['id'], {'plain': '1'})
+                 .then(function(status, rv) {
+                    rv = JSON.parse(rv);
+                    form(post['id'],
+                        function(html) {
+                            $('#isso_' + post['id']).after(html);
 
-                                var node = $("#issoform_" + post['id']);
-                                $('textarea[id="comment"]', node).val(rv['text']);
-                                $('input[id="author"]', node).val(rv['author']);
-                                $('input[id="email"]', node).val(rv['email']);
-                                $('input[id="website"]', node).val(rv['website']);
-                                $('input[name="submit"]', node).val('Bestätigen.')
-                            },
-                            function(event) {
-                                var node = $("#issoform_" + post['id']);
-                                modify(post['id'], {
-                                    text: $('textarea[id="comment"]', node).val() || null,
-                                    author: $('input[id="author"]', node).val() || null,
-                                    email: $('input[id="email"]', node).val() || null,
-                                    website: $('input[id="website"]', node).val() || null,
-                                    parent: post['parent']
-                                }, function(rv) {
-                                    update(rv);
-                                    $('#issoform_' + post['id']).remove();
-                                });
+                            var node = $("#issoform_" + post['id']);
+                            $('textarea[id="comment"]', node).val(rv['text']);
+                            $('input[id="author"]', node).val(rv['author']);
+                            $('input[id="email"]', node).val(rv['email']);
+                            $('input[id="website"]', node).val(rv['website']);
+                            $('input[name="submit"]', node).val('Bestätigen.')
+                        },
+                        function(event) {
+                            var node = $("#issoform_" + post['id']);
+                            modify(post['id'], {
+                                text: $('textarea[id="comment"]', node).val() || null,
+                                author: $('input[id="author"]', node).val() || null,
+                                email: $('input[id="email"]', node).val() || null,
+                                website: $('input[id="website"]', node).val() || null,
+                                parent: post['parent']
+                            }, function(status, rv) {
+                                update(JSON.parse(rv));
+                                $('#issoform_' + post['id']).remove();
                             });
-                        }
+                        });
                     });
             } else {
                 $('#issoform_' + post['id']).remove();
@@ -260,9 +235,12 @@ function insert(post) {
                         email: $('input[id="email"]').val() || null,
                         website: $('input[id="website"]').val() || null,
                         parent: post['id']
-                    }, function(rv) {
-                        insert(rv);
+                    }, function(status, rv) {
                         $('#issoform_' + post['id']).remove();
+
+                        if (status == 201) {
+                            insert(JSON.parse(rv));
+                        } // XXX else ...
                     });
                 });
         } else {
@@ -293,31 +271,30 @@ function initialize(thread) {
             email: $('input[id="email"]').val() || null,
             website: $('input[id="website"]').val() || null,
             parent: null
-        }, function(rv) {
-            insert(rv);
+        }, function(status, rv) {
+            if (status == 201) {
+                insert(JSON.parse(rv));
+            }
         });
     });
 };
 
 
 function fetch(thread) {
-    var rv = $.ajax({
-        url: '/1.0/' + encodeURIComponent(window.location.pathname) + '/',
-        method: 'GET',
-        type: 'json',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        error: function(resp) {
-            return;
-        },
-        success: function(resp) {
-            for (var item in resp) {
-                insert(resp[item]);
-            }
-        }
+    $.ajax('GET', '/1.0/' + encodeURIComponent(window.location.pathname) + '/',
+    {}, {'Content-Type': 'application/json'}).then(function(status, rv) {
+
+        if (status != 200) {
+            return
+        };
+
+        rv = JSON.parse(rv);
+        for (var item in rv) {
+            insert(rv[item]);
+        };
     });
-};
+}
+
 
 $.domReady(function() {
 
