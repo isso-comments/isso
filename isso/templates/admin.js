@@ -1,26 +1,4 @@
 
-function remove(path, id, func) {
-    $.ajax({
-        url: '/1.0/' + encodeURIComponent(path) + '/' + id,
-        method: 'DELETE',
-        type: 'json',
-        error: function(resp) {
-            alert('Mööp.');
-        },
-        success: function(resp) {
-            func();
-        },
-    });
-};
-
-
-// function approve(path, id, func) {
-//     $.ajax({
-//         url: ''
-//     })
-// }
-
-
 function initialize() {
 
     $('article > footer > a').forEach(function(item) {
@@ -35,9 +13,10 @@ function initialize() {
             });
         } else {
             $(item).on('click', function(event) {
-               if (confirm("RLY?") == true) {
-                    remove(path, id, function() {
-                        $(node).remove()
+                if (confirm("RLY?") == true) {
+                    $.ajax('DELETE', '/1.0/' + encodeURIComponent(path) + '/' + id).then(
+                        function() {
+                            $(node).remove()
                     });
                };
                 event.stop();

@@ -2,7 +2,7 @@
 <head>
     <title><%block name="title" /></title>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="/static/ender.js"></script>
+    <script type="text/javascript" src="/js/ender.js"></script>
     <script type="text/javascript">
         <%block name="js" />
     </script>
