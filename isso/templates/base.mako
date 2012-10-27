@@ -6,6 +6,7 @@
     <script type="text/javascript">
         <%block name="js" />
     </script>
+    <link rel="stylesheet" type="text/css" href="/static/style.css" />
     <style>
         body {
 

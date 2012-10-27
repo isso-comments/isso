@@ -27,9 +27,9 @@
 
 <%def name="make(comment)">
 
-    <article data-path="${quote(comment.path)}" data-id="${comment.id}">
+    <article class="isso" data-path="${quote(comment.path)}" data-id="${comment.id}">
         <header>
-            <h1><a href="${comment.path}">${comment.path}</a></h1>
+            <!-- <span class="title"><a href="${comment.path}">${comment.path}</a></span> -->
             <span class="created">${strftime('%a %d %B %Y', gmtime(comment.created))}</span>
             <span class="author">
                 % if comment.website:
