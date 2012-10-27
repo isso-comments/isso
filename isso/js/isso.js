@@ -91,7 +91,7 @@ function form(id, appendfunc, eventfunc) {
     var formid = 'issoform' + (id ? ('_' + id) : ''), form =
     '<div class="issoform" id="' + formid + '">' +
         '<div>' +
-        '    <input type="text" name="name" id="author" value="" placeholder="Name">' +
+        '    <input type="text" name="author" id="author" value="" placeholder="Name">' +
         '</div>' +
         '<div>' +
         '    <input type="email" name="email" id="email" value="" placeholder="Email">' +
@@ -100,7 +100,7 @@ function form(id, appendfunc, eventfunc) {
             '<input type="url" name="website" id="website" value="" placeholder="Website URL">' +
         '</div>' +
         '<div>' +
-        '    <textarea rows="10" name="comment" id="comment" placeholder="Comment"></textarea>' +
+        '    <textarea rows="10" name="text" id="comment" placeholder="Comment"></textarea>' +
         '</div>' +
         '<div>' +
             '<input type="submit" name="submit" value="Add Comment">' +
@@ -127,12 +127,6 @@ function insert(post) {
     */
 
     var path = encodeURIComponent(window.location.pathname);
-    var author = post['author'] || 'Anonymous';
-
-    if (post['website']) {
-        author = '<a href="' + post['website'] + '" rel="nofollow">' + author + '</a>';
-    }
-
     var date = new Date(parseInt(post['created']) * 1000);
 
     // create <ul /> for parent, if used
@@ -140,19 +134,48 @@ function insert(post) {
         $('#isso_' + post['parent']).append('<ul></ul>');
     }
 
-    $(post['parent'] ? '#isso_' + post['parent'] + ' > ul:last-child' : '#isso_thread > ul').append(
+    $(post['parent'] ? '#isso_' + post['parent'] + ' > ul:last-child' : '#isso_thread > ul')
+    .append(
         '<article class="isso" id="isso_' + post['id'] + '">' +
-        '  <header><span class="author">' + author + '</span>' +
-        '  </header>' +
-        '  <div class="text">' + post['text'] +
-        '  </div>' +
-        '  <footer>' +
-        '    <a href="#">Antworten</a>' +
-        '    <a href="#isso_' + post['id'] + '">#' + post['id'] + '</a>' +
-        '    <time datetime="' + date.getUTCFullYear() + '-' + date.getUTCMonth() + '-' +  date.getUTCDate() + '">' + format(date) +
-        '    </time>' +
-        '  </footer>' +
-        '</article>');
+        '  <header></header>' +
+        '  <div></div>' +
+        '  <footer></footer>' +
+        '</article>'
+    );
+
+    var node = $('#isso_' + post['id']),
+        author = post['author'] || 'Anonymous';
+
+    if (post['website'])
+        author = '<a href="' + post['website'] + '" rel="nofollow">' + author + '</a>';
+
+    // deleted
+    if (post['mode'] == 4) {
+        node.addClass('deleted');
+        $('header', node).append('Kommentar entfernt')
+        $('div', node).append('<p>&nbsp;</p>')
+        return;
+    }
+
+    $('header', node).append('<span class="author">' + author + '</span>');
+    if (post['mode'] == 2 )
+        $('helpers', node).append('<span class="note">Kommentar muss noch freigeschaltet werden</span>');
+
+    $('div', node).append(post['text']);
+
+    $('footer', node).append(
+        '<a href="#">Antworten</a>' +
+        '<a href="#isso_' + post['id'] + '">#' + post['id'] + '</a>' +
+        '<time datetime="' + date.getUTCFullYear() + '-' + date.getUTCMonth() + '-' +
+                             date.getUTCDate() + '">' + format(date) +
+        '</time>'
+    )
+
+    // pending notification
+    if (post['mode'] == 2 ) {
+        $('#isso_' + post['id'] + ' header')
+         .append('<span class="note">Kommentar muss noch freigeschaltet werden</span>');
+    }
 
     if (read('session-' + path + '-' + post['id'])) {
         $('#isso_' + post['id'] + '> footer > a:first-child')
@@ -225,10 +248,11 @@ function insert(post) {
                         parent: post['id']
                     }, function(status, rv) {
                         $('#issoform_' + post['id']).remove();
-
-                        if (status == 201) {
+                        if (status == 201 || status == 202) {
                             insert(JSON.parse(rv));
-                        } // XXX else ...
+                        } else  {
+                            alert("Mööp.");
+                        };
                     });
                 });
         } else {
@@ -260,7 +284,7 @@ function initialize(thread) {
             website: $('input[id="website"]').val() || null,
             parent: null
         }, function(status, rv) {
-            if (status == 201) {
+            if (status == 201 || status == 202) {
                 insert(JSON.parse(rv));
             }
         });

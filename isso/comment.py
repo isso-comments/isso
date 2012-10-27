@@ -39,7 +39,7 @@ def create(app, environ, request, path):
     md5 = rv.md5
     rv.text = app.markup.convert(rv.text)
 
-    response = Response(json.dumps(rv), 201, content_type='application/json')
+    response = Response(json.dumps(rv), 202 if rv.pending else 201, content_type='application/json')
     response.set_cookie('session-%s-%s' % (urllib.quote(path, ''), rv.id),
         app.signer.dumps([path, rv.id, md5]), max_age=app.MAX_AGE)
     return response

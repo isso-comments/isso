@@ -8,16 +8,35 @@
     margin-top: 18px;
 }
 
+.isso footer a, .isso header a {
+    color: #111111;
+    font-family: Palatino, "times new roman", serif;
+    font-weight: bold;
+    font-size: 0.95em;
+    text-decoration: none;
+}
+
+.isso footer a:hover, .isso header a:hover {
+    color: #111111;
+    text-shadow: #aaaaaa 0px 0px 1px;
+}
+
 .isso .author {
     font-weight: bold;
 }
 
 .isso time {
     color: lightgray;
+    float: right;
 }
 
 .isso > header {
     border-bottom: solid 1px lightgray;
+}
+
+.isso > header .note {
+    float: right;
+    color: gray;
 }
 
 .isso > footer > a {
