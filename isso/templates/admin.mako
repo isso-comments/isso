@@ -70,7 +70,7 @@
 </div>
 
 <div>
-    <h2>Recent</h2>
+    <h2 class="recent">Recent</h2>
     <span class="limit">
         [<a href="?${query(recentlimit=10)}">10</a>
         | <a href="?${query(recentlimit=20)}">20</a>

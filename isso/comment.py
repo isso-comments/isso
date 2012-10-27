@@ -89,3 +89,15 @@ def modify(app, environ, request, path, id):
         response = Response(json.dumps(rv), 200, content_type='application/json')
         response.delete_cookie('session-%s-%s' % (urllib.quote(path, ''), id))
         return response
+
+
+def approve(app, environ, request, path, id):
+
+    try:
+        if app.unsign(request.cookies.get('session-admin', '')) != '*':
+            abort(403)
+    except (SignatureExpired, BadSignature):
+        abort(403)
+
+    app.db.activate(path, id)
+    return Response(json.dumps(app.db.get(path, id)), 200, content_type='application/json')

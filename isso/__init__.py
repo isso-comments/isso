@@ -60,6 +60,7 @@ url_map = Map([
     url('/1.0/<re(".+"):path>/new', 'comment.create', ['POST']),
     url('/1.0/<re(".+"):path>/<int:id>', 'comment.get', ['GET']),
     url('/1.0/<re(".+"):path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
+    url('/1.0/<re(".+"):path>/<int:id>/approve', 'comment.approve', ['PUT'])
 ], converters={'re': RegexConverter})
 
 
