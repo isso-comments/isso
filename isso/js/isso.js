@@ -112,13 +112,6 @@ function form(id, appendfunc, eventfunc) {
 };
 
 
-function update(post) {
-
-    var node = $('#isso_' + post['id']);
-    $('div.text', node).html(post['text']);
-};
-
-
 function insert(post) {
     /*
     Insert a comment into #isso_thread.
@@ -126,13 +119,12 @@ function insert(post) {
     :param post: JSON from API call
     */
 
-    var path = encodeURIComponent(window.location.pathname);
-    var date = new Date(parseInt(post['created']) * 1000);
+    var path = encodeURIComponent(window.location.pathname),
+        date = new Date(parseInt(post['created']) * 1000);
 
     // create <ul /> for parent, if used
-    if (post['parent']) {
+    if (post['parent'])
         $('#isso_' + post['parent']).append('<ul></ul>');
-    }
 
     $(post['parent'] ? '#isso_' + post['parent'] + ' > ul:last-child' : '#isso_thread > ul')
     .append(
@@ -161,7 +153,7 @@ function insert(post) {
     if (post['mode'] == 2 )
         $('helpers', node).append('<span class="note">Kommentar muss noch freigeschaltet werden</span>');
 
-    $('div', node).append(post['text']);
+    $('div', node).html(post['text']);
 
     $('footer', node).append(
         '<a href="#">Antworten</a>' +
@@ -219,7 +211,7 @@ function insert(post) {
                                 website: $('input[id="website"]', node).val() || null,
                                 parent: post['parent']
                             }, function(status, rv) {
-                                update(JSON.parse(rv));
+                                $('#isso_' + post['id'] + ' div').html(JSON.parse(rv)['text']);
                                 $('#issoform_' + post['id']).remove();
                             });
                         });
