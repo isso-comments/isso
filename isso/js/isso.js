@@ -22,40 +22,28 @@ function read(cookie){
 };
 
 
-function zfill(arg, i) {
-    var res = String(arg);
-    if (res.length < i) {
-        for (var j = 0; j <= (i - res.length); j++) {
-            res = '0' + res;
-        };
-    };
+function format(date){
+    /*!
+     * JavaScript Pretty Date
+     * Copyright (c) 2011 John Resig (ejohn.org)
+     * Licensed under the MIT and GPL licenses.
+     */
+    var diff = (((new Date()).getTime() - date.getTime()) / 1000),
+        day_diff = Math.floor(diff / 86400);
 
-    return res;
-};
+    if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+        return;
 
-
-// pythonic strftime
-var format = function(date, lang, fmt) {
-
-    var months = {'de': [
-        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli',
-        'August', 'September', 'Oktober', 'November', 'Dezember'],
-                  'en': [
-        'January', 'February', 'March', 'April', 'May', 'June', 'July',
-        'August', 'September', 'October', 'November', 'December'],
-    };
-
-    var conversions = [
-        ['%Y', date.getFullYear()], ['%m', zfill(date.getMonth(), 2)],
-        ['%B', months[lang][date.getMonth() - 1]],
-        ['%d', zfill(date.getDate(), 2)], ['%H', zfill(date.getHours(), 2)],
-        ['%H', zfill(date.getHours(), 2)], ['%M', zfill(date.getMinutes(), 2)],
-    ];
-
-    conversions.map(function(item) { fmt = fmt.replace(item[0], item[1]) });
-    return fmt;
-};
-
+    return day_diff == 0 && (
+            diff < 60 && "just now" ||
+            diff < 120 && "1 minute ago" ||
+            diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+            diff < 7200 && "1 hour ago" ||
+            diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+        day_diff == 1 && "Yesterday" ||
+        day_diff < 7 && day_diff + " days ago" ||
+        day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
+}
 
 /*
  * isso specific helpers to create, modify, delete and receive comments
@@ -161,8 +149,8 @@ function insert(post) {
         '  <footer>' +
         '    <a href="#">Antworten</a>' +
         '    <a href="#isso_' + post['id'] + '">#' + post['id'] + '</a>' +
-        '    <span class="date">' + format(date, 'de', '%d.%m.%Y um %H:%M') +
-        '    </span>' +
+        '    <time datetime="' + date.getUTCFullYear() + '-' + date.getUTCMonth() + '-' +  date.getUTCDate() + '">' + format(date) +
+        '    </time>' +
         '  </footer>' +
         '</article>');
 

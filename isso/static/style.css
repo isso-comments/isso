@@ -12,9 +12,8 @@
     font-weight: bold;
 }
 
-.isso .date {
+.isso time {
     color: lightgray;
-    padding-left: 12px;
 }
 
 .isso > header {
