@@ -50,7 +50,7 @@ class Isso(object):
     MODERATION = False
     SQLITE = None
 
-    HOST = 'http://localhost:8000/'
+    HOST = 'http://localhost:8080/'
     MAX_AGE = 15 * 60
 
     HTTP_STATUS_CODES = {
@@ -189,5 +189,5 @@ def main():
 
     else:
         from wsgiref.simple_server import make_server
-        httpd = make_server('127.0.0.1', 8080, app)
+        httpd = make_server('127.0.0.1', 8080, app, server_class=wsgi.ThreadedWSGIServer)
         httpd.serve_forever()

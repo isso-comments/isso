@@ -5,12 +5,15 @@ import io
 import os
 import re
 import cgi
+import wsgiref
 import tempfile
 import urlparse
 import mimetypes
 
-from Cookie import SimpleCookie
 from urllib import quote
+from Cookie import SimpleCookie
+from SocketServer import ThreadingMixIn
+from wsgiref.simple_server import WSGIServer
 
 
 class Request(object):
@@ -119,3 +122,7 @@ def sendfile(filename, root):
 def setcookie(name, value, **kwargs):
     return '; '.join([quote(name, '') + '=' + quote(value, '')] +
         [k.replace('_', '-') + '=' + str(v) for k, v in kwargs.iteritems()])
+
+
+class ThreadedWSGIServer(ThreadingMixIn, WSGIServer):
+    pass
