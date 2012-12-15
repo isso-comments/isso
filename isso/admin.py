@@ -3,11 +3,11 @@
 # Copyright 2012, Martin Zimmermann <info@posativ.org>. All rights reserved.
 # License: BSD Style, 2 clauses. see isso/__init__.py
 
-from werkzeug.utils import redirect
-from werkzeug.wrappers import Response
-
 from mako.lookup import TemplateLookup
 from itsdangerous import SignatureExpired, BadSignature
+
+from isso.wsgi import setcookie
+
 
 mako = TemplateLookup(directories=['isso/templates'], input_encoding='utf-8')
 render = lambda template, **context: mako.get_template(template).render_unicode(**context)
@@ -16,12 +16,14 @@ render = lambda template, **context: mako.get_template(template).render_unicode(
 def login(app, environ, request):
 
     if request.method == 'POST':
-        if request.form.get('secret') == app.SECRET:
-            rdr = redirect('/admin/', 301)
-            rdr.set_cookie('session-admin', app.signer.dumps('*'), max_age=app.MAX_AGE)
-            return rdr
+        if request.form.getfirst('secret') == app.SECRET:
+            return 301, '', {
+                'Location': '/admin/',
+                'Set-Cookie': setcookie('session-admin', app.signer.dumps('*'),
+                    max_age=app.MAX_AGE, path='/')
+            }
 
-    return Response(render('login.mako'), content_type='text/html')
+    return 200, render('login.mako').encode('utf-8'), {'Content-Type': 'text/html'}
 
 
 def index(app, environ, request):
@@ -29,7 +31,7 @@ def index(app, environ, request):
     try:
         app.unsign(request.cookies.get('session-admin', ''))
     except (SignatureExpired, BadSignature):
-        return redirect('/')
+        return 301, '', {'Location': '/'}
 
     ctx = {'app': app, 'request': request}
-    return Response(render('admin.mako', **ctx), content_type='text/html')
+    return 200, render('admin.mako', **ctx).encode('utf-8'), {'Content-Type': 'text/html'}

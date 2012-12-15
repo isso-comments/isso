@@ -113,8 +113,8 @@ class TestComments(unittest.TestCase):
                              data=json.dumps(comment(text='...'))).status_code == 201
 
         for path in paths:
-            assert self.get('/1.0/' + path)
-            assert self.get('/1.0/' + path + '/1')
+            assert self.get('/1.0/' + path + '/').status_code == 200
+            assert self.get('/1.0/' + path + '/1').status_code == 200
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
 

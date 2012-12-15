@@ -6,50 +6,48 @@
 import cgi
 import urllib
 
-from werkzeug.wrappers import Response
-from werkzeug.exceptions import abort
-
 from itsdangerous import SignatureExpired, BadSignature
 
-from isso import json, models, utils
+from isso import json, models, utils, wsgi
 
 
 def create(app, environ, request, path):
 
     if app.PRODUCTION and not utils.urlexists(app.HOST, '/' + path):
-        return abort(404)
+        return 400, 'URL does not exist', {}
 
     try:
         comment = models.Comment.fromjson(request.data)
-    except ValueError:
-        return abort(400)
+    except ValueError as e:
+        return 400, unicode(e), {}
 
     for attr in 'author', 'email', 'website':
         if getattr(comment, attr) is not None:
             try:
                 setattr(comment, attr, cgi.escape(getattr(comment, attr)))
             except AttributeError:
-                abort(400)
+                return 400, '', {}
 
     try:
         rv = app.db.add(path, comment)
     except ValueError:
-        return abort(400)
+        return 400, '', {}
 
     md5 = rv.md5
     rv.text = app.markup.convert(rv.text)
 
-    response = Response(json.dumps(rv), 202 if rv.pending else 201, content_type='application/json')
-    response.set_cookie('session-%s-%s' % (urllib.quote(path, ''), rv.id),
-        app.signer.dumps([path, rv.id, md5]), max_age=app.MAX_AGE)
-    return response
+    return 202 if rv.pending else 201, json.dumps(rv), {
+        'Content-Type': 'application/json',
+        'Set-Cookie': wsgi.setcookie('%s-%s' % (path, rv.id),
+            app.sign([path, rv.id, md5]), max_age=app.MAX_AGE, path='/')
+    }
 
 
 def get(app, environ, request, path, id=None):
 
     rv = list(app.db.retrieve(path)) if id is None else app.db.get(path, id)
     if not rv:
-        abort(404)
+        return 400, '', {}
 
     if request.args.get('plain', '0') == '0':
         if isinstance(rv, list):
@@ -58,46 +56,47 @@ def get(app, environ, request, path, id=None):
         else:
             rv.text = app.markup.convert(rv.text)
 
-    return Response(json.dumps(rv), 200, content_type='application/json')
+    return 200, json.dumps(rv), {'Content-Type': 'application/json'}
 
 
 def modify(app, environ, request, path, id):
 
     try:
-        rv = app.unsign(request.cookies.get('session-%s-%s' % (urllib.quote(path, ''), id), ''))
-    except (SignatureExpired, BadSignature):
+        rv = app.unsign(request.cookies.get('%s-%s' % (urllib.quote(path, ''), id), ''))
+    except (SignatureExpired, BadSignature) as e:
         try:
-            rv = app.unsign(request.cookies.get('session-admin', ''))
+            rv = app.unsign(request.cookies.get('admin', ''))
         except (SignatureExpired, BadSignature):
-            return abort(403)
+            return 403, '', {}
 
     # verify checksum, mallory might skip cookie deletion when he deletes a comment
     if not (rv == '*' or rv[0:2] == [path, id] or app.db.get(path, id).md5 != rv[2]):
-        abort(403)
+        return 403, '', {}
 
     if request.method == 'PUT':
         try:
             rv = app.db.update(path, id, models.Comment.fromjson(request.data))
             rv.text = app.markup.convert(rv.text)
-            return Response(json.dumps(rv), 200, content_type='application/json')
+            return 200, json.dumps(rv), {'Content-Type': 'application/json'}
         except ValueError as e:
-            return Response(unicode(e), 400)
+            return 400, unicode(e), {}
 
     if request.method == 'DELETE':
         rv = app.db.delete(path, id)
 
-        response = Response(json.dumps(rv), 200, content_type='application/json')
-        response.delete_cookie('session-%s-%s' % (urllib.quote(path, ''), id))
-        return response
+        return 200, json.dumps(rv), {
+            'Content-Type': 'application/json',
+            'Set-Cookie': wsgi.setcookie(path + '-' + str(id), 'deleted', max_age=0, path='/')
+        }
 
 
 def approve(app, environ, request, path, id):
 
     try:
-        if app.unsign(request.cookies.get('session-admin', '')) != '*':
-            abort(403)
+        if app.unsign(request.cookies.get('admin', '')) != '*':
+            return 403, '', {}
     except (SignatureExpired, BadSignature):
-        abort(403)
+        return 403, '', {}
 
     app.db.activate(path, id)
-    return Response(json.dumps(app.db.get(path, id)), 200, content_type='application/json')
+    return 200, json.dumps(app.db.get(path, id)), {'Content-Type': 'application/json'}

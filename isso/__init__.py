@@ -20,51 +20,29 @@
 #
 # Isso – a lightweight Disqus alternative
 
-__version__ = '0.2'
+__version__ = '0.3'
 
 import sys; reload(sys)
 sys.setdefaultencoding('utf-8')  # we only support UTF-8 and python 2.X :-)
 
 import io
 import json
+import traceback
 
-from os.path import join, dirname
+from os.path import dirname
 from optparse import OptionParser, make_option, SUPPRESS_HELP
 
 from itsdangerous import URLSafeTimedSerializer
 
-from werkzeug.wsgi import SharedDataMiddleware
-from werkzeug.routing import Map, Rule
-from werkzeug.serving import run_simple
-from werkzeug.wrappers import Request, Response
-from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
-
-from isso import admin, comment, db, migrate
-from isso.utils import determine, import_object, RegexConverter, IssoEncoder
+from isso import admin, comment, db, migrate, wsgi
+from isso.utils import determine, import_object, IssoEncoder
 
 # override default json :func:`dumps`.
 _dumps = json.dumps
 setattr(json, 'dumps', lambda obj, **kw: _dumps(obj, cls=IssoEncoder, **kw))
 
-# yep. lazy.
-url = lambda path, endpoint, methods: Rule(path, endpoint=endpoint, methods=methods)
 
-url_map = Map([
-    # moderation panel
-    url('/', 'admin.login', ['GET', 'POST']),
-    url('/admin/', 'admin.index', ['GET', 'POST']),
-
-    # comment API, note that the client side quotes the URL, but this is
-    # actually unnecessary. PEP 333 aka WSGI always unquotes PATH_INFO.
-    url('/1.0/<re(".+"):path>/', 'comment.get', ['GET']),
-    url('/1.0/<re(".+"):path>/new', 'comment.create', ['POST']),
-    url('/1.0/<re(".+"):path>/<int:id>', 'comment.get', ['GET']),
-    url('/1.0/<re(".+"):path>/<int:id>', 'comment.modify', ['PUT', 'DELETE']),
-    url('/1.0/<re(".+"):path>/<int:id>/approve', 'comment.approve', ['PUT'])
-], converters={'re': RegexConverter})
-
-
-class Isso:
+class Isso(object):
 
     PRODUCTION = True
     SECRET = 'secret'
@@ -74,6 +52,12 @@ class Isso:
 
     HOST = 'http://localhost:8000/'
     MAX_AGE = 15 * 60
+
+    HTTP_STATUS_CODES = {
+        200: 'Ok', 201: 'Created', 202: 'Accepted', 301: 'Moved Permanently',
+        400: 'Bad Request', 404: 'Not Found', 403: 'Forbidden',
+        500: 'Internal Server Error',
+    }
 
     def __init__(self, conf):
 
@@ -85,6 +69,22 @@ class Isso:
             self.db = db.SQLite(self)
 
         self.markup = import_object(conf.get('MARKUP', 'isso.markup.Markdown'))(conf)
+        self.adapter = map(
+            lambda r: (wsgi.Rule(r[0]), r[1], r[2] if isinstance(r[2], list) else [r[2]]), [
+
+            # moderation panel
+            ('/', admin.login, ['GET', 'POST']),
+            ('/admin/', admin.index, ['GET', 'POST']),
+
+            # comment API, note that the client side quotes the URL, but this is
+            # actually unnecessary. PEP 333 aka WSGI always unquotes PATH_INFO.
+            ('/1.0/<(.+?):path>/new', comment.create, 'POST'),
+            ('/1.0/<(.+?):path>/<(int):id>', comment.get, 'GET'),
+            ('/1.0/<(.+?):path>/<(int):id>', comment.modify, ['PUT', 'DELETE']),
+            ('/1.0/<(.+?):path>/<(int):id>/approve', comment.approve, 'PUT'),
+
+            ('/1.0/<(.+?):path>', comment.get, 'GET'),
+        ])
 
     def sign(self, obj):
         return self.signer.dumps(obj)
@@ -92,27 +92,71 @@ class Isso:
     def unsign(self, obj):
         return self.signer.loads(obj, max_age=self.MAX_AGE)
 
-    def dispatch(self, request, start_response):
-        adapter = url_map.bind_to_environ(request.environ)
-        try:
-            endpoint, values = adapter.match()
-            module, function = endpoint.split('.', 1)
-            handler = getattr(globals()[module], function)
-            return handler(self, request.environ, request, **values)
-        except NotFound, e:
-            return Response('Not Found', 404)
-        except HTTPException, e:
-            return e
-        except InternalServerError, e:
-            return Response(e, 500)
+    def status(self, code):
+        return '%i %s' % (code, self.HTTP_STATUS_CODES[code])
 
-    def wsgi_app(self, environ, start_response):
-        request = Request(environ)
-        response = self.dispatch(request, start_response)
-        return response(environ, start_response)
+    def dispatch(self, path, method):
+
+        for rule, handler, methods in self.adapter:
+            if isinstance(methods, basestring):
+                methods = [methods, ]
+            if method not in methods:
+                continue
+            m = rule.match(path)
+            if m is not None:
+                return handler, m
+        else:
+            return (lambda app, environ, request, **kw: (404, 'Not Found', {}), {})
+
+    def wsgi(self, environ, start_response):
+
+        try:
+            request = wsgi.Request(environ)
+            handler, kwargs = self.dispatch(environ['PATH_INFO'], request.method)
+            code, body, headers = handler(self, environ, request, **kwargs)
+
+            if code == 404:
+                try:
+                    code, body, headers = wsgi.sendfile(environ['PATH_INFO'], dirname(__file__))
+                except (IOError, OSError):
+                    pass
+
+            if request == 'HEAD':
+                body = ''
+
+            start_response(self.status(code), headers.items())
+            return body
+
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except Exception:
+            traceback.print_exc(file=sys.stderr)
+            headers = [('Content-Type', 'text/html; charset=utf-8')]
+            start_response(self.status(500), headers)
+            return '<h1>' + self.status(500) + '</h1>'
 
     def __call__(self, environ, start_response):
-        return self.wsgi_app(environ, start_response)
+        return self.wsgi(environ, start_response)
+
+
+class ReverseProxied(object):
+
+    def __init__(self, app, prefix=None):
+        self.app = app
+        self.prefix = prefix if prefix is not None else ''
+
+    def __call__(self, environ, start_response):
+        script_name = environ.get('HTTP_X_SCRIPT_NAME', self.prefix)
+        if script_name:
+            environ['SCRIPT_NAME'] = script_name
+            path_info = environ['PATH_INFO']
+            if path_info.startswith(script_name):
+                environ['PATH_INFO'] = path_info[len(script_name):]
+
+        scheme = environ.get('HTTP_X_SCHEME', '')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
 
 
 def main():
@@ -122,7 +166,7 @@ def main():
         make_option("--sqlite", dest="sqlite", metavar='FILE', default="/tmp/sqlite.db",
             help="use SQLite3 database"),
         make_option("--port", dest="port", default=8000, help="webserver port"),
-        make_option("--test", dest="production", action="store_false", default=True,
+        make_option("--debug", dest="production", action="store_false", default=True,
             help=SUPPRESS_HELP),
     ]
 
@@ -133,7 +177,7 @@ def main():
         print 'isso', __version__
         sys.exit(0)
 
-    app = Isso({'SQLITE': options.sqlite, 'PRODUCTION': options.production})
+    app = Isso({'SQLITE': options.sqlite, 'PRODUCTION': options.production, 'MODERATION': False})
 
     if len(args) > 0 and args[0] == 'import':
         if len(args) < 2:
@@ -142,8 +186,8 @@ def main():
 
         with io.open(args[1], encoding='utf-8') as fp:
             migrate.disqus(app.db, fp.read())
+
     else:
-        app = SharedDataMiddleware(app, {
-            '/static': join(dirname(__file__), 'static'),
-            '/js': join(dirname(__file__), 'js')})
-        run_simple('127.0.0.1', 8000, app, use_reloader=True)
+        from wsgiref.simple_server import make_server
+        httpd = make_server('127.0.0.1', 8080, app)
+        httpd.serve_forever()

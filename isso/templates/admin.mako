@@ -17,7 +17,7 @@
 
     def get(name, convert):
         limit = request.args.get(name)
-        return convert(limit) if limit is not None else None
+        return convert(limit[0]) if limit is not None else None
 %>
 
 <%block name="title">

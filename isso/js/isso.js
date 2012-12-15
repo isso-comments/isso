@@ -16,6 +16,9 @@
  * zfill(argument, i): zero fill `argument` with `i` zeros
  */
 
+ // var prefix = "/comments";
+ var prefix = "";
+
 
 function read(cookie){
     return(document.cookie.match('(^|; )' + cookie + '=([^;]*)') || 0)[2]
@@ -60,7 +63,7 @@ function create(data, func) {
         return;
     }
 
-    $.ajax('POST', '/1.0/' + encodeURIComponent(window.location.pathname) + '/new',
+    $.ajax('POST', prefix + '/1.0/' + encodeURIComponent(window.location.pathname) + '/new',
         JSON.stringify(data), {'Content-Type': 'application/json'}).then(func);
 };
 
@@ -70,7 +73,7 @@ function modify(id, data, func) {
         return;
     }
 
-    $.ajax('PUT', '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + id,
+    $.ajax('PUT', prefix + '/1.0/' + encodeURIComponent(window.location.pathname) + '/' + id,
     JSON.stringify(data), {'Content-Type': 'application/json'}).then(func)
 };
 
@@ -169,14 +172,15 @@ function insert(post) {
          .append('<span class="note">Kommentar muss noch freigeschaltet werden</span>');
     }
 
-    if (read('session-' + path + '-' + post['id'])) {
+    if (read(path + '-' + post['id'])) {
         $('#isso_' + post['id'] + '> footer > a:first-child')
             .after('<a class="delete" href="#">Löschen</a>')
             .after('<a class="edit" href="#">Bearbeiten</a>');
 
         // DELETE
         $('#isso_' + post['id'] + ' > footer .delete').on('click', function(event) {
-            $.ajax('DELETE', '/1.0/' + path + '/' + post['id']).then(function(status, rv) {
+            $.ajax('DELETE', prefix + '/1.0/' + path + '/' + post['id'])
+            .then(function(status, rv) {
                 // XXX comment might not actually deleted
                 $('#isso_' + post['id']).remove();
             });
@@ -188,7 +192,7 @@ function insert(post) {
 
             if ($('#issoform_' + post['id']).length == 0) {
 
-                $.ajax('GET', '/1.0/' + path + '/' + post['id'], {'plain': '1'})
+                $.ajax('GET', prefix + '/1.0/' + path + '/' + post['id'], {'plain': '1'})
                  .then(function(status, rv) {
                     rv = JSON.parse(rv);
                     form(post['id'],
@@ -285,7 +289,8 @@ function initialize(thread) {
 
 
 function fetch(thread) {
-    $.ajax('GET', '/1.0/' + encodeURIComponent(window.location.pathname) + '/',
+    console.log(window.location.pathname);
+    $.ajax('GET', prefix + '/1.0/' + encodeURIComponent(window.location.pathname),
     {}, {'Content-Type': 'application/json'}).then(function(status, rv) {
 
         if (status != 200) {
