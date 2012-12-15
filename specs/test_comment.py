@@ -56,7 +56,7 @@ class TestComments(unittest.TestCase):
         for i in range(20):
             self.post('/1.0/path/new', data=json.dumps(comment(text='Spam')))
 
-        r = self.get('/1.0/path/')
+        r = self.get('/1.0/path')
         assert r.status_code == 200
 
         rv = json.loads(r.data)
@@ -113,7 +113,7 @@ class TestComments(unittest.TestCase):
                              data=json.dumps(comment(text='...'))).status_code == 201
 
         for path in paths:
-            assert self.get('/1.0/' + path + '/').status_code == 200
+            assert self.get('/1.0/' + path).status_code == 200
             assert self.get('/1.0/' + path + '/1').status_code == 200
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):

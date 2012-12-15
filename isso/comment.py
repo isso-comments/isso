@@ -47,7 +47,7 @@ def get(app, environ, request, path, id=None):
 
     rv = list(app.db.retrieve(path)) if id is None else app.db.get(path, id)
     if not rv:
-        return 400, '', {}
+        return 404, '', {}
 
     if request.args.get('plain', '0') == '0':
         if isinstance(rv, list):
