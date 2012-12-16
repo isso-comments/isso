@@ -3,9 +3,9 @@ Isso – Ich schrei sonst
 
 You love static blog generators (especially [Acrylamid][1] *cough*) and the
 only option to interact with the community is [Disqus][2]. There's nothing
-wrong with it, but if you care about the privacy of your audience you should
-better use a comment system that is under your control. This is, were Isso
-comes into play.
+wrong with it, but if you care about the privacy of your audience you are
+better off with a comment system that is under your control. This is, were
+Isso comes into play.
 
 [1]: https://github.com/posativ/acrylamid
 [2]: http://disqus.com/
@@ -24,7 +24,7 @@ Features/Roadmap
 - [x] simple JSON API, hence comments are JavaScript-only
 - [x] create comments and modify/delete within a time range as user
 - [ ] Ping/Trackback support
-- [w] simple admin interface
+- [x] simple admin interface
 - [w] easy integration, similar to Disqus
 - [ ] spam filtering using [http:bl][3]
 
@@ -34,7 +34,7 @@ Development
 -----------
 
 *Note:* This project is proudly made with the Not Invented Here syndrome,
-instead of `werkzeug` or `bottle` it uses about 100 lines to manage WSGI
+instead of `werkzeug` or `bottle` it uses about 150 lines to manage WSGI
 and instead of JQuery it uses ender.js.
 
 You'll need [2.6 ≤ python ≤ 2.7][4], [ender.js][5] and [YUI Compressor][6].

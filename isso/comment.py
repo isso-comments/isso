@@ -14,7 +14,6 @@ from isso import json, models, utils, wsgi
 def create(app, environ, request, path):
 
     if app.PRODUCTION and not utils.urlexists(app.HOST, path):
-        print app.HOST, path
         return 400, 'URL does not exist', {}
 
     try:

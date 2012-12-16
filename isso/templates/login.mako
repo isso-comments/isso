@@ -32,7 +32,7 @@
 
 <!-- login form -->
 <div id="login">
-  <form action="/" method="post">
+  <form action="/admin/" method="post">
     <input name="secret" placeholder="secret" type="password" />
     <input type="submit" name="submit" value="Login" class="button" />
   </form>

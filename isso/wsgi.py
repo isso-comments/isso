@@ -21,6 +21,8 @@ from wsgiref.simple_server import WSGIServer
 
 
 class Request(object):
+    """A ``werkzeug.wrappers.Request``-like object but much less powerful.
+    Fits exactly the needs of Isso."""
 
     def __init__(self, environ):
 
@@ -66,6 +68,14 @@ class Request(object):
 
 
 class Rule(str):
+    """A quick and dirty approach to URL route creation.  It uses the
+    following format:
+
+        - ``<(int):name>`` matches any integer, same for float
+        - ``<(.+?):path>`` matches any given regular expression
+
+    With ``Rule.match(url)`` you can test whether a route a) matches
+    and if so b) retrieve saved variables."""
 
     repl = {'int': r'[0-9]+', 'float': r'\-?[0-9]+\.[0-9]+'}
 
@@ -94,7 +104,7 @@ class Rule(str):
 
         kwargs = match.groupdict()
         for key, value in kwargs.items():
-            for type in int, float:
+            for type in int, float:  # may convert false-positives
                 try:
                     kwargs[key] = type(value)
                     break
@@ -105,6 +115,9 @@ class Rule(str):
 
 
 def sendfile(filename, root, environ):
+    """Return file object if found.  This function is heavily inspired by
+    bottles's `static_file` function and uses the same mechanism to avoid
+    access to e.g. `/etc/shadow`."""
 
     headers = {}
     root = abspath(root) + os.sep
@@ -133,6 +146,7 @@ def sendfile(filename, root, environ):
 
 
 def static(app, environ, request, directory, path):
+    """A view that returns the requested path from directory."""
 
     try:
         return sendfile(path, join(dirname(__file__), directory), environ)

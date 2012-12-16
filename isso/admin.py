@@ -15,25 +15,20 @@ mako = TemplateLookup(directories=[join(dirname(__file__), 'templates')], input_
 render = lambda template, **context: mako.get_template(template).render_unicode(**context)
 
 
-def login(app, environ, request):
+def index(app, environ, request):
 
     if request.method == 'POST':
         if request.form.getfirst('secret') == app.SECRET:
             return 301, '', {
                 'Location': '/admin/',
                 'Set-Cookie': setcookie('admin', app.signer.dumps('*'),
-                    max_age=app.MAX_AGE, path='/')
-            }
-
-    return 200, render('login.mako').encode('utf-8'), {'Content-Type': 'text/html'}
-
-
-def index(app, environ, request):
-
-    try:
-        app.unsign(request.cookies.get('admin', ''))
-    except (SignatureExpired, BadSignature):
-        return 301, '', {'Location': '/'}
+                    max_age=app.MAX_AGE, path='/')}
+        return 403, '', {}
+    else:
+        try:
+            app.unsign(request.cookies.get('admin', ''))
+        except (SignatureExpired, BadSignature):
+            return 200, render('login.mako').encode('utf-8'), {'Content-Type': 'text/html'}
 
     ctx = {'app': app, 'request': request}
     return 200, render('admin.mako', **ctx).encode('utf-8'), {'Content-Type': 'text/html'}

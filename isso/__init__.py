@@ -28,9 +28,10 @@ sys.setdefaultencoding('utf-8')  # we only support UTF-8 and python 2.X :-)
 import io
 import os
 import json
+import locale
 import traceback
 
-from optparse import OptionParser, make_option, SUPPRESS_HELP
+from optparse import OptionParser, make_option
 
 from itsdangerous import URLSafeTimedSerializer
 
@@ -40,6 +41,9 @@ from isso.utils import determine, import_object, IssoEncoder
 # override default json :func:`dumps`.
 _dumps = json.dumps
 setattr(json, 'dumps', lambda obj, **kw: _dumps(obj, cls=IssoEncoder, **kw))
+
+# set user's preferred locale, XXX conflicts with email.util.parse_date ... m(
+# locale.setlocale(locale.LC_ALL, '')
 
 
 class Isso(object):
@@ -74,7 +78,6 @@ class Isso(object):
             lambda r: (wsgi.Rule(r[0]), r[1], r[2] if isinstance(r[2], list) else [r[2]]), [
 
             # moderation panel
-            ('/', admin.login, ['HEAD', 'GET', 'POST']),
             ('/admin/', admin.index, ['HEAD', 'GET', 'POST']),
 
             # assets
@@ -86,7 +89,6 @@ class Isso(object):
             ('/1.0/<(.+?):path>/<(int):id>', comment.get, ['HEAD', 'GET']),
             ('/1.0/<(.+?):path>/<(int):id>', comment.modify, ['PUT', 'DELETE']),
             ('/1.0/<(.+?):path>/<(int):id>/approve', comment.approve, 'PUT'),
-
             ('/1.0/<(.+?):path>', comment.get, 'GET'),
         ])
 
@@ -174,8 +176,6 @@ def main():
         make_option("--sqlite", dest="sqlite", metavar='FILE', default="/tmp/sqlite.db",
             help="use SQLite3 database"),
         make_option("--port", dest="port", default=8000, help="webserver port"),
-        make_option("--debug", dest="production", action="store_false", default=True,
-            help=SUPPRESS_HELP),
     ]
 
     parser = OptionParser(option_list=options)
@@ -185,7 +185,7 @@ def main():
         print 'isso', __version__
         sys.exit(0)
 
-    app = Isso({'SQLITE': options.sqlite, 'PRODUCTION': options.production, 'MODERATION': True})
+    app = Isso({'SQLITE': options.sqlite, 'MODERATION': True})
 
     if len(args) > 0 and args[0] == 'import':
         if len(args) < 2:
@@ -195,7 +195,8 @@ def main():
         with io.open(args[1], encoding='utf-8') as fp:
             migrate.disqus(app.db, fp.read())
 
-    else:
-        from wsgiref.simple_server import make_server
-        httpd = make_server('127.0.0.1', 8080, app, server_class=wsgi.ThreadedWSGIServer)
-        httpd.serve_forever()
+        sys.exit(0)
+
+    from wsgiref.simple_server import make_server
+    httpd = make_server('127.0.0.1', 8080, app, server_class=wsgi.ThreadedWSGIServer)
+    httpd.serve_forever()
