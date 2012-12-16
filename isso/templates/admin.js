@@ -11,8 +11,8 @@ function initialize() {
             $(item).on('click', function(event) {
                 $.ajax('PUT', '/1.0/' + encodeURIComponent(path) + '/' + id + '/approve')
                  .then(function(status, rv) {
-                    // $(node).detach();
-                    $('h2.recent + span').after(node);
+                    $(node).prependTo($('#approved'));
+                    $('.approve', node).remove();
                  });
                 event.stop();
             });

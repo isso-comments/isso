@@ -108,7 +108,7 @@
             text-align: center;
         }
 
-        .button {
+        .approve, .delete {
             padding-top: 10px;
             padding: 5px;
             border: 1px solid #666;

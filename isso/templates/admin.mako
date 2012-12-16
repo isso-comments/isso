@@ -52,9 +52,9 @@
                 </ul>
 
                 <div class="row buttons">
-                    <a href="#" class="red button column grid_1">Delete</a>
+                    <a href="#" class="red delete column grid_1">Delete</a>
                     % if comment.pending:
-                        <a href="#" class="green button column grid_1">Approve</a>
+                        <a href="#" class="green approve column grid_1">Approve</a>
                     % endif
                 </div>
             </div>
@@ -77,7 +77,7 @@
 
 </div>
 
-<div class="row">
+<div class="row" id="pending">
     % for comment in app.db.recent(limit=get('pendinglimit', int), mode=2):
         ${make(comment)}
     % endfor
@@ -96,7 +96,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="approved">
     % for comment in app.db.recent(limit=get('recentlimit', int) or 20, mode=5):
         ${make(comment)}
     % endfor
