@@ -34,7 +34,7 @@ isso.create = function(data, func) {
         return;
     }
 
-    $.ajax('POST', prefix + '/1.0/' + path + '/new',
+    $.ajax('POST', prefix + '/1.0/' + isso.path + '/new',
         JSON.stringify(data), {'Content-Type': 'application/json'}).then(func);
 };
 
@@ -44,16 +44,21 @@ isso.modify = function(id, data, func) {
         return;
     }
 
-    $.ajax('PUT', prefix + '/1.0/' + path + '/' + id,
+    $.ajax('PUT', prefix + '/1.0/' + isso.path + '/' + id,
     JSON.stringify(data), {'Content-Type': 'application/json'}).then(func)
 };
 
 
 isso.plain = function(id, func) {
-    $.ajax('GET', prefix + '/1.0/' + path + '/' + id, {'plain': '1'}).then(func);
+    $.ajax('GET', prefix + '/1.0/' + isso.path + '/' + id, {'plain': '1'}).then(func);
 }
 
 
 isso.remove = function(id, func) {
-    $.ajax('DELETE', prefix + '/1.0/' + path + '/' + id).then(func);
+    $.ajax('DELETE', prefix + '/1.0/' + isso.path + '/' + id).then(func);
+}
+
+
+isso.approve = function (id, func) {
+    $.ajax('PUT', '/1.0/' + isso.path + '/' + id + '/approve').then(func)
 }

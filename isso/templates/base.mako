@@ -2,11 +2,8 @@
 <head>
     <title><%block name="title" /></title>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="/js/ender.js"></script>
-    <script type="text/javascript">
-        <%block name="js" />
-    </script>
     <link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <script type="text/javascript" src="/js/interface.js"></script>
     <style>
 
         /* ================ */
@@ -52,8 +49,6 @@
             font-size: 1em;
             line-height: 1.4;
             margin: 20px 0 0 0;
-
-            background: url(/static/simple-clouds.jpg) no-repeat center center fixed;
         }
 
         body > h1 {
@@ -65,7 +60,7 @@
         article {
             background-color: rgb(245, 245, 245);
             box-shadow: 0px 0px 4px 0px;
-            border-radius: 2px;
+            /*border-radius: 2px;*/
         }
 
         article header {
@@ -89,7 +84,7 @@
         .recent, .pending {
             padding: 10px 40px 10px 40px;
             box-shadow: 0px 0px 2px 0px;
-            border-radius: 4px;
+            /*border-radius: 4px;*/
             margin: 2px auto 2px auto;
         }
 
@@ -102,7 +97,7 @@
         }
 
         body > footer {
-            border-top: 1px solid #ccc;
+            border-top: 1px solid #AAA;
             padding-top: 8px;
 
             text-align: center;

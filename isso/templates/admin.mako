@@ -1,9 +1,5 @@
 <%inherit file="base.mako"/>
 
-<%block name="js">
-    <%include file="admin.js"/>
-</%block>
-
 <%
     from time import strftime, gmtime
 

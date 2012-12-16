@@ -10,8 +10,7 @@
         margin: 280px 270px 0 270px;
         padding: 30px;
         background-color: rgb(245, 245, 245);
-        box-shadow: 0px 0px 4px 0px;
-        border-radius: 8px;
+        box-shadow: 0px 0px 1px 0px;
         text-align: center;
     }
 

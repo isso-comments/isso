@@ -1,29 +1,34 @@
+/* Copyright 2012, Martin Zimmermann <info@posativ.org>. All rights reserved.
+ * License: BSD Style, 2 clauses. See isso/__init__.py.
+ */
+
+
+var isso = isso || {};
+
 
 function initialize() {
 
     $('div.buttons > a').forEach(function(item) {
 
-        var node = $(item).parent().parent().parent().parent()[0]
-        var path = node.getAttribute("data-path");
-        var id = node.getAttribute("data-id");
+        var node = $(item).parent().parent().parent().parent()[0],
+            id = node.getAttribute("data-id");
+        isso.path = node.getAttribute("data-path");
 
         if (item.text == 'Approve') {
             $(item).on('click', function(event) {
-                $.ajax('PUT', '/1.0/' + encodeURIComponent(path) + '/' + id + '/approve')
-                 .then(function(status, rv) {
+                isso.approve(id, function(status, rv) {
                     $(node).prependTo($('#approved'));
                     $('.approve', node).remove();
-                 });
+                });
                 event.stop();
             });
         } else {
             $(item).on('click', function(event) {
                 if (confirm("RLY?") == true) {
-                    $.ajax('DELETE', '/1.0/' + encodeURIComponent(path) + '/' + id)
-                     .then(function() {
+                    isso.remove(id, function(status, rv) {
                         $(node).remove()
                     });
-               };
+                };
                 event.stop();
             });
         };
