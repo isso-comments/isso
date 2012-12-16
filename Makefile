@@ -9,6 +9,6 @@ init:
 	rm -rf $(ISSO)/promise.js
 
 js:
-	cat $(ISSO)/ender.js $(ISSO)/isso.js $(ISSO)/utils.js > $(ISSO)/_.js
+	cat $(ISSO)/ender.js $(ISSO)/isso.js $(ISSO)/utils.js $(ISSO)/client.js > $(ISSO)/_.js
 	yuicompressor --type js --charset utf-8 $(ISSO)/_.js -o $(ISSO)/embed.js
 	rm $(ISSO)/_.js
