@@ -1,7 +1,7 @@
 all:
 
 init:
-	(cd isso/js && ender build jeesh reqwest)
+	(cd isso/js && ender build jeesh)
 
 js:
 	cat isso/js/ender.js isso/js/isso.js > _.js

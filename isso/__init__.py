@@ -26,10 +26,10 @@ import sys; reload(sys)
 sys.setdefaultencoding('utf-8')  # we only support UTF-8 and python 2.X :-)
 
 import io
+import os
 import json
 import traceback
 
-from os.path import dirname
 from optparse import OptionParser, make_option, SUPPRESS_HELP
 
 from itsdangerous import URLSafeTimedSerializer
@@ -117,9 +117,13 @@ class Isso(object):
 
             if code == 404:
                 try:
-                    code, body, headers = wsgi.sendfile(environ['PATH_INFO'], dirname(__file__))
+                    code, body, headers = wsgi.sendfile(environ['PATH_INFO'], os.getcwd())
                 except (IOError, OSError):
-                    pass
+                    try:
+                        path = environ['PATH_INFO'].rstrip('/') + '/index.html'
+                        code, body, headers = wsgi.sendfile(path, os.getcwd())
+                    except (IOError, OSError):
+                        pass
 
             if request == 'HEAD':
                 body = ''
