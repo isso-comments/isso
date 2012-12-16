@@ -10,6 +10,10 @@ import tempfile
 import urlparse
 import mimetypes
 
+from time import gmtime, mktime, strftime, strptime, timezone
+from email.utils import parsedate
+from os.path import join, dirname, abspath
+
 from urllib import quote
 from Cookie import SimpleCookie
 from SocketServer import ThreadingMixIn
@@ -100,11 +104,11 @@ class Rule(str):
         return kwargs
 
 
-def sendfile(filename, root):
+def sendfile(filename, root, environ):
 
     headers = {}
-    root = os.path.abspath(root) + os.sep
-    filename = os.path.abspath(os.path.join(root, filename.strip('/\\')))
+    root = abspath(root) + os.sep
+    filename = abspath(join(root, filename.strip('/\\')))
 
     if not filename.startswith(root):
         return 403, '', headers
@@ -115,8 +119,25 @@ def sendfile(filename, root):
 
     stats = os.stat(filename)
     headers['Content-Length'] = str(stats.st_size)
+    headers['Last-Modified'] = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime(stats.st_mtime))
+
+    ims = environ.get('HTTP_IF_MODIFIED_SINCE')
+    if ims:
+        ims = parsedate(ims)
+
+    if ims is not None and mktime(ims) - timezone >= stats.st_mtime:
+        headers['Date'] = strftime("%a, %d %b %Y %H:%M:%S GMT", gmtime())
+        return 304, '', headers
 
     return 200, io.open(filename, 'rb'), headers
+
+
+def static(app, environ, request, directory, path):
+
+    try:
+        return sendfile(path, join(dirname(__file__), directory), environ)
+    except (OSError, IOError):
+        return 404, '', {}
 
 
 def setcookie(name, value, **kwargs):

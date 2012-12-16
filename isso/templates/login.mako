@@ -9,7 +9,8 @@
     #login {
         margin: 280px 270px 0 270px;
         padding: 30px;
-        background-color: #DDD;
+        background-color: rgb(245, 245, 245);
+        box-shadow: 0px 0px 4px 0px;
         border-radius: 8px;
         text-align: center;
     }

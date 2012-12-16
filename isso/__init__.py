@@ -54,7 +54,8 @@ class Isso(object):
     MAX_AGE = 15 * 60
 
     HTTP_STATUS_CODES = {
-        200: 'Ok', 201: 'Created', 202: 'Accepted', 301: 'Moved Permanently',
+        200: 'Ok', 201: 'Created', 202: 'Accepted',
+        301: 'Moved Permanently', 304: 'Not Modified',
         400: 'Bad Request', 404: 'Not Found', 403: 'Forbidden',
         500: 'Internal Server Error',
     }
@@ -73,13 +74,16 @@ class Isso(object):
             lambda r: (wsgi.Rule(r[0]), r[1], r[2] if isinstance(r[2], list) else [r[2]]), [
 
             # moderation panel
-            ('/', admin.login, ['GET', 'POST']),
-            ('/admin/', admin.index, ['GET', 'POST']),
+            ('/', admin.login, ['HEAD', 'GET', 'POST']),
+            ('/admin/', admin.index, ['HEAD', 'GET', 'POST']),
+
+            # assets
+            ('/<(static|js):directory>/<(.+?):path>', wsgi.static, ['HEAD', 'GET']),
 
             # comment API, note that the client side quotes the URL, but this is
             # actually unnecessary. PEP 333 aka WSGI always unquotes PATH_INFO.
-            ('/1.0/<(.+?):path>/new', comment.create, 'POST'),
-            ('/1.0/<(.+?):path>/<(int):id>', comment.get, 'GET'),
+            ('/1.0/<(.+?):path>/new', comment.create,'POST'),
+            ('/1.0/<(.+?):path>/<(int):id>', comment.get, ['HEAD', 'GET']),
             ('/1.0/<(.+?):path>/<(int):id>', comment.modify, ['PUT', 'DELETE']),
             ('/1.0/<(.+?):path>/<(int):id>/approve', comment.approve, 'PUT'),
 
@@ -117,11 +121,11 @@ class Isso(object):
 
             if code == 404:
                 try:
-                    code, body, headers = wsgi.sendfile(environ['PATH_INFO'], os.getcwd())
+                    code, body, headers = wsgi.sendfile(environ['PATH_INFO'], os.getcwd(), environ)
                 except (IOError, OSError):
                     try:
                         path = environ['PATH_INFO'].rstrip('/') + '/index.html'
-                        code, body, headers = wsgi.sendfile(path, os.getcwd())
+                        code, body, headers = wsgi.sendfile(path, os.getcwd(), environ)
                     except (IOError, OSError):
                         pass
 
@@ -181,7 +185,7 @@ def main():
         print 'isso', __version__
         sys.exit(0)
 
-    app = Isso({'SQLITE': options.sqlite, 'PRODUCTION': options.production, 'MODERATION': False})
+    app = Isso({'SQLITE': options.sqlite, 'PRODUCTION': options.production, 'MODERATION': True})
 
     if len(args) > 0 and args[0] == 'import':
         if len(args) < 2:

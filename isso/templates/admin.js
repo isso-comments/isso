@@ -1,9 +1,9 @@
 
 function initialize() {
 
-    $('article > footer > a').forEach(function(item) {
+    $('div.buttons > a').forEach(function(item) {
 
-        var node = $(item).parent().parent()[0]
+        var node = $(item).parent().parent().parent().parent()[0]
         var path = node.getAttribute("data-path");
         var id = node.getAttribute("data-id");
 
