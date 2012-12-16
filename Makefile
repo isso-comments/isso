@@ -1,13 +1,14 @@
-all:
+ISSO = "isso/js"
+
+all: js
 
 init:
-	cd isso/js
-	ender build jeesh
-	
-	git clone https://github.com/posativ/promisejs.git
-	ender add promisejs
+	git clone https://github.com/posativ/promisejs.git $(ISSO)/promise.js
+	(cd $(ISSO) && ender build jeesh)
+	(cd $(ISSO) && ender add promise.js)
+	rm -rf $(ISSO)/promise.js
 
 js:
-	cat isso/js/ender.js isso/js/isso.js > _.js
-	yuicompressor --type js --charset utf-8 _.js -o isso/js/embed.js
-	rm _.js
+	cat $(ISSO)/ender.js $(ISSO)/isso.js $(ISSO)/utils.js > $(ISSO)/_.js
+	yuicompressor --type js --charset utf-8 $(ISSO)/_.js -o $(ISSO)/embed.js
+	rm $(ISSO)/_.js
