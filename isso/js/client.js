@@ -37,7 +37,7 @@ function form(id, defaults, func) {
         event.stop();
     });
     return rv;
-};
+}
 
 
 function extract(form, parent) {
@@ -53,7 +53,7 @@ function extract(form, parent) {
 
 function edit() {
 
-};
+}
 
 
 function commit(form, parent) {
@@ -62,7 +62,7 @@ function commit(form, parent) {
             insert(JSON.parse(rv));
         }
     });
-};
+}
 
 
 var insert = function insert(post) {
@@ -148,10 +148,10 @@ var insert = function insert(post) {
                 });
             } else {
                 $('#issoform_' + post['id']).remove();
-            };
+            }
             event.stop();
         });
-    };
+    }
 
     // ability to answer directly to a comment
     $('footer > a:first-child', '#isso_' + post['id']).on('click', function(event) {
@@ -164,10 +164,10 @@ var insert = function insert(post) {
             }));
         } else {
             $('#issoform_' + post['id']).remove();
-        };
+        }
         event.stop();
     });
-};
+}
 
 
 /*
@@ -182,7 +182,7 @@ function initialize(thread) {
 
     html = form(null, {}, commit);
     thread.append(html);
-};
+}
 
 
 function fetch(thread) {
@@ -191,12 +191,12 @@ function fetch(thread) {
 
         if (status != 200) {
             return
-        };
+        }
 
         rv = JSON.parse(rv);
         for (var item in rv) {
             insert(rv[item]);
-        };
+        }
     });
 }
 
