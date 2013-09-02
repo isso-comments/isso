@@ -8,7 +8,12 @@
 # - export does not include website from commenters
 # - Disqus includes already deleted comments
 
-from time import mktime, strptime
+from __future__ import division
+
+import sys
+import os
+
+from time import mktime, strptime, sleep
 from urlparse import urlparse
 from collections import defaultdict
 
@@ -36,9 +41,9 @@ def insert(db, thread, comments):
         remap[item['dsq:id']] = rv.id
 
 
-def disqus(db, xml):
+def disqus(db, xmlfile):
 
-    tree = ElementTree.fromstring(xml)
+    tree = ElementTree.parse(xmlfile)
     res = defaultdict(list)
 
     for post in tree.findall('%spost' % ns):
@@ -57,7 +62,22 @@ def disqus(db, xml):
 
         res[post.find('%sthread' % ns).attrib.get(dsq + 'id')].append(item)
 
-    for thread in tree.findall('%sthread' % ns):
+    num = len(tree.findall('%sthread' % ns))
+    cols = int(os.popen('stty size', 'r').read().split()[1])
+
+    threads = 0
+    for i, thread in enumerate(tree.findall('%sthread' % ns)):
+
+        if int(round((i+1)/num, 2) * 100) % 13 == 0:
+
+            sys.stdout.write("\r%s" % (" "*cols))
+            sys.stdout.write("\r[%i%%]  %s" % (((i+1)/num * 100), thread.find('%sid' % ns).text))
+            sys.stdout.flush()
+
         id = thread.attrib.get(dsq + 'id')
         if id in res:
+            threads += 1
             insert(db, thread, res[id])
+
+    sys.stdout.write("\r%s" % (" "*cols))
+    sys.stdout.write("\r[100%%]  %i threads, %i comments" % (threads, len(tree.findall('%spost' % ns))))
