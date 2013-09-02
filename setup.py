@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-import sys
-import re
-
 from setuptools import setup, find_packages
-
-version = re.search("__version__ = '([^']+)'",
-                    open('isso/__init__.py').read()).group(1)
 
 setup(
     name='isso',
-    version=version,
+    version='0.1',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
@@ -29,7 +23,7 @@ setup(
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7"
     ],
-    install_requires=['mako', 'itsdangerous'],
+    install_requires=['Jinja2>=2.7', 'werkzeug>=0.9', 'itsdangerous', 'misaka'],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],

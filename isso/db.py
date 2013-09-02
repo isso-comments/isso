@@ -15,7 +15,7 @@ class Abstract:
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def __init__(self, app):
+    def __init__(self, dbpath, moderation):
         return
 
     @abc.abstractmethod
@@ -79,10 +79,10 @@ class SQLite(Abstract):
         'text', 'author', 'email', 'website', 'parent', 'mode'
     ]
 
-    def __init__(self, app):
+    def __init__(self, dbpath, moderation):
 
-        self.dbpath = app.SQLITE
-        self.mode = 2 if app.MODERATION else 1
+        self.dbpath = dbpath
+        self.mode = 2 if moderation else 1
 
         with sqlite3.connect(self.dbpath) as con:
             sql = ('main.comments (path VARCHAR(255) NOT NULL, id INTEGER NOT NULL,'

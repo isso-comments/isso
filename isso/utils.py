@@ -4,10 +4,14 @@
 # License: BSD Style, 2 clauses. see isso/__init__.py
 
 import json
+
 import socket
 import httplib
+
+import random
 import contextlib
 
+from string import ascii_letters, digits
 from urlparse import urlparse
 
 from isso.models import Comment
@@ -31,7 +35,7 @@ def urlexists(host, path):
         return con.getresponse().status == 200
 
 
-def determine(host):
+def normalize(host):
     """Make `host` compatible with :py:mod:`httplib`."""
 
     if not host.startswith(('http://', 'https://')):
@@ -40,10 +44,5 @@ def determine(host):
     return (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
 
 
-def import_object(name):
-    if '.' not in name:
-        return __import__(name)
-
-    parts = name.split('.')
-    obj = __import__('.'.join(parts[:-1]), None, None, [parts[-1]], 0)
-    return getattr(obj, parts[-1])
+def mksecret(length):
+    return ''.join(random.choice(ascii_letters + digits) for x in range(length))

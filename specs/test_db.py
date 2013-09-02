@@ -19,7 +19,7 @@ class TestSQLite(unittest.TestCase):
     def setUp(self):
 
         fd, self.path = tempfile.mkstemp()
-        self.db = SQLite(isso.Isso({'SQLITE': self.path}))
+        self.db = SQLite(self.path, False)
 
     def test_get(self):
 
@@ -91,7 +91,7 @@ class TestSQLitePending(unittest.TestCase):
     def setUp(self):
 
         fd, self.path = tempfile.mkstemp()
-        self.db = SQLite(isso.Isso({'SQLITE': self.path, 'MODERATION': True}))
+        self.db = SQLite(self.path, True)
 
     def test_retrieve(self):
 
