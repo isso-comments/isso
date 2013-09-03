@@ -45,12 +45,17 @@ from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
 from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.serving import run_simple
 
-from isso import comment, db, utils, migrate
+from jinja2 import Environment, FileSystemLoader
+
+from isso import db, utils, migrate
+from isso.views import comment, admin
 
 url_map = Map([
-    Rule('/', methods=['HEAD', 'GET'], endpoint='comment.get'),
-    Rule('/', methods=['PUT', 'DELETE'], endpoint='comment.modify'),
-    Rule('/new', methods=['POST'], endpoint='comment.create'),
+    Rule('/', methods=['HEAD', 'GET'], endpoint=views.comment.get),
+    Rule('/', methods=['PUT', 'DELETE'], endpoint=views.comment.modify),
+    Rule('/new', methods=['POST'], endpoint=views.comment.create),
+
+    Rule('/admin/', endpoint=views.admin.index)
 ])
 
 
@@ -67,6 +72,7 @@ class Isso(object):
 
         self.db = db.SQLite(dbpath, moderation=False)
         self.signer = URLSafeTimedSerializer(secret)
+        self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
 
     def sign(self, obj):
         return self.signer.dumps(obj)
@@ -79,6 +85,10 @@ class Isso(object):
             | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK \
             | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
 
+    def render(self, tt, **ctx):
+        tt = self.j2env.get_template(tt)
+        return tt.render(**ctx)
+
     @classmethod
     def dumps(cls, obj, **kw):
         return json.dumps(obj, cls=utils.IssoEncoder, **kw)
@@ -86,12 +96,7 @@ class Isso(object):
     def dispatch(self, request, start_response):
         adapter = url_map.bind_to_environ(request.environ)
         try:
-            endpoint, values = adapter.match()
-            if hasattr(endpoint, '__call__'):
-                handler = endpoint
-            else:
-                module, function = endpoint.split('.', 1)
-                handler = getattr(globals()[module], function)
+            handler, values = adapter.match()
             return handler(self, request.environ, request, **values)
         except NotFound as e:
             return Response('Not Found', 404)
@@ -118,6 +123,8 @@ def main():
             help="database location"),
         make_option("--base-url", dest="base_url", default="http://localhost:8080/",
             help="set base url for comments"),
+        make_option("--secret-key", dest="secret", default=None,
+            help="fixed secret key (admin auth etc.)"),
         make_option("--max-age", dest="max_age", default=15*60, type=int,
             help="..."),
 
@@ -134,7 +141,7 @@ def main():
         print('isso', dist.version)
         sys.exit(0)
 
-    isso = Isso(dbpath=options.dbpath, secret=utils.mksecret(12),
+    isso = Isso(dbpath=options.dbpath, secret=options.secret or utils.mksecret(12),
                base_url=options.base_url, max_age=options.max_age)
 
     if len(args) > 0 and args[0] == 'import':

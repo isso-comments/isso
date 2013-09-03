@@ -11,7 +11,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort
 
-from isso import models, utils, requires
+from isso import models, utils
 
 
 class requires:
