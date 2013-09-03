@@ -33,7 +33,8 @@ import locale
 import traceback
 
 from os.path import dirname, join
-from optparse import OptionParser, make_option
+from argparse import ArgumentParser
+from ConfigParser import ConfigParser
 
 import misaka
 from itsdangerous import URLSafeTimedSerializer
@@ -61,14 +62,14 @@ url_map = Map([
 
 class Isso(object):
 
-    BASE_URL = 'http://localhost:8080/'
-    MAX_AGE = 15 * 60
     PRODUCTION = False
 
-    def __init__(self, dbpath, secret, base_url, max_age):
+    def __init__(self, dbpath, secret, base_url, max_age, passphrase):
 
         self.DBPATH = dbpath
         self.BASE_URL = utils.normalize(base_url)
+        self.PASSPHRASE = passphrase
+        self.MAX_AGE = max_age
 
         self.db = db.SQLite(dbpath, moderation=False)
         self.signer = URLSafeTimedSerializer(secret)
@@ -115,46 +116,48 @@ class Isso(object):
 
 def main():
 
-    options = [
-        make_option("--version", action="store_true",
-            help="print version info and exit"),
+    parser = ArgumentParser(description="a blog comment hosting service")
+    subparser = parser.add_subparsers(help="commands", dest="command")
 
-        make_option("--dbpath", dest="dbpath", metavar='FILE', default=":memory:",
-            help="database location"),
-        make_option("--base-url", dest="base_url", default="http://localhost:8080/",
-            help="set base url for comments"),
-        make_option("--secret-key", dest="secret", default=None,
-            help="fixed secret key (admin auth etc.)"),
-        make_option("--max-age", dest="max_age", default=15*60, type=int,
-            help="..."),
+    parser.add_argument('--version', action='version', version='%(prog)s ' + dist.version)
+    parser.add_argument("-c", dest="conf", default="/etc/isso.conf",
+            metavar="/etc/isso.conf", help="set configuration file")
 
-        make_option("--host", dest="host", default="localhost",
-            help="webserver address"),
-        make_option("--port", dest="port", default=8080,
-            help="webserver port"),
+    imprt = subparser.add_parser('import', help="import Disqus XML export")
+    imprt.add_argument("dump", metavar="FILE")
+
+    serve = subparser.add_parser("run", help="run server")
+
+    defaultcfg = [
+        "[general]",
+        "dbpath = /tmp/isso.db", "secret = %r" % os.urandom(24),
+        "base_url = http://localhost:8080/", "passphrase = p@$$w0rd",
+        "max_age = 450",
+        "[server]",
+        "host = localhost", "port = 8080"
     ]
 
-    parser = OptionParser(option_list=options)
-    options, args = parser.parse_args()
+    args = parser.parse_args()
+    conf = ConfigParser(allow_no_value=True)
+    conf.readfp(io.StringIO(u'\n'.join(defaultcfg)))
+    conf.read(args.conf)
 
-    if options.version:
-        print('isso', dist.version)
-        sys.exit(0)
+    isso = Isso(
+        dbpath=conf.get('general', 'dbpath'),
+        secret=conf.get('general', 'secret'),
+        base_url=conf.get('general', 'base_url'),
+        max_age=conf.getint('general', 'max_age'),
+        passphrase=conf.get('general', 'passphrase')
+    )
 
-    isso = Isso(dbpath=options.dbpath, secret=options.secret or utils.mksecret(12),
-               base_url=options.base_url, max_age=options.max_age)
-
-    if len(args) > 0 and args[0] == 'import':
-        if len(args) < 2:
-            print('Usage: isso import FILE')
-            sys.exit(2)
-
-        migrate.disqus(isso.db, args[1])
+    if args.command == "import":
+        migrate.disqus(isso.db, args.dump)
         sys.exit(0)
 
     app = SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/')
         })
 
-    print(' * Session Key:', isso.signer.secret_key)
-    run_simple(options.host, options.port, app, threaded=True)
+    run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),
+        app, threaded=True)
+

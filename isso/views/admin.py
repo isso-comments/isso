@@ -15,8 +15,7 @@ from itsdangerous import SignatureExpired, BadSignature
 def index(app, environ, request):
 
     if request.method == 'POST':
-        print request.form.get('secret'), app.signer.secret_key
-        if request.form.get('secret') == app.signer.secret_key:
+        if request.form.get('password') == app.PASSPHRASE:
             resp = redirect('/admin/', 301)
             resp.set_cookie('admin', app.signer.dumps('*'), max_age=app.MAX_AGE)
             return resp
