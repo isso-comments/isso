@@ -8,13 +8,13 @@ better off with a comment system that is under your control. This is, were
 Isso comes into play.
 
 [1]: https://github.com/posativ/acrylamid
-[2]: http://disqus.com/
+[2]: https://disqus.com/
 
 
 Features
 --------
 
-* [CRUD][https://en.wikipedia.org/wiki/Create,_read,_update_and_delete] comments
+* [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments
 * SQLite
 * quite nice, but unfinished client-side JS
 
@@ -33,13 +33,15 @@ Installation
 ------------
 
 Probably `git clone https://github.com/posativ/isso.git`, `python setup.py develop`
-inside a virtualenv. Then start `isso` with
+inside a virtualenv. Then start `isso` with:
 
     ~> isso run
 
 You can now leave a comment at <http://localhost:8080/static/post.html> hopefully.
 The admin interface password is `p@$$w0rd`, you may change this with a custom cfg
 file that I'll document later. You find the admin interface at <http://localhost:8080/admin/>.
+
+**[Screenshot](http://posativ.org/~tmp/isso-preview.png)**
 
 
 Migration from Disqus
