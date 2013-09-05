@@ -11,25 +11,33 @@ from isso import Isso
 from isso.models import Comment
 
 
-def comment(**kw):
-    return Comment.fromjson(Isso.dumps(kw))
+class FakeIP(object):
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        environ['REMOTE_ADDR'] = '192.168.1.1'
+        return self.app(environ, start_response)
 
 
 class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
+
         self.app = Isso(self.path, '...', '...', 15*60, "...")
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app)
 
         self.client = Client(self.app, Response)
-        self.get = lambda *x, **z: self.client.get(*x, **z)
-        self.put = lambda *x, **z: self.client.put(*x, **z)
-        self.post = lambda *x, **z: self.client.post(*x, **z)
-        self.delete = lambda *x, **z: self.client.delete(*x, **z)
+        self.get = self.client.get
+        self.put = self.client.put
+        self.post = self.client.post
+        self.delete = self.client.delete
 
     def testGet(self):
 
-        self.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Lorem ipsum ...')))
+        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
         r = self.get('/?uri=%2Fpath%2F&id=1')
         assert r.status_code == 200
 
@@ -40,7 +48,7 @@ class TestComments(unittest.TestCase):
 
     def testCreate(self):
 
-        rv = self.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Lorem ipsum ...')))
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
 
         assert rv.status_code == 201
         assert len(filter(lambda header: header[0] == 'Set-Cookie', rv.headers)) == 1
@@ -54,7 +62,7 @@ class TestComments(unittest.TestCase):
     def testCreateAndGetMultiple(self):
 
         for i in range(20):
-            self.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Spam')))
+            self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Spam'}))
 
         r = self.get('/?uri=%2Fpath%2F')
         assert r.status_code == 200
@@ -70,9 +78,9 @@ class TestComments(unittest.TestCase):
 
     def testUpdate(self):
 
-        self.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Lorem ipsum ...')))
-        self.put('/?uri=%2Fpath%2F&id=1', data=Isso.dumps(comment(
-            text='Hello World', author='me', website='http://example.com/')))
+        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
+        self.put('/?uri=%2Fpath%2F&id=1', data=json.dumps({
+            'text': 'Hello World', 'author': 'me', 'website': 'http://example.com/'}))
 
         r = self.get('/?uri=%2Fpath%2F&id=1&plain=1')
         assert r.status_code == 200
@@ -85,7 +93,7 @@ class TestComments(unittest.TestCase):
 
     def testDelete(self):
 
-        self.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Lorem ipsum ...')))
+        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
         r = self.delete('/?uri=%2Fpath%2F&id=1')
         assert r.status_code == 200
         assert json.loads(r.data) == None
@@ -94,8 +102,8 @@ class TestComments(unittest.TestCase):
     def testDeleteWithReference(self):
 
         client = Client(self.app, Response)
-        client.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='First')))
-        client.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='First', parent=1)))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First', 'parent': 1}))
 
         r = client.delete('/?uri=%2Fpath%2F&id=1')
         assert r.status_code == 200
@@ -110,7 +118,7 @@ class TestComments(unittest.TestCase):
 
         for path in paths:
             assert self.post('/new?' + urllib.urlencode({'uri': path}),
-                             data=Isso.dumps(comment(text='...'))).status_code == 201
+                             data=json.dumps({'text': '...'})).status_code == 201
 
         for path in paths:
             assert self.get('/?' + urllib.urlencode({'uri': path})).status_code == 200
@@ -119,11 +127,26 @@ class TestComments(unittest.TestCase):
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
 
         mallory = Client(self.app, Response)
-        mallory.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Foo')))
+        mallory.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Foo'}))
         mallory.delete('/?uri=%2Fpath%2F&id=1')
 
         bob = Client(self.app, Response)
-        bob.post('/new?uri=%2Fpath%2F', data=Isso.dumps(comment(text='Bar')))
+        bob.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Bar'}))
 
         assert mallory.delete('/?uri=%2Fpath%2F&id=1').status_code == 403
         assert bob.delete('/?uri=%2Fpath%2F&id=1').status_code == 200
+
+    def testHash(self):
+
+        a = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Aaa"}))
+        b = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Bbb"}))
+        c = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Ccc", "email": "..."}))
+
+        assert a.status_code == b.status_code == c.status_code == 201
+        a = json.loads(a.data)
+        b = json.loads(b.data)
+        c = json.loads(c.data)
+
+        assert a['hash'] != '192.168.1.1'
+        assert a['hash'] == b['hash']
+        assert a['hash'] != c['hash']

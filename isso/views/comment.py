@@ -43,11 +43,11 @@ def create(app, environ, request, uri):
         return Response('URI does not exist', 400)
 
     try:
-        comment = models.Comment.fromjson(request.data)
+        comment = models.Comment.fromjson(request.data, ip=request.remote_addr)
     except ValueError as e:
         return Response(unicode(e), 400)
 
-    for attr in 'author', 'email', 'website':
+    for attr in 'author', 'website':
         if getattr(comment, attr) is not None:
             try:
                 setattr(comment, attr, cgi.escape(getattr(comment, attr)))

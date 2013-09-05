@@ -7,6 +7,9 @@ import json
 import time
 import hashlib
 
+aluhut = lambda ip: hashlib.sha1(ip + '\x082@t9*\x17\xad\xc1\x1c\xa5\x98').hexdigest()
+
+
 class Comment(object):
     """This class represents a regular comment. It needs at least a text
     field, all other fields are optional (or automatically set by the
@@ -22,13 +25,13 @@ class Comment(object):
     normal and queued using MODE=3.
     """
 
-    protected = ['path', 'id', 'mode', 'created', 'modified']
-    fields = ['text', 'author', 'email', 'website', 'parent']
+    protected = ['path', 'id', 'mode', 'created', 'modified', 'hash']
+    fields = ['text', 'author', 'website', 'parent']
 
     def __init__(self, **kw):
 
         for field in self.protected + self.fields:
-            self.__dict__[field] = kw.get(field)
+            setattr(self, field, kw.get(field))
 
     def iteritems(self, protected=True):
         for field in self.fields:
@@ -38,10 +41,15 @@ class Comment(object):
                 yield field, getattr(self, field)
 
     @classmethod
-    def fromjson(self, data):
+    def fromjson(self, data, ip='127.0.0.1'):
+
+        if '.' in ip:
+            ip = ip.rsplit('.', 1)[0] + '.0'
 
         data = json.loads(data)
-        comment = Comment(created=time.time())
+        comment = Comment(
+            created=time.time(),
+            hash=hashlib.md5(data.get('email', aluhut(ip))).hexdigest())
 
         for field in self.fields:
             if field == 'text' and field not in data:

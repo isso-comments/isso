@@ -88,7 +88,7 @@ class SQLite(Abstract):
             sql = ('main.comments (path VARCHAR(255) NOT NULL, id INTEGER NOT NULL,'
                    'created FLOAT NOT NULL, modified FLOAT, text VARCHAR,'
                    'author VARCHAR(64), email VARCHAR(64), website VARCHAR(64),'
-                   'parent INTEGER, mode INTEGER, PRIMARY KEY (id, path))')
+                   'parent INTEGER, mode INTEGER, hash CHAR(32), PRIMARY KEY (id, path))')
             con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
 
             # increment id if (id, path) is no longer unique
@@ -105,8 +105,8 @@ class SQLite(Abstract):
             return None
 
         return Comment(
-            text=query[4], author=query[5], email=query[6], website=query[7], parent=query[8],
-            path=query[0], id=query[1], created=query[2], modified=query[3], mode=query[9],
+            text=query[4], author=query[5], hash=query[6], website=query[7], parent=query[8],
+            path=query[0], id=query[1], created=query[2], modified=query[3], mode=query[9]
         )
 
     def add(self, path, c):
@@ -114,7 +114,7 @@ class SQLite(Abstract):
             keys = ','.join(self.fields)
             values = ','.join('?' * len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
-                path, 0, c.created, c.modified, c.text, c.author, c.email, c.website,
+                path, 0, c.created, c.modified, c.text, c.author, c.hash, c.website,
                 c.parent, self.mode)
             )
 
