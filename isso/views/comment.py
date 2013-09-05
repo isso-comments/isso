@@ -9,7 +9,7 @@ import urllib
 from itsdangerous import SignatureExpired, BadSignature
 
 from werkzeug.wrappers import Response
-from werkzeug.exceptions import abort
+from werkzeug.exceptions import abort, BadRequest
 
 from isso import models, utils
 
@@ -24,12 +24,12 @@ class requires:
         def dec(app, env, req, *args, **kwargs):
 
             if self.param not in req.args:
-                abort(400)
+                raise BadRequest("missing %s query" % self.param)
 
             try:
                 kwargs[self.param] = self.type(req.args[self.param])
             except TypeError:
-                abort(400)
+                raise BadRequest("invalid type for %s, expected %s" % (self.param, self.type))
 
             return func(app, env, req, *args, **kwargs)
 
@@ -45,6 +45,7 @@ def create(app, environ, request, uri):
     try:
         comment = models.Comment.fromjson(request.data)
     except ValueError as e:
+        print(1)
         return Response(unicode(e), 400)
 
     for attr in 'author', 'email', 'website':
@@ -52,11 +53,13 @@ def create(app, environ, request, uri):
             try:
                 setattr(comment, attr, cgi.escape(getattr(comment, attr)))
             except AttributeError:
+                print(1)
                 Response('', 400)
 
     try:
         rv = app.db.add(uri, comment)
     except ValueError:
+        print(1)
         abort(400)  # FIXME: custom exception class, error descr
 
     md5 = rv.md5

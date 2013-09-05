@@ -155,7 +155,8 @@ def main():
         sys.exit(0)
 
     app = SharedDataMiddleware(isso.wsgi_app, {
-        '/static': join(dirname(__file__), 'static/')
+        '/static': join(dirname(__file__), 'static/'),
+        '/client': join(dirname(__file__), 'client/')
         })
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),

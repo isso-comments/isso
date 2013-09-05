@@ -3,11 +3,9 @@
 
     <title>Hello World</title>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="/static/style.css" />
     <!-- script type="text/javascript" src="/js/embed.js"></script -->
-    <script type="text/javascript" src="/js/ender.js"></script>
-    <script type="text/javascript" src="/js/isso.js"></script>
-    <script type="text/javascript" src="/js/utils.js"></script>
-    <script type="text/javascript" src="/js/client.js"></script>
+    <script data-main="/client/embed" src="/client/require.js"></script>
     <style type="text/css">
         body {
           margin: 0 auto;
@@ -46,7 +44,7 @@
 
     <footer>
         <hr />
-        <div id="isso_thread"></div>
+        <div id="isso-thread"></div>
         <noscript>
             <p>Please enable JavaScript to view the comments powered by Isso™.</a></p>
         </noscript>

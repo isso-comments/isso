@@ -1,68 +1,133 @@
-#comments {
+#isso-comments {
     margin: 0;
     padding: 0;
 }
 
-.isso {
+.isso-comment {
     margin-bottom: 18px;
     margin-top: 18px;
 }
 
-.isso footer a, .isso header a {
+.isso-follow-up {
+    margin-left: 64px;
+}
+
+
+.isso-comment footer a, .isso-comment header a {
     color: #111111;
-    font-family: Palatino, "times new roman", serif;
     font-weight: bold;
     font-size: 0.95em;
     text-decoration: none;
 }
 
-.isso footer a:hover, .isso header a:hover {
+.isso-comment footer a:hover, .isso-comment header a:hover {
     color: #111111;
     text-shadow: #aaaaaa 0px 0px 1px;
 }
 
-.isso .author {
+.isso-comment > header, .isso-comment > footer {
+    font-family: "Helvetica", Arial, sans-serif;
+    font-size: 0.80em;
+}
+
+.isso-comment .author {
     font-weight: bold;
+    color: #555;
 }
 
-.isso time {
-    color: lightgray;
-    float: right;
+.isso-comment .spacer {
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
-.isso > header {
-    border-bottom: solid 1px lightgray;
+.isso-comment .spacer, .isso-comment .permalink {
+    color: gray;
+    font-weight: normal;
 }
 
-.isso > header .note {
+.isso-comment > header {
+    margin-bottom: 8px;
+    margin-left: 64px;
+}
+
+.isso-comment > header .note {
     float: right;
     color: gray;
 }
 
-.isso > footer > a {
+.isso-comment span.avatar {
+
+    position: relative;
+    margin-top: -22px;
+
+    /*margin: 16px 0px 12px 0px;*/
+    float: left;
+    clear: both;
+}
+
+img:-moz-broken {
+    -moz-force-broken-image-icon: 1;
+}
+
+/* comment style */
+
+.isso-comment > div.text {
+    margin-left: 64px;
+    min-height: 24px;
+
+    margin-bottom: 4px;
+
+    text-align: left;
+    font-family: Georgia, Times, serif;
+}
+
+/* .. */
+
+.isso-comment > footer {
+    margin-left: 64px;
+}
+
+.isso-comment > footer > a {
     padding: 0 10px 10px 0;
 }
 
-.isso + .issoform {
+/* comment form */
+
+.isso-comment + .isso-comment-box {
     margin-left: 20px;
 }
 
-.issoform input, .issoform textarea {
-    border: 4px solid rgba(0,0,0,0.1);
-    padding: 8px 10px;
+.isso-comment-box ul {
+    padding: 0;
+}
 
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+.isso-comment-box .optional {
+    margin-bottom: 6px;
+}
+
+.isso-comment-box li {
+    margin-right: 8px;
+    display: inline;
+}
+
+.isso-comment-box li input {
+    margin-left: 0;
+}
+
+.isso-comment-box input, .isso-comment-box textarea {
+    border: 1px solid rgba(0,0,0,0.25);
+    padding: 8px 10px;
+    border-radius: 3px;
 
     outline: 0;
 }
 
-.issoform textarea {
-    width: 350px;
+.isso-comment-box textarea {
+    width: 640px;
+    margin-bottom: 6px;
 }
 
-.issoform input[type="submit"] {
+.isso-comment-box input[type="submit"] {
     cursor: pointer;
     background: -webkit-linear-gradient(top, #efefef, #ddd);
     background: -moz-linear-gradient(top, #efefef, #ddd);
@@ -72,9 +137,10 @@
     color: #333;
     text-shadow: 0px 1px 1px rgba(255,255,255,1);
     border: 1px solid #ccc;
+    margin-left: 0px;
 }
 
-.issoform input[type="submit"]:hover {
+.isso-comment-box input[type="submit"]:hover {
     background: -webkit-linear-gradient(top, #eee, #ccc);
     background: -moz-linear-gradient(top, #eee, #ccc);
     background: -ms-linear-gradient(top, #eee, #ccc);
@@ -83,7 +149,7 @@
     border: 1px solid #bbb;
 }
 
-.issoform input[type="submit"]:active {
+.isso-comment-box input[type="submit"]:active {
     background: -webkit-linear-gradient(top, #ddd, #aaa);
     background: -moz-linear-gradient(top, #ddd, #aaa);
     background: -ms-linear-gradient(top, #ddd, #aaa);
@@ -92,6 +158,25 @@
     border: 1px solid #999;
 }
 
-.issoform div {
-    margin-bottom: 8px;
+input {
+    transition: background-color 0.1s ease;
+}
+
+input:focus:invalid {
+    box-shadow: inset 0px 0px 6px #8b0000;
+}
+
+textarea:focus:valid, input:focus:valid {
+    box-shadow: inset 0px 0px 6px #2f4f4f;
+}
+
+.isso-popup {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 0.8em;
+    padding: 6px 8px;
+    margin-left: 20px;
+    border: 1px solid rgb(242, 122, 122);
+    border-radius: 2px;
+    background-color: rgb(242, 222, 222);
+    z-index: 9002;
 }

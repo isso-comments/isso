@@ -1,41 +1,35 @@
 /* Isso – Ich schrei sonst!
  *
- * Copyright 2012, Martin Zimmermann <info@posativ.org>. All rights reserved.
+ * Copyright 2013, Martin Zimmermann <info@posativ.org>. All rights reserved.
  * License: BSD Style, 2 clauses. See isso/__init__.py.
- *
- *
- * Code requires Bean, Bonzo, Qwery, domReady (all are part of jeesh) and
- * reqwest. To ease integration with websites, all classes are prefixed
- * with `isso`.
  */
 
 // Uhm. Namespaces are one honking great idea, aren't they?
-var isso = isso || {},
-    prefix = "",
-    path = encodeURIComponent(window.location.pathname);
-
-// XXX
-isso.prefix = prefix;
-isso.path = path;
+var isso = {};
 
 
-/*
- * isso specific helpers to create, modify, remove and receive comments
- */
+var init = function() {
+    var isso = new Object();
 
-function verify(data) {
-    return data['text'] == null ? false : true
-};
+    // guess Isso API location
+    var js = document.getElementsByTagName("script");
+    for (var i = 0; i < js.length; i++) {
+        if (js[i].src.match("/client/require\\.js$")) {
+            isso.location = js[i].src.substring(0, 18);
+            break;
+        }
+    }
+
+    console.log(isso.location)
+}
 
 
 isso.create = function(data, func) {
 
-    if (!verify(data)) {
-        return;
-    }
+    var request = new XMLHttpRequest();
 
-    $.ajax('POST', prefix + '/1.0/' + isso.path + '/new',
-        JSON.stringify(data), {'Content-Type': 'application/json'}).then(func);
+//    $.ajax('POST', prefix + '/1.0/' + isso.path + '/new',
+//        JSON.stringify(data), {'Content-Type': 'application/json'}).then(func);
 };
 
 

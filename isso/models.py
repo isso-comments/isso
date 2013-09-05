@@ -62,5 +62,5 @@ class Comment(object):
     def md5(self):
         hv = hashlib.md5()
         for key in set(self.fields) - set(['parent', ]):
-            hv.update(getattr(self, key) or '')
+            hv.update(getattr(self, key).encode('utf-8', errors="replace") or u'')
         return hv.hexdigest()
