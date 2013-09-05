@@ -19,7 +19,7 @@ class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        self.app = Isso(self.path, '...', '...', 15*60)
+        self.app = Isso(self.path, '...', '...', 15*60, "...")
 
         self.client = Client(self.app, Response)
         self.get = lambda *x, **z: self.client.get(*x, **z)

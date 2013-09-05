@@ -46,7 +46,7 @@ class Comment(object):
         for field in self.fields:
             if field == 'text' and field not in data:
                 raise ValueError('Comment needs at least text, but no text was provided.')
-            comment.__dict__[field] = data.get(field)
+            setattr(comment, field, data.get(field))
 
         return comment
 
@@ -62,5 +62,5 @@ class Comment(object):
     def md5(self):
         hv = hashlib.md5()
         for key in set(self.fields) - set(['parent', ]):
-            hv.update(getattr(self, key).encode('utf-8', errors="replace") or u'')
+            hv.update((getattr(self, key) or u"").encode('utf-8', errors="replace"))
         return hv.hexdigest()
