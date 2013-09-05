@@ -1,56 +1,60 @@
 Isso – Ich schrei sonst
 =======================
 
-You love static blog generators (especially Acrylamid__ *cough*) and the
-only option to interact with the community is Disqus__. There's nothing
+You love static blog generators (especially [Acrylamid][1] *cough*) and the
+only option to interact with the community is [Disqus][2]. There's nothing
 wrong with it, but if you care about the privacy of your audience you are
 better off with a comment system that is under your control. This is, were
 Isso comes into play.
 
-.. __: https://github.com/posativ/acrylamid
-.. __: http://disqus.com/
+[1]: https://github.com/posativ/acrylamid
+[2]: http://disqus.com/
 
 
 Features
 --------
 
-...
+* [CRUD][https://en.wikipedia.org/wiki/Create,_read,_update_and_delete] comments
+* SQLite
+* quite nice, but unfinished client-side JS
 
 
 Roadmap
 -------
 
-- lightweight SQLite backend
-- create comments and modify/delete within a time range as user
 - Ping/TrackBack™ support
 - simple admin interface
-- easy integration snippet, similar to Disqus
-- spam filtering using `http:bl`__
+- spam filtering using [http:bl][3]
 
-.. __: https://www.projecthoneypot.org/
+[3]: https://www.projecthoneypot.org/
 
 
 Installation
 ------------
 
-Still a TODO, but later it's simply `easy_install isso`.
+Probably `git clone https://github.com/posativ/isso.git`, `python setup.py develop`
+inside a virtualenv. Then start `isso` with
+
+    ~> isso run
+
+You can now leave a comment at <http://localhost:8080/static/post.html> hopefully.
+The admin interface password is `p@$$w0rd`, you may change this with a custom cfg
+file that I'll document later. You find the admin interface at <http://localhost:8080/admin/>.
 
 
 Migration from Disqus
 ---------------------
 
-Go to `disqus.com <https://disqus.com/>`_ and export your "forum" as XML. If you
-use Firefox and you get a 403, try a WebKit browser, Disqus did something very
-weird with that download link. Next::
+Go to [Disqus.com](https://disqus.com/) and export your "forum" as XML.
 
-    $ isso import /path/to/ur/dump.xml
+    ~> isso import /path/to/ur/dump.xml
 
-That's it. Visit your admin page to see all threads. If it doesn't work for
+That's it. <del>Visit your admin page to see all threads.</del> If it doesn't work for
 you, please file in a bug report \*including\* your dump.
 
 
-API
----
+API (a draft)
+-------------
 
 To fetch all comments for `http://example.tld/foo-bar/`, run
 
@@ -63,8 +67,6 @@ key-value pairs. Text is mandatory otherwise you'll get a 400 Bad Request.
 You'll also get a 400 when your JSON is invalid.
 
 Let's say you want to comment on /foo-bar/
-
-::
 
     $ curl http://example.tld/isso/new?uri=%2Ffoo-bar%2F -X POST -d \
         '{
