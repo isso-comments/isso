@@ -55,7 +55,7 @@ def create(app, environ, request, uri):
                 Response('', 400)
 
     try:
-        rv = app.db.add(uri, comment)
+        rv = app.db.add(uri, comment, request.remote_addr)
     except ValueError:
         abort(400)  # FIXME: custom exception class, error descr
 
@@ -118,6 +118,14 @@ def modify(app, environ, request, uri, id):
         resp = Response(app.dumps(rv), 200, content_type='application/json')
         resp.delete_cookie(uri + '-' + str(id), path='/')
         return resp
+
+
+@requires(str, 'uri')
+@requires(int, 'id')
+def like(app, environ, request, uri, id):
+
+    nv = app.db.like(uri, id, request.remote_addr)
+    return Response(str(nv), 200)
 
 
 def approve(app, environ, request, path, id):

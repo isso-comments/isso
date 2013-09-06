@@ -7,6 +7,7 @@ import abc
 import time
 import sqlite3
 
+from isso.utils import Bloomfilter
 from isso.models import Comment
 
 
@@ -65,8 +66,12 @@ class Abstract:
         """
         return
 
-
-
+    @abc.abstractmethod
+    def like(self, path, id, remote_addr):
+        """+1 a given comment. Returns the new like count (may not change because
+        the creater can't vote on his/her own comment and multiple votes from the
+        same ip address are ignored as well)."""
+        return
 
 class SQLite(Abstract):
     """A basic :class:`Abstract` implementation using SQLite3.  All comments
@@ -76,7 +81,7 @@ class SQLite(Abstract):
 
     fields = [
         'path', 'id', 'created', 'modified',
-        'text', 'author', 'hash', 'website', 'parent', 'mode'
+        'text', 'author', 'hash', 'website', 'parent', 'mode', 'voters'
     ]
 
     def __init__(self, dbpath, moderation):
@@ -89,6 +94,7 @@ class SQLite(Abstract):
                    'created FLOAT NOT NULL, modified FLOAT, text VARCHAR,'
                    'author VARCHAR(64), hash VARCHAR(32), website VARCHAR(64),'
                    'parent INTEGER, mode INTEGER,'
+                   'likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL,'
                    'PRIMARY KEY (id, path))')
             con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
 
@@ -101,22 +107,29 @@ class SQLite(Abstract):
                     WHERE rowid=NEW.rowid;
                 END;""")
 
+            # threads (path -> title for now)
+            sql = ('main.threads (path VARCHAR(255) NOT NULL, title TEXT'
+                   'PRIMARY KEY path)')
+            con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
+
     def query2comment(self, query):
         if query is None:
             return None
 
         return Comment(
             text=query[4], author=query[5], hash=query[6], website=query[7], parent=query[8],
-            path=query[0], id=query[1], created=query[2], modified=query[3], mode=query[9]
+            path=query[0], id=query[1], created=query[2], modified=query[3], mode=query[9],
+            votes=query[10]
         )
 
-    def add(self, path, c):
+    def add(self, path, c, remote_addr):
+        voters = buffer(Bloomfilter(iterable=[remote_addr]).array)
         with sqlite3.connect(self.dbpath) as con:
             keys = ','.join(self.fields)
             values = ','.join('?' * len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
                 path, 0, c.created, c.modified, c.text, c.author, c.hash, c.website,
-                c.parent, self.mode)
+                c.parent, self.mode, voters)
             )
 
         with sqlite3.connect(self.dbpath) as con:
@@ -159,6 +172,27 @@ class SQLite(Abstract):
                     (None, path, id))
         return self.get(path, id)
 
+    def like(self, path, id, remote_addr):
+        with sqlite3.connect(self.dbpath) as con:
+            rv = con.execute("SELECT likes, dislikes, voters FROM comments" \
+               + " WHERE path=? AND id=?", (path, id)).fetchone()
+
+        likes, dislikes, voters = rv
+        if likes + dislikes >= 142:
+            return likes
+
+        bf = Bloomfilter(bytearray(voters), likes + dislikes)
+        if remote_addr in bf:
+            return likes
+
+        bf.add(remote_addr)
+        with sqlite3.connect(self.dbpath) as con:
+            con.execute("UPDATE comments SET likes = likes + 1 WHERE path=? AND id=?", (path, id))
+            con.execute("UPDATE comments SET voters = ? WHERE path=? AND id=?", (
+                buffer(bf.array), path, id))
+
+        return likes + 1
+
     def retrieve(self, path, mode=5):
         with sqlite3.connect(self.dbpath) as con:
             rv = con.execute("SELECT * FROM comments WHERE path=? AND (? | mode) = ?" \
@@ -181,3 +215,4 @@ class SQLite(Abstract):
 
         for item in rv:
             yield self.query2comment(item)
+

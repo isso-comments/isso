@@ -55,6 +55,7 @@ url_map = Map([
     Rule('/', methods=['HEAD', 'GET'], endpoint=views.comment.get),
     Rule('/', methods=['PUT', 'DELETE'], endpoint=views.comment.modify),
     Rule('/new', methods=['POST'], endpoint=views.comment.create),
+    Rule('/like', methods=['POST'], endpoint=views.comment.like),
 
     Rule('/admin/', endpoint=views.admin.index)
 ])

@@ -25,7 +25,7 @@ class Comment(object):
     normal and queued using MODE=3.
     """
 
-    protected = ['path', 'id', 'mode', 'created', 'modified', 'hash']
+    protected = ['path', 'id', 'mode', 'created', 'modified', 'hash', 'votes']
     fields = ['text', 'author', 'website', 'parent']
 
     def __init__(self, **kw):
