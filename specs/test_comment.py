@@ -1,4 +1,5 @@
 
+import os
 import json
 import urllib
 import tempfile
@@ -34,6 +35,9 @@ class TestComments(unittest.TestCase):
         self.put = self.client.put
         self.post = self.client.post
         self.delete = self.client.delete
+
+    def tearDown(self):
+        os.unlink(self.path)
 
     def testGet(self):
 

@@ -76,7 +76,7 @@ class SQLite(Abstract):
 
     fields = [
         'path', 'id', 'created', 'modified',
-        'text', 'author', 'email', 'website', 'parent', 'mode'
+        'text', 'author', 'hash', 'website', 'parent', 'mode'
     ]
 
     def __init__(self, dbpath, moderation):
@@ -87,8 +87,9 @@ class SQLite(Abstract):
         with sqlite3.connect(self.dbpath) as con:
             sql = ('main.comments (path VARCHAR(255) NOT NULL, id INTEGER NOT NULL,'
                    'created FLOAT NOT NULL, modified FLOAT, text VARCHAR,'
-                   'author VARCHAR(64), email VARCHAR(64), website VARCHAR(64),'
-                   'parent INTEGER, mode INTEGER, hash CHAR(32), PRIMARY KEY (id, path))')
+                   'author VARCHAR(64), hash VARCHAR(32), website VARCHAR(64),'
+                   'parent INTEGER, mode INTEGER,'
+                   'PRIMARY KEY (id, path))')
             con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
 
             # increment id if (id, path) is no longer unique
