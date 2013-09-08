@@ -12,7 +12,7 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
         email: "info@example.org", website: "..."
     };
 
-    var insert = function(comment) {
+    var insert = function(comment, scrollIntoView) {
         /*
          * insert a comment (JSON/object) into the #isso-thread or below a parent (#isso-N), renders some HTML and
          * registers events to reply to, edit and remove a comment.
@@ -62,6 +62,10 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
 
         node.footer.add("a.liek{Liek}").href = "#";
         node.footer.add("a.reply{Antworten}").href = "#";
+
+        if (scrollIntoView) {
+            node.scrollIntoView(false);
+        }
 
         if (utils.read(window.location.pathname + "-" + comment.id)) {
             node.footer.add("a.delete{Löschen}").href = "#";
@@ -131,10 +135,11 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
             }
 
             var msgbox = forms.msgbox({})
-            HTML.query("#isso-" + comment.id).footer.appendChild(msgbox)
+            HTML.query("#isso-" + comment.id).footer.appendChild(msgbox);
             HTML.query("#isso-" + comment.id).classList.add("isso-active-msgbox");
             HTML.query("#isso-" + comment.id + " a.reply").textContent = "Schließen";
 
+            msgbox.scrollIntoView(false);
             msgbox.query("input[type=submit]").addEventListener("click", function(event) {
                 forms.validate(msgbox) && api.create({
                     author: msgbox.query("[name=author]").value,
@@ -147,7 +152,7 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
                     msgbox.parentNode.parentNode.classList.remove("isso-active-msgbox");
                     msgbox.parentNode.parentNode.query("a.reply").textContent = "Antworten"
                     msgbox.remove()
-                    insert(rv);
+                    insert(rv, true);
                 })
                 event.preventDefault()
             });
