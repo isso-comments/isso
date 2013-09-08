@@ -12,6 +12,7 @@ from __future__ import division
 
 import sys
 import os
+import hashlib
 
 from time import mktime, strptime
 from urlparse import urlparse
@@ -35,10 +36,11 @@ def insert(db, thread, comments):
 
         parent = remap.get(item.get('dsq:parent'))
         comment = Comment(created=item['created'], text=item['text'],
-                          author=item['author'], email=item['email'], parent=parent)
+                          author=item['author'], parent=parent,
+                          hash=hashlib.md5(item["email"] or '').hexdigest())
 
-        rv = db.add(path, comment)
-        remap[item['dsq:id']] = rv.id
+        rv = db.add(path, comment, '127.0.0.1')
+        remap[item['dsq:id']] = rv["id"]
 
 
 def disqus(db, xmlfile):
