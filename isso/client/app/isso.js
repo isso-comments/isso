@@ -73,7 +73,11 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
             delbtn.addEventListener("click", function(event) {
                 if (delbtn.textContent == "Bestätigen") {
                     api.remove(comment.id).then(function(rv) {
-                        console.log(rv);
+                        if (rv) {
+                            node.remove();
+                        } else {
+                            // XXX recursively remove deleted comments
+                        }
                     })
                 } else {
                     delbtn.textContent = "Bestätigen"
@@ -83,20 +87,6 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
             })
         }
 
-//        if (read(path + '-' + post['id'])) {
-//            $('#isso_' + post['id'] + '> footer > a:first-child')
-//                .after(brew(['a', {'class': 'delete', 'href': '#'}, 'Löschen']))
-//                .after(brew(['a', {'class': 'edit', 'href': '#'}, 'Bearbeiten']));
-//
-//            // DELETE
-//            $('#isso_' + post['id'] + ' > footer .delete').on('click', function(event) {
-//                isso.remove(post['id'], function(status, rv) {
-//                    // XXX comment might not actually deleted
-//                    $('#isso_' + post['id']).remove();
-//                });
-//                event.stop();
-//            });
-//
 //            // EDIT
 //            $('#isso_' + post['id'] + ' > footer .edit').on('click', function(event) {
 //

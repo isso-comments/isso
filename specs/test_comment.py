@@ -117,6 +117,39 @@ class TestComments(unittest.TestCase):
         assert self.get('/?uri=%2Fpath%2F&id=1').status_code == 200
         assert self.get('/?uri=%2Fpath%2F&id=2').status_code == 200
 
+        r = client.delete('/?uri=%2Fpath%2F&id=2')
+        assert self.get('/?uri=%2Fpath%2F').status_code == 404
+
+    def testDeleteWithMultipleReferences(self):
+        """
+        [ comment 1 ]
+            |
+            --- [ comment 2, ref 1 ]
+                    |
+                    --- [ comment 3, ref 2 ]
+                    |
+                    --- [ comment 4, ref 2 ]
+        [ comment 5 ]
+        """
+        client = Client(self.app, Response)
+
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Second', 'parent': 1}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third 1', 'parent': 2}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third 2', 'parent': 2}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': '...'}))
+
+        client.delete('/?uri=%2Fpath%2F&id=1')
+        assert self.get('/?uri=%2Fpath%2F').status_code == 200
+        client.delete('/?uri=%2Fpath%2F&id=2')
+        assert self.get('/?uri=%2Fpath%2F').status_code == 200
+        client.delete('/?uri=%2Fpath%2F&id=3')
+        assert self.get('/?uri=%2Fpath%2F').status_code == 200
+        client.delete('/?uri=%2Fpath%2F&id=4')
+        assert self.get('/?uri=%2Fpath%2F').status_code == 200
+        client.delete('/?uri=%2Fpath%2F&id=5')
+        assert self.get('/?uri=%2Fpath%2F').status_code == 404
+
     def testPathVariations(self):
 
         paths = ['/sub/path/', '/path.html', '/sub/path.html', 'path', '/']

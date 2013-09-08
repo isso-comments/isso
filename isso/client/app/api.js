@@ -81,7 +81,7 @@ define(["lib/q", "app/models"], function(Q, models) {
         return curl("DELETE", endpoint + "/?" + qs({uri: location, id: id}), null)
         .then(function(rv) {
             if (rv.status == 200) {
-                return rv;
+                return JSON.parse(rv.body) == null;
             } else {
                     throw {status: rv.status, reason: rv.body}
             }

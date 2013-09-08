@@ -157,19 +157,39 @@ class SQLite(Abstract):
             return self.query2comment(con.execute(
                 'SELECT * FROM comments WHERE path=? AND id=?;', (path, id)).fetchone())
 
+    def _remove_stale(self, con, path):
+
+        sql = ('DELETE FROM',
+               '    comments',
+               'WHERE',
+               '    path=? AND mode=4 AND id NOT IN (',
+               '        SELECT',
+               '            parent',
+               '        FROM',
+               '            comments',
+               '        WHERE path=? AND parent IS NOT NULL)')
+
+        while con.execute(' '.join(sql), (path, path)).rowcount:
+            continue
+
     def delete(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
-            refs = con.execute('SELECT * FROM comments WHERE path=? AND parent=?', (path, id)).fetchone()
+            sql = 'SELECT * FROM comments WHERE path=? AND parent=?'
+            refs = con.execute(sql, (path, id)).fetchone()
 
             if refs is None:
                 con.execute('DELETE FROM comments WHERE path=? AND id=?', (path, id))
+                self._remove_stale(con, path)
                 return None
 
             con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
             con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (4, path, id))
-            for field in ('text', 'author', 'website'):
+            for field in ('author', 'website'):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,
                     (None, path, id))
+
+            self._remove_stale(con, path)
+
         return self.get(path, id)
 
     def like(self, path, id, remote_addr):
