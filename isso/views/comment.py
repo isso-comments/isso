@@ -4,7 +4,10 @@
 # License: BSD Style, 2 clauses. see isso/__init__.py
 
 import cgi
-import urllib
+import json
+import hashlib
+import sqlite3
+import logging
 
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -43,28 +46,40 @@ def create(app, environ, request, uri):
         return Response('URI does not exist', 400)
 
     try:
-        comment = models.Comment.fromjson(request.data, ip=request.remote_addr)
-    except ValueError as e:
-        return Response(unicode(e), 400)
+        data = json.loads(request.data)
+    except ValueError:
+        return Response("No JSON object could be decoded", 400)
 
-    for attr in 'author', 'website':
-        if getattr(comment, attr) is not None:
-            try:
-                setattr(comment, attr, cgi.escape(getattr(comment, attr)))
-            except AttributeError:
-                Response('', 400)
+    if not data.get("text"):
+        return Response("No text given.", 400)
+
+    if "id" in data and not isinstance(data["id"], int):
+        return Response("Parent ID must be an integer.")
+
+    if "email" in data:
+        hash = data["email"]
+    else:
+        hash = utils.salt(utils.anonymize(request.remote_addr))
+
+    comment = models.Comment(
+        text=data["text"], parent=data.get("parent"),
+
+        author=data.get("author") and cgi.escape(data.get("author")),
+        website=data.get("website") and cgi.escape(data.get("website")),
+
+        hash=hashlib.md5(hash).hexdigest())
 
     try:
-        rv = app.db.add(uri, comment, request.remote_addr)
-    except ValueError:
-        abort(400)  # FIXME: custom exception class, error descr
+        rv = app.db.add(uri, comment, utils.anonymize(request.remote_addr))
+    except sqlite3.Error:
+        logging.exception('uncaught SQLite3 exception')
+        abort(400)
 
-    md5 = rv.md5
-    rv.text = app.markdown(rv.text)
+    rv["text"] = app.markdown(rv["text"])
 
     resp = Response(app.dumps(rv), 202 if rv.pending else 201,
         content_type='application/json')
-    resp.set_cookie('%s-%s' % (uri, rv.id), app.sign([uri, rv.id, md5]),
+    resp.set_cookie('%s-%s' % (uri, rv["id"]), app.sign([uri, rv["id"], rv.md5]),
        max_age=app.MAX_AGE, path='/')
     return resp
 
@@ -94,7 +109,7 @@ def modify(app, environ, request, uri, id):
 
     try:
         rv = app.unsign(request.cookies.get('%s-%s' % (uri, id), ''))
-    except (SignatureExpired, BadSignature) as e:
+    except (SignatureExpired, BadSignature):
         try:
             rv = app.unsign(request.cookies.get('admin', ''))
         except (SignatureExpired, BadSignature):
@@ -106,11 +121,25 @@ def modify(app, environ, request, uri, id):
 
     if request.method == 'PUT':
         try:
-            rv = app.db.update(uri, id, models.Comment.fromjson(request.data))
-            rv.text = app.markdown(rv.text)
-            return Response(app.dumps(rv), 200, content_type='application/json')
-        except ValueError as e:
-            return Response(unicode(e), 400) # FIXME: custom exception and error descr
+            data = json.loads(request.data)
+        except ValueError:
+            return Response("No JSON object could be decoded", 400)
+
+        if not data.get("text"):
+            return Response("No text given.", 400)
+
+        for key in data.keys():
+            if key not in ("text", "author", "website"):
+                data.pop(key)
+
+        try:
+            rv = app.db.update(uri, id, data)
+        except sqlite3.Error:
+            logging.exception('uncaught SQLite3 exception')
+            abort(400)
+
+        rv["text"] = app.markdown(rv["text"])
+        return Response(app.dumps(rv), 200, content_type='application/json')
 
     if request.method == 'DELETE':
         rv = app.db.delete(uri, id)

@@ -3,11 +3,9 @@
 # Copyright 2012, Martin Zimmermann <info@posativ.org>. All rights reserved.
 # License: BSD Style, 2 clauses. see isso/__init__.py
 
-import json
-import time
-import hashlib
+from __future__ import unicode_literals
 
-aluhut = lambda ip: hashlib.sha1(ip + '\x082@t9*\x17\xad\xc1\x1c\xa5\x98').hexdigest()
+import hashlib
 
 
 class Comment(object):
@@ -25,50 +23,41 @@ class Comment(object):
     normal and queued using MODE=3.
     """
 
-    protected = ['path', 'id', 'mode', 'created', 'modified', 'hash', 'votes']
-    fields = ['text', 'author', 'website', 'parent']
+    fields = ["text", "author", "website", "votes", "hash", "parent", "mode", "id",
+              "created", "modified"]
 
-    def __init__(self, **kw):
+    def __init__(self, **kwargs):
 
-        for field in self.protected + self.fields:
-            setattr(self, field, kw.get(field))
+        self.values = {}
 
-    def iteritems(self, protected=True):
-        for field in self.fields:
-            yield field, getattr(self, field)
-        if protected:
-            for field in self.protected:
-                yield field, getattr(self, field)
+        for key in Comment.fields:
+            self.values[key] = kwargs.get(key, None)
 
-    @classmethod
-    def fromjson(self, data, ip='127.0.0.1'):
+    def __getitem__(self, key):
+        return self.values[key]
 
-        if '.' in ip:
-            ip = ip.rsplit('.', 1)[0] + '.0'
+    def __setitem__(self, key, value):
+        self.values[key] = value
 
-        data = json.loads(data)
-        comment = Comment(
-            created=time.time(),
-            hash=hashlib.md5(data.get('email', aluhut(ip))).hexdigest())
-
-        for field in self.fields:
-            if field == 'text' and field not in data:
-                raise ValueError('Comment needs at least text, but no text was provided.')
-            setattr(comment, field, data.get(field))
-
-        return comment
+    def iteritems(self):
+        for key in Comment.fields:
+            yield key, self.values[key]
 
     @property
     def pending(self):
-        return self.mode == 2
+        return self.values["mode"] == 2
 
     @property
     def deleted(self):
-        return self.mode == 4
+        return self.values["mode"] == 4
 
     @property
     def md5(self):
         hv = hashlib.md5()
-        for key in set(self.fields) - set(['parent', ]):
-            hv.update((getattr(self, key) or u"").encode('utf-8', errors="replace"))
+
+        for key, value in self.iteritems():
+            if key == "parent" or value is None:
+                continue
+            hv.update(unicode(self.values.get(key, "")).encode("utf-8", "replace")) # XXX
+
         return hv.hexdigest()

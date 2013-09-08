@@ -1,4 +1,6 @@
 
+from __future__ import unicode_literals
+
 import os
 import json
 import urllib
@@ -57,11 +59,10 @@ class TestComments(unittest.TestCase):
         assert rv.status_code == 201
         assert len(filter(lambda header: header[0] == 'Set-Cookie', rv.headers)) == 1
 
-        c = Comment.fromjson(rv.data)
+        rv = json.loads(rv.data)
 
-        assert not c.pending
-        assert not c.deleted
-        assert c.text == '<p>Lorem ipsum ...</p>\n'
+        assert rv["mode"] == 1
+        assert rv["text"] == '<p>Lorem ipsum ...</p>\n'
 
     def testCreateAndGetMultiple(self):
 
@@ -154,3 +155,16 @@ class TestComments(unittest.TestCase):
         assert a['hash'] != '192.168.1.1'
         assert a['hash'] == b['hash']
         assert a['hash'] != c['hash']
+
+    def testVisibleFields(self):
+
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
+        assert rv.status_code == 201
+
+        rv = json.loads(rv.data)
+
+        for key in Comment.fields:
+            rv.pop(key)
+
+        assert rv.keys() == []
+

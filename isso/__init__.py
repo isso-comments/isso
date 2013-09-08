@@ -29,8 +29,6 @@ import sys
 import io
 import os
 import json
-import locale
-import traceback
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -48,7 +46,7 @@ from werkzeug.serving import run_simple
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, utils, migrate
+from isso import db, utils, migrate, views
 from isso.views import comment, admin
 
 url_map = Map([

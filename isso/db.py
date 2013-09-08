@@ -122,29 +122,29 @@ class SQLite(Abstract):
             votes=query[10]
         )
 
-    def add(self, path, c, remote_addr):
+    def add(self, uri, c, remote_addr):
         voters = buffer(Bloomfilter(iterable=[remote_addr]).array)
         with sqlite3.connect(self.dbpath) as con:
             keys = ','.join(self.fields)
             values = ','.join('?' * len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
-                path, 0, c.created, c.modified, c.text, c.author, c.hash, c.website,
-                c.parent, self.mode, voters)
+                uri, 0, time.time(), None, c["text"], c["author"], c["hash"], c["website"],
+                c["parent"], self.mode, voters)
             )
 
         with sqlite3.connect(self.dbpath) as con:
             return self.query2comment(
-                con.execute('SELECT *, MAX(id) FROM comments WHERE path=?;', (path, )).fetchone())
+                con.execute('SELECT *, MAX(id) FROM comments WHERE path=?;', (uri, )).fetchone())
 
     def activate(self, path, id):
         with sqlite3.connect(self.dbpath) as con:
             con.execute("UPDATE comments SET mode=1 WHERE path=? AND id=? AND mode=2", (path, id))
         return self.get(path, id)
 
-    def update(self, path, id, comment):
+    def update(self, path, id, values):
         with sqlite3.connect(self.dbpath) as con:
-            for field, value in comment.iteritems(False):
-                con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?;' % field,
+            for key, value in values.iteritems():
+                con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?;' % key,
                     (value, path, id))
 
         with sqlite3.connect(self.dbpath) as con:
@@ -167,7 +167,7 @@ class SQLite(Abstract):
 
             con.execute('UPDATE comments SET text=? WHERE path=? AND id=?', ('', path, id))
             con.execute('UPDATE comments SET mode=? WHERE path=? AND id=?', (4, path, id))
-            for field in set(Comment.fields) - set(['text', 'parent']):
+            for field in ('text', 'author', 'website'):
                 con.execute('UPDATE comments SET %s=? WHERE path=? AND id=?' % field,
                     (None, path, id))
         return self.get(path, id)

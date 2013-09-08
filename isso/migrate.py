@@ -13,7 +13,7 @@ from __future__ import division
 import sys
 import os
 
-from time import mktime, strptime, sleep
+from time import mktime, strptime
 from urlparse import urlparse
 from collections import defaultdict
 

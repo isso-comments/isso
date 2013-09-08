@@ -9,8 +9,8 @@ import json
 
 import socket
 import httplib
+import ipaddress
 
-import math
 import random
 import hashlib
 import contextlib
@@ -46,6 +46,17 @@ def normalize(host):
         host = 'http://' + host
     rv = urlparse(host)
     return (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
+
+
+def anonymize(remote_addr):
+    ip = ipaddress.ip_address(remote_addr)
+    if ip.version == "4":
+        return ''.join(ip.exploded.rsplit('.', 1)[0]) + '.' + '0'
+    return ip.exploded.rsplit(':', 4)[0]
+
+
+def salt(value, s=u'\x082@t9*\x17\xad\xc1\x1c\xa5\x98'):
+    return hashlib.sha1((value + s).encode('utf-8')).hexdigest()
 
 
 def mksecret(length):
