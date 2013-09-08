@@ -169,8 +169,6 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
 
         console.log(utils.heading());
 
-//        return;
-
         var rootmsgbox = forms.msgbox({});
         HTML.query("#isso-thread").add("div#isso-root").add(rootmsgbox);
         rootmsgbox.query("input[type=submit]").addEventListener("click", function(event) {
@@ -181,8 +179,10 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
                 text: rootmsgbox.query("textarea").value,
                 parent: null })
             .then(function(rv) {
-                // remove box on submit
-                rootmsgbox.remove()
+                rootmsgbox.query("[name=author]").value = "";
+                rootmsgbox.query("[name=email]").value = "";
+                rootmsgbox.query("[name=website]").value = "";
+                rootmsgbox.query("textarea").value = "";
                 insert(rv);
             })
             event.preventDefault()
