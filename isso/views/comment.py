@@ -59,7 +59,7 @@ def create(app, environ, request, uri):
     if "email" in data:
         hash = data["email"]
     else:
-        hash = utils.salt(utils.anonymize(request.remote_addr))
+        hash = utils.salt(utils.anonymize(unicode(request.remote_addr)))
 
     comment = models.Comment(
         text=data["text"], parent=data.get("parent"),
@@ -70,7 +70,7 @@ def create(app, environ, request, uri):
         hash=hashlib.md5(hash).hexdigest())
 
     try:
-        rv = app.db.add(uri, comment, utils.anonymize(request.remote_addr))
+        rv = app.db.add(uri, comment, utils.anonymize(unicode(request.remote_addr)))
     except sqlite3.Error:
         logging.exception('uncaught SQLite3 exception')
         abort(400)
