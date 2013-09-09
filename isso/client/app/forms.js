@@ -1,4 +1,4 @@
-define(["lib/HTML", "./logging"], function(HTML, logging) {
+define(["lib/HTML", "helper/utils"], function(HTML, utils) {
 
     var msgbox = function(defaults) {
 

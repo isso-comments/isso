@@ -8,7 +8,7 @@
     margin-top: 18px;
 }
 
-.isso-follow-up {
+#isso-root > .isso-comment > .isso-follow-up {
     margin-left: 64px;
 }
 
@@ -63,6 +63,10 @@
     /*margin: 16px 0px 12px 0px;*/
     float: left;
     clear: both;
+}
+
+span.avatar > canvas {
+    box-shadow: 0px 0px 2px #888;
 }
 
 img:-moz-broken {

@@ -5,7 +5,7 @@
  */
 
 
-define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], function(Q, HTML, utils, api, forms, logging) {
+define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging", "helper/identicons"], function(Q, HTML, utils, api, forms, logging, identicons) {
 
     var defaults = {
         text: "Lorem ipsum ...", author: "Anonymous",
@@ -55,7 +55,9 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
             setTimeout(refresh, 60*1000)
         };  refresh();
 
-        node.query("span.avatar").add("img[width=48 height=48]");
+        var canvas = node.query("span.avatar").add("canvas[hash=" + comment.hash + "]");
+        canvas.width = canvas.height = 48;
+        identicons.generate(canvas.getContext('2d'), comment.hash);
 
         if (comment.mode == 4) {
             node.query(".text").add("p").value = "&nbsp;"
@@ -167,7 +169,7 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
 
     var init = function() {
 
-        console.log(utils.heading());
+        // console.log(utils.heading());
 
         var rootmsgbox = forms.msgbox({});
         HTML.query("#isso-thread").add("div#isso-root").add(rootmsgbox);
@@ -193,7 +195,6 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
             for (var i in comments) {
                 insert(comments[i])
             }})
-        .fail(logging.error)
     }
 
     return {
