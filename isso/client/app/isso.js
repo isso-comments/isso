@@ -165,6 +165,7 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
     var init = function() {
 
         var rootmsgbox = forms.msgbox({});
+        var h4 = HTML.query("#isso-thread").add("h4")
         HTML.query("#isso-thread").add("div#isso-root").add(rootmsgbox);
         rootmsgbox.query("input[type=submit]").addEventListener("click", function(event) {
             forms.validate(rootmsgbox) && api.create({
@@ -183,11 +184,14 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
             event.preventDefault()
         });
 
-        api.fetchall()
-        .then(function(comments) {
+        api.fetchall().then(function(comments) {
+            h4.textContent = comments.length + " Kommentare zu \"" + utils.heading() + "\"";
             for (var i in comments) {
                 insert(comments[i])
-            }})
+            }
+        }).fail(function(rv) {
+                h4.textContent = "Kommentiere \"" + utils.heading() + "\"";
+        })
     }
 
     return {

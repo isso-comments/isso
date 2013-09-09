@@ -8,10 +8,16 @@
     margin-top: 18px;
 }
 
+#isso-thread > h4 {
+    color: #555;
+    font-weight: bold;
+    font-family: "Helvetica", Arial, sans-serif;
+    margin: 0;
+}
+
 #isso-root > .isso-comment > .isso-follow-up {
     margin-left: 64px;
 }
-
 
 .isso-comment footer a, .isso-comment header a {
     color: #111111;
