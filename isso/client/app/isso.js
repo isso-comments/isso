@@ -139,7 +139,7 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
             HTML.query("#isso-" + comment.id).classList.add("isso-active-msgbox");
             HTML.query("#isso-" + comment.id + " a.reply").textContent = "Schließen";
 
-            msgbox.scrollIntoView(false);
+            // msgbox.scrollIntoView(false);
             msgbox.query("input[type=submit]").addEventListener("click", function(event) {
                 forms.validate(msgbox) && api.create({
                     author: msgbox.query("[name=author]").value,

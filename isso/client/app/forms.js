@@ -15,8 +15,8 @@ define(["lib/HTML", "./logging"], function(HTML, logging) {
         textarea.value = defaults.text || "";
         textarea.placeholder = "Kommentar hier eintippen (andere Felder sind optional)"
         textarea.onfocus = function() {
-            textarea.rows = 10
-            form.scrollIntoView(false);
+            textarea.rows = 10;
+            // scrollIntoView enhancement
         };
         textarea.onblur = function() { setTimeout(function() {
             if (textarea.value == "" && document.activeElement != textarea) {
