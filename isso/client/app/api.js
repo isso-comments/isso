@@ -3,7 +3,7 @@
  * License: BSD Style, 2 clauses. See isso/__init__.py.
  */
 
-define(["lib/q", "app/models"], function(Q, models) {
+define(["lib/q"], function(Q) {
 
     // http://stackoverflow.com/questions/17544965/unhandled-rejection-reasons-should-be-empty
     Q.stopUnhandledRejectionTracking();

@@ -5,12 +5,7 @@
  */
 
 
-define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging", "helper/identicons"], function(Q, HTML, utils, api, forms, logging, identicons) {
-
-    var defaults = {
-        text: "Lorem ipsum ...", author: "Anonymous",
-        email: "info@example.org", website: "..."
-    };
+define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./forms"], function(Q, HTML, utils, identicons, api, forms) {
 
     var insert = function(comment, scrollIntoView) {
         /*
@@ -168,8 +163,6 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging", "h
     }
 
     var init = function() {
-
-        // console.log(utils.heading());
 
         var rootmsgbox = forms.msgbox({});
         HTML.query("#isso-thread").add("div#isso-root").add(rootmsgbox);
