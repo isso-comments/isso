@@ -93,12 +93,12 @@ def get(app, environ, request, uri):
     if not rv:
         abort(404)
 
-    if request.args.get('plain', '1') == '0':
+    if request.args.get('plain', '0') == '0':
         if isinstance(rv, list):
             for item in rv:
-                item.text = app.markdown(item.text)
+                item['text'] = app.markdown(item['text'])
         else:
-            rv.text = app.markdown(rv.text)
+            rv['text'] = app.markdown(rv['text'])
 
     return Response(app.dumps(rv), 200, content_type='application/json')
 
