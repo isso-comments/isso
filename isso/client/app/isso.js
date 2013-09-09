@@ -50,7 +50,10 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
         var permalink = node.header.add("a.permalink");
         permalink.href = '#isso-' + comment.id;
         permalink.add("date[datetime=" + date.getUTCFullYear() + "-" + date.getUTCMonth() + "-" + date.getUTCDay() + "]")
-            .textContent = utils.ago(date);
+        var refresh = function() {
+            permalink.date.textContent = utils.ago(date);
+            setTimeout(refresh, 60*1000)
+        };  refresh();
 
         node.query("span.avatar").add("img[width=48 height=48]");
 
