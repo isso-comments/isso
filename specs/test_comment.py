@@ -50,7 +50,7 @@ class TestComments(unittest.TestCase):
         rv = json.loads(r.data)
 
         assert rv['id'] == 1
-        assert rv['text'] == 'Lorem ipsum ...'
+        assert rv['text'] == '<p>Lorem ipsum ...</p>\n'
 
     def testCreate(self):
 
