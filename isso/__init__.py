@@ -159,5 +159,5 @@ def main():
         })
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),
-        app, threaded=True)
+        app, processes=2)
 
