@@ -24,8 +24,8 @@ define({
         return;
 
     return day_diff == 0 && (
-        diff < 60 && "just now" ||
-            diff < 120 && "1 minute ago" ||
+        diff < 60 && "eben jetzt" ||
+            diff < 120 && "vor einer Minute" ||
             diff < 3600 && "vor " + Math.floor(diff / 60) + " Minuten" ||
             diff < 7200 && "vor einer Stunde" ||
             diff < 86400 && "vor " + Math.floor(diff / 3600) + " Stunden") ||
