@@ -83,7 +83,9 @@ define(["lib/q", "lib/HTML", "helper/utils", "./api", "./forms", "./logging"], f
                         if (rv) {
                             node.remove();
                         } else {
-                            // XXX recursively remove deleted comments
+                            node.classList.add('deleted');
+                            node.header.add("span.note").textContent = "Kommentar gelöscht.";
+                            HTML.query("#isso-" + comment.id + " > div.text").innerHTML = "<p>&nbsp;</p>"
                         }
                     })
                 } else {
