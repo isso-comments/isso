@@ -39,14 +39,15 @@ from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response, Request
-from werkzeug.exceptions import HTTPException, NotFound, InternalServerError
+from werkzeug.exceptions import HTTPException, NotFound, InternalServerError, MethodNotAllowed
 
 from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.serving import run_simple
+from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, utils, migrate, views
+from isso import db, utils, migrate, views, wsgi
 from isso.views import comment, admin
 
 url_map = Map([
@@ -64,10 +65,10 @@ class Isso(object):
 
     PRODUCTION = False
 
-    def __init__(self, dbpath, secret, base_url, max_age, passphrase):
+    def __init__(self, dbpath, secret, origin, max_age, passphrase):
 
         self.DBPATH = dbpath
-        self.BASE_URL = utils.normalize(base_url)
+        self.ORIGIN = utils.normalize(origin)
         self.PASSPHRASE = passphrase
         self.MAX_AGE = max_age
 
@@ -101,6 +102,11 @@ class Isso(object):
             return handler(self, request.environ, request, **values)
         except NotFound as e:
             return Response('Not Found', 404)
+        except MethodNotAllowed:
+            return Response("", 200, headers={
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+                "Access-Control-Allow-Headers": "Origin, Content-Type"
+            })
         except HTTPException as e:
             return e
         except InternalServerError as e:
@@ -111,6 +117,14 @@ class Isso(object):
         return response(environ, start_response)
 
     def __call__(self, environ, start_response):
+
+        script_name = environ.get('HTTP_X_SCRIPT_NAME')
+        if script_name:
+            environ['SCRIPT_NAME'] = script_name
+            path_info = environ['PATH_INFO']
+            if path_info.startswith(script_name):
+                environ['PATH_INFO'] = path_info[len(script_name):]
+
         return self.wsgi_app(environ, start_response)
 
 
@@ -131,7 +145,7 @@ def main():
     defaultcfg = [
         "[general]",
         "dbpath = /tmp/isso.db", "secret = %r" % os.urandom(24),
-        "base_url = http://localhost:8080/", "passphrase = p@$$w0rd",
+        "host = http://localhost:8080/", "passphrase = p@$$w0rd",
         "max_age = 450",
         "[server]",
         "host = localhost", "port = 8080"
@@ -145,7 +159,7 @@ def main():
     isso = Isso(
         dbpath=conf.get('general', 'dbpath'),
         secret=conf.get('general', 'secret'),
-        base_url=conf.get('general', 'base_url'),
+        origin=conf.get('general', 'host'),
         max_age=conf.getint('general', 'max_age'),
         passphrase=conf.get('general', 'passphrase')
     )
@@ -154,10 +168,10 @@ def main():
         migrate.disqus(isso.db, args.dump)
         sys.exit(0)
 
-    app = SharedDataMiddleware(isso.wsgi_app, {
+    app = wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),
         '/js': join(dirname(__file__), 'js/')
-        })
+        }))
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),
         app, processes=2)

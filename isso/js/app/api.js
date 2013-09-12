@@ -22,25 +22,34 @@ define(["lib/q"], function(Q) {
             endpoint = js[i].src.substring(0, js[i].src.length - 12);
             break;
         }
+    }
 
+    if (endpoint == null) {
         throw "no Isso API location found";
     }
 
     var curl = function(method, url, data) {
 
-        var request = new XMLHttpRequest();
+        var xhr = new XMLHttpRequest();
         var response = Q.defer();
 
+        if (! ("withCredentials" in xhr)) {
+            respone.reject("I won't support IE ≤ 10.")
+            return response.promise;
+        }
+
+        xhr.withCredentials = true;
+
         function onload() {
-            response.resolve({status: request.status, body: request.responseText});
+            response.resolve({status: xhr.status, body: xhr.responseText});
         }
 
         try {
-            request.open(method, url, true);
-            request.overrideMimeType("application/javascript");
+            xhr.open(method, url, true);
+            xhr.overrideMimeType("application/javascript");
 
-            request.onreadystatechange = function () {
-                if (request.readyState === 4) {
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
                     onload();
                 }
             };
@@ -48,7 +57,7 @@ define(["lib/q"], function(Q) {
             response.reject(exception.message);
         }
 
-        request.send(data);
+        xhr.send(data);
         return response.promise;
     };
 
