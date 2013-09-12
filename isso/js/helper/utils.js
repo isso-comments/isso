@@ -20,18 +20,20 @@ define({
     var diff = (((new Date()).getTime() - date.getTime()) / 1000),
         day_diff = Math.floor(diff / 86400);
 
-    if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31)
+    if (isNaN(day_diff) || day_diff < 0)
         return;
 
     return day_diff == 0 && (
-        diff < 60 && "eben jetzt" ||
+        diff < 60 && "eben jetzt"  ||
             diff < 120 && "vor einer Minute" ||
             diff < 3600 && "vor " + Math.floor(diff / 60) + " Minuten" ||
             diff < 7200 && "vor einer Stunde" ||
             diff < 86400 && "vor " + Math.floor(diff / 3600) + " Stunden") ||
         day_diff == 1 && "Gestern" ||
         day_diff < 7 && "vor " + day_diff + " Tagen" ||
-        day_diff < 31 && "vor " + Math.ceil(day_diff / 7) + " Wochen";
+        day_diff < 31 && "vor " + Math.ceil(day_diff / 7) + " Wochen" ||
+        day_diff < 365 && "vor " + Math.ceil(day_diff / 30) + " Monaten" ||
+        "vor " + Math.ceil(day_diff / 365.25) + " Jahren";
     },
 
     heading: function() {
