@@ -135,8 +135,8 @@ class SQLite(Abstract):
             keys = ','.join(self.fields)
             values = ','.join('?' * len(self.fields))
             con.execute('INSERT INTO comments (%s) VALUES (%s);' % (keys, values), (
-                uri, 0, time.time(), None, c["text"], c["author"], c["hash"], c["website"],
-                c["parent"], self.mode, voters)
+                uri, 0, c['created'] or time.time(), None, c["text"], c["author"],
+                c["hash"], c["website"], c["parent"], self.mode, voters)
             )
 
         with sqlite3.connect(self.dbpath) as con:
