@@ -68,7 +68,7 @@ class Isso(object):
     def __init__(self, dbpath, secret, origin, max_age, passphrase):
 
         self.DBPATH = dbpath
-        self.ORIGIN = utils.normalize(origin)
+        self.ORIGIN = origin
         self.PASSPHRASE = passphrase
         self.MAX_AGE = max_age
 
@@ -103,10 +103,7 @@ class Isso(object):
         except NotFound as e:
             return Response('Not Found', 404)
         except MethodNotAllowed:
-            return Response("", 200, headers={
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
-                "Access-Control-Allow-Headers": "Origin, Content-Type"
-            })
+            return Response("Yup.", 200)
         except HTTPException as e:
             return e
         except InternalServerError as e:
@@ -114,6 +111,11 @@ class Isso(object):
 
     def wsgi_app(self, environ, start_response):
         response = self.dispatch(Request(environ), start_response)
+        if hasattr(response, 'headers'):
+            response.headers["Access-Control-Allow-Origin"] = self.ORIGIN.rstrip('/')
+            response.headers["Access-Control-Allow-Headers"] = "Origin, Content-Type"
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
         return response(environ, start_response)
 
     def __call__(self, environ, start_response):

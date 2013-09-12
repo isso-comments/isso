@@ -33,7 +33,7 @@ class IssoEncoder(json.JSONEncoder):
 def urlexists(host, path):
     with contextlib.closing(httplib.HTTPConnection(host)) as con:
         try:
-            con.request('HEAD', path)
+            con.request('HEAD', normalize(path))
         except socket.error:
             return False
         return con.getresponse().status == 200
