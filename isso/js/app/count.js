@@ -6,8 +6,7 @@ define(["app/api", "lib/HTML"], function(api, HTML) {
             };
 
             var uri = el.href.match("^(.+)#isso-thread$")[1]
-                .replace(/^.*\/\/[^\/]+/, '');
-            console.log(uri)
+                             .replace(/^.*\/\/[^\/]+/, '');
             api.count(uri).then(function(rv) {
                 el.textContent = rv + (rv > 1 ? " Kommentare" : " Kommentar");
             })

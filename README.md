@@ -76,7 +76,6 @@ Let's assume you want Isso on `/isso`, use the following nginx snippet
 
 ```nginx
 server {
-
     listen       [::]:80;
     listen       [::]:443 ssl;
     server_name  example.tld;
@@ -126,7 +125,7 @@ when using [require.js][r.js]:
 
 ```html
 <link rel="stylesheet" href="/static/isso.css" />
-<script data-main="/js/main" src="/js/require.js"></script>
+<script data-main="/js/embed" src="/js/require.js"></script>
 ```
 
 
@@ -140,7 +139,7 @@ Alternatives
 ------------
 
 - [talkatv](https://github.com/talkatv/talkatv) – Python
-- [Juvia](https://github.com/phusion/juvia – Ruby on Rails
+- [Juvia](https://github.com/phusion/juvia) – Ruby on Rails
 - [Tildehash.com](http://www.tildehash.com/?article=why-im-reinventing-disqus) – PHP
 - [SO: Unobtrusive, self-hosted comments](http://stackoverflow.com/q/2053217)
 
