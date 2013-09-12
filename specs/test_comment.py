@@ -201,3 +201,25 @@ class TestComments(unittest.TestCase):
 
         assert rv.keys() == []
 
+    def testCounts(self):
+
+        assert self.get('/count?uri=%2Fpath%2F').status_code == 404
+        self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
+
+        rv = self.get('/count?uri=%2Fpath%2F')
+        assert rv.status_code == 200
+        assert json.loads(rv.data) == 1
+
+        for x in range(3):
+            self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
+
+        rv = self.get('/count?uri=%2Fpath%2F')
+        assert rv.status_code == 200
+        assert json.loads(rv.data) == 4
+
+        for x in range(4):
+            self.delete('/?uri=%%2Fpath%%2F&id=%i' % (x + 1))
+
+        rv = self.get('/count?uri=%2Fpath%2F')
+        assert rv.status_code == 404
+

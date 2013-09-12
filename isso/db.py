@@ -73,6 +73,13 @@ class Abstract:
         same ip address are ignored as well)."""
         return
 
+    @abc.abstractmethod
+    def count(self, path=None, mode=1):
+        """return count of comments for path (optional) and mode (defaults to
+        visible, not deleted or moderated comments)."""
+        return
+
+
 class SQLite(Abstract):
     """A basic :class:`Abstract` implementation using SQLite3.  All comments
     share a single database. The tuple (id, path) acts as unique identifier
@@ -212,6 +219,17 @@ class SQLite(Abstract):
                 buffer(bf.array), path, id))
 
         return likes + 1
+
+    def count(self, path=None, mode=1):
+
+        if path is not None:
+            with sqlite3.connect(self.dbpath) as con:
+                return con.execute("SELECT COUNT(*) FROM comments WHERE path=?" \
+                    + " AND (? | mode) = ?", (path, mode, mode)).fetchone()
+
+        with sqlite3.connect(self.dbpath) as con:
+            return con.execute("SELECT COUNT(*) FROM comments WHERE" \
+                + "(? | mode) = ?", (path, mode, mode)).fetchone()
 
     def retrieve(self, path, mode=5):
         with sqlite3.connect(self.dbpath) as con:

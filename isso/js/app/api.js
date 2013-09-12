@@ -104,11 +104,22 @@ define(["lib/q"], function(Q) {
         })
     }
 
+    var count = function(uri) {
+        return curl("GET", endpoint + "/count?" + qs({uri: uri}), null)
+        .then(function (rv) {
+            if (rv.status == 200)
+                return JSON.parse(rv.body)
+
+            throw {status: rv.status, reason: rv.body};
+        })
+    }
+
     return {
         endpoint: endpoint,
         create: create,
         remove: remove,
-        fetchall: fetchall
+        fetchall: fetchall,
+        count: count
     }
 
 });

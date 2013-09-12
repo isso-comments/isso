@@ -168,3 +168,14 @@ def approve(app, environ, request, path, id):
     app.db.activate(path, id)
     return Response(app.dumps(app.db.get(path, id)), 200,
         content_type='application/json')
+
+
+@requires(str, 'uri')
+def count(app, environ, request, uri):
+
+    rv = app.db.count(uri, mode=1)[0]
+
+    if rv == 0:
+        abort(404)
+
+    return Response(json.dumps(rv), 200, content_type='application/json')
