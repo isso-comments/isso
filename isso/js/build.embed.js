@@ -1,7 +1,7 @@
 ({
-    bseUrl: ".",
+    baseUrl: ".",
     name: "lib/almond",
-    include: ['main'],
-    out: "embed.js",
+    include: ['embed'],
+    out: "embed.min.js",
     wrap: true
 })

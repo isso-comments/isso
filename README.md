@@ -10,13 +10,15 @@ Isso comes into play.
 [1]: https://github.com/posativ/acrylamid
 [2]: https://disqus.com/
 
+**[Screenshot](http://posativ.org/~tmp/isso-preview.png)**
+
 
 Features
 --------
 
 * [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments
-* SQLite
-* quite nice, but unfinished client-side JS
+* SQLite backend
+* client-side JS (currently 12.5kb minified and gzipped)
 
 
 Roadmap
@@ -24,75 +26,123 @@ Roadmap
 
 - Ping/TrackBack™ support
 - simple admin interface
-- spam filtering using [http:bl][3]
-
-[3]: https://www.projecthoneypot.org/
+- spam filtering
 
 
 Installation
 ------------
 
-Probably `git clone https://github.com/posativ/isso.git`, `python setup.py develop`
-inside a virtualenv. Then start `isso` with:
+Requirements:
+
+- Python 2.6 or 2.7
+- [NPM](https://npmjs.org/)
+
+For now (as long as there is no stable version), you need to manually
+build everything:
+
+    ~> git clone https://github.com/posativ/isso.git
+    ~> cd isso/
+    ~> python setup.py develop
+
+You can now either use the JS client as-is (using [require.js][r.js], see
+below) or compile all JS into a single file:
+
+    ~> cd isso/js
+    ~> npm install -g requirejs uglifyjs
+    ~> r.js -o build.embed.js
+    ~> r.js -o build.count.js
+
+Before you start, you may want to import comments from
+[Disqus.com](https://disqus.com/):
+
+    ~> isso import ~/Downloads/user-2013-09-02T11_39_22.971478-all.xml
+    [100%]  53 threads, 192 comments
+
+You start the server via (try to visit [http://localhost:8080/static/post.html]()).
 
     ~> isso run
 
-You can now leave a comment at <http://localhost:8080/static/post.html> hopefully.
-The admin interface password is `p@$$w0rd`, you may change this with a custom cfg
-file that I'll document later. You find the admin interface at <http://localhost:8080/admin/>.
 
-**[Screenshot](http://posativ.org/~tmp/isso-preview.png)**
+Webserver Configuration
+-----------------------
+
+This part is not fun, I know. I have prepared two possible setups for nginx,
+using Isso on the same domain as the blog, and on a different domain. Each
+setup has its own benefits.
+
+### Isso on a Sub URI
+
+Let's assume you want Isso on `/isso`, use the following nginx snippet
+
+```nginx
+server {
+
+    listen       [::]:80;
+    listen       [::]:443 ssl;
+    server_name  example.tld;
+    root         /var/www/example.tld;
+
+    location /isso {
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Script-Name /isso;
+        proxy_pass http://localhost:8080;
+    }
+}
+```
+
+The Isso API endpoint is now `example.tld/isso`, check by `curl`ing the client
+JS located at `http://example.tld/isso/js/embed.js`.
+
+### Isso on a Dedicated Domain
+
+...
 
 
-Migration from Disqus
----------------------
+Website Integration
+-------------------
 
-Go to [Disqus.com](https://disqus.com/) and export your "forum" as XML.
+Add the following two lines into your HTML header:
 
-    ~> isso import /path/to/ur/dump.xml
+```html
+<link rel="stylesheet" href="http://example.tld/isso/static/isso.css" />
+<script src="http://example.tld/isso/embed.min.js"></script>
+```
 
-That's it. <del>Visit your admin page to see all threads.</del> If it doesn't work for
-you, please file in a bug report \*including\* your dump.
+To enable comments, add a `<div id="#isso-thread"></div>` below your post and
+let the magic happen :-)
+
+To add comment count links to your index page, include `count.min.js` at the
+very bottom of your document. All links followed by `#isso-thread`, are
+updated with the current comment count.
+
+This functionality is already included when you embed `embed.min.js`, try
+to *not* mix `embed.min.js` and `count.min.js` in a single document.
+
+### Embed with require.js
+
+This section is primarily for developers: The client-side JS is modularized
+and uses an AMD loader for execution. You can easily hack on the JS files,
+when using [require.js][r.js]:
+
+```html
+<link rel="stylesheet" href="/static/isso.css" />
+<script data-main="/js/main" src="/js/require.js"></script>
+```
 
 
-API (a draft)
--------------
+API
+---
 
-To fetch all comments for `http://example.tld/foo-bar/`, run
+See [docs/API.md](https://github.com/posativ/isso/blob/master/docs/API.md).
 
-::
-
-    $ curl http://example.tld/isso?uri=%2Ffoo-bar%2F
-
-To write a comment, you have to POST a JSON dictionary with the following
-key-value pairs. Text is mandatory otherwise you'll get a 400 Bad Request.
-You'll also get a 400 when your JSON is invalid.
-
-Let's say you want to comment on /foo-bar/
-
-    $ curl http://example.tld/isso/new?uri=%2Ffoo-bar%2F -X POST -d \
-        '{
-            "text": "Lorem ipsum ...",
-            "name": "Hans", "email": "foo@bla.org", "website": "http://blog/log/"
-         }'
-
-This will set a cookie, that expires in a few minutes (15 minutes per default).
-This cookie allows you do modify or delete your comment. Don't try to modify
-that cookie, it is cryptographically signed. If your cookie is outdated or
-modified, you'll get a 403 Forbidden.
-
-For each comment you'll post, you get an unique cookie. Let's try to remove
-your comment::
-
-    $ curl -X DELETE 'http://example.tld/isso?uri=%2Ffoo-bar%2F&id=1'
-
-If your comment has been referenced by another comment, your comment will be
-cleared but not deleted to retain depending comments.
 
 Alternatives
 ------------
 
-- `talkatv <https://github.com/talkatv/talkatv>`_ – Python
-- `Juvia <https://github.com/phusion/juvia)>`_ – Ruby on Rails
-- `Tildehash.com <http://www.tildehash.com/?article=why-im-reinventing-disqus>`_ – PHP
-- `SO: Unobtrusive, self-hosted comments <http://stackoverflow.com/q/2053217>`_
+- [talkatv](https://github.com/talkatv/talkatv) – Python
+- [Juvia](https://github.com/phusion/juvia – Ruby on Rails
+- [Tildehash.com](http://www.tildehash.com/?article=why-im-reinventing-disqus) – PHP
+- [SO: Unobtrusive, self-hosted comments](http://stackoverflow.com/q/2053217)
+
+
+[r.js]: http://require.js/

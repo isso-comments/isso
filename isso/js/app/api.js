@@ -18,8 +18,8 @@ define(["lib/q"], function(Q) {
         if (js[i].src.match("/js/require\\.js$")) {
             endpoint = js[i].src.substring(0, js[i].src.length - 14);
             break;
-        } else if (js[i].src.match("/js/embed\\.js$")) {
-            endpoint = js[i].src.substring(0, js[i].src.length - 12);
+        } else if (js[i].src.match("/js/embed\\.min\\.js$")) {
+            endpoint = js[i].src.substring(0, js[i].src.length - 16);
             break;
         }
     }
