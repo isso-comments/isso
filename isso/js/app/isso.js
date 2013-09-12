@@ -93,32 +93,6 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
             })
         }
 
-//            // EDIT
-//            $('#isso_' + post['id'] + ' > footer .edit').on('click', function(event) {
-//
-//                if ($('#issoform_' + post['id']).length == 0) {  // HTML form not shown
-//                    isso.plain(post['id'], function(status, rv) {
-//                        if (status != 200) return alert('Mööp');
-//                        var rv = form(post['id'], JSON.parse(rv), function(form, id) {
-//                            isso.modify(id, extract(form, post['parent']), function(status, rv) {
-//                                if (status != 200) return alert('Mööp');
-//
-//                                $('#issoform_' + post['id']).remove();
-//                                $('#isso_' + post['id']).remove();
-//                                insert(JSON.parse(rv));
-//                            });
-//                        });
-//
-//                        $('#isso_' + post['id']).after(rv);
-//                        $('input[type="submit"]', rv)[0].value = 'Bestätigen.';
-//                    });
-//                } else {
-//                    $('#issoform_' + post['id']).remove();
-//                };
-//                event.stop();
-//            });
-//        };
-
         // ability to answer directly to a comment
         HTML.query("#isso-" + comment.id + " a.reply").addEventListener("click", function(event) {
 

@@ -72,7 +72,7 @@ define({
 
             var rv = recurse(el);
             if (rv) {
-                return rv.textContent
+                return rv.textContent.trim();
             }
 
             el = el.parentNode;
