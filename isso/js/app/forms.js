@@ -15,13 +15,9 @@ define(["lib/HTML"], function(HTML) {
         textarea.value = defaults.text || "";
         textarea.placeholder = "Kommentar hier eintippen (andere Felder sind optional)"
         textarea.onfocus = function() {
-            textarea.rows = 10;
+            textarea.rows = 8;
             // scrollIntoView enhancement
         };
-        textarea.onblur = function() { setTimeout(function() {
-            if (textarea.value == "" && document.activeElement != textarea) {
-                textarea.rows = 2
-            }}, 500)};
 
         form.add("input[type=submit]").value = "Kommentar hinzufügen";
         form.add("span");

@@ -179,7 +179,9 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
                 rootmsgbox.query("[name=email]").value = "";
                 rootmsgbox.query("[name=website]").value = "";
                 rootmsgbox.query("textarea").value = "";
-                insert(rv);
+                rootmsgbox.query("textarea").rows = 2;
+                rootmsgbox.query("textarea").blur();
+                insert(rv, true);
             })
             event.preventDefault()
         });
