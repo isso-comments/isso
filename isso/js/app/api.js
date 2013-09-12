@@ -15,11 +15,11 @@ define(["lib/q"], function(Q) {
     // guess Isso API location
     var js = document.getElementsByTagName("script");
     for (var i = 0; i < js.length; i++) {
-        if (js[i].src.match("/client/require\\.js$")) {
-            endpoint = js[i].src.substring(0, js[i].src.length - 18);
+        if (js[i].src.match("/js/require\\.js$")) {
+            endpoint = js[i].src.substring(0, js[i].src.length - 14);
             break;
-        } else if (js[i].src.match("/client/embed\\.js$")) {
-            endpoint = js[i].src.substring(0, js[i].src.length - 16);
+        } else if (js[i].src.match("/js/embed\\.js$")) {
+            endpoint = js[i].src.substring(0, js[i].src.length - 12);
             break;
         }
 
