@@ -33,7 +33,11 @@ class IssoEncoder(json.JSONEncoder):
 
 
 def urlexists(host, path):
-    with closing(httplib.HTTPConnection(normalize(host), timeout=3)) as con:
+
+    rv = urlparse(host)
+    http = httplib.HTTPSConnection if rv.scheme == 'https' else httplib.HTTPConnection
+
+    with closing(http(rv.netloc, rv.port, timeout=3)) as con:
         try:
             con.request('HEAD', path)
         except (httplib.HTTPException, socket.error):
@@ -45,7 +49,10 @@ def heading(host, path):
     """Connect to `host`, GET path and start from #isso-thread to search for
     a possible heading (h1). Returns `None` if nothing found."""
 
-    with closing(httplib.HTTPConnection(normalize(host), timeout=15)) as con:
+    rv = urlparse(host)
+    http = httplib.HTTPSConnection if rv.scheme == 'https' else httplib.HTTPConnection
+
+    with closing(http(rv.netloc, rv.port, timeout=15)) as con:
         con.request('GET', path)
         html = html5lib.parse(con.getresponse().read(), treebuilder="dom")
 
@@ -90,15 +97,6 @@ def heading(host, path):
         el = el.parentNode
 
     return None
-
-
-def normalize(host):
-    """Make `host` compatible with :py:mod:`httplib`."""
-
-    if not host.startswith(('http://', 'https://')):
-        host = 'http://' + host
-    rv = urlparse(host)
-    return (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
 
 
 def anonymize(remote_addr):
