@@ -32,12 +32,23 @@ class IssoEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def urlexists(host, path):
+def normalize(host):
+
+    if not host.startswith(('http://', 'https://')):
+        host = 'https://' + host
 
     rv = urlparse(host)
-    http = httplib.HTTPSConnection if rv.scheme == 'https' else httplib.HTTPConnection
+    if rv.scheme == 'https':
+        return (rv.netloc, 443)
+    return (rv.netloc.rsplit(':')[0], rv.port or 80)
 
-    with closing(http(rv.netloc, rv.port, timeout=3)) as con:
+
+def urlexists(host, path):
+
+    host, port = normalize(host)
+    http = httplib.HTTPSConnection if port == 443 else httplib.HTTPConnection
+
+    with closing(http(host, port, timeout=3)) as con:
         try:
             con.request('HEAD', path)
         except (httplib.HTTPException, socket.error):
@@ -49,10 +60,10 @@ def heading(host, path):
     """Connect to `host`, GET path and start from #isso-thread to search for
     a possible heading (h1). Returns `None` if nothing found."""
 
-    rv = urlparse(host)
-    http = httplib.HTTPSConnection if rv.scheme == 'https' else httplib.HTTPConnection
+    host, port = normalize(host)
+    http = httplib.HTTPSConnection if port == 443 else httplib.HTTPConnection
 
-    with closing(http(rv.netloc, rv.port, timeout=15)) as con:
+    with closing(http(host, port, timeout=15)) as con:
         con.request('GET', path)
         html = html5lib.parse(con.getresponse().read(), treebuilder="dom")
 

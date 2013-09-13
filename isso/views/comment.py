@@ -43,7 +43,7 @@ class requires:
 @requires(str, 'uri')
 def create(app, environ, request, uri):
 
-    if not utils.urlexists(app.ORIGIN, uri):
+    if app.db.threads.get(uri) is None and not utils.urlexists(app.ORIGIN, uri):
         return Response('URI does not exist', 404)
 
     try:
@@ -70,13 +70,12 @@ def create(app, environ, request, uri):
 
         hash=hashlib.md5(hash).hexdigest())
 
-    try:
-        title = app.db.threads.get(uri)
-    except KeyError:
+    title = app.db.threads.get(uri)
+    if title is None:
         title = app.db.threads.add(uri, utils.heading(app.ORIGIN, uri))
 
     try:
-        rv = app.db.add(uri, comment, utils.anonymize(unicode(request.remote_addr)))
+        rv = app.db.add(uri, comment, request.remote_addr)
     except sqlite3.Error:
         logging.exception('uncaught SQLite3 exception')
         abort(400)
