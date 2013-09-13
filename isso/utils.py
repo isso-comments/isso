@@ -105,7 +105,7 @@ def anonymize(remote_addr):
     ip = ipaddress.ip_address(remote_addr)
     if ip.version == "4":
         return ''.join(ip.exploded.rsplit('.', 1)[0]) + '.' + '0'
-    return ip.exploded.rsplit(':', 4)[0]
+    return ip.exploded.rsplit(':', 5)[0]
 
 
 def salt(value, s=u'\x082@t9*\x17\xad\xc1\x1c\xa5\x98'):
