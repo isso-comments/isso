@@ -101,9 +101,14 @@ def heading(host, path):
 
 def anonymize(remote_addr):
     ip = ipaddress.ip_address(remote_addr)
-    if ip.version == "4":
+    try:
+        ipv4 = ipaddress.IPv4Address(remote_addr)
         return ''.join(ip.exploded.rsplit('.', 1)[0]) + '.' + '0'
-    return ip.exploded.rsplit(':', 5)[0]
+    except ipaddress.AddressValueError:
+        ipv6 = ipaddress.IPv6Address(remote_addr)
+        if ipv6.ipv4_mapped is not None:
+            return anonymize(ipv6.ipv4_mapped)
+        return ip.exploded.rsplit(':', 5)[0]
 
 
 def salt(value, s=u'\x082@t9*\x17\xad\xc1\x1c\xa5\x98'):

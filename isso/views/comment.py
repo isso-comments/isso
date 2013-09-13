@@ -57,7 +57,7 @@ def create(app, environ, request, uri):
     if "id" in data and not isinstance(data["id"], int):
         return Response("Parent ID must be an integer.")
 
-    if "email" in data:
+    if data.get("email"):
         hash = data["email"]
     else:
         hash = utils.salt(utils.anonymize(unicode(request.remote_addr)))
