@@ -10,8 +10,11 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, notify
+from isso import Isso, notify, utils
 from isso.models import Comment
+
+utils.heading = lambda *args: "Untitled."
+utils.urlexists = lambda *args: True
 
 
 class FakeIP(object):
