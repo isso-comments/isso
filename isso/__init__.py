@@ -123,14 +123,6 @@ class Isso(object):
         return response(environ, start_response)
 
     def __call__(self, environ, start_response):
-
-        script_name = environ.get('HTTP_X_SCRIPT_NAME')
-        if script_name:
-            environ['SCRIPT_NAME'] = script_name
-            path_info = environ['PATH_INFO']
-            if path_info.startswith(script_name):
-                environ['PATH_INFO'] = path_info[len(script_name):]
-
         return self.wsgi_app(environ, start_response)
 
 
@@ -199,10 +191,10 @@ def main():
         mailer=mailer
     )
 
-    app = wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
+    app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),
         '/js': join(dirname(__file__), 'js/')
-        }))
+        })))
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),
         app, threaded=True, use_reloader=conf.getboolean('server', 'reload'))
