@@ -44,7 +44,7 @@ class requires:
 def create(app, environ, request, uri):
 
     if not utils.urlexists(app.ORIGIN, uri):
-        return Response('URI does not exist', 400)
+        return Response('URI does not exist', 404)
 
     try:
         data = json.loads(request.data)
