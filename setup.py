@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7"
     ],
-    install_requires=['Jinja2>=2.7', 'werkzeug>=0.9', 'itsdangerous', 'misaka'],
+    install_requires=['Jinja2>=2.7', 'werkzeug>=0.9', 'itsdangerous', 'misaka', 'html5lib'],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],

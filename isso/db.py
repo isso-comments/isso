@@ -80,6 +80,30 @@ class Abstract:
         return
 
 
+class Threads(object):
+
+    def __init__(self, dbpath):
+
+        self.dbpath = dbpath
+
+        with sqlite3.connect(self.dbpath) as con:
+            sql = ('main.threads (path VARCHAR(255) NOT NULL, title TEXT'
+                   'PRIMARY KEY path)')
+            con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
+
+    def get(self, path):
+        with sqlite3.connect(self.dbpath) as con:
+            rv = con.execute("SELECT title FROM threads WHERE path=?", (path,)).fetchone()
+            if rv is not None:
+                return rv[0]
+            raise KeyError
+
+    def add(self, path, title):
+        with sqlite3.connect(self.dbpath) as con:
+            con.execute("INSERT INTO threads (path, title) VALUES (?, ?)", (path, title))
+        return title
+
+
 class SQLite(Abstract):
     """A basic :class:`Abstract` implementation using SQLite3.  All comments
     share a single database. The tuple (id, path) acts as unique identifier
@@ -114,10 +138,7 @@ class SQLite(Abstract):
                     WHERE rowid=NEW.rowid;
                 END;""")
 
-            # threads (path -> title for now)
-            sql = ('main.threads (path VARCHAR(255) NOT NULL, title TEXT'
-                   'PRIMARY KEY path)')
-            con.execute("CREATE TABLE IF NOT EXISTS %s;" % sql)
+        self.threads = Threads(self.dbpath)
 
     def query2comment(self, query):
         if query is None:

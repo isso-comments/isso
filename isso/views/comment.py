@@ -5,6 +5,7 @@
 
 import cgi
 import json
+import thread
 import hashlib
 import sqlite3
 import logging
@@ -14,7 +15,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort, BadRequest
 
-from isso import models, utils
+from isso import models, utils, notify
 
 
 class requires:
@@ -42,7 +43,7 @@ class requires:
 @requires(str, 'uri')
 def create(app, environ, request, uri):
 
-    if app.PRODUCTION and not utils.urlexists(app.HOST, uri):
+    if not utils.urlexists(app.ORIGIN, uri):
         return Response('URI does not exist', 400)
 
     try:
@@ -70,12 +71,20 @@ def create(app, environ, request, uri):
         hash=hashlib.md5(hash).hexdigest())
 
     try:
+        title = app.db.threads.get(uri)
+    except KeyError:
+        title = app.db.threads.add(uri, utils.heading(app.ORIGIN, uri))
+
+    try:
         rv = app.db.add(uri, comment, utils.anonymize(unicode(request.remote_addr)))
     except sqlite3.Error:
         logging.exception('uncaught SQLite3 exception')
         abort(400)
+    else:
+        rv["text"] = app.markdown(rv["text"])
 
-    rv["text"] = app.markdown(rv["text"])
+    href = (app.ORIGIN.rstrip("/") + uri + "#isso-%i" % rv["id"])
+    thread.start_new_thread(app.notify, notify.create(comment, title, href, request.remote_addr))
 
     resp = Response(app.dumps(rv), 202 if rv.pending else 201,
         content_type='application/json')

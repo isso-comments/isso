@@ -62,7 +62,7 @@ define({
             }
         }
 
-        while (true) {
+        while (el != null) {
 
             visited.push(el);
 

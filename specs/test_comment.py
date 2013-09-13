@@ -10,7 +10,7 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso
+from isso import Isso, notify
 from isso.models import Comment
 
 
@@ -29,7 +29,7 @@ class TestComments(unittest.TestCase):
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
 
-        self.app = Isso(self.path, '...', '...', 15*60, "...")
+        self.app = Isso(self.path, '...', '...', 15*60, "...", notify.NullMailer())
         self.app.wsgi_app = FakeIP(self.app.wsgi_app)
 
         self.client = Client(self.app, Response)

@@ -9,7 +9,7 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso
+from isso import Isso, notify
 
 
 class FakeIP(object):
@@ -33,7 +33,7 @@ class TestVote(unittest.TestCase):
 
     def makeClient(self, ip):
 
-        app = Isso(self.path, '...', '...', 15*60, "...")
+        app = Isso(self.path, '...', '...', 15*60, "...", notify.NullMailer())
         app.wsgi_app = FakeIP(app.wsgi_app, ip)
 
         return Client(app, Response)

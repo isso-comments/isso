@@ -29,6 +29,9 @@ import sys
 import io
 import os
 import json
+import socket
+import httplib
+import urlparse
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -47,7 +50,7 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, utils, migrate, views, wsgi
+from isso import db, utils, migrate, views, wsgi, notify, colors
 from isso.views import comment, admin
 
 url_map = Map([
@@ -65,7 +68,7 @@ class Isso(object):
 
     PRODUCTION = False
 
-    def __init__(self, dbpath, secret, origin, max_age, passphrase):
+    def __init__(self, dbpath, secret, origin, max_age, passphrase, mailer):
 
         self.DBPATH = dbpath
         self.ORIGIN = origin
@@ -75,6 +78,7 @@ class Isso(object):
         self.db = db.SQLite(dbpath, moderation=False)
         self.signer = URLSafeTimedSerializer(secret)
         self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
+        self.notify = lambda *args, **kwargs: mailer.sendmail(*args, **kwargs)
 
     def sign(self, obj):
         return self.signer.dumps(obj)
@@ -146,11 +150,15 @@ def main():
 
     defaultcfg = [
         "[general]",
-        "dbpath = /tmp/isso.db", "secret = %r" % os.urandom(24),
+        "dbpath = /tmp/isso.db", "secretkey = %r" % os.urandom(24),
         "host = http://localhost:8080/", "passphrase = p@$$w0rd",
         "max_age = 450",
         "[server]",
-        "host = localhost", "port = 8080"
+        "host = localhost", "port = 8080", "reload = off",
+        "[SMTP]",
+        "username = ", "password = ",
+        "host = localhost", "port = 465", "ssl = on",
+        "recipient = ", "sender = "
     ]
 
     args = parser.parse_args()
@@ -158,17 +166,38 @@ def main():
     conf.readfp(io.StringIO(u'\n'.join(defaultcfg)))
     conf.read(args.conf)
 
+    if args.command == "import":
+        migrate.disqus(db.SQLite(conf.get("general", "dbpath"), False), args.dump)
+        sys.exit(0)
+
+    if not conf.get("general", "host").startswith(("http://", "https://")):
+        sys.exit("error: host must start with http:// or https://")
+
+    try:
+        print(" * connecting to SMTP server", end=" ")
+        mailer = notify.SMTPMailer(conf)
+        print("[%s]" % colors.green("ok"))
+    except (socket.error, notify.SMTPException):
+        print("[%s]" % colors.red("failed"))
+        mailer = notify.NullMailer()
+
+    try:
+        print(" * connecting to HTTP server", end=" ")
+        rv = urlparse.urlparse(conf.get("general", "host"))
+        host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
+        httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
+        print("[%s]" % colors.green("ok"))
+    except (httplib.HTTPException, socket.error):
+        print("[%s]" % colors.red("failed"))
+
     isso = Isso(
         dbpath=conf.get('general', 'dbpath'),
-        secret=conf.get('general', 'secret'),
+        secret=conf.get('general', 'secretkey'),
         origin=conf.get('general', 'host'),
         max_age=conf.getint('general', 'max_age'),
-        passphrase=conf.get('general', 'passphrase')
+        passphrase=conf.get('general', 'passphrase'),
+        mailer=mailer
     )
-
-    if args.command == "import":
-        migrate.disqus(isso.db, args.dump)
-        sys.exit(0)
 
     app = wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),
@@ -176,5 +205,4 @@ def main():
         }))
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),
-        app, processes=2)
-
+        app, threaded=True, use_reloader=conf.getboolean('server', 'reload'))

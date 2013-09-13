@@ -42,6 +42,11 @@ def insert(db, thread, comments):
         rv = db.add(path, comment, '127.0.0.1')
         remap[item['dsq:id']] = rv["id"]
 
+        try:
+            db.threads.get(path)
+        except KeyError:
+            db.threads.add(path, thread.find('%stitle' % ns).text.strip())
+
 
 def disqus(db, xmlfile):
 
