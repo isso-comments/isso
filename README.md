@@ -10,7 +10,8 @@ Isso comes into play.
 [1]: https://github.com/posativ/acrylamid
 [2]: https://disqus.com/
 
-**[Screenshot](http://posativ.org/~tmp/isso-preview.png)**
+**[Screenshot](http://posativ.org/~tmp/isso-preview.png)** |
+**[Try Yourself!](https://posativ.org/isso/static/post.html)** (in case it's not crashed ;-)
 
 
 Features
@@ -82,7 +83,7 @@ server {
     root         /var/www/example.tld;
 
     location /isso {
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Script-Name /isso;
         proxy_pass http://localhost:8080;
     }
@@ -114,8 +115,8 @@ To add comment count links to your index page, include `count.min.js` at the
 very bottom of your document. All links followed by `#isso-thread`, are
 updated with the current comment count.
 
-This functionality is already included when you embed `embed.min.js`, try
-to *not* mix `embed.min.js` and `count.min.js` in a single document.
+This functionality is already included when you embed `embed.min.js`, do
+*not* mix `embed.min.js` and `count.min.js` in a single document.
 
 ### Embed with require.js
 
