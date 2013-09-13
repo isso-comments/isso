@@ -118,9 +118,9 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
             // msgbox.scrollIntoView(false);
             msgbox.query("input[type=submit]").addEventListener("click", function(event) {
                 forms.validate(msgbox) && api.create({
-                    author: msgbox.query("[name=author]").value,
-                    email: msgbox.query("[name=email]").value,
-                    website: msgbox.query("[name=website]").value,
+                    author: msgbox.query("[name=author]").value || null,
+                    email: msgbox.query("[name=email]").value || null,
+                    website: msgbox.query("[name=website]").value || null,
                     text: msgbox.query("textarea").value,
                     parent: comment.id })
                 .then(function(rv) {
@@ -143,9 +143,9 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
         HTML.query("#isso-thread").add("div#isso-root").add(rootmsgbox);
         rootmsgbox.query("input[type=submit]").addEventListener("click", function(event) {
             forms.validate(rootmsgbox) && api.create({
-                author: rootmsgbox.query("[name=author]").value,
-                email: rootmsgbox.query("[name=email]").value,
-                website: rootmsgbox.query("[name=website]").value,
+                author: rootmsgbox.query("[name=author]").value || null,
+                email: rootmsgbox.query("[name=email]").value || null,
+                website: rootmsgbox.query("[name=website]").value || null,
                 text: rootmsgbox.query("textarea").value,
                 parent: null })
             .then(function(rv) {
