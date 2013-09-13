@@ -96,7 +96,7 @@ class Threads(object):
             rv = con.execute("SELECT title FROM threads WHERE path=?", (path,)).fetchone()
             if rv is not None:
                 return rv[0]
-            raise KeyError
+            return None
 
     def add(self, path, title):
         with sqlite3.connect(self.dbpath) as con:

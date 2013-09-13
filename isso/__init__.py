@@ -150,7 +150,7 @@ def main():
         "[SMTP]",
         "username = ", "password = ",
         "host = localhost", "port = 465", "ssl = on",
-        "recipient = ", "sender = "
+        "to = ", "from = "
     ]
 
     args = parser.parse_args()

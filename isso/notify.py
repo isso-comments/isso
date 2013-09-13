@@ -23,18 +23,35 @@ def create(comment, subject, permalink, remote_addr):
     return subject, u'\n'.join(rv)
 
 
+class Connection(object):
+
+    def __init__(self, conf):
+        self.conf = conf
+
+    def __enter__(self):
+        self.server = (SMTP_SSL if self.conf.getboolean('SMTP', 'ssl') else SMTP)(
+            host=self.conf.get('SMTP', 'host'), port=self.conf.getint('SMTP', 'port'))
+
+        if self.conf.get('SMTP', 'username') and self.conf.get('SMTP', 'password'):
+            self.server.login(self.conf.get('SMTP', 'username'),
+                              self.conf.get('SMTP', 'password'))
+
+        return self.server
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.server.quit()
+
+
 class SMTPMailer(object):
 
     def __init__(self, conf):
 
-        self.server = (SMTP_SSL if conf.getboolean('SMTP', 'ssl') else SMTP)(
-            host=conf.get('SMTP', 'host'), port=conf.getint('SMTP', 'port'))
-
-        if conf.get('SMTP', 'username') and conf.get('SMTP', 'password'):
-            self.server.login(conf.get('SMTP', 'username'), conf.get('SMTP', 'password'))
-
+        self.conf = conf
         self.from_addr = conf.get('SMTP', 'from')
         self.to_addr = conf.get('SMTP', 'to')
+
+        with Connection(self.conf):
+            pass
 
     def sendmail(self, subject, body, retries=5):
 
@@ -45,7 +62,8 @@ class SMTPMailer(object):
 
         for i in range(retries):
             try:
-                self.server.sendmail(self.from_addr, self.to_addr, msg.as_string())
+                with Connection(self.conf) as con:
+                    con.sendmail(self.from_addr, self.to_addr, msg.as_string())
             except SMTPException:
                 logging.exception("uncaught exception, %i of %i:", i + 1, retries)
             else:
