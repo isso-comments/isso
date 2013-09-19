@@ -67,7 +67,7 @@ define(["lib/q", "lib/HTML", "helper/utils", "helper/identicons", "./api", "./fo
             node.scrollIntoView(false);
         }
 
-        if (utils.read(window.location.pathname + "-" + comment.id)) {
+        if (utils.read(comment.id)) {
             node.footer.add("a.delete{Löschen}").href = "#";
             node.footer.add("a.edit{Bearbeiten}").href = "#";
 

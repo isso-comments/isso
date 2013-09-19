@@ -5,8 +5,6 @@
 
 from __future__ import division
 
-import json
-
 import socket
 import httplib
 
@@ -19,17 +17,6 @@ from contextlib import closing
 
 import html5lib
 import ipaddress
-
-from isso.models import Comment
-
-
-class IssoEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        if isinstance(obj, Comment):
-            return dict((field, value) for field, value in obj.iteritems())
-
-        return json.JSONEncoder.default(self, obj)
 
 
 def normalize(host):
@@ -111,15 +98,14 @@ def heading(host, path):
 
 
 def anonymize(remote_addr):
-    ip = ipaddress.ip_address(remote_addr)
     try:
         ipv4 = ipaddress.IPv4Address(remote_addr)
-        return ''.join(ip.exploded.rsplit('.', 1)[0]) + '.' + '0'
+        return ''.join(ipv4.exploded.rsplit('.', 1)[0]) + '.' + '0'
     except ipaddress.AddressValueError:
         ipv6 = ipaddress.IPv6Address(remote_addr)
         if ipv6.ipv4_mapped is not None:
             return anonymize(ipv6.ipv4_mapped)
-        return ip.exploded.rsplit(':', 5)[0]
+        return ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*3)
 
 
 def salt(value, s=u'\x082@t9*\x17\xad\xc1\x1c\xa5\x98'):

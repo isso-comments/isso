@@ -28,7 +28,6 @@ dist = pkg_resources.get_distribution("isso")
 import sys
 import io
 import os
-import json
 import socket
 import httplib
 import urlparse
@@ -50,16 +49,17 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, utils, migrate, views, wsgi, notify, colors
+from isso import db, migrate, views, wsgi, notify, colors
 from isso.views import comment, admin
 
 url_map = Map([
-    Rule('/', methods=['HEAD', 'GET'], endpoint=views.comment.get),
-    Rule('/', methods=['PUT', 'DELETE'], endpoint=views.comment.modify),
-    Rule('/new', methods=['POST'], endpoint=views.comment.create),
-    Rule('/like', methods=['POST'], endpoint=views.comment.like),
-    Rule('/count', methods=['GET'], endpoint=views.comment.count),
+    Rule('/new', methods=['POST'], endpoint=views.comment.new),
 
+    Rule('/id/<int:id>', methods=['GET', 'PUT', 'DELETE'], endpoint=views.comment.single),
+    Rule('/id/<int:id>/like', methods=['POST'], endpoint=views.comment.like),
+
+    Rule('/', methods=['GET'], endpoint=views.comment.fetch),
+    Rule('/count', methods=['GET'], endpoint=views.comment.count),
     Rule('/admin/', endpoint=views.admin.index)
 ])
 
@@ -75,7 +75,7 @@ class Isso(object):
         self.PASSPHRASE = passphrase
         self.MAX_AGE = max_age
 
-        self.db = db.SQLite(dbpath, moderation=False)
+        self.db = db.SQLite3(dbpath)
         self.signer = URLSafeTimedSerializer(secret)
         self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
         self.notify = lambda *args, **kwargs: mailer.sendmail(*args, **kwargs)
@@ -94,10 +94,6 @@ class Isso(object):
     def render(self, tt, **ctx):
         tt = self.j2env.get_template(tt)
         return tt.render(**ctx)
-
-    @classmethod
-    def dumps(cls, obj, **kw):
-        return json.dumps(obj, cls=utils.IssoEncoder, **kw)
 
     def dispatch(self, request, start_response):
         adapter = url_map.bind_to_environ(request.environ)
@@ -159,7 +155,7 @@ def main():
     conf.read(args.conf)
 
     if args.command == "import":
-        migrate.disqus(db.SQLite(conf.get("general", "dbpath"), False), args.dump)
+        migrate.disqus(db.SQLite3(conf.get("general", "dbpath"), False), args.dump)
         sys.exit(0)
 
     if not conf.get("general", "host").startswith(("http://", "https://")):

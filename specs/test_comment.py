@@ -10,8 +10,8 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, notify, utils
-from isso.models import Comment
+from isso import Isso, notify, utils, views
+from isso.views import comment
 
 utils.heading = lambda *args: "Untitled."
 utils.urlexists = lambda *args: True
@@ -47,7 +47,7 @@ class TestComments(unittest.TestCase):
     def testGet(self):
 
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
-        r = self.get('/?uri=%2Fpath%2F&id=1')
+        r = self.get('/id/1')
         assert r.status_code == 200
 
         rv = json.loads(r.data)
@@ -66,6 +66,16 @@ class TestComments(unittest.TestCase):
 
         assert rv["mode"] == 1
         assert rv["text"] == '<p>Lorem ipsum ...</p>\n'
+
+    def testCreateMultiple(self):
+
+        a = self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        b = self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        c = self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        assert json.loads(a.data)["id"] == 1
+        assert json.loads(b.data)["id"] == 2
+        assert json.loads(c.data)["id"] == 3
 
     def testCreateAndGetMultiple(self):
 
@@ -87,10 +97,10 @@ class TestComments(unittest.TestCase):
     def testUpdate(self):
 
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
-        self.put('/?uri=%2Fpath%2F&id=1', data=json.dumps({
+        self.put('/id/1', data=json.dumps({
             'text': 'Hello World', 'author': 'me', 'website': 'http://example.com/'}))
 
-        r = self.get('/?uri=%2Fpath%2F&id=1&plain=1')
+        r = self.get('/id/1?plain=1')
         assert r.status_code == 200
 
         rv = json.loads(r.data)
@@ -102,10 +112,10 @@ class TestComments(unittest.TestCase):
     def testDelete(self):
 
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
-        r = self.delete('/?uri=%2Fpath%2F&id=1')
+        r = self.delete('/id/1')
         assert r.status_code == 200
         assert json.loads(r.data) == None
-        assert self.get('/?uri=%2Fpath%2F&id=1').status_code == 404
+        assert self.get('/id/1').status_code == 404
 
     def testDeleteWithReference(self):
 
@@ -113,14 +123,15 @@ class TestComments(unittest.TestCase):
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First', 'parent': 1}))
 
-        r = client.delete('/?uri=%2Fpath%2F&id=1')
+        r = client.delete('/id/1')
         assert r.status_code == 200
-        assert Comment(**json.loads(r.data)).deleted
+        print r.data
+        assert json.loads(r.data)['mode'] == 4
 
         assert self.get('/?uri=%2Fpath%2F&id=1').status_code == 200
         assert self.get('/?uri=%2Fpath%2F&id=2').status_code == 200
 
-        r = client.delete('/?uri=%2Fpath%2F&id=2')
+        r = client.delete('/id/2')
         assert self.get('/?uri=%2Fpath%2F').status_code == 404
 
     def testDeleteWithMultipleReferences(self):
@@ -142,15 +153,15 @@ class TestComments(unittest.TestCase):
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third 2', 'parent': 2}))
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': '...'}))
 
-        client.delete('/?uri=%2Fpath%2F&id=1')
+        client.delete('/id/1')
         assert self.get('/?uri=%2Fpath%2F').status_code == 200
-        client.delete('/?uri=%2Fpath%2F&id=2')
+        client.delete('/id/2')
         assert self.get('/?uri=%2Fpath%2F').status_code == 200
-        client.delete('/?uri=%2Fpath%2F&id=3')
+        client.delete('/id/3')
         assert self.get('/?uri=%2Fpath%2F').status_code == 200
-        client.delete('/?uri=%2Fpath%2F&id=4')
+        client.delete('/id/4')
         assert self.get('/?uri=%2Fpath%2F').status_code == 200
-        client.delete('/?uri=%2Fpath%2F&id=5')
+        client.delete('/id/5')
         assert self.get('/?uri=%2Fpath%2F').status_code == 404
 
     def testPathVariations(self):
@@ -161,21 +172,21 @@ class TestComments(unittest.TestCase):
             assert self.post('/new?' + urllib.urlencode({'uri': path}),
                              data=json.dumps({'text': '...'})).status_code == 201
 
-        for path in paths:
+        for i, path in enumerate(paths):
             assert self.get('/?' + urllib.urlencode({'uri': path})).status_code == 200
-            assert self.get('/?' + urllib.urlencode({'uri': path, id: 1})).status_code == 200
+            assert self.get('/id/%i' % (i + 1)).status_code == 200
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
 
         mallory = Client(self.app, Response)
         mallory.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Foo'}))
-        mallory.delete('/?uri=%2Fpath%2F&id=1')
+        mallory.delete('/id/1')
 
         bob = Client(self.app, Response)
         bob.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Bar'}))
 
-        assert mallory.delete('/?uri=%2Fpath%2F&id=1').status_code == 403
-        assert bob.delete('/?uri=%2Fpath%2F&id=1').status_code == 200
+        assert mallory.delete('/id/1').status_code == 403
+        assert bob.delete('/id/1').status_code == 200
 
     def testHash(self):
 
@@ -199,7 +210,7 @@ class TestComments(unittest.TestCase):
 
         rv = json.loads(rv.data)
 
-        for key in Comment.fields:
+        for key in comment.FIELDS:
             rv.pop(key)
 
         assert rv.keys() == []
@@ -221,8 +232,7 @@ class TestComments(unittest.TestCase):
         assert json.loads(rv.data) == 4
 
         for x in range(4):
-            self.delete('/?uri=%%2Fpath%%2F&id=%i' % (x + 1))
+            self.delete('/id/%i' % (x + 1))
 
         rv = self.get('/count?uri=%2Fpath%2F')
         assert rv.status_code == 404
-

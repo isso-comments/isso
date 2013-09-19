@@ -90,7 +90,7 @@ define(["lib/q"], function(Q) {
     }
 
     var remove = function(id) {
-        return curl("DELETE", endpoint + "/?" + qs({uri: location, id: id}), null)
+        return curl("DELETE", endpoint + "/id/" + id, null)
         .then(function(rv) {
             if (rv.status == 200) {
                 return JSON.parse(rv.body) == null;

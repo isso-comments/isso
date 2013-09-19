@@ -12,15 +12,12 @@ from __future__ import division
 
 import sys
 import os
-import hashlib
 
 from time import mktime, strptime
 from urlparse import urlparse
 from collections import defaultdict
 
 from xml.etree import ElementTree
-
-from isso.models import Comment
 
 
 ns = '{http://disqus.com}'
@@ -32,20 +29,15 @@ def insert(db, thread, comments):
     path = urlparse(thread.find('%sid' % ns).text).path
     remap = dict()
 
+    if path not in db.threads:
+        db.threads.new(path, thread.find('%stitle' % ns).text.strip())
+
     for item in sorted(comments, key=lambda k: k['created']):
 
-        parent = remap.get(item.get('dsq:parent'))
-        comment = Comment(created=item['created'], text=item['text'],
-                          author=item['author'], parent=parent,
-                          hash=hashlib.md5(item["email"] or '').hexdigest())
-
-        rv = db.add(path, comment, '127.0.0.1')
-        remap[item['dsq:id']] = rv["id"]
-
-        try:
-            db.threads.get(path)
-        except KeyError:
-            db.threads.add(path, thread.find('%stitle' % ns).text.strip())
+        dsq_id = item.pop('dsq:id')
+        item['parent'] = remap.get(item.pop('dsq:parent', None))
+        rv = db.comments.add(path, item)
+        remap[dsq_id] = rv["id"]
 
 
 def disqus(db, xmlfile):
@@ -61,7 +53,8 @@ def disqus(db, xmlfile):
             'author': post.find('%sauthor/%sname' % (ns, ns)).text,
             'email': post.find('%sauthor/%semail' % (ns, ns)).text,
             'created': mktime(strptime(
-                post.find('%screatedAt' % ns).text, '%Y-%m-%dT%H:%M:%SZ'))
+                post.find('%screatedAt' % ns).text, '%Y-%m-%dT%H:%M:%SZ')),
+            'remote_addr': '127.0.0.0'
         }
 
         if post.find(ns + 'parent') is not None:

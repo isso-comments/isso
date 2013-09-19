@@ -68,10 +68,6 @@ You must encode `path`, e.g. to retrieve comments for `/hello-world/`:
 
     GET /?uri=%2Fhello-world%2F
 
-You can also pass an `id` to fetch a specific comment:
-
-    GET /?uri=%2Fhello-world%2F&id=1
-
 To disable automatic Markdown-to-HTML conversion, pass `plain=1` to the
 query URL:
 
