@@ -11,7 +11,7 @@ Isso comes into play.
 [2]: https://disqus.com/
 
 **[Screenshot](http://posativ.org/~tmp/isso-preview.png)** |
-**[Try Yourself!](https://posativ.org/isso/static/post.html)** (in case it's not crashed ;-)
+**[Try Yourself!](http://posativ.org/isso/static/post.html)** (in case it's not crashed ;-)
 
 
 Features
