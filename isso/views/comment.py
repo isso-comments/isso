@@ -14,6 +14,7 @@ from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort, BadRequest
 
 from isso import utils, notify
+from isso.crypto import pbkdf2
 
 FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email', 'mode',
               'created', 'modified', 'likes', 'dislikes', 'hash'])
@@ -87,7 +88,7 @@ def new(app, environ, request, uri):
     checksum = hashlib.md5(rv["text"]).hexdigest()
 
     rv["text"] = app.markdown(rv["text"])
-    rv["hash"] = hashlib.md5(rv.get('email') or utils.salt(rv['remote_addr'])).hexdigest()
+    rv["hash"] = pbkdf2(rv.get('email') or rv['remote_addr'], app.SALT, 1000, 6)
 
     for key in set(rv.keys()) - FIELDS:
         rv.pop(key)
@@ -176,7 +177,7 @@ def fetch(app, environ, request, uri):
 
     for item in rv:
 
-        item['hash'] = hashlib.md5(item['email'] or utils.salt(item['remote_addr'])).hexdigest()
+        item['hash'] = pbkdf2(item['email'] or item['remote_addr'], app.SALT, 1000, 6)
 
         for key in set(item.keys()) - FIELDS:
             item.pop(key)
@@ -190,8 +191,14 @@ def fetch(app, environ, request, uri):
 
 def like(app, environ, request, id):
 
-    nv = app.db.comments.like(id, utils.anonymize(unicode(request.remote_addr)))
-    return Response(str(nv), 200)
+    nv = app.db.comments.vote(True, id, utils.anonymize(unicode(request.remote_addr)))
+    return Response(json.dumps(nv), 200)
+
+
+def dislike(app, environ, request, id):
+
+    nv = app.db.comments.vote(False, id, utils.anonymize(unicode(request.remote_addr)))
+    return Response(json.dumps(nv), 200)
 
 
 @requires(str, 'uri')
@@ -203,3 +210,7 @@ def count(app, environ, request, uri):
         abort(404)
 
     return Response(json.dumps(rv), 200, content_type='application/json')
+
+
+def checkip(app, env, req):
+    return Response(utils.anonymize(unicode(req.remote_addr)), 200)

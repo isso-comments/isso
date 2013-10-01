@@ -1,15 +1,15 @@
-define(["app/api", "lib/HTML"], function(api, HTML) {
+define(["app/api", "app/dom", "app/markup"], function(api, $, Mark) {
     return function() {
-        HTML.query("a").each(function(el, i, all) {
+        $.each("a", function(el) {
             if (! el.href.match("#isso-thread$")) {
                 return;
-            };
+            }
 
             var uri = el.href.match("^(.+)#isso-thread$")[1]
                              .replace(/^.*\/\/[^\/]+/, '');
             api.count(uri).then(function(rv) {
-                el.textContent = rv + (rv > 1 ? " Kommentare" : " Kommentar");
-            })
+                el.textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv});
+            });
         });
-    }
+    };
 });

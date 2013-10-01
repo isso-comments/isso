@@ -54,7 +54,7 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, migrate, views, wsgi, notify, colors
+from isso import db, migrate, views, wsgi, notify, colors, utils
 from isso.views import comment, admin
 
 url_map = Map([
@@ -62,16 +62,20 @@ url_map = Map([
 
     Rule('/id/<int:id>', methods=['GET', 'PUT', 'DELETE'], endpoint=views.comment.single),
     Rule('/id/<int:id>/like', methods=['POST'], endpoint=views.comment.like),
+    Rule('/id/<int:id>/dislike', methods=['POST'], endpoint=views.comment.dislike),
 
     Rule('/', methods=['GET'], endpoint=views.comment.fetch),
     Rule('/count', methods=['GET'], endpoint=views.comment.count),
-    Rule('/admin/', endpoint=views.admin.index)
+    Rule('/admin/', endpoint=views.admin.index),
+
+    Rule('/check-ip', endpoint=views.comment.checkip)
 ])
 
 
 class Isso(object):
 
     PRODUCTION = False
+    SALT = "Eech7co8Ohloopo9Ol6baimi"
 
     def __init__(self, dbpath, secret, origin, max_age, passphrase, mailer):
 

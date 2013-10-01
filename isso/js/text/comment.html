@@ -1,0 +1,61 @@
+<article class="isso-comment" id="isso-{{ id | blank }}">
+    <div class="avatar">
+        <canvas data-hash="{{ hash }}" height="48px" width="48px"></canvas>
+    </div>
+    <div class="text-wrapper">
+        <header>
+            {{ if bool(website) }}
+            <a class="author" href="{{ website }}" rel="nofollow">
+                {{ author | blank : Anonymous }}
+            </a>
+            {{ else }}
+                <span class="author">
+                    {{ author | blank : Anonymous }}
+                </span>
+            {{ /if }}
+
+            {{ if parent }}
+            <span class="spacer">•</span>
+            <a class="parent" href="#isso-{{ parent }}"><i>{{ svg-forward }}</i>{{ replyto }}</a>
+            {{ /if }}
+
+            <span class="spacer">•</span>
+
+            <a class="permalink" href="#isso-{{ id }}">
+                <date datetime="{{ created | datetime }}"></date>
+            </a>
+
+            <span class="note">
+            {{ if mode | equals : 2 }}
+                Kommentar muss noch freigeschaltet werden.
+            {{ /if }}
+            {{ if mode | equals : 4 }}
+                Kommentar gelöscht.
+            {{ /if }}
+            </span>
+
+
+        </header>
+        <div class="text">
+            {{ if mode | equals : 4 }}
+                <p>&nbsp;</p>
+            {{ else }}
+                {{ text }}
+            {{ /if }}
+        </div>
+        <footer>
+            {{ if likes | substract : `dislikes` | notequals : 0 }}
+                <span class="votes">{{ likes | substract : `dislikes` }}</span>
+            {{ /if }}
+            <a class="upvote" href="#"><i>{{ svg-arrow-up}}</i></a>
+            <span class="spacer">|</span>
+            <a class="downvote" href="#"><i>{{ svg-arrow-down}}</i></a>
+
+            <a class="reply" href="#">{{ i18n-comment-reply }}</a>
+            <!--<a class="edit" href="#">Bearbeiten</a>-->
+            <a class="delete" href="#">{{ i18n-comment-delete }}</a>
+        </footer>
+        <div class="isso-follow-up">
+        </div>
+    </div>
+</article>

@@ -31,6 +31,10 @@
     text-shadow: #aaaaaa 0px 0px 1px;
 }
 
+span.votes, a.like, a.dislike {
+    color: gray;
+}
+
 .isso-comment > header, .isso-comment > footer {
     font-family: "Helvetica", Arial, sans-serif;
     font-size: 0.80em;

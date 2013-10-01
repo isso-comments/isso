@@ -141,7 +141,7 @@ class Comments:
         self._remove_stale()
         return self.get(id)
 
-    def like(self, id, remote_addr):
+    def vote(self, upvote, id, remote_addr):
         """+1 a given comment. Returns the new like count (may not change because
         the creater can't vote on his/her own comment and multiple votes from the
         same ip address are ignored as well)."""
@@ -151,23 +151,26 @@ class Comments:
             .fetchone()
 
         if rv is None:
-            return 0
+            return None
 
         likes, dislikes, voters = rv
         if likes + dislikes >= 142:
-            return likes
+            return {'likes': likes, 'dislikes': dislikes}
 
         bf = Bloomfilter(bytearray(voters), likes + dislikes)
         if remote_addr in bf:
-            return likes
+            return {'likes': likes, 'dislikes': dislikes}
 
         bf.add(remote_addr)
         self.db.execute([
             'UPDATE comments SET',
-            '    likes = likes + 1, voters = ?',
+            '    likes = likes + 1,' if upvote else 'dislikes = dislikes + 1,',
+            '    voters = ?'
             'WHERE id=?;'], (buffer(bf.array), id))
 
-        return likes + 1
+        if upvote:
+            return {'likes': likes + 1, 'dislikes': dislikes}
+        return {'likes': likes, 'dislikes': dislikes + 1}
 
     def count(self, uri):
         """
