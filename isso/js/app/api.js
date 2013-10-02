@@ -3,7 +3,7 @@
  * License: BSD Style, 2 clauses. See isso/__init__.py.
  */
 
-define(["lib/q"], function(Q) {
+define(["q"], function(Q) {
 
     "use strict";
 
@@ -18,8 +18,8 @@ define(["lib/q"], function(Q) {
     // guess Isso API location
     var js = document.getElementsByTagName("script");
     for (var i = 0; i < js.length; i++) {
-        if (js[i].src.match("/js/require\\.js$")) {
-            endpoint = js[i].src.substring(0, js[i].src.length - 14);
+        if (js[i].src.match("/js/components/requirejs/require\\.js$")) {
+            endpoint = js[i].src.substring(0, js[i].src.length - 35);
             break;
         } else if (js[i].src.match("/js/embed\\.min\\.js$")) {
             endpoint = js[i].src.substring(0, js[i].src.length - 16);
@@ -27,7 +27,7 @@ define(["lib/q"], function(Q) {
         }
     }
 
-    if (endpoint == null) {
+    if (! endpoint) {
         throw "no Isso API location found";
     }
 

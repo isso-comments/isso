@@ -1,12 +1,7 @@
 /* Isso – Ich schrei sonst!
- *
- * Copyright 2013, Martin Zimmermann <info@posativ.org>. All rights reserved.
- * License: BSD Style, 2 clauses. See isso/__init__.py.
  */
-
-
-define(["lib/pbkdf2", "lib/identicons", "text/html", "./dom", "./utils", "./api", "./markup", "./i18n"],
-    function(pbkdf2, identicons, templates, $, utils, api, Mark, i18n) {
+define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i18n", "app/lib"],
+    function(behave, templates, $, utils, api, Mark, i18n, lib) {
 
     "use strict";
 
@@ -30,13 +25,13 @@ define(["lib/pbkdf2", "lib/identicons", "text/html", "./dom", "./utils", "./api"
 
         // add a blank identicon to not waste CPU cycles
         // XXX show a space invader instead :>
-        $(".avatar > canvas", el).replace(identicons.blank(48, 48));
+        $(".avatar > canvas", el).replace(lib.identicons.blank(48, 48));
 
         // on text area focus, generate identicon from IP address
         $(".textarea-wrapper > textarea", el).on("focus", function() {
             if ($(".avatar canvas", el).classList.contains("blank")) {
                 $(".avatar canvas", el).replace(
-                    identicons.generate(pbkdf2(api.remote_addr, api.salt, 1000, 6), 48, 48));
+                    lib.identicons.generate(lib.pbkdf2(api.remote_addr, api.salt, 1000, 6), 48, 48));
             }
         });
 
@@ -47,9 +42,9 @@ define(["lib/pbkdf2", "lib/identicons", "text/html", "./dom", "./utils", "./api"
                 clearTimeout(active);
             }
             active = setTimeout(function() {
-                pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr, api.salt, 1000, 6)
+                lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr, api.salt, 1000, 6)
                 .then(function(rv) {
-                    $(".avatar canvas", el).replace(identicons.generate(rv, 48, 48));
+                    $(".avatar canvas", el).replace(lib.identicons.generate(rv, 48, 48));
                 });
             }, 200);
         }, false);
@@ -90,6 +85,8 @@ define(["lib/pbkdf2", "lib/identicons", "text/html", "./dom", "./utils", "./api"
             });
         });
 
+        var editor = new behave({textarea: $("textarea", el)});
+
         return el;
     };
 
@@ -109,7 +106,7 @@ define(["lib/pbkdf2", "lib/identicons", "text/html", "./dom", "./utils", "./api"
             setTimeout(refresh, 60*1000);
         };  refresh();
 
-        $("div.avatar > canvas", el).replace(identicons.generate(comment.hash, 48, 48));
+        $("div.avatar > canvas", el).replace(lib.identicons.generate(comment.hash, 48, 48));
 
         var entrypoint;
         if (comment.parent === null) {
@@ -209,16 +206,6 @@ define(["lib/pbkdf2", "lib/identicons", "text/html", "./dom", "./utils", "./api"
                 }, 1500);
             }
         });
-
-        return;
-
-//        var votes = node.footer.add("span.votes{" + (comment.likes - comment.dislikes) + "}");
-//        node.footer.add(forms.like(comment.id, function(rv) {
-//            votes.textContent = rv.likes - rv.dislikes;
-//        }))
-//        node.footer.add(forms.dislike(comment.id, function(rv) {
-//            votes.textContent = rv.likes - rv.dislikes;
-//        }))
     };
 
     return {

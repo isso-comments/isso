@@ -1,4 +1,4 @@
-define(["lib/markup", "./i18n", "text/svg"], function(Mark, i18n, svg) {
+define(["vendor/markup", "app/i18n", "app/text/svg"], function(Mark, i18n, svg) {
 
     "use strict";
 

@@ -7,9 +7,11 @@
 
 *.pyc
 .Python
-/isso.egg-info/
-/isso/client/node_modules
 /bin
 /include
 /lib
 /share
+/isso.egg-info/
+/isso/js/components
+/isso/js/embed.min.js
+/isso/js/count.min.js

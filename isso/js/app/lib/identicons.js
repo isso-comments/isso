@@ -1,4 +1,4 @@
-define(["lib/q"], function(Q) {
+define(["q"], function(Q) {
 
     "use strict";
 

@@ -4,7 +4,7 @@
  * utility functions
  */
 
-define(["./markup"], function(Mark) {
+define(["app/markup"], function(Mark) {
 
     // return `cookie` string if set
     var cookie = function(cookie) {

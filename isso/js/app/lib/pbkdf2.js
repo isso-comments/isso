@@ -1,4 +1,4 @@
-define(["lib/q", "lib/sha1"], function(Q, sha1) {
+define(["q", "app/lib/sha1"], function(Q, sha1) {
     /*
      * JavaScript implementation of Password-Based Key Derivation Function 2
      * (PBKDF2) as defined in RFC 2898.

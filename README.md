@@ -36,7 +36,7 @@ Installation
 Requirements:
 
 - Python 2.6 or 2.7
-- [NPM](https://npmjs.org/)
+- [NPM](https://npmjs.org/) and [Bower](http://bower.io/)
 
 For now (as long as there is no stable version), you need to manually
 build everything:
@@ -44,6 +44,11 @@ build everything:
     ~> git clone https://github.com/posativ/isso.git
     ~> cd isso/
     ~> python setup.py develop
+
+To fetch the requires JS components (and CSS framework), run:
+
+    ~> cd isso/js/
+    ~> bower install almond q requirejs requirejs-domready requirejs-text
 
 You can now either use the JS client as-is (using [require.js][r.js], see
 below) or compile all JS into a single file:
@@ -126,7 +131,8 @@ when using [require.js][r.js]:
 
 ```html
 <link rel="stylesheet" href="/static/isso.css" />
-<script data-main="/js/embed" src="/js/require.js"></script>
+<script src="/js/config.js"></script>
+<script data-main="/js/embed" src="/isso/js/components/requirejs/require.js"></script>
 ```
 
 
