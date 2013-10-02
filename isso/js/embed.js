@@ -3,6 +3,12 @@ require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup"], 
     "use strict";
 
     domready(function() {
+        var css = $.new("link");
+        css.type = "text/css";
+        css.rel = "stylesheet";
+        css.href = api.endpoint + "/css/isso.css";
+        $("head").append(css);
+
         count();
 
         $("#isso-thread").append($.new('h4'));
