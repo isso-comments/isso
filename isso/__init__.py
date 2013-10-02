@@ -198,7 +198,8 @@ def main():
 
     app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),
-        '/js': join(dirname(__file__), 'js/')
+        '/js': join(dirname(__file__), 'js/'),
+        '/css': join(dirname(__file__), 'css/')
         })))
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),

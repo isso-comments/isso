@@ -128,7 +128,9 @@ a {
       }
 
       .upvote svg, .downvote svg {
-        margin-bottom: -0.2em;
+        position: relative;
+        top: 0.2em;
+        //margin-bottom: -0.2em;
       }
     }
   }
