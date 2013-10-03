@@ -15,13 +15,19 @@ require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup"], 
         $("#isso-thread").append(new isso.Postbox(null));
         $("#isso-thread").append('<div id="isso-root"></div>');
 
-        api.fetch().then(function(comments) {
-            $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: comments.length});
-            for (var i=0; i < comments.length; i++) {
-                isso.insert(comments[i], false);
+        api.fetch().then(function(rv) {
+
+            if (! rv.length) {
+                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-no-comments }}");
+                return;
             }
-        }).fail(function() {
-            $("#isso-thread > h4").textContent = Mark.up("{{ i18n-no-comments }}");
+
+            $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv.length});
+            for (var i=0; i < rv.length; i++) {
+                isso.insert(rv[i], false);
+            }
+        }).fail(function(err) {
+            console.log(err);
         });
     });
 });

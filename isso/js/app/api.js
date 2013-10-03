@@ -7,13 +7,20 @@ define(["q"], function(Q) {
 
     "use strict";
 
-    // http://stackoverflow.com/questions/17544965/unhandled-rejection-reasons-should-be-empty
-//    Q.stopUnhandledRejectionTracking();
+    Q.stopUnhandledRejectionTracking();
     Q.longStackSupport = true;
 
     var endpoint = null, remote_addr = null,
         salt = "Eech7co8Ohloopo9Ol6baimi",
         location = window.location.pathname;
+
+    var rules = {
+        "/": [200, 404],
+        "/new": [201, 202],
+        "/id/\\d+": [200, 403, 404],
+        "/id/\\d+/(like/dislike)": [200],
+        "/count": [200]
+    };
 
     // guess Isso API location
     var js = document.getElementsByTagName("script");
@@ -36,13 +43,15 @@ define(["q"], function(Q) {
         var xhr = new XMLHttpRequest();
         var response = Q.defer();
 
-        if (! ("withCredentials" in xhr)) {
-            respone.reject("I won't support IE ≤ 10.");
-            return response.promise;
-        }
-
         function onload() {
-            response.resolve({status: xhr.status, body: xhr.responseText});
+
+            var rule = url.replace(endpoint, "").split("?", 1)[0];
+
+            if (rule in rules && rules[rule].indexOf(xhr.status) === -1) {
+                response.reject(xhr.responseText);
+            } else {
+                response.resolve({status: xhr.status, body: xhr.responseText});
+            }
         }
 
         try {
@@ -70,19 +79,11 @@ define(["q"], function(Q) {
         }
 
         return rv.substring(0, rv.length - 1);  // chop off trailing "&"
-    }
+    };
 
     var create = function(data) {
-
-        return curl("POST", endpoint + "/new?" + qs({uri: location}), JSON.stringify(data))
-        .then(function (rv) {
-            if (rv.status === 201 || rv.status === 202) {
-                return JSON.parse(rv.body);
-            } else {
-                var msg = rv.body.match("<p>(.+)</p>");
-                throw {status: rv.status, reason: (msg && msg[1]) || rv.body};
-            }
-        });
+        return curl("POST", endpoint + "/new?" + qs({uri: location}), JSON.stringify(data)).then(
+            function (rv) { return JSON.parse(rv.body); });
     };
 
     var modify = function(data) {
@@ -90,63 +91,58 @@ define(["q"], function(Q) {
     };
 
     var remove = function(id) {
-        return curl("DELETE", endpoint + "/id/" + id, null)
-        .then(function(rv) {
-            if (rv.status === 200) {
-                return JSON.parse(rv.body) === null;
-            } else {
-                throw {status: rv.status, reason: rv.body};
+        return curl("DELETE", endpoint + "/id/" + id, null).then(function(rv) {
+            if (rv.status === 403) {
+                throw "Not authorized to remove this comment!";
             }
+
+            return JSON.parse(rv.body) === null;
         });
     };
 
     var fetch = function() {
 
-        return curl("GET", endpoint + "/?" + qs({uri: location}), null)
-        .then(function (rv) {
+        return curl("GET", endpoint + "/?" + qs({uri: location}), null).then(function (rv) {
             if (rv.status === 200) {
                 return JSON.parse(rv.body);
             } else {
-                var msg = rv.body.match("<p>(.+)</p>");
-                throw {status: rv.status, reason: (msg && msg[1]) || rv.body};
+                return [];
             }
         });
     };
 
     var count = function(uri) {
-        return curl("GET", endpoint + "/count?" + qs({uri: uri}), null)
-        .then(function (rv) {
-            if (rv.status == 200)
-                return JSON.parse(rv.body)
-
-            throw {status: rv.status, reason: rv.body};
-        })
-    }
+        return curl("GET", endpoint + "/count?" + qs({uri: uri}), null).then(function(rv) {
+            return JSON.parse(rv.body);
+        });
+    };
 
     var like = function(id) {
-        return curl("POST", endpoint + "/id/" + id + "/like", null)
-        .then(function(rv) {
+        return curl("POST", endpoint + "/id/" + id + "/like", null).then(function(rv) {
             return JSON.parse(rv.body);
-        })
-    }
+        });
+    };
 
     var dislike = function(id) {
-        return curl("POST", endpoint + "/id/" + id + "/dislike", null)
-            .then(function(rv) {
-                return JSON.parse(rv.body);
-            })
-    }
+        return curl("POST", endpoint + "/id/" + id + "/dislike", null).then(function(rv) {
+            return JSON.parse(rv.body);
+        });
+    };
 
-    remote_addr = curl("GET", endpoint + "/check-ip", null).then(function(rv) {return rv.body});
+    remote_addr = curl("GET", endpoint + "/check-ip", null).then(function(rv) {
+        return rv.body;
+    });
 
     return {
-        endpoint: endpoint, remote_addr: remote_addr, salt: salt,
+        endpoint: endpoint,
+        remote_addr: remote_addr,
+        salt: salt,
+
         create: create,
         remove: remove,
         fetch: fetch,
         count: count,
         like: like,
         dislike: dislike
-    }
-
+    };
 });
