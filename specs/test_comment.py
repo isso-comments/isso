@@ -236,3 +236,12 @@ class TestComments(unittest.TestCase):
 
         rv = self.get('/count?uri=%2Fpath%2F')
         assert rv.status_code == 404
+
+    def testModify(self):
+        self.post('/new?uri=test', data=json.dumps({"text": "Tpyo"}))
+
+        self.put('/id/1', data=json.dumps({"text": "Tyop"}))
+        assert json.loads(self.get('/id/1').data)["text"] == "<p>Tyop</p>\n"
+
+        self.put('/id/1', data=json.dumps({"text": "Typo"}))
+        assert json.loads(self.get('/id/1').data)["text"] == "<p>Typo</p>\n"

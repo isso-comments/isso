@@ -95,8 +95,7 @@ def new(app, environ, request, uri):
 
     resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201,
         content_type='application/json')
-    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]),
-       max_age=app.MAX_AGE, path='/')
+    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.MAX_AGE)
     return resp
 
 
@@ -153,8 +152,12 @@ def single(app, environ, request, id):
         for key in set(rv.keys()) - FIELDS:
             rv.pop(key)
 
+        checksum = hashlib.md5(rv["text"]).hexdigest()
         rv["text"] = app.markdown(rv["text"])
-        return Response(json.dumps(rv), 200, content_type='application/json')
+
+        resp = Response(json.dumps(rv), 200, content_type='application/json')
+        resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.MAX_AGE)
+        return resp
 
     if request.method == 'DELETE':
 
