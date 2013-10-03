@@ -154,6 +154,21 @@ a {
   > .form-wrapper {
     @include span-columns(10 of 11);
 
+    textarea {
+      @include fill-parent;
+      @include isso-shadow;
+      @include placeholder {
+        color: #AAA;
+      }
+
+      min-height: 48px;
+      font: inherit;
+    }
+
+    > .textarea-wrapper {
+      margin-bottom: 0.2em;
+    }
+
     > .auth-section {
       @include outer-container;
 
@@ -165,7 +180,12 @@ a {
         input {
           @include fill-parent;
           @include isso-shadow;
-          @include pad(0.4em);
+          @include pad(0.2em);
+          @include placeholder {
+            color: #AAA;
+          }
+
+          font: inherit;
         }
       }
 
@@ -174,6 +194,7 @@ a {
         margin-top: 0.1em;
 
         > input {
+          @include fill-parent;
           padding: 0.4em 1em;
 
           border-radius: 2px;
@@ -191,12 +212,6 @@ a {
           }
         }
       }
-    }
-
-    textarea {
-      @include fill-parent;
-      @include isso-shadow;
-      min-height: 48px;
     }
   }
 }
