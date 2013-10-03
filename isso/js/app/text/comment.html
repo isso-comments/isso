@@ -6,17 +6,19 @@
         <header>
             {{ if bool(website) }}
             <a class="author" href="{{ website }}" rel="nofollow">
-                {{ author | blank : Anonymous }}
+                {{ author | blank : `i18n-comment-anonymous` }}
             </a>
             {{ else }}
                 <span class="author">
-                    {{ author | blank : Anonymous }}
+                    {{ author | blank : `i18n-comment-anonymous` }}
                 </span>
             {{ /if }}
 
             {{ if parent }}
             <span class="spacer">•</span>
-            <a class="parent" href="#isso-{{ parent }}"><i>{{ svg-forward }}</i>{{ replyto }}</a>
+            <a class="parent" href="#isso-{{ parent }}">
+                <i>{{ svg-forward }}</i>{{ replyto | blank: `i18n-comment-anonymous` }}
+            </a>
             {{ /if }}
 
             <span class="spacer">•</span>
@@ -27,10 +29,10 @@
 
             <span class="note">
             {{ if mode | equals : 2 }}
-                Kommentar muss noch freigeschaltet werden.
+                {{ i18n-comment-queued }}
             {{ /if }}
             {{ if mode | equals : 4 }}
-                Kommentar gelöscht.
+                {{ i18n-comment-deleted }}
             {{ /if }}
             </span>
 

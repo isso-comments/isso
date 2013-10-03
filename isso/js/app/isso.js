@@ -127,7 +127,8 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
         }
 
         var footer = $("#isso-" + comment.id + " > .text-wrapper > footer"),
-            header = $("#isso-" + comment.id + " > .text-wrapper > header");
+            header = $("#isso-" + comment.id + " > .text-wrapper > header"),
+            text   = $("#isso-" + comment.id + " > .text-wrapper > div.text");
 
         var form = new Postbox(comment.id);
         $("a.reply", footer).on("click", function() {
@@ -135,6 +136,7 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
                 $("a.reply", footer),
                 function(reply) {
                     footer.insertAfter(form);
+                    $("textarea", form).focus();
                     reply.textContent = msgs["comment-close"];
                 },
                 function(reply) {
@@ -195,8 +197,8 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
                     if (rv) {
                         el.remove();
                     } else {
-                        $("span.note", el).textContent = "Kommentar gelöscht.";
-                        $(".text", el).innerHTML = "<p>&nbsp;</p>";
+                        $("span.note", header).textContent = msgs["comment-deleted"];
+                        text.innerHTML = "<p>&nbsp;</p>";
                     }
                 });
             } else {
