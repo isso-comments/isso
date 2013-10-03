@@ -10,7 +10,8 @@ Isso comes into play.
 [1]: https://github.com/posativ/acrylamid
 [2]: https://disqus.com/
 
-**[Screenshot](http://posativ.org/~tmp/isso-preview.png)** |
+**[Screenshot @2013-09-13](http://posativ.org/~tmp/isso-preview.png)** |
+**[Screenshot @2013-10-03](http://rw.posativ.org/n1v/o)** |
 **[Try Yourself!](http://posativ.org/isso/static/post.html)** (in case it's not crashed ;-)
 
 
@@ -19,7 +20,8 @@ Features
 
 * [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments
 * SQLite backend
-* client-side JS (currently 12.5kb minified and gzipped)
+* client-side JS (currently 60kb minified (20.5 gzipped))
+* I18N, available in german and english (also fallback)
 
 
 Roadmap
