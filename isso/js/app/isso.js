@@ -85,7 +85,16 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
             });
         });
 
-        var editor = new behave({textarea: $("textarea", el)});
+        var textarea = $("textarea", el);
+        new behave({textarea: textarea});
+
+        var offset= !window.opera ? (textarea.offsetHeight - textarea.clientHeight) : (textarea.offsetHeight + parseInt(window.getComputedStyle(textarea, null).getPropertyValue('border-top-width')));
+        $("textarea", el).on("keyup", function() {
+            if ((textarea.scrollHeight  + offset ) > 48) {
+                textarea.style.height = "auto";
+                textarea.style.height = (textarea.scrollHeight  + offset ) + 'px';
+            }
+        });
 
         return el;
     };
