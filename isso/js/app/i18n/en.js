@@ -8,9 +8,12 @@ define({
     "no-comments": "No Comments Yet",
 
     "comment-reply": "Reply",
+    "comment-edit": "Edit",
+    "comment-save": "Save",
     "comment-delete": "Delete",
     "comment-confirm": "Confirm",
     "comment-close": "Close",
+    "comment-cancel": "Cancel",
     "comment-deleted": "Comment deleted.",
     "comment-queued": "Comment in queue for moderation.",
     "comment-anonymous": "Anonymous",

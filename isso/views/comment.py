@@ -85,7 +85,7 @@ def new(app, environ, request, uri):
 
     # save checksum of text into cookie, so mallory can't modify/delete a comment, if
     # he add a comment, then removed it but not the signed cookie.
-    checksum = hashlib.md5(rv["text"]).hexdigest()
+    checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
 
     rv["text"] = app.markdown(rv["text"])
     rv["hash"] = pbkdf2(rv.get('email') or rv['remote_addr'], app.SALT, 1000, 6)
@@ -126,7 +126,7 @@ def single(app, environ, request, id):
         abort(403)
 
     # verify checksum, mallory might skip cookie deletion when he deletes a comment
-    if rv[1] != hashlib.md5(app.db.comments.get(id)["text"]).hexdigest():
+    if rv[1] != hashlib.md5(app.db.comments.get(id)["text"].encode('utf-8')).hexdigest():
         abort(403)
 
     if request.method == 'PUT':
@@ -152,7 +152,7 @@ def single(app, environ, request, id):
         for key in set(rv.keys()) - FIELDS:
             rv.pop(key)
 
-        checksum = hashlib.md5(rv["text"]).hexdigest()
+        checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
         rv["text"] = app.markdown(rv["text"])
 
         resp = Response(json.dumps(rv), 200, content_type='application/json')

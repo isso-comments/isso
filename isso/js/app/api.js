@@ -73,7 +73,7 @@ define(["q"], function(Q) {
     var qs = function(params) {
         var rv = "";
         for (var key in params) {
-            if (params.hasOwnProperty(key)) {
+            if (params.hasOwnProperty(key) && params[key]) {
                 rv += key + "=" + encodeURIComponent(params[key]) + "&";
             }
         }
@@ -86,8 +86,9 @@ define(["q"], function(Q) {
             function (rv) { return JSON.parse(rv.body); });
     };
 
-    var modify = function(data) {
-        // ...
+    var modify = function(id, data) {
+        return curl("PUT", endpoint + "/id/" + id, JSON.stringify(data)).then(
+            function (rv) { return JSON.parse(rv.body); });
     };
 
     var remove = function(id) {
@@ -100,9 +101,15 @@ define(["q"], function(Q) {
         });
     };
 
-    var fetch = function() {
+    var view = function(id, plain) {
+        return curl("GET", endpoint + "/id/" + id + "?" + qs({plain: plain}), null).then(function (rv) {
+            return JSON.parse(rv.body);
+        });
+    };
 
-        return curl("GET", endpoint + "/?" + qs({uri: location}), null).then(function (rv) {
+    var fetch = function(plain) {
+
+        return curl("GET", endpoint + "/?" + qs({uri: location, plain: plain}), null).then(function (rv) {
             if (rv.status === 200) {
                 return JSON.parse(rv.body);
             } else {
@@ -139,7 +146,9 @@ define(["q"], function(Q) {
         salt: salt,
 
         create: create,
+        modify: modify,
         remove: remove,
+        view: view,
         fetch: fetch,
         count: count,
         like: like,

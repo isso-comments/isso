@@ -103,6 +103,12 @@ a {
       }
     }
 
+    > div.textarea-wrapper textarea {
+      @include fill-parent;
+      @include isso-shadow;
+      font: inherit;
+    }
+
     > footer {
 
       font-family: "Helvetica", Arial, sans-serif;
@@ -119,7 +125,7 @@ a {
         }
       }
 
-      a.reply, a.delete {
+      a.reply, a.edit, a.cancel, a.delete {
         padding-left: 1em;
       }
 
@@ -130,7 +136,6 @@ a {
       .upvote svg, .downvote svg {
         position: relative;
         top: 0.2em;
-        //margin-bottom: -0.2em;
       }
     }
   }

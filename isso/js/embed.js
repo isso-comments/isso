@@ -28,6 +28,10 @@ require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup"], 
             }
         }).fail(function(err) {
             console.log(err);
+        }).done(function() {
+            if (window.location.hash.length > 0) {
+                $(window.location.hash).scrollIntoView();
+            }
         });
     });
 });

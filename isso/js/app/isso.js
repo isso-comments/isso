@@ -1,23 +1,11 @@
 /* Isso – Ich schrei sonst!
  */
-define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i18n", "app/lib"],
-    function(behave, templates, $, utils, api, Mark, i18n, lib) {
+define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i18n", "app/lib", "app/fancy"],
+    function(behave, templates, $, utils, api, Mark, i18n, lib, fancy) {
 
     "use strict";
 
     var msgs = i18n[i18n.lang];
-
-    var toggle = function(el, on, off) {
-        if (el.classList.contains("off") || ! el.classList.contains("on")) {
-            el.classList.remove("off");
-            el.classList.add("on");
-            on(el);
-        } else {
-            el.classList.remove("on");
-            el.classList.add("off");
-            off(el);
-        }
-    };
 
     var Postbox = function(parent) {
 
@@ -85,16 +73,8 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
             });
         });
 
-        var textarea = $("textarea", el);
-        new behave({textarea: textarea});
-
-        var offset= !window.opera ? (textarea.offsetHeight - textarea.clientHeight) : (textarea.offsetHeight + parseInt(window.getComputedStyle(textarea, null).getPropertyValue('border-top-width')));
-        $("textarea", el).on("keyup", function() {
-            if ((textarea.scrollHeight  + offset ) > 48) {
-                textarea.style.height = "auto";
-                textarea.style.height = (textarea.scrollHeight  + offset ) + 'px';
-            }
-        });
+        fancy.autoresize($("textarea", el), 48);
+        new behave({textarea: $("textarea", el)});
 
         return el;
     };
@@ -140,20 +120,17 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
             text   = $("#isso-" + comment.id + " > .text-wrapper > div.text");
 
         var form = new Postbox(comment.id);
-        $("a.reply", footer).on("click", function() {
-            toggle(
-                $("a.reply", footer),
-                function(reply) {
-                    footer.insertAfter(form);
-                    $("textarea", form).focus();
-                    reply.textContent = msgs["comment-close"];
-                },
-                function(reply) {
-                    form.remove();
-                    reply.textContent = msgs["comment-reply"];
-                }
-            );
-        });
+        $("a.reply", footer).toggle("click",
+            function() {
+                footer.insertAfter(form);
+                $("textarea", form).focus();
+                $("a.reply", footer).textContent = msgs["comment-close"];
+            },
+            function() {
+                form.remove();
+                $("a.reply", footer).textContent = msgs["comment-reply"];
+            }
+        );
 
         if (comment.parent !== null) {
             $("a.parent", header).on("mouseover", function() {
@@ -171,7 +148,7 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
                     span.remove();
                     return;
                 } else {
-                    footer.prepend($.htmlify('<span class="votes">' + value + '</span>'));
+                    footer.prepend($.new("span.votes", value));
                 }
             } else {
                 if (value === 0) {
@@ -195,10 +172,51 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
         });
 
         if (! utils.cookie(comment.id)) {
-//            $("a.edit", footer).remove();
+            $("a.edit", footer).remove();
             $("a.delete", footer).remove();
             return;
         }
+
+        $("a.edit", footer).toggle("click",
+            function(toggler) {
+                var edit = $("a.edit", footer);
+
+                edit.textContent = msgs["comment-save"];
+                edit.insertAfter($.new("a.cancel", msgs["comment-cancel"])).on("click", function() {
+                    text.textContent = "";
+                    text.className = "text";
+                    text.append(comment.text);
+                    toggler.next();
+                });
+
+                api.view(comment.id, 1).then(function(rv) {
+                    var textarea = $.new("textarea", rv.text);
+                    new behave({textarea: textarea});
+                    fancy.autoresize(textarea, 48);
+                    text.className = "textarea-wrapper";
+                    text.textContent = "";
+                    text.append(textarea);
+                    textarea.focus();
+                });
+            },
+            function(toggler) {
+                var textarea = $("textarea", text);
+                if (textarea && textarea.value.length < 3) {
+                    textarea.focus();
+                    toggler.wait();
+                    return;
+                } else if (textarea) {
+                    api.modify(comment.id, {"text": textarea.value}).then(function(rv) {
+                        text.innerHTML = rv.text;
+                        text.className = "text";
+                        comment.text = rv.text;
+                    });
+                }
+
+                $("a.cancel", footer).remove();
+                $("a.edit", footer).textContent = msgs["comment-edit"];
+            }
+        );
 
         $("a.delete", footer).on("click", function() {
             if ($("a.delete", footer).textContent === msgs["comment-confirm"]) {

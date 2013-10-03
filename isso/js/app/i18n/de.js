@@ -8,9 +8,12 @@ define({
     "no-comments": "Keine Kommentare bis jetzt",
 
     "comment-reply": "Antworten",
+    "comment-edit": "Bearbeiten",
+    "comment-save": "Speichern",
     "comment-delete": "Löschen",
     "comment-confirm": "Bestätigen",
     "comment-close": "Schließen",
+    "comment-cancel": "Abbrechen",
     "comment-deleted": "Kommentar gelöscht.",
     "comment-queued": "Kommentar muss noch freigeschaltet werden.",
     "comment-anonymous": "Anonym",

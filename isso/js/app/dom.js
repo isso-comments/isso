@@ -35,6 +35,35 @@ define(function() {
         });
     };
 
+    window.Element.prototype.toggle = function(type, on, off) {
+
+        function Toggle(el, on, off) {
+            this.state = false;
+            this.el = el;
+            this.on = on;
+            this.off = off;
+        }
+
+        Toggle.prototype.next = function next() {
+            if (! this.state) {
+                this.state = true;
+                this.on(this);
+            } else {
+                this.state = false;
+                this.off(this);
+            }
+        };
+
+        Toggle.prototype.wait = function wait() {
+            this.state = ! this.state;
+        };
+
+        var toggler = new Toggle(this, on, off);
+        this.on(type, function() {
+            toggler.next();
+        });
+    };
+
     window.Element.prototype.remove = function() {
         // Mimimi, I am IE and I am so retarded, mimimi.
         this.parentNode.removeChild(this);
@@ -70,8 +99,21 @@ define(function() {
         return wrapper.firstChild;
     };
 
-    DOM.new = function(tag) {
-        return document.createElement(tag);
+    DOM.new = function(tag, content) {
+
+        var el = document.createElement(tag.split(".")[0]);
+        tag.split(".").slice(1).forEach(function(val) { el.classList.add(val); });
+
+        if (["A", "LINK"].indexOf(el.nodeName) > -1) {
+            el.href = "#";
+        }
+
+        if (["TEXTAREA", "INPUT"].indexOf(el.nodeName) > -1) {
+            el.value = content;
+        } else {
+            el.textContent = content || "";
+        }
+        return el;
     };
 
     DOM.each = function(tag, func) {
