@@ -41,6 +41,8 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
             clearTimeout(active);
         }, false);
 
+        el.onsuccess = function() {};
+
         el.validate = function() {
             if ($("textarea", this).value.length < 3) {
                 $("textarea", this).focus();
@@ -68,6 +70,7 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
                 insert(comment, true);
 
                 if (parent !== null) {
+                    el.onsuccess();
                     el.remove();
                 }
             });
@@ -121,8 +124,9 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
 
         var form = new Postbox(comment.id);
         $("a.reply", footer).toggle("click",
-            function() {
+            function(toggler) {
                 footer.insertAfter(form);
+                form.onsuccess = function() { toggler.next(); };
                 $("textarea", form).focus();
                 $("a.reply", footer).textContent = msgs["comment-close"];
             },
