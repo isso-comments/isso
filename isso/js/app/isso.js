@@ -171,12 +171,6 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
             });
         });
 
-        if (! utils.cookie(comment.id)) {
-            $("a.edit", footer).remove();
-            $("a.delete", footer).remove();
-            return;
-        }
-
         $("a.edit", footer).toggle("click",
             function(toggler) {
                 var edit = $("a.edit", footer);
@@ -235,6 +229,18 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
                 }, 1500);
             }
         });
+
+        // remove edit and delete buttons when cookie is gone
+        var clear = function(button) {
+            if (! utils.cookie(comment.id)) {
+                $(button, footer).remove();
+            } else {
+                setTimeout(function() { clear(button); }, 15*1000);
+            }
+        };
+
+        clear("a.edit");
+        clear("a.delete");
     };
 
     return {
