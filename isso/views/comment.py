@@ -3,10 +3,9 @@
 import cgi
 import json
 import time
-import thread
 import hashlib
-import sqlite3
 import logging
+import sqlite3
 
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -16,8 +15,8 @@ from werkzeug.exceptions import abort, BadRequest
 from isso import utils, notify
 from isso.crypto import pbkdf2
 
-FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email', 'mode',
-              'created', 'modified', 'likes', 'dislikes', 'hash'])
+FIELDS = {'id', 'parent', 'text', 'author', 'website', 'email', 'mode', 'created',
+          'modified', 'likes', 'dislikes', 'hash'}
 
 
 class requires:
@@ -45,7 +44,7 @@ class requires:
 @requires(str, 'uri')
 def new(app, environ, request, uri):
 
-    if uri not in app.db.threads and not utils.urlexists(app.ORIGIN, uri):
+    if uri not in app.db.threads and not utils.urlexists(app.conf.get('general', 'host'), uri):
         return Response('URI does not exist', 404)
 
     try:
@@ -68,8 +67,9 @@ def new(app, environ, request, uri):
 
     data['remote_addr'] = utils.anonymize(unicode(request.remote_addr))
 
-    if uri not in app.db.threads:
-        app.db.threads.new(uri, utils.heading(app.ORIGIN, uri))
+    with app.lock:
+        if uri not in app.db.threads:
+            app.db.threads.new(uri, utils.heading(app.conf.get('general', 'host'), uri))
     title = app.db.threads[uri].title
 
     try:
@@ -78,24 +78,22 @@ def new(app, environ, request, uri):
         logging.exception('uncaught SQLite3 exception')
         abort(400)
 
-    href = (app.ORIGIN.rstrip("/") + uri + "#isso-%i" % rv["id"])
-    thread.start_new_thread(
-        app.notify,
-        notify.create(rv, title, href, utils.anonymize(unicode(request.remote_addr))))
+    href = (app.conf.get('general', 'host').rstrip("/") + uri + "#isso-%i" % rv["id"])
+    app.notify(title, notify.format(rv, href, utils.anonymize(unicode(request.remote_addr))))
 
     # save checksum of text into cookie, so mallory can't modify/delete a comment, if
     # he add a comment, then removed it but not the signed cookie.
     checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
 
     rv["text"] = app.markdown(rv["text"])
-    rv["hash"] = pbkdf2(rv.get('email') or rv['remote_addr'], app.SALT, 1000, 6)
+    rv["hash"] = pbkdf2(rv.get('email') or rv['remote_addr'], app.salt, 1000, 6)
 
     for key in set(rv.keys()) - FIELDS:
         rv.pop(key)
 
     resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201,
         content_type='application/json')
-    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.MAX_AGE)
+    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.conf.getint('general', 'max_age'))
     return resp
 
 
@@ -180,7 +178,7 @@ def fetch(app, environ, request, uri):
 
     for item in rv:
 
-        item['hash'] = pbkdf2(item['email'] or item['remote_addr'], app.SALT, 1000, 6)
+        item['hash'] = pbkdf2(item['email'] or item['remote_addr'], app.salt, 1000, 6)
 
         for key in set(item.keys()) - FIELDS:
             item.pop(key)

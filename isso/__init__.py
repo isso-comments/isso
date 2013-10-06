@@ -31,7 +31,6 @@ import pkg_resources
 dist = pkg_resources.get_distribution("isso")
 
 import sys
-import io
 import os
 import socket
 import httplib
@@ -39,14 +38,13 @@ import urlparse
 
 from os.path import dirname, join
 from argparse import ArgumentParser
-from ConfigParser import ConfigParser
 
 import misaka
 from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response, Request
-from werkzeug.exceptions import HTTPException, NotFound, InternalServerError, MethodNotAllowed
+from werkzeug.exceptions import HTTPException, NotFound, MethodNotAllowed
 
 from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.serving import run_simple
@@ -54,10 +52,11 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, migrate, views, wsgi, notify, colors, utils
+from isso import db, migrate, views, wsgi, colors
+from isso.core import NaiveMixin, uWSGIMixin, Config
 from isso.views import comment, admin
 
-url_map = Map([
+rules = Map([
     Rule('/new', methods=['POST'], endpoint=views.comment.new),
 
     Rule('/id/<int:id>', methods=['GET', 'PUT', 'DELETE'], endpoint=views.comment.single),
@@ -74,20 +73,28 @@ url_map = Map([
 
 class Isso(object):
 
-    PRODUCTION = False
-    SALT = "Eech7co8Ohloopo9Ol6baimi"
+    salt = "Eech7co8Ohloopo9Ol6baimi"
 
-    def __init__(self, dbpath, secret, origin, max_age, passphrase, mailer):
+    def __init__(self, conf):
 
-        self.DBPATH = dbpath
-        self.ORIGIN = origin
-        self.PASSPHRASE = passphrase
-        self.MAX_AGE = max_age
+        super(Isso, self).__init__(conf)
 
-        self.db = db.SQLite3(dbpath)
-        self.signer = URLSafeTimedSerializer(secret)
+        if not conf.get("general", "host").startswith(("http://", "https://")):
+            sys.exit("error: host must start with http:// or https://")
+
+        try:
+             print(" * connecting to HTTP server", end=" ")
+             rv = urlparse.urlparse(conf.get("general", "host"))
+             host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
+             httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
+             print("[%s]" % colors.green("ok"))
+        except (httplib.HTTPException, socket.error):
+             print("[%s]" % colors.red("failed"))
+
+        self.conf = conf
+        self.db = db.SQLite3(conf.get('general', 'dbpath'))
+        self.signer = URLSafeTimedSerializer(conf.get('general', 'secretkey'))
         self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
-        self.notify = lambda *args, **kwargs: mailer.sendmail(*args, **kwargs)
 
     def sign(self, obj):
         return self.signer.dumps(obj)
@@ -105,7 +112,7 @@ class Isso(object):
         return tt.render(**ctx)
 
     def dispatch(self, request, start_response):
-        adapter = url_map.bind_to_environ(request.environ)
+        adapter = rules.bind_to_environ(request.environ)
         try:
             handler, values = adapter.match()
             return handler(self, request.environ, request, **values)
@@ -114,14 +121,12 @@ class Isso(object):
         except MethodNotAllowed:
             return Response("Yup.", 200)
         except HTTPException as e:
-            return e
-        except InternalServerError as e:
             return Response(e, 500)
 
     def wsgi_app(self, environ, start_response):
         response = self.dispatch(Request(environ), start_response)
         if hasattr(response, 'headers'):
-            response.headers["Access-Control-Allow-Origin"] = self.ORIGIN.rstrip('/')
+            response.headers["Access-Control-Allow-Origin"] = self.conf.get('general', 'host').rstrip('/')
             response.headers["Access-Control-Allow-Headers"] = "Origin, Content-Type"
             response.headers["Access-Control-Allow-Credentials"] = "true"
             response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
@@ -129,6 +134,24 @@ class Isso(object):
 
     def __call__(self, environ, start_response):
         return self.wsgi_app(environ, start_response)
+
+
+def make_app(conf=None):
+
+    try:
+        import uwsgi
+    except ImportError:
+        isso = type("Isso", (Isso, NaiveMixin), {})(conf)
+    else:
+        isso = type("Isso", (Isso, uWSGIMixin), {})(conf)
+
+    app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
+        '/static': join(dirname(__file__), 'static/'),
+        '/js': join(dirname(__file__), 'js/'),
+        '/css': join(dirname(__file__), 'css/')
+        })))
+
+    return app
 
 
 def main():
@@ -145,62 +168,20 @@ def main():
 
     serve = subparser.add_parser("run", help="run server")
 
-    defaultcfg = [
-        "[general]",
-        "dbpath = /tmp/isso.db", "secretkey = %r" % os.urandom(24),
-        "host = http://localhost:8080/", "passphrase = p@$$w0rd",
-        "max_age = 450",
-        "[server]",
-        "host = localhost", "port = 8080", "reload = off",
-        "[SMTP]",
-        "username = ", "password = ",
-        "host = localhost", "port = 465", "ssl = on",
-        "to = ", "from = "
-    ]
-
     args = parser.parse_args()
-    conf = ConfigParser(allow_no_value=True)
-    conf.readfp(io.StringIO(u'\n'.join(defaultcfg)))
-    conf.read(args.conf)
+    conf = Config.load(args.conf)
 
     if args.command == "import":
-        migrate.disqus(db.SQLite3(conf.get("general", "dbpath"), False), args.dump)
+        migrate.disqus(db.SQLite3(conf.get('general', 'dbpath')), args.dump)
         sys.exit(0)
 
-    if not conf.get("general", "host").startswith(("http://", "https://")):
-        sys.exit("error: host must start with http:// or https://")
+    run_simple(conf.get('server', 'host'), conf.getint('server', 'port'), make_app(conf),
+               threaded=True, use_reloader=conf.getboolean('server', 'reload'))
 
-    try:
-        print(" * connecting to SMTP server", end=" ")
-        mailer = notify.SMTPMailer(conf)
-        print("[%s]" % colors.green("ok"))
-    except (socket.error, notify.SMTPException):
-        print("[%s]" % colors.red("failed"))
-        mailer = notify.NullMailer()
 
-    try:
-        print(" * connecting to HTTP server", end=" ")
-        rv = urlparse.urlparse(conf.get("general", "host"))
-        host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
-        httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
-        print("[%s]" % colors.green("ok"))
-    except (httplib.HTTPException, socket.error):
-        print("[%s]" % colors.red("failed"))
-
-    isso = Isso(
-        dbpath=conf.get('general', 'dbpath'),
-        secret=conf.get('general', 'secretkey'),
-        origin=conf.get('general', 'host'),
-        max_age=conf.getint('general', 'max_age'),
-        passphrase=conf.get('general', 'passphrase'),
-        mailer=mailer
-    )
-
-    app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
-        '/static': join(dirname(__file__), 'static/'),
-        '/js': join(dirname(__file__), 'js/'),
-        '/css': join(dirname(__file__), 'css/')
-        })))
-
-    run_simple(conf.get('server', 'host'), conf.getint('server', 'port'),
-        app, threaded=True, use_reloader=conf.getboolean('server', 'reload'))
+try:
+    import uwsgi
+except ImportError:
+    pass
+else:
+    application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))

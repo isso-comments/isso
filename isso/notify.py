@@ -1,13 +1,10 @@
 # -*- encoding: utf-8 -*-
 
-import time
-import logging
-
-from smtplib import SMTP, SMTP_SSL, SMTPException
+from smtplib import SMTP, SMTP_SSL
 from email.mime.text import MIMEText
 
 
-def create(comment, subject, permalink, remote_addr):
+def format(comment, permalink, remote_addr):
 
     rv = []
     rv.append("%s schrieb:" % (comment["author"] or "Jemand"))
@@ -21,7 +18,7 @@ def create(comment, subject, permalink, remote_addr):
     rv.append("IP Adresse: %s" % remote_addr)
     rv.append("Link zum Kommentar: %s" % permalink)
 
-    return subject, u'\n'.join(rv)
+    return u'\n'.join(rv)
 
 
 class Connection(object):
@@ -54,23 +51,15 @@ class SMTPMailer(object):
         with Connection(self.conf):
             pass
 
-    def sendmail(self, subject, body, retries=5):
+    def sendmail(self, subject, body):
 
         msg = MIMEText(body, 'plain', 'utf-8')
         msg['From'] = "Ich schrei sonst! <%s>" % self.from_addr
         msg['To'] = self.to_addr
         msg['Subject'] = subject.encode('utf-8')
 
-        for i in range(retries):
-            try:
-                with Connection(self.conf) as con:
-                    con.sendmail(self.from_addr, self.to_addr, msg.as_string())
-            except SMTPException:
-                logging.exception("uncaught exception, %i of %i:", i + 1, retries)
-            else:
-                return
-
-            time.sleep(60)
+        with Connection(self.conf) as con:
+            con.sendmail(self.from_addr, self.to_addr, msg.as_string())
 
 
 class NullMailer(object):

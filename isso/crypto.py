@@ -4,7 +4,6 @@
 # All rights reserved.
 
 import hmac
-import time
 import struct
 import base64
 import hashlib
