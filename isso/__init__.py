@@ -79,20 +79,8 @@ class Isso(object):
 
         super(Isso, self).__init__(conf)
 
-        if not conf.get("general", "host").startswith(("http://", "https://")):
-            sys.exit("error: host must start with http:// or https://")
-
-        try:
-             print(" * connecting to HTTP server", end=" ")
-             rv = urlparse.urlparse(conf.get("general", "host"))
-             host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
-             httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
-             print("[%s]" % colors.green("ok"))
-        except (httplib.HTTPException, socket.error):
-             print("[%s]" % colors.red("failed"))
-
         self.conf = conf
-        self.db = db.SQLite3(conf.get('general', 'dbpath'))
+        self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(conf.get('general', 'secretkey'))
         self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
 
@@ -100,7 +88,7 @@ class Isso(object):
         return self.signer.dumps(obj)
 
     def unsign(self, obj):
-        return self.signer.loads(obj, max_age=self.MAX_AGE)
+        return self.signer.loads(obj, max_age=self.conf.getint('general', 'max-age'))
 
     def markdown(self, text):
         return misaka.html(text, extensions=misaka.EXT_STRIKETHROUGH \
@@ -121,7 +109,7 @@ class Isso(object):
         except MethodNotAllowed:
             return Response("Yup.", 200)
         except HTTPException as e:
-            return Response(e, 500)
+            return e
 
     def wsgi_app(self, environ, start_response):
         response = self.dispatch(Request(environ), start_response)
@@ -141,9 +129,13 @@ def make_app(conf=None):
     try:
         import uwsgi
     except ImportError:
-        isso = type("Isso", (Isso, NaiveMixin), {})(conf)
+        class App(Isso, NaiveMixin):
+            pass
     else:
-        isso = type("Isso", (Isso, uWSGIMixin), {})(conf)
+        class App(Isso, uWSGIMixin):
+            pass
+
+    isso = App(conf)
 
     app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),
@@ -172,7 +164,8 @@ def main():
     conf = Config.load(args.conf)
 
     if args.command == "import":
-        migrate.disqus(db.SQLite3(conf.get('general', 'dbpath')), args.dump)
+        conf.set("guard", "enabled", "off")
+        migrate.disqus(db.SQLite3(conf.get('general', 'dbpath'), conf), args.dump)
         sys.exit(0)
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'), make_app(conf),

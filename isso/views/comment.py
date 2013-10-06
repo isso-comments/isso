@@ -12,7 +12,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort, BadRequest
 
-from isso import utils, notify
+from isso import utils, notify, db
 from isso.crypto import pbkdf2
 
 FIELDS = {'id', 'parent', 'text', 'author', 'website', 'email', 'mode', 'created',
@@ -73,10 +73,13 @@ def new(app, environ, request, uri):
     title = app.db.threads[uri].title
 
     try:
-        rv = app.db.comments.add(uri, data)
+        with app.lock:
+            rv = app.db.comments.add(uri, data)
     except sqlite3.Error:
         logging.exception('uncaught SQLite3 exception')
         abort(400)
+    except db.IssoDBException:
+        abort(403)
 
     href = (app.conf.get('general', 'host').rstrip("/") + uri + "#isso-%i" % rv["id"])
     app.notify(title, notify.format(rv, href, utils.anonymize(unicode(request.remote_addr))))
@@ -93,7 +96,7 @@ def new(app, environ, request, uri):
 
     resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201,
         content_type='application/json')
-    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.conf.getint('general', 'max_age'))
+    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.conf.getint('general', 'max-age'))
     return resp
 
 
@@ -154,7 +157,7 @@ def single(app, environ, request, id):
         rv["text"] = app.markdown(rv["text"])
 
         resp = Response(json.dumps(rv), 200, content_type='application/json')
-        resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.MAX_AGE)
+        resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.conf.getint('general', 'max-age'))
         return resp
 
     if request.method == 'DELETE':
