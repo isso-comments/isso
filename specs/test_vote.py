@@ -9,7 +9,7 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, notify, utils
+from isso import Isso, notify, utils, core
 
 utils.heading = lambda *args: "Untitled."
 utils.urlexists = lambda *args: True
@@ -36,7 +36,14 @@ class TestVote(unittest.TestCase):
 
     def makeClient(self, ip):
 
-        app = Isso(self.path, '...', '...', 15*60, "...", notify.NullMailer())
+        conf = core.Config.load(None)
+        conf.set("general", "dbpath", self.path)
+        conf.set("guard", "enabled", "off")
+
+        class App(Isso, core.Mixin):
+            pass
+
+        app = App(conf)
         app.wsgi_app = FakeIP(app.wsgi_app, ip)
 
         return Client(app, Response)

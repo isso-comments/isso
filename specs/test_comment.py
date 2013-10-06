@@ -10,7 +10,7 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, notify, utils, views
+from isso import Isso, notify, utils, views, core
 from isso.views import comment
 
 utils.heading = lambda *args: "Untitled."
@@ -31,8 +31,14 @@ class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
+        conf = core.Config.load(None)
+        conf.set("general", "dbpath", self.path)
+        conf.set("guard", "enabled", "off")
 
-        self.app = Isso(self.path, '...', '...', 15*60, "...", notify.NullMailer())
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app)
 
         self.client = Client(self.app, Response)

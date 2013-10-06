@@ -12,6 +12,9 @@ import threading
 import socket
 import smtplib
 
+import httplib
+import urlparse
+
 from ConfigParser import ConfigParser
 
 try:
@@ -21,19 +24,24 @@ except ImportError:
 
 from isso import notify, colors
 
+
 class Config:
 
     default = [
         "[general]",
         "dbpath = /tmp/isso.db", "secretkey = %r" % os.urandom(24),
         "host = http://localhost:8080/", "passphrase = p@$$w0rd",
-        "max_age = 450",
+        "max-age = 900",
         "[server]",
         "host = localhost", "port = 8080", "reload = off",
         "[SMTP]",
         "username = ", "password = ",
         "host = localhost", "port = 465", "ssl = on",
-        "to = ", "from = "
+        "to = ", "from = ",
+        "[guard]",
+        "enabled = on",
+        "ratelimit = 2"
+        ""
     ]
 
     @classmethod
@@ -56,9 +64,20 @@ def threaded(func):
     return dec
 
 
-class NaiveMixin(object):
+class Mixin(object):
+
+    def __init__(self, *args):
+        self.lock = threading.Lock()
+
+    def notify(self, subject, body, retries=5):
+        pass
+
+
+class NaiveMixin(Mixin):
 
     def __init__(self, conf):
+
+        super(NaiveMixin, self).__init__()
 
         try:
              print(" * connecting to SMTP server", end=" ")
@@ -69,7 +88,18 @@ class NaiveMixin(object):
              mailer = notify.NullMailer()
 
         self.mailer = mailer
-        self.lock = threading.Lock()
+
+        if not conf.get("general", "host").startswith(("http://", "https://")):
+            raise SystemExit("error: host must start with http:// or https://")
+
+        try:
+             print(" * connecting to HTTP server", end=" ")
+             rv = urlparse.urlparse(conf.get("general", "host"))
+             host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
+             httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
+             print("[%s]" % colors.green("ok"))
+        except (httplib.HTTPException, socket.error):
+             print("[%s]" % colors.red("failed"))
 
     @threaded
     def notify(self, subject, body, retries=5):
@@ -86,15 +116,16 @@ class NaiveMixin(object):
 class uWSGIMixin(NaiveMixin):
 
     def __init__(self, conf):
+
         super(uWSGIMixin, self).__init__(conf)
 
         class Lock():
 
             def __enter__(self):
                 while uwsgi.queue_get(0) == "LOCK":
-                    time.sleep(0.1)
+                    time.sleep(0.01)
 
-                uwsgi.queue_set(uwsgi.queue_slot(), "LOCK")
+                uwsgi.queue_set(0, "LOCK")
 
             def __exit__(self, exc_type, exc_val, exc_tb):
                 uwsgi.queue_pop()
