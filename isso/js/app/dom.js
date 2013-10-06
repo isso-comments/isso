@@ -27,6 +27,10 @@ define(function() {
     };
 
     window.Element.prototype.on = function(type, listener, prevent) {
+        /*
+        Shortcut for `Element.addEventListener`, prevents default event
+        by default, set :param prevents: to `false` to change that behavior.
+         */
         this.addEventListener(type, function(event) {
             listener();
             if (prevent === undefined || prevent) {
@@ -36,6 +40,15 @@ define(function() {
     };
 
     window.Element.prototype.toggle = function(type, on, off) {
+        /*
+        Toggle between two internal states on event :param type: e.g. to
+        cycle form visibility. Callback :param on: is called on first event,
+        :param off: next time.
+
+        You can skip to the next state without executing the callback with
+        `toggler.next()`. You can prevent a cycle when you call `toggler.wait()`
+        during an event.
+         */
 
         function Toggle(el, on, off) {
             this.state = false;
@@ -70,6 +83,12 @@ define(function() {
     };
 
     var DOM = function(query, root) {
+        /*
+        jQuery-like CSS selector which returns on :param query: either a
+        single node, a node list or null.
+
+        :param root: only queries within the given element.
+         */
 
         if (! root) {
             root = window.document;
@@ -89,6 +108,9 @@ define(function() {
     };
 
     DOM.htmlify = function(html) {
+        /*
+        Convert :param html: into an Element (if not already).
+         */
 
         if (html instanceof window.Element) {
             return html;
@@ -100,6 +122,14 @@ define(function() {
     };
 
     DOM.new = function(tag, content) {
+        /*
+        A helper to build HTML with pure JS. You can pass class names and
+        default content as well:
+
+            var par = DOM.new("p"),
+                div = DOM.new("p.some.classes"),
+                div = DOM.new("textarea.foo", "...")
+         */
 
         var el = document.createElement(tag.split(".")[0]);
         tag.split(".").slice(1).forEach(function(val) { el.classList.add(val); });
@@ -109,7 +139,7 @@ define(function() {
         }
 
         if (["TEXTAREA", "INPUT"].indexOf(el.nodeName) > -1) {
-            el.value = content;
+            el.value = content || "";
         } else {
             el.textContent = content || "";
         }
@@ -117,6 +147,7 @@ define(function() {
     };
 
     DOM.each = function(tag, func) {
+        // XXX really needed? Maybe better as NodeList method
         Array.prototype.forEach.call(document.getElementsByTagName(tag), func);
     };
 
