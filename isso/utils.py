@@ -59,7 +59,7 @@ def heading(host, path):
               filter(lambda i: i.attributes.has_key("id"), html.getElementsByTagName("div"))))
 
     if not el:
-        return None
+        return "Untitled"
 
     el = el[0]
     visited = []
@@ -91,7 +91,7 @@ def heading(host, path):
 
         el = el.parentNode
 
-    return None
+    return "Untitled."
 
 
 def anonymize(remote_addr):

@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import time
-import sqlite3
 
 from isso.utils import Bloomfilter
 
