@@ -14,6 +14,9 @@ Isso comes into play.
 **[Screenshot @2013-10-03](http://rw.posativ.org/n1v/o)** |
 **[Try Yourself!](http://posativ.org/isso/static/post.html)** (in case it's not crashed ;-)
 
+Isso is not stable (pretty far from that state) and the database format may
+change without any backwards compatibility. Just saying.
+
 
 Features
 --------
