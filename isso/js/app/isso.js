@@ -245,6 +245,19 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
 
         clear("a.edit");
         clear("a.delete");
+
+        // show direct reply to own comment when cookie is max aged
+        var show = function(el) {
+            if (utils.cookie(comment.id)) {
+                setTimeout(function() { show(el); }, 15*1000);
+            } else {
+                footer.append(el);
+            }
+        };
+
+        if (utils.cookie(comment.id)) {
+            show($("a.reply", footer).detach());
+        }
     };
 
     return {

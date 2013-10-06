@@ -64,6 +64,15 @@ define(function() {
         });
     };
 
+    window.Element.prototype.detach = function() {
+        /*
+        Detach an element from the DOM and return it.
+         */
+
+        this.parentNode.removeChild(this);
+        return this;
+    };
+
     window.Element.prototype.remove = function() {
         // Mimimi, I am IE and I am so retarded, mimimi.
         this.parentNode.removeChild(this);
