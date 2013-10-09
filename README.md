@@ -22,8 +22,8 @@ Features
 --------
 
 * [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments
-* SQLite backend
-* client-side JS (currently 60kb minified (20.5 gzipped))
+* SQLite backend, Disqus import
+* client-side JS (currently 61kb minified, 21kb gzipped)
 * I18N, available in german and english (also fallback)
 
 
@@ -50,7 +50,7 @@ build everything:
     ~> cd isso/
     ~> python setup.py develop
 
-To fetch the requires JS components (and CSS framework), run:
+To fetch the requires JS components, run:
 
     ~> cd isso/js/
     ~> bower install almond q requirejs requirejs-domready requirejs-text
@@ -62,6 +62,12 @@ below) or compile all JS into a single file:
     ~> npm install -g requirejs uglifyjs
     ~> r.js -o build.embed.js
     ~> r.js -o build.count.js
+
+At last, you need to build the CSS:
+
+    ~> cd ../css
+    ~> gem install sass
+    ~> scss isso.scss > isso.css
 
 Before you start, you may want to import comments from
 [Disqus.com](https://disqus.com/):
