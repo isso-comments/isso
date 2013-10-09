@@ -11,8 +11,12 @@ import sys
 import os
 
 from time import mktime, strptime
-from urlparse import urlparse
 from collections import defaultdict
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 from xml.etree import ElementTree
 

@@ -3,13 +3,18 @@
 from __future__ import division
 
 import socket
-import httplib
+
+try:
+    import httplib
+    from urlparse import urlparse
+except ImportError:
+    import http.client as httplib
+    from urllib.parse import urlparse
 
 import random
 import hashlib
 
 from string import ascii_letters, digits
-from urlparse import urlparse
 from contextlib import closing
 
 import html5lib

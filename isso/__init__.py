@@ -33,8 +33,6 @@ dist = pkg_resources.get_distribution("isso")
 import sys
 import os
 import socket
-import httplib
-import urlparse
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -73,7 +71,7 @@ rules = Map([
 
 class Isso(object):
 
-    salt = "Eech7co8Ohloopo9Ol6baimi"
+    salt = b"Eech7co8Ohloopo9Ol6baimi"
 
     def __init__(self, conf):
 

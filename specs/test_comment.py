@@ -3,9 +3,13 @@ from __future__ import unicode_literals
 
 import os
 import json
-import urllib
 import tempfile
 import unittest
+
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
@@ -15,6 +19,8 @@ from isso.views import comment
 
 utils.heading = lambda *args: "Untitled."
 utils.urlexists = lambda *args: True
+
+loads = lambda data: json.loads(data.decode('utf-8'))
 
 
 class FakeIP(object):
@@ -56,7 +62,7 @@ class TestComments(unittest.TestCase):
         r = self.get('/id/1')
         assert r.status_code == 200
 
-        rv = json.loads(r.data)
+        rv = loads(r.data)
 
         assert rv['id'] == 1
         assert rv['text'] == '<p>Lorem ipsum ...</p>\n'
@@ -66,9 +72,9 @@ class TestComments(unittest.TestCase):
         rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
 
         assert rv.status_code == 201
-        assert len(filter(lambda header: header[0] == 'Set-Cookie', rv.headers)) == 1
+        assert any(filter(lambda header: header[0] == 'Set-Cookie', rv.headers))
 
-        rv = json.loads(rv.data)
+        rv = loads(rv.data)
 
         assert rv["mode"] == 1
         assert rv["text"] == '<p>Lorem ipsum ...</p>\n'
@@ -79,9 +85,9 @@ class TestComments(unittest.TestCase):
         b = self.post('/new?uri=test', data=json.dumps({'text': '...'}))
         c = self.post('/new?uri=test', data=json.dumps({'text': '...'}))
 
-        assert json.loads(a.data)["id"] == 1
-        assert json.loads(b.data)["id"] == 2
-        assert json.loads(c.data)["id"] == 3
+        assert loads(a.data)["id"] == 1
+        assert loads(b.data)["id"] == 2
+        assert loads(c.data)["id"] == 3
 
     def testCreateAndGetMultiple(self):
 
@@ -91,7 +97,7 @@ class TestComments(unittest.TestCase):
         r = self.get('/?uri=%2Fpath%2F')
         assert r.status_code == 200
 
-        rv = json.loads(r.data)
+        rv = loads(r.data)
         assert len(rv) == 20
 
     def testGetInvalid(self):
@@ -109,7 +115,7 @@ class TestComments(unittest.TestCase):
         r = self.get('/id/1?plain=1')
         assert r.status_code == 200
 
-        rv = json.loads(r.data)
+        rv = loads(r.data)
         assert rv['text'] == 'Hello World'
         assert rv['author'] == 'me'
         assert rv['website'] == 'http://example.com/'
@@ -120,7 +126,7 @@ class TestComments(unittest.TestCase):
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
         r = self.delete('/id/1')
         assert r.status_code == 200
-        assert json.loads(r.data) == None
+        assert loads(r.data) == None
         assert self.get('/id/1').status_code == 404
 
     def testDeleteWithReference(self):
@@ -131,8 +137,7 @@ class TestComments(unittest.TestCase):
 
         r = client.delete('/id/1')
         assert r.status_code == 200
-        print r.data
-        assert json.loads(r.data)['mode'] == 4
+        assert loads(r.data)['mode'] == 4
 
         assert self.get('/?uri=%2Fpath%2F&id=1').status_code == 200
         assert self.get('/?uri=%2Fpath%2F&id=2').status_code == 200
@@ -175,11 +180,11 @@ class TestComments(unittest.TestCase):
         paths = ['/sub/path/', '/path.html', '/sub/path.html', 'path', '/']
 
         for path in paths:
-            assert self.post('/new?' + urllib.urlencode({'uri': path}),
+            assert self.post('/new?' + urlencode({'uri': path}),
                              data=json.dumps({'text': '...'})).status_code == 201
 
         for i, path in enumerate(paths):
-            assert self.get('/?' + urllib.urlencode({'uri': path})).status_code == 200
+            assert self.get('/?' + urlencode({'uri': path})).status_code == 200
             assert self.get('/id/%i' % (i + 1)).status_code == 200
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
@@ -201,9 +206,9 @@ class TestComments(unittest.TestCase):
         c = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Ccc", "email": "..."}))
 
         assert a.status_code == b.status_code == c.status_code == 201
-        a = json.loads(a.data)
-        b = json.loads(b.data)
-        c = json.loads(c.data)
+        a = loads(a.data)
+        b = loads(b.data)
+        c = loads(c.data)
 
         assert a['hash'] != '192.168.1.1'
         assert a['hash'] == b['hash']
@@ -214,12 +219,12 @@ class TestComments(unittest.TestCase):
         rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
         assert rv.status_code == 201
 
-        rv = json.loads(rv.data)
+        rv = loads(rv.data)
 
         for key in comment.FIELDS:
             rv.pop(key)
 
-        assert rv.keys() == []
+        assert not any(rv.keys())
 
     def testCounts(self):
 
@@ -228,14 +233,14 @@ class TestComments(unittest.TestCase):
 
         rv = self.get('/count?uri=%2Fpath%2F')
         assert rv.status_code == 200
-        assert json.loads(rv.data) == 1
+        assert loads(rv.data) == 1
 
         for x in range(3):
             self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
 
         rv = self.get('/count?uri=%2Fpath%2F')
         assert rv.status_code == 200
-        assert json.loads(rv.data) == 4
+        assert loads(rv.data) == 4
 
         for x in range(4):
             self.delete('/id/%i' % (x + 1))
@@ -247,7 +252,7 @@ class TestComments(unittest.TestCase):
         self.post('/new?uri=test', data=json.dumps({"text": "Tpyo"}))
 
         self.put('/id/1', data=json.dumps({"text": "Tyop"}))
-        assert json.loads(self.get('/id/1').data)["text"] == "<p>Tyop</p>\n"
+        assert loads(self.get('/id/1').data)["text"] == "<p>Tyop</p>\n"
 
         self.put('/id/1', data=json.dumps({"text": "Typo"}))
-        assert json.loads(self.get('/id/1').data)["text"] == "<p>Typo</p>\n"
+        assert loads(self.get('/id/1').data)["text"] == "<p>Typo</p>\n"

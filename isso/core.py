@@ -6,15 +6,10 @@ import io
 import os
 import time
 import binascii
-
-import thread
 import threading
 
 import socket
 import smtplib
-
-import httplib
-import urlparse
 
 from configparser import ConfigParser
 
@@ -22,6 +17,19 @@ try:
     import uwsgi
 except ImportError:
     uwsgi = None
+
+from isso.compat import PY2K
+
+if PY2K:
+    import thread
+
+    import httplib
+    import urlparse
+else:
+    import _thread as thread
+
+    import http.client as httplib
+    import urllib.parse as urlparse
 
 from isso import notify, colors
 

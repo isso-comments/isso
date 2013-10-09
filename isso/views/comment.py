@@ -12,6 +12,8 @@ from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import abort, BadRequest
 
+from isso.compat import text_type as str
+
 from isso import utils, notify, db
 from isso.crypto import pbkdf2
 
@@ -48,7 +50,7 @@ def new(app, environ, request, uri):
         return Response('URI does not exist', 404)
 
     try:
-        data = json.loads(request.data)
+        data = json.loads(request.get_data().decode('utf-8'))
     except ValueError:
         return Response("No JSON object could be decoded", 400)
 
@@ -65,7 +67,7 @@ def new(app, environ, request, uri):
         if data.get(field):
             data[field] = cgi.escape(data[field])
 
-    data['remote_addr'] = utils.anonymize(unicode(request.remote_addr))
+    data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
     with app.lock:
         if uri not in app.db.threads:
@@ -82,14 +84,14 @@ def new(app, environ, request, uri):
         abort(403)
 
     href = (app.conf.get('general', 'host').rstrip("/") + uri + "#isso-%i" % rv["id"])
-    app.notify(title, notify.format(rv, href, utils.anonymize(unicode(request.remote_addr))))
+    app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr))))
 
     # save checksum of text into cookie, so mallory can't modify/delete a comment, if
     # he add a comment, then removed it but not the signed cookie.
     checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
 
     rv["text"] = app.markdown(rv["text"])
-    rv["hash"] = pbkdf2(rv.get('email') or rv['remote_addr'], app.salt, 1000, 6)
+    rv["hash"] = str(pbkdf2(rv.get('email') or rv['remote_addr'], app.salt, 1000, 6))
 
     for key in set(rv.keys()) - FIELDS:
         rv.pop(key)
@@ -132,7 +134,7 @@ def single(app, environ, request, id):
 
     if request.method == 'PUT':
         try:
-            data = json.loads(request.data)
+            data = json.loads(request.get_data().decode('utf-8'))
         except ValueError:
             return Response("No JSON object could be decoded", 400)
 
@@ -181,7 +183,7 @@ def fetch(app, environ, request, uri):
 
     for item in rv:
 
-        item['hash'] = pbkdf2(item['email'] or item['remote_addr'], app.salt, 1000, 6)
+        item['hash'] = str(pbkdf2(item['email'] or item['remote_addr'], app.salt, 1000, 6))
 
         for key in set(item.keys()) - FIELDS:
             item.pop(key)
@@ -195,13 +197,13 @@ def fetch(app, environ, request, uri):
 
 def like(app, environ, request, id):
 
-    nv = app.db.comments.vote(True, id, utils.anonymize(unicode(request.remote_addr)))
+    nv = app.db.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
     return Response(json.dumps(nv), 200)
 
 
 def dislike(app, environ, request, id):
 
-    nv = app.db.comments.vote(False, id, utils.anonymize(unicode(request.remote_addr)))
+    nv = app.db.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
     return Response(json.dumps(nv), 200)
 
 
@@ -217,4 +219,4 @@ def count(app, environ, request, uri):
 
 
 def checkip(app, env, req):
-    return Response(utils.anonymize(unicode(req.remote_addr)), 200)
+    return Response(utils.anonymize(str(req.remote_addr)), 200)

@@ -4,6 +4,7 @@ import time
 
 from isso.db import spam
 from isso.utils import Bloomfilter
+from isso.compat import buffer
 
 
 class Comments:
@@ -77,7 +78,7 @@ class Comments:
             'UPDATE comments SET',
                 ','.join(key + '=' + '?' for key in data),
             'WHERE id=?;'],
-            data.values() + [id])
+            list(data.values()) + [id])
 
         return self.get(id)
 

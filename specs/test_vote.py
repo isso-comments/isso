@@ -14,6 +14,8 @@ from isso import Isso, notify, utils, core
 utils.heading = lambda *args: "Untitled."
 utils.urlexists = lambda *args: True
 
+loads = lambda data: json.loads(data.decode('utf-8'))
+
 
 class FakeIP(object):
 
@@ -51,7 +53,7 @@ class TestVote(unittest.TestCase):
     def testZeroLikes(self):
 
         rv = self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
-        assert json.loads(rv.data)['likes'] == json.loads(rv.data)['dislikes'] == 0
+        assert loads(rv.data)['likes'] == loads(rv.data)['dislikes'] == 0
 
     def testSingleLike(self):
 
@@ -59,7 +61,7 @@ class TestVote(unittest.TestCase):
         rv = self.makeClient("0.0.0.0").post("/id/1/like")
 
         assert rv.status_code == 200
-        assert json.loads(rv.data)["likes"] == 1
+        assert loads(rv.data)["likes"] == 1
 
     def testSelfLike(self):
 
@@ -68,7 +70,7 @@ class TestVote(unittest.TestCase):
         rv = bob.post('/id/1/like')
 
         assert rv.status_code == 200
-        assert json.loads(rv.data)["likes"] == 0
+        assert loads(rv.data)["likes"] == 0
 
     def testMultipleLikes(self):
 
@@ -76,12 +78,12 @@ class TestVote(unittest.TestCase):
         for num in range(15):
             rv = self.makeClient("1.2.%i.0" % num).post('/id/1/like')
             assert rv.status_code == 200
-            assert json.loads(rv.data)["likes"] == num + 1
+            assert loads(rv.data)["likes"] == num + 1
 
     def testVoteOnNonexistentComment(self):
         rv = self.makeClient("1.2.3.4").post('/id/1/like')
         assert rv.status_code == 200
-        assert json.loads(rv.data) == None
+        assert loads(rv.data) == None
 
     def testTooManyLikes(self):
 
@@ -91,14 +93,14 @@ class TestVote(unittest.TestCase):
             assert rv.status_code == 200
 
             if num >= 142:
-                assert json.loads(rv.data)["likes"] == 142
+                assert loads(rv.data)["likes"] == 142
             else:
-                assert json.loads(rv.data)["likes"] == num + 1
+                assert loads(rv.data)["likes"] == num + 1
 
     def testDislike(self):
         self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
         rv = self.makeClient("1.2.3.4").post('/id/1/dislike')
 
         assert rv.status_code == 200
-        assert json.loads(rv.data)['likes'] == 0
-        assert json.loads(rv.data)['dislikes'] == 1
+        assert loads(rv.data)['likes'] == 0
+        assert loads(rv.data)['dislikes'] == 1

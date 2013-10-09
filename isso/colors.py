@@ -1,10 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 # from isso import compat
-# from isso.compat import text_type as str, string_types
-
-str = unicode
-string_types = (unicode, str)
+from isso.compat import text_type as str, string_types
 
 
 # @compat.implements_to_string

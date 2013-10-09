@@ -10,6 +10,8 @@ import hashlib
 import binascii
 import operator
 
+from functools import reduce
+
 
 def _bin_to_long(x):
     """
@@ -76,7 +78,7 @@ def _pbkdf2(password, salt, iterations, dklen=0, digest=None):
     def F(i):
         def U():
             u = salt + struct.pack(b'>I', i)
-            for j in xrange(int(iterations)):
+            for j in range(int(iterations)):
                 u = _fast_hmac(password, u, digest).digest()
                 yield _bin_to_long(u)
         return _long_to_bin(reduce(operator.xor, U()), hex_format_string)
