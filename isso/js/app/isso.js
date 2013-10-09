@@ -11,8 +11,7 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
 
         var el = $.htmlify(Mark.up(templates["postbox"]));
 
-        // add a blank identicon to not waste CPU cycles
-        // XXX show a space invader instead :>
+        // add a default identicon to not waste CPU cycles
         $(".avatar > canvas", el).replace(lib.identicons.blank(48, 48));
 
         // on text area focus, generate identicon from IP address

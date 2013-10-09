@@ -108,8 +108,16 @@ define(["q"], function(Q) {
     };
 
     var generateBlank = function(height, width) {
-        var el = generateIdenticon(null, height, width);
+
+        var blank = parseInt([
+            0, 1, 1, 1, 1,
+            1, 0, 1, 1, 0,
+            1, 1, 1, 1, 1, /* purple: */ 0, 1, 0
+        ].join(""), 2).toString(16);
+
+        var el = generateIdenticon(blank, height, width);
         el.className = "blank";
+
         return el;
     };
 
