@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 requires = ['Jinja2>=2.7', 'werkzeug>=0.9', 'itsdangerous', 'misaka', 'html5lib']
 
 if sys.version_info < (3, 0):
-    requires += ['ipaddress']
+    requires += ['ipaddress', 'configparser']
 
 setup(
     name='isso',

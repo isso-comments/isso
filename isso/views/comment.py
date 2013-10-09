@@ -15,8 +15,8 @@ from werkzeug.exceptions import abort, BadRequest
 from isso import utils, notify, db
 from isso.crypto import pbkdf2
 
-FIELDS = {'id', 'parent', 'text', 'author', 'website', 'email', 'mode', 'created',
-          'modified', 'likes', 'dislikes', 'hash'}
+FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email', 'mode',
+              'created', 'modified', 'likes', 'dislikes', 'hash'])
 
 
 class requires:

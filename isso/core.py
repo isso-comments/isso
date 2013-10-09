@@ -5,6 +5,7 @@ from __future__ import print_function
 import io
 import os
 import time
+import binascii
 
 import thread
 import threading
@@ -15,7 +16,7 @@ import smtplib
 import httplib
 import urlparse
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 try:
     import uwsgi
@@ -29,7 +30,7 @@ class Config:
 
     default = [
         "[general]",
-        "dbpath = /tmp/isso.db", "secretkey = %r" % os.urandom(24),
+        "dbpath = /tmp/isso.db", "secretkey = %r" % binascii.b2a_hex(os.urandom(24)),
         "host = http://localhost:8080/", "passphrase = p@$$w0rd",
         "max-age = 900",
         "[server]",
@@ -48,7 +49,7 @@ class Config:
     def load(cls, configfile):
 
         rv = ConfigParser(allow_no_value=True)
-        rv.readfp(io.StringIO(u'\n'.join(Config.default)))
+        rv.read_file(io.StringIO(u'\n'.join(Config.default)))
 
         if configfile:
             rv.read(configfile)
