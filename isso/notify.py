@@ -4,7 +4,7 @@ from smtplib import SMTP, SMTP_SSL
 from email.mime.text import MIMEText
 
 
-def format(comment, permalink, remote_addr):
+def format(comment, permalink, remote_addr, activation_key=None):
 
     rv = []
     rv.append("%s schrieb:" % (comment["author"] or "Jemand"))
@@ -17,6 +17,10 @@ def format(comment, permalink, remote_addr):
 
     rv.append("IP Adresse: %s" % remote_addr)
     rv.append("Link zum Kommentar: %s" % permalink)
+
+    if activation_key:
+        rv.append("")
+        rv.append("Kommentar freischalten: %s" % activation_key)
 
     return u'\n'.join(rv)
 

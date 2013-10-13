@@ -256,3 +256,34 @@ class TestComments(unittest.TestCase):
 
         self.put('/id/1', data=json.dumps({"text": "Typo"}))
         assert loads(self.get('/id/1').data)["text"] == "<p>Typo</p>\n"
+
+
+class TestModeratedComments(unittest.TestCase):
+
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        conf = core.Config.load(None)
+        conf.set("general", "dbpath", self.path)
+        conf.set("general", "moderated", "true")
+        conf.set("guard", "enabled", "off")
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app)
+        self.client = Client(self.app, Response)
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def testAddComment(self):
+
+        rv = self.client.post('/new?uri=test', data=json.dumps({"text": "..."}))
+        assert rv.status_code == 202
+
+        assert self.client.get('/id/1').status_code == 200
+        assert self.client.get('/?uri=test').status_code == 404
+
+        self.app.db.comments.activate(1)
+        assert self.client.get('/?uri=test').status_code == 200

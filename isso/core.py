@@ -40,7 +40,7 @@ class Config:
         "[general]",
         "dbpath = /tmp/isso.db", "secretkey = %r" % binascii.b2a_hex(os.urandom(24)),
         "host = http://localhost:8080/", "passphrase = p@$$w0rd",
-        "max-age = 900",
+        "max-age = 900", "moderated = false",
         "[server]",
         "host = localhost", "port = 8080", "reload = off",
         "[SMTP]",

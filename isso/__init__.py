@@ -63,6 +63,7 @@ rules = Map([
 
     Rule('/', methods=['GET'], endpoint=views.comment.fetch),
     Rule('/count', methods=['GET'], endpoint=views.comment.count),
+    Rule('/activate/<string:auth>', endpoint=views.comment.activate),
     Rule('/admin/', endpoint=views.admin.index),
 
     Rule('/check-ip', endpoint=views.comment.checkip)
@@ -85,8 +86,8 @@ class Isso(object):
     def sign(self, obj):
         return self.signer.dumps(obj)
 
-    def unsign(self, obj):
-        return self.signer.loads(obj, max_age=self.conf.getint('general', 'max-age'))
+    def unsign(self, obj, max_age=None):
+        return self.signer.loads(obj, max_age=max_age or self.conf.getint('general', 'max-age'))
 
     def markdown(self, text):
         return misaka.html(text, extensions=misaka.EXT_STRIKETHROUGH \

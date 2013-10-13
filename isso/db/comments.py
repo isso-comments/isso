@@ -51,7 +51,7 @@ class Comments:
             '    ?, ?, ?, ?, ?',
             'FROM threads WHERE threads.uri = ?;'], (
             c.get('parent'),
-            c.get('created') or time.time(), None, self.db.mode, c['remote_addr'],
+            c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
             c['text'], c.get('author'), c.get('email'), c.get('website'), buffer(
                 Bloomfilter(iterable=[c['remote_addr']]).array),
             uri)
@@ -61,11 +61,12 @@ class Comments:
             'SELECT *, MAX(c.id) FROM comments AS c INNER JOIN threads ON threads.uri = ?',
             (uri, )).fetchone()))
 
-    # def activate(self, path, id):
-    #     """Activate comment id if pending and return comment for (path, id)."""
-    #     with sqlite3.connect(self.dbpath) as con:
-    #         con.execute("UPDATE comments SET mode=1 WHERE path=? AND id=? AND mode=2", (path, id))
-    #     return self.get(path, id)
+    def activate(self, id):
+        """Activate comment id if pending and return comment for (path, id)."""
+        self.db.execute([
+            'UPDATE comments SET',
+            '    mode=1',
+            'WHERE id=? AND mode=2'], (id, ))
 
     def update(self, id, data):
         """

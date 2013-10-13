@@ -67,6 +67,7 @@ def new(app, environ, request, uri):
         if data.get(field):
             data[field] = cgi.escape(data[field])
 
+    data['mode'] = (app.conf.getboolean('general', 'moderated') and 2) or 1
     data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
     with app.lock:
@@ -83,8 +84,14 @@ def new(app, environ, request, uri):
     except db.IssoDBException:
         abort(403)
 
-    href = (app.conf.get('general', 'host').rstrip("/") + uri + "#isso-%i" % rv["id"])
-    app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr))))
+    host = app.conf.get('general', 'host').rstrip("/")
+    href = host + uri + "#isso-%i" % rv["id"]
+    auth = None
+
+    if app.conf.getboolean('general', 'moderated'):
+        auth = host + environ["SCRIPT_NAME"] + "/activate/" + app.sign(str(rv["id"]))
+
+    app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr)), auth))
 
     # save checksum of text into cookie, so mallory can't modify/delete a comment, if
     # he add a comment, then removed it but not the signed cookie.
@@ -146,11 +153,8 @@ def single(app, environ, request, id):
 
         data['modified'] = time.time()
 
-        try:
+        with app.lock:
             rv = app.db.comments.update(id, data)
-        except sqlite3.Error:
-            logging.exception('uncaught SQLite3 exception')
-            abort(400)
 
         for key in set(rv.keys()) - FIELDS:
             rv.pop(key)
@@ -216,6 +220,19 @@ def count(app, environ, request, uri):
         abort(404)
 
     return Response(json.dumps(rv), 200, content_type='application/json')
+
+
+def activate(app, environ, request, auth):
+
+    try:
+        id = app.unsign(auth, max_age=2**32)
+    except (BadSignature, SignatureExpired):
+        abort(403)
+
+    with app.lock:
+        app.db.comments.activate(id)
+
+    return Response("Yo", 200)
 
 
 def checkip(app, env, req):
