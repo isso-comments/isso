@@ -55,7 +55,8 @@ def disqus(db, xmlfile):
             'email': post.find('%sauthor/%semail' % (ns, ns)).text,
             'created': mktime(strptime(
                 post.find('%screatedAt' % ns).text, '%Y-%m-%dT%H:%M:%SZ')),
-            'remote_addr': '127.0.0.0'
+            'remote_addr': '127.0.0.0',
+            'mode': 1
         }
 
         if post.find(ns + 'parent') is not None:
