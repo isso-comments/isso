@@ -43,6 +43,11 @@ Requirements:
 - Python 2.6 or 2.7
 - [NPM](https://npmjs.org/) and [Bower](http://bower.io/)
 
+On Debian/Ubuntu install the following packages
+
+    ~> sudo aptitude install python-setuptools python-dev npm 
+    ~> ln -s /usr/bin/nodejs /usr/bin/node 
+
 For now (as long as there is no stable version), you need to manually
 build everything:
 
@@ -121,7 +126,7 @@ Add the following two lines into your HTML header:
 
 ```html
 <link rel="stylesheet" href="http://example.tld/isso/static/isso.css" />
-<script src="http://example.tld/isso/embed.min.js"></script>
+<script src="http://example.tld/isso/js/embed.min.js"></script>
 ```
 
 To enable comments, add a `<div id="#isso-thread"></div>` below your post and
