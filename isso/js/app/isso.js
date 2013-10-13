@@ -1,7 +1,7 @@
 /* Isso – Ich schrei sonst!
  */
-define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i18n", "app/lib", "app/fancy"],
-    function(behave, templates, $, utils, api, Mark, i18n, lib, fancy) {
+define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i18n", "app/lib", "app/fancy"],
+    function(templates, $, utils, api, Mark, i18n, lib, fancy) {
 
     "use strict";
 
@@ -76,7 +76,6 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
         });
 
         fancy.autoresize($("textarea", el), 48);
-        new behave({textarea: $("textarea", el)});
 
         return el;
     };
@@ -188,7 +187,6 @@ define(["behave", "app/text/html", "app/dom", "app/utils", "app/api", "app/marku
 
                 api.view(comment.id, 1).then(function(rv) {
                     var textarea = $.new("textarea", rv.text);
-                    new behave({textarea: textarea});
                     fancy.autoresize(textarea, 48);
                     text.className = "textarea-wrapper";
                     text.textContent = "";
