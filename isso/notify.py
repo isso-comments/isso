@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from smtplib import SMTP, SMTP_SSL
+from email.header import Header
 from email.mime.text import MIMEText
 
 
@@ -60,7 +61,7 @@ class SMTPMailer(object):
         msg = MIMEText(body, 'plain', 'utf-8')
         msg['From'] = "Ich schrei sonst! <%s>" % self.from_addr
         msg['To'] = self.to_addr
-        msg['Subject'] = subject.encode('utf-8')
+        msg['Subject'] = Header(subject, 'utf-8')
 
         with Connection(self.conf) as con:
             con.sendmail(self.from_addr, self.to_addr, msg.as_string())
