@@ -146,9 +146,9 @@ and uses an AMD loader for execution. You can easily hack on the JS files,
 when using [require.js][r.js]:
 
 ```html
-<link rel="stylesheet" href="/static/isso.css" />
-<script src="/js/config.js"></script>
-<script data-main="/js/embed" src="/isso/js/components/requirejs/require.js"></script>
+<link rel="stylesheet" href="/isso/static/isso.css" />
+<script src="/isso/js/config.js"></script>
+<script data-main="/isso/js/embed" src="/isso/js/components/requirejs/require.js"></script>
 ```
 
 
