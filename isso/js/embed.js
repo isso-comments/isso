@@ -11,6 +11,10 @@ require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup"], 
 
         count();
 
+        if ($("#isso-thread") === null) {
+            return console.log("abort, #isso-thread is missing");
+        }
+
         $("#isso-thread").append($.new('h4'));
         $("#isso-thread").append(new isso.Postbox(null));
         $("#isso-thread").append('<div id="isso-root"></div>');
