@@ -32,7 +32,7 @@ define(["app/markup"], function(Mark) {
                 diff <    60 && i18n("date-now")  ||
                 diff <  3600 && i18n("date-minute", Math.floor(diff / 60)) ||
                 diff < 86400 && i18n("date-hour", Math.floor(diff / 3600))) ||
-            day_diff === 1 && i18n("date-day", day_diff) ||
+            day_diff <   7 && i18n("date-day", day_diff) ||
             day_diff <  31 && i18n("date-week", Math.ceil(day_diff / 7)) ||
             day_diff < 365 && i18n("date-month", Math.ceil(day_diff / 30)) ||
             i18n("date-year", Math.ceil(day_diff / 365.25));
