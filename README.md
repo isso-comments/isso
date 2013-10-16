@@ -129,7 +129,7 @@ Add the following two lines into your HTML header:
 <script src="http://example.tld/isso/js/embed.min.js"></script>
 ```
 
-To enable comments, add a `<div id="#isso-thread"></div>` below your post and
+To enable comments, add a `<div id="isso-thread"></div>` below your post and
 let the magic happen :-)
 
 To add comment count links to your index page, include `count.min.js` at the
