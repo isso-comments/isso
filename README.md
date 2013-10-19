@@ -4,7 +4,7 @@ Isso – Ich schrei sonst
 You love static blog generators (especially [Acrylamid][1] *cough*) and the
 only option to interact with the community is [Disqus][2]. There's nothing
 wrong with it, but if you care about the privacy of your audience you are
-better off with a comment system that is under your control. This is, were
+better off with a comment system that is under your control. This is, where
 Isso comes into play.
 
 [1]: https://github.com/posativ/acrylamid
@@ -38,41 +38,15 @@ Roadmap
 Installation
 ------------
 
-Requirements:
+Note, there is currently no PyPi release, but I'll upload a snapshot
+infrequently. Nevertheless, here are the requirements:
 
-- Python 2.6 or 2.7
-- [NPM](https://npmjs.org/) and [Bower](http://bower.io/)
+- Python 2.6, 2.7 or 3.3
+- easy_install or pip
 
-On Debian/Ubuntu install the following packages
+Install Isso (and its dependencies) with:
 
-    ~> sudo aptitude install python-setuptools python-dev npm 
-    ~> ln -s /usr/bin/nodejs /usr/bin/node 
-
-For now (as long as there is no stable version), you need to manually
-build everything:
-
-    ~> git clone https://github.com/posativ/isso.git
-    ~> cd isso/
-    ~> python setup.py develop
-
-To fetch the requires JS components, run:
-
-    ~> cd isso/js/
-    ~> bower install almond q requirejs requirejs-domready requirejs-text
-
-You can now either use the JS client as-is (using [require.js][r.js], see
-below) or compile all JS into a single file:
-
-    ~> cd isso/js
-    ~> npm install -g requirejs uglifyjs
-    ~> r.js -o build.embed.js
-    ~> r.js -o build.count.js
-
-At last, you need to build the CSS:
-
-    ~> cd ../css
-    ~> gem install sass
-    ~> scss isso.scss > isso.css
+    ~> pip install http://posativ.org/~tmp/isso-latest.tar.gz
 
 Before you start, you may want to import comments from
 [Disqus.com](https://disqus.com/):
@@ -94,7 +68,7 @@ setup has its own benefits.
 
 ### Isso on a Sub URI
 
-Let's assume you want Isso on `/isso`, use the following nginx snippet
+Let's assume you want Isso on `/isso`, use the following nginx snippet:
 
 ```nginx
 server {
@@ -111,23 +85,41 @@ server {
 }
 ```
 
-The Isso API endpoint is now `example.tld/isso`, check by `curl`ing the client
-JS located at `http://example.tld/isso/js/embed.js`.
+```html
+<link rel="stylesheet" href="http://example.tld/isso/css/isso.css" />
+<script src="http://example.tld/isso/js/embed.min.js"></script>
+```
 
 ### Isso on a Dedicated Domain
 
-...
+Now, assuming you have your isso instance running on a different URL, such as
+`http://example.tld:8080`, but your blog runs on `http://example.tld`:
+
+    ~> cat example.cfg
+    [general]
+    host = http://example.tld/
+    ~> isso -c example.cfg run
+     * connecting to SMTP server [failed]
+     * connecting to HTTP server [ok]
+     * Running on http://localhost:8080/
+
+Make sure, Isso can connect to server that hosts your blog, otherwise you are
+not able to post comments.
+
+Integrate Isso with:
+
+```html
+<link rel="stylesheet" href="http://example.tld:8080/css/isso.css" />
+<script src="http://example.tld:8080/js/embed.min.js"></script>
+```
+
+Also, put the plain isso server behind a real web server or [use uWSGI][3].
+
+[3]: https://github.com/posativ/isso/blob/master/docs/CONTRIBUTING.md
 
 
 Website Integration
 -------------------
-
-Add the following two lines into your HTML header:
-
-```html
-<link rel="stylesheet" href="http://example.tld/isso/static/isso.css" />
-<script src="http://example.tld/isso/js/embed.min.js"></script>
-```
 
 To enable comments, add a `<div id="isso-thread"></div>` below your post and
 let the magic happen :-)
@@ -139,23 +131,14 @@ updated with the current comment count.
 This functionality is already included when you embed `embed.min.js`, do
 *not* mix `embed.min.js` and `count.min.js` in a single document.
 
-### Embed with require.js
-
-This section is primarily for developers: The client-side JS is modularized
-and uses an AMD loader for execution. You can easily hack on the JS files,
-when using [require.js][r.js]:
-
-```html
-<link rel="stylesheet" href="/isso/static/isso.css" />
-<script src="/isso/js/config.js"></script>
-<script data-main="/isso/js/embed" src="/isso/js/components/requirejs/require.js"></script>
-```
 
 
-API
----
+Other Documents
+---------------
 
-See [docs/API.md](https://github.com/posativ/isso/blob/master/docs/API.md).
+- [Configuration](https://github.com/posativ/isso/raw/master/docs/CONFIGURATION.md)
+- [API overview](https://github.com/posativ/isso/raw/master/docs/API.md)
+- [uWSGI usage](https://github.com/posativ/isso/blob/master/docs/uWSGI.md)
 
 
 Alternatives
@@ -165,6 +148,3 @@ Alternatives
 - [Juvia](https://github.com/phusion/juvia) – Ruby on Rails
 - [Tildehash.com](http://www.tildehash.com/?article=why-im-reinventing-disqus) – PHP
 - [SO: Unobtrusive, self-hosted comments](http://stackoverflow.com/q/2053217)
-
-
-[r.js]: http://require.js/
