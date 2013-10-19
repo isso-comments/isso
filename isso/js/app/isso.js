@@ -116,9 +116,9 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             el.scrollIntoView();
         }
 
-        var footer = $("#isso-" + comment.id + " > .text-wrapper > footer"),
-            header = $("#isso-" + comment.id + " > .text-wrapper > header"),
-            text   = $("#isso-" + comment.id + " > .text-wrapper > div.text");
+        var footer = $("#isso-" + comment.id + " > .text-wrapper > .isso-comment-footer"),
+            header = $("#isso-" + comment.id + " > .text-wrapper > .isso-comment-header"),
+            text   = $("#isso-" + comment.id + " > .text-wrapper > .text");
 
         var form = new Postbox(comment.id);
         $("a.reply", footer).toggle("click",

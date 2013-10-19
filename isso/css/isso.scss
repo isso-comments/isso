@@ -60,11 +60,11 @@ a {
   > div.text-wrapper {
     @include span-columns(10 of 11);
 
-    > header, > footer {
+    > .isso-comment-header, > .isso-comment-footer {
       font-size: 0.95em;
     }
 
-    > header {
+    > .isso-comment-header {
       font-family: "Helvetica", Arial, sans-serif;
       font-size: 0.85em;
 
@@ -109,7 +109,7 @@ a {
       font: inherit;
     }
 
-    > footer {
+    > .isso-comment-footer {
 
       font-family: "Helvetica", Arial, sans-serif;
       font-size: 0.80em;

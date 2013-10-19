@@ -1,9 +1,9 @@
-<article class="isso-comment" id="isso-{{ id | blank }}">
+<div class="isso-comment" id="isso-{{ id | blank }}">
     <div class="avatar">
         <canvas data-hash="{{ hash }}" height="48px" width="48px"></canvas>
     </div>
     <div class="text-wrapper">
-        <header>
+        <div class="isso-comment-header" role="meta">
             {{ if bool(website) }}
             <a class="author" href="{{ website }}" rel="nofollow">
                 {{ author | blank : `i18n-comment-anonymous` }}
@@ -36,8 +36,7 @@
             {{ /if }}
             </span>
 
-
-        </header>
+        </div>
         <div class="text">
             {{ if mode | equals : 4 }}
                 <p>&nbsp;</p>
@@ -45,7 +44,7 @@
                 {{ text }}
             {{ /if }}
         </div>
-        <footer>
+        <div class="isso-comment-footer">
             {{ if likes | substract : `dislikes` | notequals : 0 }}
                 <span class="votes">{{ likes | substract : `dislikes` }}</span>
             {{ /if }}
@@ -56,8 +55,8 @@
             <a class="reply" href="#">{{ i18n-comment-reply }}</a>
             <a class="edit" href="#">{{ i18n-comment-edit }}</a>
             <a class="delete" href="#">{{ i18n-comment-delete }}</a>
-        </footer>
+        </div>
         <div class="isso-follow-up">
         </div>
     </div>
-</article>
+</div>
