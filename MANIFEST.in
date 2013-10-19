@@ -1,4 +1,6 @@
-recursive-include isso/templates
 recursive-include isso/static
 
-include isso/client/embed.js
+include isso/js/embed.min.js
+include isso/js/count.min.js
+
+include isso/css/isso.css
