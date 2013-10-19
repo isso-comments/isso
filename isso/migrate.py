@@ -76,6 +76,9 @@ def disqus(db, xmlfile):
             sys.stdout.write("\r[%i%%]  %s" % (((i+1)/num * 100), thread.find('%sid' % ns).text))
             sys.stdout.flush()
 
+        if thread.find('%sid' % ns).text is None:
+            continue
+
         id = thread.attrib.get(dsq + 'id')
         if id in res:
             threads += 1
