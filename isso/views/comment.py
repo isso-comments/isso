@@ -86,12 +86,15 @@ def new(app, environ, request, uri):
 
     host = app.conf.get('general', 'host').rstrip("/")
     href = host + uri + "#isso-%i" % rv["id"]
-    auth = None
+
+    deletion = host + environ["SCRIPT_NAME"] + "/delete/" + app.sign(str(rv["id"]))
+    activation = None
 
     if app.conf.getboolean('general', 'moderated'):
-        auth = host + environ["SCRIPT_NAME"] + "/activate/" + app.sign(str(rv["id"]))
+        activation = host + environ["SCRIPT_NAME"] + "/activate/" + app.sign(str(rv["id"]))
 
-    app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr)), auth))
+    app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr)),
+                                    activation_key=activation, deletion_key=deletion))
 
     # save checksum of text into cookie, so mallory can't modify/delete a comment, if
     # he add a comment, then removed it but not the signed cookie.
@@ -233,6 +236,18 @@ def activate(app, environ, request, auth):
         app.db.comments.activate(id)
 
     return Response("Yo", 200)
+
+def delete(app, environ, request, auth):
+
+    try:
+        id = app.unsign(auth, max_age=2**32)
+    except (BadSignature, SignatureExpired):
+        abort(403)
+
+    with app.lock:
+        app.db.comments.delete(id)
+
+    return Response("%s successfully removed" % id)
 
 
 def checkip(app, env, req):

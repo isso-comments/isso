@@ -63,6 +63,7 @@ rules = Map([
 
     Rule('/', methods=['GET'], endpoint=views.comment.fetch),
     Rule('/count', methods=['GET'], endpoint=views.comment.count),
+    Rule('/delete/<string:auth>', endpoint=views.comment.delete),
     Rule('/activate/<string:auth>', endpoint=views.comment.activate),
     Rule('/admin/', endpoint=views.admin.index),
 
