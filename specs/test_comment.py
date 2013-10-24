@@ -14,11 +14,12 @@ except ImportError:
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, notify, utils, views, core
+from isso import Isso, notify, views, core
+from isso.utils import http
 from isso.views import comment
 
-utils.heading = lambda *args: "Untitled."
-utils.urlexists = lambda *args: True
+http.heading = lambda *args: "Untitled."
+http.urlexists = lambda *args: True
 
 loads = lambda data: json.loads(data.decode('utf-8'))
 

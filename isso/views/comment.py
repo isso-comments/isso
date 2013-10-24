@@ -15,6 +15,7 @@ from werkzeug.exceptions import abort, BadRequest
 from isso.compat import text_type as str
 
 from isso import utils, notify, db
+from isso.utils import http
 from isso.crypto import pbkdf2
 
 FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email', 'mode',
@@ -46,7 +47,7 @@ class requires:
 @requires(str, 'uri')
 def new(app, environ, request, uri):
 
-    if uri not in app.db.threads and not utils.urlexists(app.conf.get('general', 'host'), uri):
+    if uri not in app.db.threads and not http.urlexists(app.conf.get('general', 'host'), uri):
         return Response('URI does not exist', 404)
 
     try:
@@ -72,7 +73,7 @@ def new(app, environ, request, uri):
 
     with app.lock:
         if uri not in app.db.threads:
-            app.db.threads.new(uri, utils.heading(app.conf.get('general', 'host'), uri))
+            app.db.threads.new(uri, http.heading(app.conf.get('general', 'host'), uri))
     title = app.db.threads[uri].title
 
     try:
