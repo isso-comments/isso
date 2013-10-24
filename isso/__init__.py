@@ -32,9 +32,17 @@ dist = pkg_resources.get_distribution("isso")
 
 import sys
 import os
+import socket
 
 from os.path import dirname, join
 from argparse import ArgumentParser
+
+try:
+    import httplib
+    import urlparse
+except ImportError:
+    import http.client as httplib
+    import urllib.parse as urlparse
 
 import misaka
 from itsdangerous import URLSafeTimedSerializer
@@ -49,8 +57,8 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, migrate, views, wsgi
-from isso.core import NaiveMixin, uWSGIMixin, Config
+from isso import db, migrate, views, wsgi, colors
+from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.views import comment, admin
 
 rules = Map([
@@ -76,12 +84,12 @@ class Isso(object):
 
     def __init__(self, conf):
 
-        super(Isso, self).__init__(conf)
-
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(conf.get('general', 'secretkey'))
         self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
+
+        super(Isso, self).__init__(conf)
 
     def sign(self, obj):
         return self.signer.dumps(obj)
@@ -128,13 +136,25 @@ def make_app(conf=None):
     try:
         import uwsgi
     except ImportError:
-        class App(Isso, NaiveMixin):
+        class App(Isso, ThreadedMixin):
             pass
     else:
         class App(Isso, uWSGIMixin):
             pass
 
     isso = App(conf)
+
+    if not conf.get("general", "host").startswith(("http://", "https://")):
+        raise SystemExit("error: host must start with http:// or https://")
+
+    try:
+        print(" * connecting to HTTP server", end=" ")
+        rv = urlparse.urlparse(conf.get("general", "host"))
+        host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
+        httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
+        print("[%s]" % colors.green("ok"))
+    except (httplib.HTTPException, socket.error):
+        print("[%s]" % colors.red("failed"))
 
     app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),

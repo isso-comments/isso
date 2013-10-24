@@ -39,8 +39,7 @@ establish a connection to your website (a simple HEAD request). If this
 check fails, none can comment on your website.
 
 max-age
-: time to allow users to remove or edit their comments. Defaults to `900`
-seconds (15 minutes).
+: time to allow users to remove or edit their comments. Defaults to `15m`.
 
 ## server (not applicable for uWSGI)
 
@@ -53,6 +52,14 @@ port
 reload
 : reload application, when editing the source code (only useful for developers),
 disabled by default.
+
+## moderation
+
+enabled
+: enable comment moderation queue, disabled by default
+
+purge-after
+: remove unprocessed comments in moderation queue after, by default, `30d`.
 
 ## SMTP
 

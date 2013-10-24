@@ -183,3 +183,9 @@ class Comments:
             'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
             '    threads.uri=? AND comments.tid=threads.id AND comments.mode=1;'],
             (uri, )).fetchone()
+
+    def purge(self, delta):
+        self.db.execute([
+            'DELETE FROM comments WHERE mode = 2 AND ? - created > ?;'
+        ], (time.time(), delta))
+        self._remove_stale()

@@ -67,7 +67,7 @@ def new(app, environ, request, uri):
         if data.get(field):
             data[field] = cgi.escape(data[field])
 
-    data['mode'] = (app.conf.getboolean('general', 'moderated') and 2) or 1
+    data['mode'] = (app.conf.getboolean('moderation', 'enabled') and 2) or 1
     data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
     with app.lock:
@@ -90,7 +90,7 @@ def new(app, environ, request, uri):
     deletion = host + environ["SCRIPT_NAME"] + "/delete/" + app.sign(str(rv["id"]))
     activation = None
 
-    if app.conf.getboolean('general', 'moderated'):
+    if app.conf.getboolean('moderation', 'enabled'):
         activation = host + environ["SCRIPT_NAME"] + "/activate/" + app.sign(str(rv["id"]))
 
     app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr)),

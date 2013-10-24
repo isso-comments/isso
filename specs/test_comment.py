@@ -264,7 +264,7 @@ class TestModeratedComments(unittest.TestCase):
         fd, self.path = tempfile.mkstemp()
         conf = core.Config.load(None)
         conf.set("general", "dbpath", self.path)
-        conf.set("general", "moderated", "true")
+        conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
 
         class App(Isso, core.Mixin):
@@ -287,3 +287,35 @@ class TestModeratedComments(unittest.TestCase):
 
         self.app.db.comments.activate(1)
         assert self.client.get('/?uri=test').status_code == 200
+
+
+class TestPurgeComments(unittest.TestCase):
+
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        conf = core.Config.load(None)
+        conf.set("general", "dbpath", self.path)
+        conf.set("moderation", "enabled", "true")
+        conf.set("guard", "enabled", "off")
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app)
+        self.client = Client(self.app, Response)
+
+    def testPurgeDoesNoHarm(self):
+        self.client.post('/new?uri=test', data=json.dumps({"text": "..."}))
+        self.app.db.comments.activate(1)
+        self.app.db.comments.purge(0)
+        assert self.client.get('/?uri=test').status_code == 200
+
+    def testPurgeWorks(self):
+        self.client.post('/new?uri=test', data=json.dumps({"text": "..."}))
+        self.app.db.comments.purge(0)
+        assert self.client.get('/id/1').status_code == 404
+
+        self.client.post('/new?uri=test', data=json.dumps({"text": "..."}))
+        self.app.db.comments.purge(3600)
+        assert self.client.get('/id/1').status_code == 200

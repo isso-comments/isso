@@ -22,16 +22,29 @@ from isso.compat import PY2K
 
 if PY2K:
     import thread
-
-    import httplib
-    import urlparse
 else:
     import _thread as thread
 
-    import http.client as httplib
-    import urllib.parse as urlparse
-
 from isso import notify, colors
+from isso.utils import parse
+
+
+class IssoParser(ConfigParser):
+
+    @classmethod
+    def _total_seconds(cls, td):
+        return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+
+    def getint(self, section, key):
+        try:
+            delta = parse.timedelta(self.get(section, key))
+        except ValueError:
+            return super(IssoParser, self).getint(section, key)
+        else:
+            try:
+                return int(delta.total_seconds())
+            except AttributeError:
+                return int(IssoParser._total_seconds(delta))
 
 
 class Config:
@@ -40,7 +53,10 @@ class Config:
         "[general]",
         "dbpath = /tmp/isso.db", "secretkey = %r" % binascii.b2a_hex(os.urandom(24)),
         "host = http://localhost:8080/", "passphrase = p@$$w0rd",
-        "max-age = 900", "moderated = false",
+        "max-age = 15m",
+        "[moderation]",
+        "enabled = false",
+        "purge-after = 30d",
         "[server]",
         "host = localhost", "port = 8080", "reload = off",
         "[SMTP]",
@@ -56,13 +72,35 @@ class Config:
     @classmethod
     def load(cls, configfile):
 
-        rv = ConfigParser(allow_no_value=True)
+        rv = IssoParser(allow_no_value=True)
         rv.read_file(io.StringIO(u'\n'.join(Config.default)))
 
         if configfile:
             rv.read(configfile)
 
         return rv
+
+
+def SMTP(conf):
+
+    try:
+        print(" * connecting to SMTP server", end=" ")
+        mailer = notify.SMTPMailer(conf)
+        print("[%s]" % colors.green("ok"))
+    except (socket.error, smtplib.SMTPException):
+        print("[%s]" % colors.red("failed"))
+        mailer = notify.NullMailer()
+
+    return mailer
+
+
+class Mixin(object):
+
+    def __init__(self, conf):
+        self.lock = threading.Lock()
+
+    def notify(self, subject, body, retries=5):
+        pass
 
 
 def threaded(func):
@@ -73,42 +111,17 @@ def threaded(func):
     return dec
 
 
-class Mixin(object):
-
-    def __init__(self, *args):
-        self.lock = threading.Lock()
-
-    def notify(self, subject, body, retries=5):
-        pass
-
-
-class NaiveMixin(Mixin):
+class ThreadedMixin(Mixin):
 
     def __init__(self, conf):
 
-        super(NaiveMixin, self).__init__()
+        super(ThreadedMixin, self).__init__(conf)
 
-        try:
-             print(" * connecting to SMTP server", end=" ")
-             mailer = notify.SMTPMailer(conf)
-             print("[%s]" % colors.green("ok"))
-        except (socket.error, smtplib.SMTPException):
-             print("[%s]" % colors.red("failed"))
-             mailer = notify.NullMailer()
+        if conf.getboolean("moderation", "enabled"):
+            self.purge(conf.getint("moderation", "purge-after"))
 
-        self.mailer = mailer
+        self.mailer = SMTP(conf)
 
-        if not conf.get("general", "host").startswith(("http://", "https://")):
-            raise SystemExit("error: host must start with http:// or https://")
-
-        try:
-             print(" * connecting to HTTP server", end=" ")
-             rv = urlparse.urlparse(conf.get("general", "host"))
-             host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
-             httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
-             print("[%s]" % colors.green("ok"))
-        except (httplib.HTTPException, socket.error):
-             print("[%s]" % colors.red("failed"))
 
     @threaded
     def notify(self, subject, body, retries=5):
@@ -121,8 +134,15 @@ class NaiveMixin(Mixin):
             else:
                 break
 
+    @threaded
+    def purge(self, delta):
+        while True:
+            with self.lock:
+                self.db.comments.purge(delta)
+            time.sleep(delta)
 
-class uWSGIMixin(NaiveMixin):
+
+class uWSGIMixin(Mixin):
 
     def __init__(self, conf):
 
@@ -148,7 +168,16 @@ class uWSGIMixin(NaiveMixin):
                 return uwsgi.SPOOL_OK
 
         self.lock = Lock()
+        self.mailer = SMTP(conf)
         uwsgi.spooler = spooler
+
+        timedelta = conf.getint("moderation", "purge-after")
+        purge = lambda signum: self.db.comments.purge(timedelta)
+        uwsgi.register_signal(1, "", purge)
+        uwsgi.add_timer(1, timedelta)
+
+        # run purge once
+        purge(1)
 
     def notify(self, subject, body, retries=5):
         uwsgi.spool({"subject": subject.encode('utf-8'), "body": body.encode('utf-8')})
