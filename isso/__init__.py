@@ -32,7 +32,6 @@ dist = pkg_resources.get_distribution("isso")
 
 import sys
 import os
-import socket
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -50,7 +49,7 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, migrate, views, wsgi, colors
+from isso import db, migrate, views, wsgi
 from isso.core import NaiveMixin, uWSGIMixin, Config
 from isso.views import comment, admin
 
@@ -104,7 +103,7 @@ class Isso(object):
         try:
             handler, values = adapter.match()
             return handler(self, request.environ, request, **values)
-        except NotFound as e:
+        except NotFound:
             return Response('Not Found', 404)
         except MethodNotAllowed:
             return Response("Yup.", 200)
