@@ -33,6 +33,7 @@ dist = pkg_resources.get_distribution("isso")
 import sys
 import os
 import socket
+import logging
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -57,9 +58,17 @@ from werkzeug.contrib.fixers import ProxyFix
 
 from jinja2 import Environment, FileSystemLoader
 
-from isso import db, migrate, views, wsgi, colors
+from isso import db, migrate, views, wsgi
 from isso.core import ThreadedMixin, uWSGIMixin, Config
+from isso.utils import parse
 from isso.views import comment, admin
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s: %(message)s")
+
+logger = logging.getLogger("isso")
+
 
 rules = Map([
     Rule('/new', methods=['POST'], endpoint=views.comment.new),
@@ -144,17 +153,13 @@ def make_app(conf=None):
 
     isso = App(conf)
 
-    if not conf.get("general", "host").startswith(("http://", "https://")):
-        raise SystemExit("error: host must start with http:// or https://")
-
     try:
-        print(" * connecting to HTTP server", end=" ")
-        rv = urlparse.urlparse(conf.get("general", "host"))
-        host = (rv.netloc + ':443') if rv.scheme == 'https' else rv.netloc
-        httplib.HTTPConnection(host, timeout=5).request('GET', rv.path)
-        print("[%s]" % colors.green("ok"))
+        host, port, ssl = parse.host(conf.get("general", "host"))
+        con = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
+        con(host, port, timeout=5).request('GET', '/')
+        logger.info("connected to HTTP server")
     except (httplib.HTTPException, socket.error):
-        print("[%s]" % colors.red("failed"))
+        logger.warn("unable to connect to HTTP server")
 
     app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
         '/static': join(dirname(__file__), 'static/'),

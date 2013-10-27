@@ -16,8 +16,8 @@ from isso.utils import parse
 
 def urlexists(host, path):
 
-    host, port = parse.host(host)
-    http = httplib.HTTPSConnection if port == 443 else httplib.HTTPConnection
+    host, port, ssl = parse.host(host)
+    http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
 
     with closing(http(host, port, timeout=3)) as con:
         try:
@@ -31,8 +31,8 @@ def heading(host, path):
     """Connect to `host`, GET path and start from #isso-thread to search for
     a possible heading (h1). Returns `None` if nothing found."""
 
-    host, port = parse.host(host)
-    http = httplib.HTTPSConnection if port == 443 else httplib.HTTPConnection
+    host, port, ssl = parse.host(host)
+    http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
 
     with closing(http(host, port, timeout=15)) as con:
         con.request('GET', path)

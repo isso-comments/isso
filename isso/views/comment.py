@@ -6,6 +6,7 @@ import time
 import hashlib
 import logging
 import sqlite3
+import logging
 
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -17,6 +18,8 @@ from isso.compat import text_type as str
 from isso import utils, notify, db
 from isso.utils import http
 from isso.crypto import pbkdf2
+
+logger = logging.getLogger("isso")
 
 FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email', 'mode',
               'created', 'modified', 'likes', 'dislikes', 'hash'])
@@ -74,6 +77,7 @@ def new(app, environ, request, uri):
     with app.lock:
         if uri not in app.db.threads:
             app.db.threads.new(uri, http.heading(app.conf.get('general', 'host'), uri))
+            logger.info('new thread: %s -> %s', uri, app.db.threads[uri].title)
     title = app.db.threads[uri].title
 
     try:
@@ -106,6 +110,9 @@ def new(app, environ, request, uri):
 
     for key in set(rv.keys()) - FIELDS:
         rv.pop(key)
+
+    # success!
+    logger.info('comment created: %s', json.dumps(rv))
 
     resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201,
         content_type='application/json')
@@ -163,6 +170,8 @@ def single(app, environ, request, id):
         for key in set(rv.keys()) - FIELDS:
             rv.pop(key)
 
+        logger.info('comment %i edited: %s', id, json.dumps(rv))
+
         checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
         rv["text"] = app.markdown(rv["text"])
 
@@ -176,6 +185,8 @@ def single(app, environ, request, id):
         if rv:
             for key in set(rv.keys()) - FIELDS:
                 rv.pop(key)
+
+        logger.info('comment %i deleted', id)
 
         resp = Response(json.dumps(rv), 200, content_type='application/json')
         resp.delete_cookie(str(id), path='/')

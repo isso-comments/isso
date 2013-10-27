@@ -7,6 +7,7 @@ import os
 import time
 import binascii
 import threading
+import logging
 
 import socket
 import smtplib
@@ -25,8 +26,10 @@ if PY2K:
 else:
     import _thread as thread
 
-from isso import notify, colors
+from isso import notify
 from isso.utils import parse
+
+logger = logging.getLogger("isso")
 
 
 class IssoParser(ConfigParser):
@@ -71,11 +74,23 @@ class Config:
     @classmethod
     def load(cls, configfile):
 
+        # return set of (section, option)
+        setify = lambda cp: set((section, option) for section in cp.sections()
+                                for option in cp.options(section))
+
         rv = IssoParser(allow_no_value=True)
         rv.read_file(io.StringIO(u'\n'.join(Config.default)))
 
+        a = setify(rv)
+
         if configfile:
             rv.read(configfile)
+
+        diff = setify(rv).difference(a)
+
+        if diff:
+            for item in diff:
+                logger.warn("no such option: [%s] %s", *item)
 
         return rv
 
@@ -83,11 +98,10 @@ class Config:
 def SMTP(conf):
 
     try:
-        print(" * connecting to SMTP server", end=" ")
         mailer = notify.SMTPMailer(conf)
-        print("[%s]" % colors.green("ok"))
+        logger.info("connected to SMTP server")
     except (socket.error, smtplib.SMTPException):
-        print("[%s]" % colors.red("failed"))
+        logger.warn("unable to connect to SMTP server")
         mailer = notify.NullMailer()
 
     return mailer
