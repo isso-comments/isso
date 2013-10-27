@@ -86,7 +86,7 @@ class Isso(object):
 
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
-        self.signer = URLSafeTimedSerializer(conf.get('general', 'secretkey'))
+        self.signer = URLSafeTimedSerializer(conf.get('general', 'session-key'))
         self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
 
         super(Isso, self).__init__(conf)

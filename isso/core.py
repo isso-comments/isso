@@ -51,9 +51,8 @@ class Config:
 
     default = [
         "[general]",
-        "dbpath = /tmp/isso.db", "secretkey = %r" % binascii.b2a_hex(os.urandom(24)),
-        "host = http://localhost:8080/", "passphrase = p@$$w0rd",
-        "max-age = 15m",
+        "dbpath = /tmp/isso.db", "session-key = %r" % binascii.b2a_hex(os.urandom(24)),
+        "host = http://localhost:8080/", "max-age = 15m",
         "[moderation]",
         "enabled = false",
         "purge-after = 30d",
@@ -64,7 +63,7 @@ class Config:
         "host = localhost", "port = 465", "ssl = on",
         "to = ", "from = ",
         "[guard]",
-        "enabled = on",
+        "enabled = true",
         "ratelimit = 2"
         ""
     ]

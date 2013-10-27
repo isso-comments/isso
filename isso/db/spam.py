@@ -21,7 +21,7 @@ def check(func):
             'SELECT id FROM comments WHERE remote_addr = ? AND created > ?;'
         ], (c["remote_addr"], time.time() + 60)).fetchall()
 
-        if len(rv) >= 2:
+        if len(rv) >= self.db.conf.getint("guard", "ratelimit"):
             raise TooManyComments
 
         # block more than three comments as direct response to the post
