@@ -45,19 +45,21 @@ def host(name):
     Parse :param name: into `httplib`-compatible host:port.
 
     >>> print(host("http://example.tld/"))
-    ('example.tld', 80)
+    ('example.tld', 80, False)
     >>> print(host("https://example.tld/"))
-    ('example.tld', 443)
+    ('example.tld', 443, True)
     >>> print(host("example.tld"))
-    ('example.tld', 80)
+    ('example.tld', 80, False)
     >>> print(host("example.tld:42"))
-    ('example.tld', 42)
+    ('example.tld', 42, False)
+    >>> print(host("https://example.tld:80/"))
+    ('example.tld', 80, True)
     """
 
     if not name.startswith(('http://', 'https://')):
         name = 'http://' + name
 
     rv = urlparse(name)
-    if rv.scheme == 'https':
-        return (rv.netloc, 443)
-    return (rv.netloc.rsplit(':')[0], rv.port or 80)
+    if rv.scheme == 'https' and rv.port is None:
+        return (rv.netloc, 443, True)
+    return (rv.netloc.rsplit(':')[0], rv.port or 80, rv.scheme == 'https')
