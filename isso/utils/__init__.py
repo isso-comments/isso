@@ -11,14 +11,23 @@ import ipaddress
 
 
 def anonymize(remote_addr):
+    """
+    Anonymize IPv4 and IPv6 :param remote_addr: to /24 (zero'd)
+    and /48 (zero'd).
+
+    >>> anonymize(u'12.34.56.78')
+    u'12.34.56.0'
+    >>> anonymize(u'1234:5678:90ab:cdef:fedc:ba09:8765:4321')
+    u'1234:5678:90ab:0000:0000:0000:0000:0000'
+    """
     try:
         ipv4 = ipaddress.IPv4Address(remote_addr)
-        return ''.join(ipv4.exploded.rsplit('.', 1)[0]) + '.' + '0'
+        return u''.join(ipv4.exploded.rsplit('.', 1)[0]) + '.' + '0'
     except ipaddress.AddressValueError:
         ipv6 = ipaddress.IPv6Address(remote_addr)
         if ipv6.ipv4_mapped is not None:
             return anonymize(ipv6.ipv4_mapped)
-        return ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*3)
+        return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*5)
 
 
 def salt(value, s=u'\x082@t9*\x17\xad\xc1\x1c\xa5\x98'):
