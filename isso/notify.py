@@ -58,6 +58,10 @@ class SMTPMailer(object):
         self.from_addr = conf.get('SMTP', 'from')
         self.to_addr = conf.get('SMTP', 'to')
 
+        # test SMTP connectivity
+        with Connection(self.conf):
+            pass
+
     def sendmail(self, subject, body):
 
         msg = MIMEText(body, 'plain', 'utf-8')
