@@ -31,7 +31,7 @@ Roadmap
 -------
 
 - Ping/TrackBack™ support
-- simple admin interface
+- simple admin interface (needs contributor)
 - spam filtering
 
 
@@ -57,6 +57,8 @@ Before you start, you may want to import comments from
 You start the server via (try to visit [http://localhost:8080/static/post.html]()).
 
     ~> isso run
+
+If that is working, you may want to [edit the configuration](https://github.com/posativ/isso/blob/master/docs/CONFIGURATION.rst).
 
 
 Webserver Configuration
@@ -136,7 +138,7 @@ This functionality is already included when you embed `embed.min.js`, do
 Other Documents
 ---------------
 
-- [Configuration](https://github.com/posativ/isso/raw/master/docs/CONFIGURATION.md)
+- [Configuration](https://github.com/posativ/isso/blob/master/docs/CONFIGURATION.rst)
 - [API overview](https://github.com/posativ/isso/raw/master/docs/API.md)
 - [uWSGI usage](https://github.com/posativ/isso/blob/master/docs/uWSGI.md)
 
