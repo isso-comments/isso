@@ -47,6 +47,17 @@ host
     fails, Isso may not be able check if a web page exists, thus fails to
     accept new comments.
 
+    You can supply more than one host:
+
+    .. code-block:: ini
+
+        [general]
+        host =
+            http://localhost/
+            https://localhost/
+
+    This is useful, when your website is available on HTTP and HTTPS.
+
 session-key
     private session key to validate client cookies. If you restart the
     application several times per hour for whatever reason, use a fixed

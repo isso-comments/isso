@@ -40,10 +40,8 @@ from argparse import ArgumentParser
 
 try:
     import httplib
-    import urlparse
 except ImportError:
     import http.client as httplib
-    import urllib.parse as urlparse
 
 import misaka
 from itsdangerous import URLSafeTimedSerializer
@@ -128,12 +126,24 @@ class Isso(object):
             return e
 
     def wsgi_app(self, environ, start_response):
+
         response = self.dispatch(Request(environ), start_response)
-        if hasattr(response, 'headers'):
-            response.headers["Access-Control-Allow-Origin"] = self.conf.get('general', 'host').rstrip('/')
-            response.headers["Access-Control-Allow-Headers"] = "Origin, Content-Type"
-            response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+
+        # add CORS header
+        if hasattr(response, 'headers') and 'HTTP_ORIGN' in environ:
+            for host in self.conf.getiter('general', 'host'):
+                if environ["HTTP_ORIGIN"] == host.rstrip("/"):
+                    origin = host.rstrip("/")
+                    break
+            else:
+                origin = host.rstrip("/")
+
+            hdrs = response.headers
+            hdrs["Access-Control-Allow-Origin"] = origin
+            hdrs["Access-Control-Allow-Headers"] = "Origin, Content-Type"
+            hdrs["Access-Control-Allow-Credentials"] = "true"
+            hdrs["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+
         return response(environ, start_response)
 
     def __call__(self, environ, start_response):
@@ -153,12 +163,17 @@ def make_app(conf=None):
 
     isso = App(conf)
 
-    try:
-        host, port, ssl = parse.host(conf.get("general", "host"))
-        con = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
-        con(host, port, timeout=5).request('GET', '/')
-        logger.info("connected to HTTP server")
-    except (httplib.HTTPException, socket.error):
+    for line in conf.getiter("general", "host"):
+        try:
+            host, port, ssl = parse.host(line)
+            con = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
+            con(host, port, timeout=5).request('GET', '/')
+        except (httplib.HTTPException, socket.error):
+            continue
+        else:
+            logger.info("connected to HTTP server")
+            break
+    else:
         logger.warn("unable to connect to HTTP server")
 
     app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
@@ -194,7 +209,6 @@ def main():
 
     run_simple(conf.get('server', 'host'), conf.getint('server', 'port'), make_app(conf),
                threaded=True, use_reloader=conf.getboolean('server', 'reload'))
-
 
 try:
     import uwsgi

@@ -28,11 +28,36 @@ else:
 
 from isso import notify
 from isso.utils import parse
+from isso.compat import text_type as str
 
 logger = logging.getLogger("isso")
 
 
 class IssoParser(ConfigParser):
+    """
+    Extended :class:`ConfigParser` to parse human-readable timedeltas
+    into seconds and handles multiple values per key.
+
+    >>> import io
+    >>> parser = IssoParser(allow_no_value=True)
+    >>> parser.read_file(io.StringIO(u'''
+    ... [foo]
+    ... bar = 1h
+    ... baz = 12
+    ... bla =
+    ...     spam
+    ...     ham
+    ... asd = fgh
+    ... '''))
+    >>> parser.getint("foo", "bar")
+    3600
+    >>> parser.getint("foo", "baz")
+    12
+    >>> list(parser.getiter("foo", "bla"))  # doctest: +IGNORE_UNICODE
+    ['spam', 'ham']
+    >>> list(parser.getiter("foo", "asd"))  # doctest: +IGNORE_UNICODE
+    ['fgh']
+    """
 
     @classmethod
     def _total_seconds(cls, td):
@@ -48,6 +73,11 @@ class IssoParser(ConfigParser):
                 return int(delta.total_seconds())
             except AttributeError:
                 return int(IssoParser._total_seconds(delta))
+
+    def getiter(self, section, key):
+        for item in map(str.strip, self.get(section, key).split('\n')):
+            if item:
+                yield item
 
 
 class Config:
