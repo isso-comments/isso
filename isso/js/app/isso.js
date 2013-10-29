@@ -16,7 +16,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
 
         // on text area focus, generate identicon from IP address
         $(".textarea-wrapper > textarea", el).on("focus", function() {
-            if ($(".avatar svg", el).classList.contains("blank")) {
+            if ($(".avatar svg", el).getAttribute("className") === "blank") {
                 $(".avatar svg", el).replace(
                     lib.identicons.generate(lib.pbkdf2(api.remote_addr, api.salt, 1000, 6), 4, 48));
             }

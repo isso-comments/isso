@@ -111,7 +111,7 @@ define(["q"], function(Q) {
         ].join(""), 2).toString(16);
 
         var el = generateIdenticon(blank, height, width);
-        el.classList.add("blank");
+        el.setAttribute("className", "blank"); // IE10 does not support classList on SVG elements, duh.
 
         return el;
     };
