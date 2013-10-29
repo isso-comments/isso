@@ -213,8 +213,20 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             }
         );
 
-        $("a.delete", footer).on("click", function() {
-            if ($("a.delete", footer).textContent === msgs["comment-confirm"]) {
+        $("a.delete", footer).toggle("click",
+            function(toggler) {
+                var del = $("a.delete", footer);
+                var state = ! toggler.state;
+
+                del.textContent = msgs["comment-confirm"];
+                del.on("mouseout", function() {
+                    del.textContent = msgs["comment-delete"];
+                    toggler.state = state;
+                    del.onmouseout = null;
+                });
+            },
+            function() {
+                var del = $("a.delete", footer);
                 api.remove(comment.id).then(function(rv) {
                     if (rv) {
                         el.remove();
@@ -222,14 +234,10 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
                         $("span.note", header).textContent = msgs["comment-deleted"];
                         text.innerHTML = "<p>&nbsp;</p>";
                     }
+                    del.textContent = msgs["comment-delete"];
                 });
-            } else {
-                $("a.delete", footer).textContent = msgs["comment-confirm"];
-                setTimeout(function() {
-                    $("a.delete", footer).textContent = msgs["comment-delete"];
-                }, 1500);
             }
-        });
+        );
 
         // remove edit and delete buttons when cookie is gone
         var clear = function(button) {
