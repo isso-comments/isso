@@ -52,8 +52,9 @@ a {
   > div.avatar {
     @include span-columns(1 of 11);
 
-    > canvas {
+    > svg {
       @include isso-shadow;
+      max-height: 48px;
     }
   }
 
@@ -151,8 +152,9 @@ a {
   > .avatar {
     @include span-columns(1 of 11);
 
-    > canvas {
+    > svg {
       @include isso-shadow;
+      max-height: 48px;
     }
   }
 

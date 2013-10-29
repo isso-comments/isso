@@ -12,13 +12,13 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
         var el = $.htmlify(Mark.up(templates["postbox"]));
 
         // add a default identicon to not waste CPU cycles
-        $(".avatar > canvas", el).replace(lib.identicons.blank(48, 48));
+        $(".avatar > svg", el).replace(lib.identicons.blank(4, 48));
 
         // on text area focus, generate identicon from IP address
         $(".textarea-wrapper > textarea", el).on("focus", function() {
-            if ($(".avatar canvas", el).classList.contains("blank")) {
-                $(".avatar canvas", el).replace(
-                    lib.identicons.generate(lib.pbkdf2(api.remote_addr, api.salt, 1000, 6), 48, 48));
+            if ($(".avatar svg", el).classList.contains("blank")) {
+                $(".avatar svg", el).replace(
+                    lib.identicons.generate(lib.pbkdf2(api.remote_addr, api.salt, 1000, 6), 4, 48));
             }
         });
 
@@ -31,7 +31,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             active = setTimeout(function() {
                 lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr, api.salt, 1000, 6)
                 .then(function(rv) {
-                    $(".avatar canvas", el).replace(lib.identicons.generate(rv, 48, 48));
+                    $(".avatar svg", el).replace(lib.identicons.generate(rv, 4, 48));
                 });
             }, 200);
         }, false);
@@ -96,7 +96,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             setTimeout(refresh, 60*1000);
         };  refresh();
 
-        $("div.avatar > canvas", el).replace(lib.identicons.generate(comment.hash, 48, 48));
+        $("div.avatar > svg", el).replace(lib.identicons.generate(comment.hash, 4, 48));
 
         var entrypoint;
         if (comment.parent === null) {
