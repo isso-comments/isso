@@ -18,8 +18,14 @@ from isso import Isso, notify, views, core
 from isso.utils import http
 from isso.views import comment
 
-http.heading = lambda *args: "Untitled."
-http.urlexists = lambda *args: True
+class Dummy:
+
+    status = 200
+
+    def read(self):
+        return ''
+
+http.curl = lambda method, host, path: Dummy()
 
 loads = lambda data: json.loads(data.decode('utf-8'))
 

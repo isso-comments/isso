@@ -10,9 +10,16 @@ from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
 from isso import Isso, notify, utils, core
+from isso.utils import http
 
-utils.heading = lambda *args: "Untitled."
-utils.urlexists = lambda *args: True
+class Dummy:
+
+    status = 200
+
+    def read(self):
+        return ''
+
+http.curl = lambda method, host, path: Dummy()
 
 loads = lambda data: json.loads(data.decode('utf-8'))
 

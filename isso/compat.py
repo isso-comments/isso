@@ -4,16 +4,17 @@ import sys
 PY2K = sys.version_info[0] == 2
 
 if not PY2K:
-    # iterkeys = lambda d: iter(d.keys())
-    # iteritems = lambda d: iter(d.items())
+
+    map, zip, filter = map, zip, filter
 
     text_type = str
     string_types = (str, )
 
     buffer = memoryview
 else:
-    # iterkeys = lambda d: d.iterkeys()
-    # iteritems = lambda d: d.iteritems()
+
+    from itertools import imap, izip, ifilter
+    map, zip, filter = imap, izip, ifilter
 
     text_type = unicode
     string_types = (str, unicode)

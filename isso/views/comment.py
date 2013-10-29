@@ -6,7 +6,6 @@ import time
 import hashlib
 import logging
 import sqlite3
-import logging
 
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -16,7 +15,7 @@ from werkzeug.exceptions import abort, BadRequest
 from isso.compat import text_type as str
 
 from isso import utils, notify, db
-from isso.utils import http
+from isso.utils import http, parse
 from isso.crypto import pbkdf2
 
 logger = logging.getLogger("isso")
@@ -50,9 +49,6 @@ class requires:
 @requires(str, 'uri')
 def new(app, environ, request, uri):
 
-    if uri not in app.db.threads and not http.urlexists(app.conf.get('general', 'host'), uri):
-        return Response('URI does not exist', 404)
-
     try:
         data = json.loads(request.get_data().decode('utf-8'))
     except ValueError:
@@ -74,11 +70,23 @@ def new(app, environ, request, uri):
     data['mode'] = (app.conf.getboolean('moderation', 'enabled') and 2) or 1
     data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
+    # extract site's <h1> title
+    if uri not in app.db.threads:
+        for host in app.conf.getiter('general', 'host'):
+            resp = http.curl('HEAD', host, uri)
+            if resp and resp.status == 200:
+                title = parse.title(resp.read())
+                break
+        else:
+            return Response('URI does not exist', 404)
+    else:
+        title = app.db.threads[uri].title
+
     with app.lock:
         if uri not in app.db.threads:
-            app.db.threads.new(uri, http.heading(app.conf.get('general', 'host'), uri))
-            logger.info('new thread: %s -> %s', uri, app.db.threads[uri].title)
-    title = app.db.threads[uri].title
+            app.db.threads.new(uri, title)
+
+    logger.info('new thread: %s -> %s', uri, title)
 
     try:
         with app.lock:

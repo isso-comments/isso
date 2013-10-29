@@ -117,6 +117,9 @@ class Mixin(object):
 
 
 def threaded(func):
+    """
+    Decorator to execute each :param func: call in a separate thread.
+    """
 
     def dec(self, *args, **kwargs):
         thread.start_new_thread(func, (self, ) + args, kwargs)
