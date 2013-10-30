@@ -70,23 +70,20 @@ def new(app, environ, request, uri):
     data['mode'] = (app.conf.getboolean('moderation', 'enabled') and 2) or 1
     data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
-    # extract site's <h1> title
-    if uri not in app.db.threads:
-        for host in app.conf.getiter('general', 'host'):
-            resp = http.curl('HEAD', host, uri)
-            if resp and resp.status == 200:
-                title = parse.title(resp.read())
-                break
-        else:
-            return Response('URI does not exist', 404)
-    else:
-        title = app.db.threads[uri].title
-
     with app.lock:
         if uri not in app.db.threads:
-            app.db.threads.new(uri, title)
+            for host in app.conf.getiter('general', 'host'):
+                resp = http.curl('HEAD', host, uri)
+                if resp and resp.status == 200:
+                    title = parse.title(resp.read())
+                    break
+            else:
+                return Response('URI does not exist', 404)
 
-    logger.info('new thread: %s -> %s', uri, title)
+            app.db.threads.new(uri, title)
+            logger.info('new thread: %s -> %s', uri, title)
+        else:
+            title = app.db.threads[uri].title
 
     try:
         with app.lock:

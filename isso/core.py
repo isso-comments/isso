@@ -197,13 +197,10 @@ class uWSGIMixin(Mixin):
         class Lock():
 
             def __enter__(self):
-                while uwsgi.queue_get(0) == "LOCK":
-                    time.sleep(0.01)
-
-                uwsgi.queue_set(0, "LOCK")
+                uwsgi.lock()
 
             def __exit__(self, exc_type, exc_val, exc_tb):
-                uwsgi.queue_pop()
+                uwsgi.unlock()
 
         def spooler(args):
             try:
