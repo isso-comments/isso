@@ -46,7 +46,7 @@ infrequently. Nevertheless, here are the requirements:
 
 Install Isso (and its dependencies) with:
 
-    ~> pip install http://posativ.org/~tmp/isso-latest.tar.gz
+    ~> pip install isso
 
 Before you start, you may want to import comments from
 [Disqus.com](https://disqus.com/):
@@ -88,8 +88,8 @@ server {
 ```
 
 ```html
-<link rel="stylesheet" href="http://example.tld/isso/css/isso.css" />
 <script src="http://example.tld/isso/js/embed.min.js"></script>
+<div id="isso-thread"></div>
 ```
 
 ### Isso on a Dedicated Domain
@@ -111,20 +111,20 @@ not able to post comments.
 Integrate Isso with:
 
 ```html
-<link rel="stylesheet" href="http://example.tld:8080/css/isso.css" />
 <script src="http://example.tld:8080/js/embed.min.js"></script>
+<div id="isso-thread"></div>
 ```
 
 Also, put the plain isso server behind a real web server or [use uWSGI][3].
 
-[3]: https://github.com/posativ/isso/blob/master/docs/CONTRIBUTING.md
+[3]: https://github.com/posativ/isso/blob/master/docs/uWSGI.md
 
 
 Website Integration
 -------------------
 
-To enable comments, add a `<div id="isso-thread"></div>` below your post and
-let the magic happen :-)
+To enable comments, add a `<div id="isso-thread"></div>` or `<section id="isso-thread" ...`
+below your post.
 
 To add comment count links to your index page, include `count.min.js` at the
 very bottom of your document. All links followed by `#isso-thread`, are

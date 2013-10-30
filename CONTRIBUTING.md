@@ -75,7 +75,6 @@ Integration
 -----------
 
 ```html
-<link rel="stylesheet" href="/isso/static/isso.css" />
 <script src="/isso/js/config.js"></script>
 <script data-main="/isso/js/embed" src="/isso/js/components/requirejs/require.js"></script>
 ```
