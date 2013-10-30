@@ -255,6 +255,7 @@ def activate(app, environ, request, auth):
     with app.lock:
         app.db.comments.activate(id)
 
+    logger.info("comment %s activated" % id)
     return Response("Yo", 200)
 
 def delete(app, environ, request, auth):
@@ -267,6 +268,7 @@ def delete(app, environ, request, auth):
     with app.lock:
         app.db.comments.delete(id)
 
+    logger.info("comment %s deleted" % id)
     return Response("%s successfully removed" % id)
 
 

@@ -61,6 +61,7 @@ from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.utils import parse
 from isso.views import comment, admin
 
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s: %(message)s")

@@ -21,7 +21,7 @@ change without any backwards compatibility. Just saying.
 Features
 --------
 
-* [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments
+* [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments written in Markdown
 * SQLite backend, Disqus import
 * client-side JS (currently 61kb minified, 21kb gzipped)
 * I18N, available in german and english (also fallback)
@@ -37,9 +37,6 @@ Roadmap
 
 Installation
 ------------
-
-Note, there is currently no PyPi release, but I'll upload a snapshot
-infrequently. Nevertheless, here are the requirements:
 
 - Python 2.6, 2.7 or 3.3
 - easy_install or pip
@@ -101,9 +98,9 @@ Now, assuming you have your isso instance running on a different URL, such as
     [general]
     host = http://example.tld/
     ~> isso -c example.cfg run
-     * connecting to SMTP server [failed]
-     * connecting to HTTP server [ok]
-     * Running on http://localhost:8080/
+    2013-10-30 09:32:48,369 WARNING: unable to connect to SMTP server
+    2013-10-30 09:32:48,408 WARNING: connected to HTTP server
+    2013-10-30 09:32:48,409 INFO:  * Running on http://localhost:8080/
 
 Make sure, Isso can connect to server that hosts your blog, otherwise you are
 not able to post comments.
