@@ -10,9 +10,7 @@ Isso comes into play.
 [1]: https://github.com/posativ/acrylamid
 [2]: https://disqus.com/
 
-**[Screenshot @2013-09-13](http://posativ.org/~tmp/isso-preview.png)** |
-**[Screenshot @2013-10-03](http://rw.posativ.org/n1v/o)** |
-**[Try Yourself!](http://posativ.org/isso/static/post.html)** (in case it's not crashed ;-)
+**[Try Yourself!](http://posativ.org/isso/)**
 
 Isso is not stable (pretty far from that state) and the database format may
 change without any backwards compatibility. Just saying.
