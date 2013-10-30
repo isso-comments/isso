@@ -58,7 +58,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from isso import db, migrate, views, wsgi
 from isso.core import ThreadedMixin, uWSGIMixin, Config
-from isso.utils import parse
+from isso.utils import parse, http
 from isso.views import comment, admin
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
@@ -164,16 +164,11 @@ def make_app(conf=None):
 
     isso = App(conf)
 
-    for line in conf.getiter("general", "host"):
-        try:
-            host, port, ssl = parse.host(line)
-            con = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
-            con(host, port, timeout=5).request('GET', '/')
-        except (httplib.HTTPException, socket.error):
-            continue
-        else:
-            logger.info("connected to HTTP server")
-            break
+    for host in conf.getiter("general", "host"):
+        with http.curl('HEAD', host, '/', 5) as resp:
+            if resp is not None:
+                logger.info("connected to HTTP server")
+                break
     else:
         logger.warn("unable to connect to HTTP server")
 

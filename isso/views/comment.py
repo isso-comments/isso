@@ -73,10 +73,10 @@ def new(app, environ, request, uri):
     with app.lock:
         if uri not in app.db.threads:
             for host in app.conf.getiter('general', 'host'):
-                resp = http.curl('HEAD', host, uri)
-                if resp and resp.status == 200:
-                    title = parse.title(resp.read())
-                    break
+                with http.curl('GET', host, uri) as resp:
+                    if resp and resp.status == 200:
+                        title = parse.title(resp.read())
+                        break
             else:
                 return Response('URI does not exist', 404)
 
