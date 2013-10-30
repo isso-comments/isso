@@ -12,14 +12,27 @@ except ImportError:
 from isso.utils import parse
 
 
-def curl(method, host, path, timeout=3):
+class curl(object):
 
-    host, port, ssl = parse.host(host)
-    http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
+    def __init__(self, method, host, path, timeout=3):
+        self.method = method
+        self.host = host
+        self.path = path
+        self.timeout = timeout
 
-    with closing(http(host, port, timeout=timeout)) as con:
+    def __enter__(self):
+
+        host, port, ssl = parse.host(self.host)
+        http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
+
+        self.con = http(host, port, timeout=self.timeout)
+
         try:
-            con.request(method, path)
+            self.con.request(self.method, self.path)
         except (httplib.HTTPException, socket.error):
             return None
-        return con.getresponse()
+
+        return self.con.getresponse()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.con.close()
