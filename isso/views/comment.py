@@ -97,7 +97,7 @@ def new(app, environ, request, uri):
     except db.IssoDBException:
         abort(403)
 
-    host = app.conf.get('general', 'host').rstrip("/")
+    host = list(app.conf.getiter('general', 'host'))[0].rstrip("/")
     href = host + uri + "#isso-%i" % rv["id"]
 
     deletion = host + environ["SCRIPT_NAME"] + "/delete/" + app.sign(str(rv["id"]))
