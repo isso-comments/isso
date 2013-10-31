@@ -12,16 +12,13 @@ Isso comes into play.
 
 **[Try Yourself!](http://posativ.org/isso/)**
 
-Isso is not stable (pretty far from that state) and the database format may
-change without any backwards compatibility. Just saying.
-
 
 Features
 --------
 
 * [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) comments written in Markdown
 * SQLite backend, Disqus import
-* client-side JS (currently 61kb minified, 21kb gzipped)
+* client-side JS (currently 54kb minified, 18kb gzipped)
 * I18N, available in german and english (also fallback)
 
 
@@ -37,96 +34,108 @@ Installation
 ------------
 
 - Python 2.6, 2.7 or 3.3
-- easy_install or pip
+- a working C compiler
 
-Install Isso (and its dependencies) with:
+Install Isso with:
 
     ~> pip install isso
 
-Before you start, you may want to import comments from
-[Disqus.com](https://disqus.com/):
+Set your database location and website:
 
-    ~> isso import ~/Downloads/user-2013-09-02T11_39_22.971478-all.xml
+    ~> cat my.cfg
+    [general]
+    dbpath = /var/lib/isso/comments.db
+    host = http://example.tld/
+
+You can optionally import your comments from [Disqus.com](https://disqus.com/):
+
+    ~> isso -c my.cfg import ~/Downloads/user-2013-09-02T11_39_22.971478-all.xml
     [100%]  53 threads, 192 comments
 
-You start the server via (try to visit [http://localhost:8080/static/post.html]()).
+You start the server via (try to visit [http://localhost:8080/check-ip]().
 
-    ~> isso run
-
-If that is working, you may want to [edit the configuration](https://github.com/posativ/isso/blob/master/docs/CONFIGURATION.rst).
-
-
-Webserver Configuration
------------------------
-
-This part is not fun, I know. I have prepared two possible setups for nginx,
-using Isso on the same domain as the blog, and on a different domain. Each
-setup has its own benefits.
-
-### Isso on a Sub URI
-
-Let's assume you want Isso on `/isso`, use the following nginx snippet:
-
-```nginx
-server {
-    listen       [::]:80;
-    listen       [::]:443 ssl;
-    server_name  example.tld;
-    root         /var/www/example.tld;
-
-    location /isso {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Script-Name /isso;
-        proxy_pass http://localhost:8080;
-    }
-}
-```
-
-```html
-<script src="http://example.tld/isso/js/embed.min.js"></script>
-<div id="isso-thread"></div>
-```
-
-### Isso on a Dedicated Domain
-
-Now, assuming you have your isso instance running on a different URL, such as
-`http://example.tld:8080`, but your blog runs on `http://example.tld`:
-
-    ~> cat example.cfg
-    [general]
-    host = http://example.tld/
-    ~> isso -c example.cfg run
+    ~> isso -c my.cfg run
     2013-10-30 09:32:48,369 WARNING: unable to connect to SMTP server
     2013-10-30 09:32:48,408 WARNING: connected to HTTP server
-    2013-10-30 09:32:48,409 INFO:  * Running on http://localhost:8080/
 
-Make sure, Isso can connect to server that hosts your blog, otherwise you are
-not able to post comments.
-
-Integrate Isso with:
-
-```html
-<script src="http://example.tld:8080/js/embed.min.js"></script>
-<div id="isso-thread"></div>
-```
-
-Also, put the plain isso server behind a real web server or [use uWSGI][3].
-
-[3]: https://github.com/posativ/isso/blob/master/docs/uWSGI.md
+Make sure, Isso can connect to the server that hosts your blog, otherwise you
+are not able to post comments.
 
 
 Website Integration
 -------------------
 
-To enable comments, add a `<div id="isso-thread"></div>` or `<section id="isso-thread" ...`
-below your post.
+You can run Isso on a dedicated domain or behind a sub URI like `/isso`. It
+makes actually no difference except for the webserver configuration (see
+below).
 
-To add comment count links to your index page, include `count.min.js` at the
-very bottom of your document. All links followed by `#isso-thread`, are
-updated with the current comment count.
+Whatever method you prefer (just change the URL), you add comments to your
+site, add:
+
+```html
+<head>
+    ...
+    <script src="http://example.tld/js/embed.min.js"></script>
+    ...
+</head>
+<body>
+    ...
+    <div id="isso-thread"></div>
+    ...
+</body>
+```
+
+The JavaScript client will automatically detect the API endpoint.
+To show the comment count for a post, add `#isso-thread` to the link:
+
+```html
+<head>
+    ...
+    <script src="http://example.tld/js/count.min.js"></script>
+    ...
+</head>
+<body>
+    ...
+    <a href="/path/to/post#isso-thread">Comments</a>
+    ...
+</body>
+```
 
 This functionality is already included when you embed `embed.min.js`, do
 *not* mix `embed.min.js` and `count.min.js` in a single document.
+
+### Webserver configuration
+
+*   nginx configuration to run Isso on `/isso`:
+
+    ```nginx
+    server {
+        listen       [::]:80;
+        listen       [::]:443 ssl;
+        server_name  example.tld;
+        root         /var/www/example.tld;
+
+        location /isso {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Script-Name /isso;
+            proxy_pass http://localhost:8080;
+        }
+    }
+    ```
+
+*   nginx configuration to run Isso on a dedicated domain:
+
+    ```nginx
+    server {
+        listen       [::]:8080;
+        server_name  comments.example.tld;
+
+        location / {
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_pass http://localhost:8080;
+        }
+    }
+    ```
 
 
 Documentation
