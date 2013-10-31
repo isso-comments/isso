@@ -20,6 +20,13 @@ class SQLite3:
         self.threads = Threads(self)
         self.comments = Comments(self)
 
+        self.execute([
+            'CREATE TRIGGER IF NOT EXISTS remove_stale_threads',
+            'AFTER DELETE ON comments',
+            'BEGIN',
+            '    DELETE FROM threads WHERE id NOT IN (SELECT tid FROM comments);',
+            'END'])
+
     def execute(self, sql, args=()):
 
         if isinstance(sql, (list, tuple)):

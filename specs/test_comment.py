@@ -151,12 +151,14 @@ class TestComments(unittest.TestCase):
         r = client.delete('/id/1')
         assert r.status_code == 200
         assert loads(r.data)['mode'] == 4
+        assert '/path/' in self.app.db.threads
 
         assert self.get('/?uri=%2Fpath%2F&id=1').status_code == 200
         assert self.get('/?uri=%2Fpath%2F&id=2').status_code == 200
 
         r = client.delete('/id/2')
         assert self.get('/?uri=%2Fpath%2F').status_code == 404
+        assert '/path/' not in self.app.db.threads
 
     def testDeleteWithMultipleReferences(self):
         """
@@ -269,6 +271,13 @@ class TestComments(unittest.TestCase):
 
         self.put('/id/1', data=json.dumps({"text": "Typo"}))
         assert loads(self.get('/id/1').data)["text"] == "<p>Typo</p>\n"
+
+    def testDeleteCommentRemovesThread(self):
+
+            rv = self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+            assert '/' in self.app.db.threads
+            self.client.delete('/id/1')
+            assert '/' not in self.app.db.threads
 
 
 class TestModeratedComments(unittest.TestCase):
