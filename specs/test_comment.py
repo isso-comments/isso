@@ -22,8 +22,14 @@ class Dummy:
 
     status = 200
 
+    def __enter__(self):
+        return self
+
     def read(self):
         return ''
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
 http.curl = lambda method, host, path: Dummy()
 

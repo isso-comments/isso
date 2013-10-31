@@ -32,6 +32,10 @@ def format(comment, permalink, remote_addr, deletion_key, activation_key=None):
 
 
 class Connection(object):
+    """
+    Establish connection to SMTP server, optional with authentication, and
+    close connection afterwards.
+    """
 
     def __init__(self, conf):
         self.conf = conf
@@ -75,5 +79,5 @@ class SMTPMailer(object):
 
 class NullMailer(object):
 
-    def sendmail(self, subject, body, retries=5):
+    def sendmail(self, subject, body):
         pass

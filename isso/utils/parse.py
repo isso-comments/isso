@@ -54,15 +54,15 @@ def host(name):
     """
     Parse :param name: into `httplib`-compatible host:port.
 
-    >>> print(host("http://example.tld/"))
+    >>> host("http://example.tld/")
     ('example.tld', 80, False)
-    >>> print(host("https://example.tld/"))
+    >>> host("https://example.tld/")
     ('example.tld', 443, True)
-    >>> print(host("example.tld"))
+    >>> host("example.tld")
     ('example.tld', 80, False)
-    >>> print(host("example.tld:42"))
+    >>> host("example.tld:42")
     ('example.tld', 42, False)
-    >>> print(host("https://example.tld:80/"))
+    >>> host("https://example.tld:80/")
     ('example.tld', 80, True)
     """
 
@@ -109,7 +109,7 @@ def title(data, default=u"Untitled."):
     assert html.lastChild.nodeName == "html"
     html = html.lastChild
 
-    # aka getElementById
+    # aka getElementById, but limited to div and section tags
     el = list(filter(lambda i: i.attributes["id"].value == "isso-thread",
               filter(lambda i: "id" in i.attributes,
                      chain(*map(html.getElementsByTagName, ("div", "section"))))))
