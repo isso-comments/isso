@@ -28,7 +28,7 @@ define(["q"], function(Q) {
         if (js[i].src.match("/js/components/requirejs/require\\.js$")) {
             endpoint = js[i].src.substring(0, js[i].src.length - 35);
             break;
-        } else if (js[i].src.match("/js/(embed|count)\\.min\\.js$")) {
+        } else if (js[i].src.match("/js/(embed|count)\\.(min|dev)\\.js$")) {
             endpoint = js[i].src.substring(0, js[i].src.length - 16);
             break;
         }
