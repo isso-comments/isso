@@ -129,13 +129,14 @@ This functionality is already included when you embed `embed.min.js`, do
 *not* mix `embed.min.js` and `count.min.js` in a single document.
 
 
-
-Other Documents
----------------
+Documentation
+-------------
 
 - [Configuration](https://github.com/posativ/isso/blob/master/docs/CONFIGURATION.rst)
 - [API overview](https://github.com/posativ/isso/raw/master/docs/API.md)
 - [uWSGI usage](https://github.com/posativ/isso/blob/master/docs/uWSGI.md)
+- [Contributing](https://github.com/posativ/isso/blob/master/CONTRIBUTING.md)
+- [Development](https://github.com/posativ/isso/blob/master/docs/DEVELOPMENT.md)
 
 
 Alternatives
