@@ -59,7 +59,7 @@ from jinja2 import Environment, FileSystemLoader
 from isso import db, migrate, views, wsgi
 from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.utils import parse, http
-from isso.views import comment, admin
+from isso.views import comment
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 logging.basicConfig(
@@ -80,7 +80,6 @@ rules = Map([
     Rule('/count', methods=['GET'], endpoint=views.comment.count),
     Rule('/delete/<string:auth>', endpoint=views.comment.delete),
     Rule('/activate/<string:auth>', endpoint=views.comment.activate),
-    Rule('/admin/', endpoint=views.admin.index),
 
     Rule('/check-ip', endpoint=views.comment.checkip)
 ])
@@ -173,7 +172,6 @@ def make_app(conf=None):
         logger.warn("unable to connect to HTTP server")
 
     app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
-        '/static': join(dirname(__file__), 'static/'),
         '/js': join(dirname(__file__), 'js/'),
         '/css': join(dirname(__file__), 'css/')
         })))
