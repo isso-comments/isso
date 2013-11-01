@@ -10,7 +10,7 @@ import sqlite3
 from itsdangerous import SignatureExpired, BadSignature
 
 from werkzeug.wrappers import Response
-from werkzeug.exceptions import abort, BadRequest
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from isso.compat import text_type as str
 
@@ -49,19 +49,16 @@ class requires:
 @requires(str, 'uri')
 def new(app, environ, request, uri):
 
-    try:
-        data = json.loads(request.get_data().decode('utf-8'))
-    except ValueError:
-        return Response("No JSON object could be decoded", 400)
+    data = request.get_json()
 
     for field in set(data.keys()) - set(['text', 'author', 'website', 'email', 'parent']):
         data.pop(field)
 
     if not data.get("text"):
-        return Response("No text given.", 400)
+        raise BadRequest("no text given")
 
     if "id" in data and not isinstance(data["id"], int):
-        return Response("Parent ID must be an integer.")
+        raise BadRequest("parent id must be an integer")
 
     for field in ("author", "email"):
         if data.get(field):
@@ -88,11 +85,8 @@ def new(app, environ, request, uri):
     try:
         with app.lock:
             rv = app.db.comments.add(uri, data)
-    except sqlite3.Error:
-        logging.exception('uncaught SQLite3 exception')
-        abort(400)
     except db.IssoDBException:
-        abort(403)
+        raise Forbidden
 
     host = list(app.conf.getiter('general', 'host'))[0].rstrip("/")
     href = host + uri + "#isso-%i" % rv["id"]
@@ -130,7 +124,7 @@ def single(app, environ, request, id):
     if request.method == 'GET':
         rv = app.db.comments.get(id)
         if rv is None:
-            abort(404)
+            raise NotFound
 
         for key in set(rv.keys()) - FIELDS:
             rv.pop(key)
@@ -146,23 +140,20 @@ def single(app, environ, request, id):
         try:
             rv = app.unsign(request.cookies.get('admin', ''))
         except (SignatureExpired, BadSignature):
-            abort(403)
+            raise Forbidden
 
     if rv[0] != id:
-        abort(403)
+        raise Forbidden
 
     # verify checksum, mallory might skip cookie deletion when he deletes a comment
     if rv[1] != hashlib.md5(app.db.comments.get(id)["text"].encode('utf-8')).hexdigest():
-        abort(403)
+        raise Forbidden
 
     if request.method == 'PUT':
-        try:
-            data = json.loads(request.get_data().decode('utf-8'))
-        except ValueError:
-            return Response("No JSON object could be decoded", 400)
+        data = request.get_json()
 
         if data.get("text") is not None and len(data['text']) < 3:
-            return Response("No text given.", 400)
+            raise BadRequest("no text given")
 
         for key in set(data.keys()) - set(["text", "author", "website"]):
             data.pop(key)
@@ -203,7 +194,7 @@ def fetch(app, environ, request, uri):
 
     rv = list(app.db.comments.fetch(uri))
     if not rv:
-        abort(404)
+        raise NotFound
 
     for item in rv:
 
@@ -237,7 +228,7 @@ def count(app, environ, request, uri):
     rv = app.db.comments.count(uri)[0]
 
     if rv == 0:
-        abort(404)
+        raise NotFound
 
     return Response(json.dumps(rv), 200, content_type='application/json')
 
@@ -247,7 +238,7 @@ def activate(app, environ, request, auth):
     try:
         id = app.unsign(auth, max_age=2**32)
     except (BadSignature, SignatureExpired):
-        abort(403)
+        raise Forbidden
 
     with app.lock:
         app.db.comments.activate(id)
@@ -260,7 +251,7 @@ def delete(app, environ, request, auth):
     try:
         id = app.unsign(auth, max_age=2**32)
     except (BadSignature, SignatureExpired):
-        abort(403)
+        raise Forbidden
 
     with app.lock:
         app.db.comments.delete(id)

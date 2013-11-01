@@ -2,10 +2,14 @@
 
 from __future__ import division
 
+import json
 import random
 import hashlib
 
 from string import ascii_letters, digits
+
+from werkzeug.wrappers import Request
+from werkzeug.exceptions import BadRequest
 
 import ipaddress
 
@@ -83,3 +87,12 @@ class Bloomfilter:
 
     def __len__(self):
         return self.elements
+
+
+class JSONRequest(Request):
+
+    def get_json(self):
+        try:
+            return json.loads(self.get_data().decode('utf-8'))
+        except ValueError:
+            raise BadRequest('Unable to read JSON request')
