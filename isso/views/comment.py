@@ -166,6 +166,7 @@ def single(app, environ, request, id):
         for key in set(rv.keys()) - FIELDS:
             rv.pop(key)
 
+        app.cache.delete('hash', id)
         logger.info('comment %i edited: %s', id, json.dumps(rv))
 
         checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
@@ -182,6 +183,7 @@ def single(app, environ, request, id):
             for key in set(rv.keys()) - FIELDS:
                 rv.pop(key)
 
+        app.cache.delete('hash', id)
         logger.info('comment %i deleted', id)
 
         resp = Response(json.dumps(rv), 200, content_type='application/json')
@@ -198,7 +200,14 @@ def fetch(app, environ, request, uri):
 
     for item in rv:
 
-        item['hash'] = str(pbkdf2(item['email'] or item['remote_addr'], app.salt, 1000, 6))
+        key = item['email'] or item['remote_addr']
+        val = app.cache.get('hash', key)
+
+        if val is None:
+            val = str(pbkdf2(key, app.salt, 1000, 6))
+            app.cache.set('hash', key, val)
+
+        item['hash'] = val
 
         for key in set(item.keys()) - FIELDS:
             item.pop(key)

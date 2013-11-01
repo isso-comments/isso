@@ -30,6 +30,8 @@ from isso import notify
 from isso.utils import parse
 from isso.compat import text_type as str
 
+from werkzeug.contrib.cache import NullCache, SimpleCache
+
 logger = logging.getLogger("isso")
 
 
@@ -137,10 +139,29 @@ def SMTP(conf):
     return mailer
 
 
+class Cache:
+    """Wrapper around werkzeug's cache class, to make it compatible to
+    uWSGI's cache framework.
+    """
+
+    def __init__(self, cache):
+        self.cache = cache
+
+    def get(self, cache, key):
+        return self.cache.get(key)
+
+    def set(self, cache, key, value):
+        return self.cache.set(key, value)
+
+    def delete(self, cache, key):
+        return self.cache.delete(key)
+
+
 class Mixin(object):
 
     def __init__(self, conf):
         self.lock = threading.Lock()
+        self.cache = Cache(NullCache())
 
     def notify(self, subject, body, retries=5):
         pass
@@ -167,7 +188,7 @@ class ThreadedMixin(Mixin):
             self.purge(conf.getint("moderation", "purge-after"))
 
         self.mailer = SMTP(conf)
-
+        self.cache = Cache(SimpleCache(threshold=1024, default_timeout=3600))
 
     @threaded
     def notify(self, subject, body, retries=5):
@@ -186,6 +207,28 @@ class ThreadedMixin(Mixin):
             with self.lock:
                 self.db.comments.purge(delta)
             time.sleep(delta)
+
+
+class uWSGICache(object):
+    """Uses uWSGI Caching Framework. INI configuration:
+
+    .. code-block:: ini
+
+        cache2 = name=hash,items=1024,blocksize=32
+
+    """
+
+    @classmethod
+    def get(self, cache, key):
+        return uwsgi.cache_get(key, cache)
+
+    @classmethod
+    def set(self, cache, key, value):
+        uwsgi.cache_set(key, value, 3600, cache)
+
+    @classmethod
+    def delete(self, cache, key):
+        uwsgi.cache_del(key, cache)
 
 
 class uWSGIMixin(Mixin):
@@ -210,9 +253,11 @@ class uWSGIMixin(Mixin):
             else:
                 return uwsgi.SPOOL_OK
 
+        uwsgi.spooler = spooler
+
         self.lock = Lock()
         self.mailer = SMTP(conf)
-        uwsgi.spooler = spooler
+        self.cache = uWSGICache
 
         timedelta = conf.getint("moderation", "purge-after")
         purge = lambda signum: self.db.comments.purge(timedelta)
