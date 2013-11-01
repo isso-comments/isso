@@ -54,8 +54,6 @@ from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.serving import run_simple
 from werkzeug.contrib.fixers import ProxyFix
 
-from jinja2 import Environment, FileSystemLoader
-
 from isso import db, migrate, views, wsgi
 from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.utils import parse, http
@@ -94,7 +92,6 @@ class Isso(object):
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(conf.get('general', 'session-key'))
-        self.j2env = Environment(loader=FileSystemLoader(join(dirname(__file__), 'templates/')))
 
         super(Isso, self).__init__(conf)
 
@@ -108,10 +105,6 @@ class Isso(object):
         return misaka.html(text, extensions=misaka.EXT_STRIKETHROUGH \
             | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK \
             | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
-
-    def render(self, tt, **ctx):
-        tt = self.j2env.get_template(tt)
-        return tt.render(**ctx)
 
     def dispatch(self, request, start_response):
         adapter = rules.bind_to_environ(request.environ)
