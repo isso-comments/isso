@@ -120,10 +120,10 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             header = $("#isso-" + comment.id + " > .text-wrapper > .isso-comment-header"),
             text   = $("#isso-" + comment.id + " > .text-wrapper > .text");
 
-        var form = new Postbox(comment.id);
+        var form = null;
         $("a.reply", footer).toggle("click",
             function(toggler) {
-                footer.insertAfter(form);
+                form = footer.insertAfter(new Postbox(comment.id));
                 form.onsuccess = function() { toggler.next(); };
                 $("textarea", form).focus();
                 $("a.reply", footer).textContent = msgs["comment-close"];
