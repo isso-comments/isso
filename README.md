@@ -70,7 +70,7 @@ Whatever method you prefer (just change the URL), to embed comments add
 to your HTML (presumedly into `<head>`) and
 
 ```html
-    <div id="isso-thread"></div>
+<div id="isso-thread"></div>
 ```
 
 below your post. That's all. The JavaScript client will automatically detect
@@ -79,7 +79,7 @@ the API endpoint.
 To show the comment count for posts (but no comments), add
 
 ```html
-    <script src="http://example.tld/js/count.min.js"></script>
+<script src="http://example.tld/js/count.min.js"></script>
 ```
 
 to your header and all links ending with `#isso-thread` are updated with the
