@@ -1,9 +1,3 @@
-/* Copyright 2013, Martin Zimmermann <info@posativ.org>. All rights reserved.
- * License: BSD Style, 2 clauses. See isso/__init__.py.
- *
- * utility functions
- */
-
 define(["app/markup"], function(Mark) {
 
     // return `cookie` string if set

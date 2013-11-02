@@ -1,3 +1,8 @@
+/*
+ * Copyright 2013, Martin Zimmermann <info@posativ.org>. All rights reserved.
+ * Distributed under the MIT license
+ */
+
 require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup"], function(domready, api, isso, count, $, Mark) {
 
     "use strict";
