@@ -1,8 +1,8 @@
 Changelog for Isso
 ==================
 
-0.3 (2013-11-01)
-----------------
+0.3.1 (2013-11-02)
+------------------
 
 - improve initial comment loading performance in the client
 - cache slow REST requests, see #18
