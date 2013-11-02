@@ -41,12 +41,12 @@ class Connection(object):
         self.conf = conf
 
     def __enter__(self):
-        self.server = (SMTP_SSL if self.conf.getboolean('SMTP', 'ssl') else SMTP)(
-            host=self.conf.get('SMTP', 'host'), port=self.conf.getint('SMTP', 'port'))
+        self.server = (SMTP_SSL if self.conf.getboolean('smtp', 'ssl') else SMTP)(
+            host=self.conf.get('smtp', 'host'), port=self.conf.getint('smtp', 'port'))
 
-        if self.conf.get('SMTP', 'username') and self.conf.get('SMTP', 'password'):
-            self.server.login(self.conf.get('SMTP', 'username'),
-                              self.conf.get('SMTP', 'password'))
+        if self.conf.get('smtp', 'username') and self.conf.get('smtp', 'password'):
+            self.server.login(self.conf.get('smtp', 'username'),
+                              self.conf.get('smtp', 'password'))
 
         return self.server
 
@@ -59,8 +59,8 @@ class SMTPMailer(object):
     def __init__(self, conf):
 
         self.conf = conf
-        self.from_addr = conf.get('SMTP', 'from')
-        self.to_addr = conf.get('SMTP', 'to')
+        self.from_addr = conf.get('smtp', 'from')
+        self.to_addr = conf.get('smtp', 'to')
 
         # test SMTP connectivity
         with Connection(self.conf):

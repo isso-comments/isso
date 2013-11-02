@@ -93,7 +93,7 @@ class Config:
         "purge-after = 30d",
         "[server]",
         "host = localhost", "port = 8080", "reload = off",
-        "[SMTP]",
+        "[smtp]",
         "username = ", "password = ",
         "host = localhost", "port = 465", "ssl = on",
         "to = ", "from = ",
