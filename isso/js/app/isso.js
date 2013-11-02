@@ -18,7 +18,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
         $(".textarea-wrapper > textarea", el).on("focus", function() {
             if ($(".avatar svg", el).getAttribute("className") === "blank") {
                 $(".avatar svg", el).replace(
-                    lib.identicons.generate(lib.pbkdf2(api.remote_addr, api.salt, 1000, 6), 4, 48));
+                    lib.identicons.generate(lib.pbkdf2(api.remote_addr(), api.salt, 1000, 6), 4, 48));
             }
         });
 
@@ -29,7 +29,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
                 clearTimeout(active);
             }
             active = setTimeout(function() {
-                lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr, api.salt, 1000, 6)
+                lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr(), api.salt, 1000, 6)
                 .then(function(rv) {
                     $(".avatar svg", el).replace(lib.identicons.generate(rv, 4, 48));
                 });

@@ -5,7 +5,7 @@ define(["q"], function(Q) {
     Q.stopUnhandledRejectionTracking();
     Q.longStackSupport = true;
 
-    var endpoint = null, remote_addr = null,
+    var endpoint = null,
         salt = "Eech7co8Ohloopo9Ol6baimi",
         location = window.location.pathname;
 
@@ -163,14 +163,17 @@ define(["q"], function(Q) {
         });
     };
 
-    remote_addr = curl("GET", endpoint + "/check-ip", null).then(function(rv) {
-        return rv.body;
-    });
+    var remote_addr = function() {
+        return curl("GET", endpoint + "/check-ip", null).then(function(rv) {
+                return rv.body;
+         });
+    };
 
     return {
         endpoint: endpoint,
-        remote_addr: remote_addr,
         salt: salt,
+
+        remote_addr: remote_addr,
 
         create: create,
         modify: modify,
