@@ -7,9 +7,10 @@ import datetime
 from itertools import chain
 
 try:
+    from urllib import unquote
     from urlparse import urlparse
 except ImportError:
-    from urllib.parse import urlparse
+    from urllib.parse import urlparse, unquote
 
 import html5lib
 
@@ -81,7 +82,7 @@ def title(data, default=u"Untitled."):
     which is the nearest H1 node in context to an element with the `isso-thread` id.
 
     >>> title("asdf")  # doctest: +IGNORE_UNICODE
-    u'Untitled.'
+    'Untitled.'
     >>> title('''
     ... <html>
     ... <head>
@@ -101,7 +102,14 @@ def title(data, default=u"Untitled."):
     ...     </article>
     ... </body>
     ... </html>''')  # doctest: +IGNORE_UNICODE
-    u'Can you find me?'
+    'Can you find me?'
+    >>> title('''
+    ... <html>
+    ... <body>
+    ... <h1>I'm the real title!1
+    ... <section data-title="No way%21" id="isso-thread">
+    ... ''')  # doctest: +IGNORE_UNICODE
+    'No way!'
     """
 
     html = html5lib.parse(data, treebuilder="dom")
@@ -136,6 +144,11 @@ def title(data, default=u"Untitled."):
             if child.nodeType == child.ELEMENT_NODE:
                 for item in gettext(child):
                     yield item
+
+    try:
+        return unquote(el.attributes["data-title"].value)
+    except (KeyError, AttributeError):
+        pass
 
     while el is not None:  # el.parentNode is None in the very end
 
