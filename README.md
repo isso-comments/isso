@@ -122,6 +122,15 @@ You can configure the client (the JS part) via `data-` attributes:
 
     Make sure to escape the attribute value.
 
+*   data-prefix
+
+    Isso usually detects the REST API automatically, but when you serve the JS
+    script on a different location, this may fail. Use `data-prefix` to
+    override the API location:
+
+     ```html
+     <script data-prefix="/isso" src="/path/to/embed.min.js"></script>
+     ```
 
 ### Webserver configuration
 

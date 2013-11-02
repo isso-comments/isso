@@ -22,20 +22,51 @@ define(["q"], function(Q) {
         "/count": [200]
     };
 
-    // guess Isso API location
+    /*
+     * Detect Isso API endpoint. There are typically two use cases:
+     *
+     *   1. use minified, single-file JavaScript. The browser interprets
+     *      scripts sequentially, thus we can safely use the last script
+     *      tag. Then, we chop off some characters -- /js/embed.min.s --
+     *      and we're done.
+     *
+     *      If the script is not served by Isso directly, a custom data
+     *      attribute can be used to override the default detection
+     *      mechanism:
+     *
+     *      .. code-block:: html
+     *
+     *          <script data-prefix="/path" src="/.../embed.min.js"></script>
+     *
+     *   2. use require.js (during development). When using require.js, we
+     *      assume that the path to the scripts ends with `/js/`.
+     *
+     */
+
+    var script, uri;
+    var port = window.location.port ? ":" + window.location.port : "",
+        host = window.location.protocol + "//" + window.location.hostname + port;
+
     var js = document.getElementsByTagName("script");
     for (var i = 0; i < js.length; i++) {
-        if (js[i].src.match("/js/components/requirejs/require\\.js$")) {
-            endpoint = js[i].src.substring(0, js[i].src.length - 35);
-            break;
-        } else if (js[i].src.match("/js/(embed|count)\\.(min|dev)\\.js$")) {
-            endpoint = js[i].src.substring(0, js[i].src.length - 16);
-            break;
+        if (js[i].src.match("require\\.js$") && js[i].dataset.main.match("/js/embed$")) {
+            uri = js[i].dataset.main;
+            endpoint = uri.substr(0, uri.length - "/js/main".length);
         }
     }
 
     if (! endpoint) {
-        throw "no Isso API location found";
+        script = js[js.length - 1];
+
+        if (script.dataset.prefix) {
+            endpoint = script.dataset.prefix;
+            if (endpoint[endpoint.length - 1] === "/") {
+                endpoint = endpoint.substring(0, endpoint.length - 1);
+            }
+        } else {
+            uri = script.src.substring(host.length);
+            endpoint = uri.substring(0, uri.length - "/js/embed.min.js".length);
+        }
     }
 
     var curl = function(method, url, data) {
