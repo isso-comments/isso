@@ -55,13 +55,14 @@ define(["q"], function(Q) {
 
         if (script.dataset.prefix) {
             endpoint = script.dataset.prefix;
-            if (endpoint[endpoint.length - 1] === "/") {
-                endpoint = endpoint.substring(0, endpoint.length - 1);
-            }
         } else {
             uri = script.src.substring(host.length);
             endpoint = uri.substring(0, uri.length - "/js/embed.min.js".length);
         }
+    }
+
+    if (endpoint[endpoint.length - 1] === "/") {
+        endpoint = endpoint.substring(0, endpoint.length - 1);
     }
 
     var curl = function(method, url, data) {
