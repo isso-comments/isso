@@ -91,7 +91,7 @@ purge-after
 Server
 ------
 
-HTTP server configuration, does **not** apply to uWSGI.
+HTTP server configuration, does **not** apply to uWSGI (except for `profile`).
 
 .. code-block:: ini
 
@@ -99,6 +99,7 @@ HTTP server configuration, does **not** apply to uWSGI.
     host = localhost
     port = 8080
     reload = off
+    profile = off
 
 host
     listen on specified interface
@@ -109,6 +110,10 @@ port
 reload
     reload application, when the source code has changed. Useful for
     development (don't forget to use a fixed `session-key`).
+
+profile
+    show 10 most time consuming function in Isso after each request. Do
+    not use in production.
 
 
 SMTP

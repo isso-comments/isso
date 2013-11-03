@@ -162,7 +162,11 @@ def make_app(conf=None):
     else:
         logger.warn("unable to connect to HTTP server")
 
-    app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso.wsgi_app, {
+    if isso.conf.getboolean("server", "profile"):
+        from werkzeug.contrib.profiler import ProfilerMiddleware
+        isso = ProfilerMiddleware(isso, sort_by=("cumtime", ), restrictions=("isso/(?!lib)", ))
+
+    app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso, {
         '/js': join(dirname(__file__), 'js/'),
         '/css': join(dirname(__file__), 'css/')
         })))
