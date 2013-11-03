@@ -60,6 +60,9 @@ def new(app, environ, request, uri):
     if "id" in data and not isinstance(data["id"], int):
         raise BadRequest("parent id must be an integer")
 
+    if len(data.get("email") or "") > 254:
+        raise BadRequest("http://tools.ietf.org/html/rfc5321#section-4.5.3")
+
     for field in ("author", "email"):
         if data.get(field):
             data[field] = cgi.escape(data[field])
