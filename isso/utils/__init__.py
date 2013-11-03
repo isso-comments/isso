@@ -2,6 +2,9 @@
 
 from __future__ import division
 
+import pkg_resources
+werkzeug = pkg_resources.get_distribution("werkzeug")
+
 import json
 import random
 import hashlib
@@ -90,6 +93,10 @@ class Bloomfilter:
 
 
 class JSONRequest(Request):
+
+    if werkzeug.version.startswith("0.8"):
+        def get_data(self):
+            return self.data.decode('utf-8')
 
     def get_json(self):
         try:

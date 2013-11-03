@@ -5,13 +5,15 @@ import sys
 
 from setuptools import setup, find_packages
 
-requires = ['werkzeug>=0.9', 'itsdangerous', 'misaka', 'html5lib']
+requires = ['itsdangerous', 'misaka', 'html5lib']
 
 if (3, 0) <= sys.version_info < (3, 3):
     raise SystemExit("Python 3.0, 3.1 and 3.2 are not supported")
 
 if sys.version_info < (3, 0):
-    requires += ['ipaddress', 'configparser']
+    requires += ['ipaddress', 'configparser', 'werkzeug>=0.8']
+else:
+    requires += ['werkzeug>=0.9']
 
 setup(
     name='isso',
