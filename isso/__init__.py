@@ -46,6 +46,7 @@ import misaka
 from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map, Rule
+from werkzeug.wrappers import Response
 from werkzeug.exceptions import HTTPException, InternalServerError
 
 from werkzeug.wsgi import SharedDataMiddleware
@@ -83,6 +84,23 @@ class Isso(object):
         Rule('/check-ip', endpoint=views.comment.checkip)
     ])
 
+    @classmethod
+    def CORS(cls, request, response, hosts):
+        for host in hosts:
+            if request.environ.get("HTTP_ORIGIN", None) == host.rstrip("/"):
+                origin = host.rstrip("/")
+                break
+        else:
+            origin = host.rstrip("/")
+
+        hdrs = response.headers
+        hdrs["Access-Control-Allow-Origin"] = origin
+        hdrs["Access-Control-Allow-Headers"] = "Origin, Content-Type"
+        hdrs["Access-Control-Allow-Credentials"] = "true"
+        hdrs["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+
+        return response
+
     def __init__(self, conf):
 
         self.conf = conf
@@ -103,7 +121,12 @@ class Isso(object):
             | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
 
     def dispatch(self, request):
+
+        if request.method == "OPTIONS":
+            return Isso.CORS(request, Response("", 200), self.conf.getiter("general", "host"))
+
         adapter = Isso.urls.bind_to_environ(request.environ)
+
         try:
             handler, values = adapter.match()
         except HTTPException as e:
@@ -117,20 +140,7 @@ class Isso(object):
                 logger.exception("%s %s", request.method, request.environ["PATH_INFO"])
                 return InternalServerError()
 
-            for host in self.conf.getiter('general', 'host'):
-                if request.environ.get("HTTP_ORIGIN", None) == host.rstrip("/"):
-                    origin = host.rstrip("/")
-                    break
-            else:
-                origin = host.rstrip("/")
-
-            hdrs = response.headers
-            hdrs["Access-Control-Allow-Origin"] = origin
-            hdrs["Access-Control-Allow-Headers"] = "Origin, Content-Type"
-            hdrs["Access-Control-Allow-Credentials"] = "true"
-            hdrs["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-
-            return response
+            return Isso.CORS(request, response, self.conf.getiter("general", "host"))
 
     def wsgi_app(self, environ, start_response):
 
