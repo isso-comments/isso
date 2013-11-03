@@ -5,8 +5,7 @@ define(["q"], function(Q) {
     Q.stopUnhandledRejectionTracking();
     Q.longStackSupport = true;
 
-    var endpoint = null,
-        salt = "Eech7co8Ohloopo9Ol6baimi",
+    var salt = "Eech7co8Ohloopo9Ol6baimi",
         location = window.location.pathname;
 
     var rules = {
@@ -38,26 +37,30 @@ define(["q"], function(Q) {
      *
      */
 
-    var script, uri;
-    var port = window.location.port ? ":" + window.location.port : "",
-        host = window.location.protocol + "//" + window.location.hostname + port;
+    var script, endpoint,
+        js = document.getElementsByTagName("script");
 
-    var js = document.getElementsByTagName("script");
     for (var i = 0; i < js.length; i++) {
-        if (js[i].src.match("require\\.js$") && js[i].dataset.main.match("/js/embed$")) {
-            uri = js[i].dataset.main;
-            endpoint = uri.substr(0, uri.length - "/js/main".length);
+        if (js[i].dataset.issoPrefix !== undefined) {
+            endpoint = js[i].dataset.issoPrefix;
         }
     }
 
     if (! endpoint) {
+        for (i = 0; i < js.length; i++) {
+            if (js[i].hasAttribute("async") || js[i].hasAttribute("defer")) {
+                throw "Isso's automatic configuration detection failed, please " +
+                      "refer to https://github.com/posativ/isso#client-configuration " +
+                      "and add a custom `data-isso-prefix` attribute.";
+            }
+        }
+
         script = js[js.length - 1];
 
         if (script.dataset.prefix) {
             endpoint = script.dataset.prefix;
         } else {
-            uri = script.src.substring(host.length);
-            endpoint = uri.substring(0, uri.length - "/js/embed.min.js".length);
+            endpoint = script.src.substring(0, script.src.length - "/js/embed.min.js".length);
         }
     }
 
@@ -166,7 +169,7 @@ define(["q"], function(Q) {
     var remote_addr = function() {
         return curl("GET", endpoint + "/check-ip", null).then(function(rv) {
                 return rv.body;
-         });
+        });
     };
 
     return {
