@@ -110,7 +110,7 @@ def new(app, environ, request, uri):
     rv["text"] = app.markdown(rv["text"])
     rv["hash"] = str(pbkdf2(rv['email'] or rv['remote_addr'], app.salt, 1000, 6))
 
-    app.cache.set('hash', rv['email'] or rv['remote_addr'], rv['hash'])
+    app.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
 
     for key in set(rv.keys()) - FIELDS:
         rv.pop(key)
@@ -183,7 +183,7 @@ def single(app, environ, request, id):
     if request.method == 'DELETE':
 
         item = app.db.comments.get(id)
-        app.cache.delete('hash', item['email'] or item['remote_addr'])
+        app.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
 
         rv = app.db.comments.delete(id)
         if rv:
@@ -207,11 +207,11 @@ def fetch(app, environ, request, uri):
     for item in rv:
 
         key = item['email'] or item['remote_addr']
-        val = app.cache.get('hash', key)
+        val = app.cache.get('hash', key.encode('utf-8'))
 
         if val is None:
             val = str(pbkdf2(key, app.salt, 1000, 6))
-            app.cache.set('hash', key, val)
+            app.cache.set('hash', key.encode('utf-8'), val)
 
         item['hash'] = val
 
