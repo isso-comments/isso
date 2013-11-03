@@ -108,7 +108,9 @@ def new(app, environ, request, uri):
     checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
 
     rv["text"] = app.markdown(rv["text"])
-    rv["hash"] = str(pbkdf2(rv.get('email') or rv['remote_addr'], app.salt, 1000, 6))
+    rv["hash"] = str(pbkdf2(rv['email'] or rv['remote_addr'], app.salt, 1000, 6))
+
+    app.cache.set('hash', rv['email'] or rv['remote_addr'], rv['hash'])
 
     for key in set(rv.keys()) - FIELDS:
         rv.pop(key)
