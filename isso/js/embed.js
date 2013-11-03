@@ -3,16 +3,15 @@
  * Distributed under the MIT license
  */
 
-require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup"], function(domready, api, isso, count, $, Mark) {
+require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup", "app/text/css"], function(domready, api, isso, count, $, Mark, css) {
 
     "use strict";
 
     domready(function() {
-        var css = $.new("link");
-        css.type = "text/css";
-        css.rel = "stylesheet";
-        css.href = api.endpoint + "/css/isso.css";
-        $("head").append(css);
+        var style = $.new("style");
+        style.type = "text/css";
+        style.textContent = css.inline;
+        $("head").append(style);
 
         count();
 
