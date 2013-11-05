@@ -43,6 +43,8 @@ define(["q"], function(Q) {
     for (var i = 0; i < js.length; i++) {
         if (js[i].dataset.issoPrefix !== undefined) {
             endpoint = js[i].dataset.issoPrefix;
+        } else if (js[i].src.match("require\\.js$")) {
+            endpoint = js[i].dataset.main.replace(/\/js\/(embed|count)$/, "");
         }
     }
 
