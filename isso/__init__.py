@@ -174,7 +174,7 @@ def make_app(conf=None):
 
     app = ProxyFix(
             wsgi.SubURI(
-                wsgi.CORSMiddleWare(
+                wsgi.CORSMiddleware(
                     SharedDataMiddleware(isso, {
                         '/js': join(dirname(__file__), 'js/'),
                         '/css': join(dirname(__file__), 'css/')}),

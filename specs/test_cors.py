@@ -1,8 +1,10 @@
 
+from __future__ import unicode_literals
+
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso.wsgi import CORSMiddleWare
+from isso.wsgi import CORSMiddleware
 
 
 def hello_world(environ, start_response):
@@ -12,7 +14,7 @@ def hello_world(environ, start_response):
 
 def test_simple_CORS():
 
-    app = CORSMiddleWare(hello_world, hosts=[
+    app = CORSMiddleware(hello_world, hosts=[
         "https://example.tld/",
         "http://example.tld/",
         "http://example.tld",
@@ -40,7 +42,7 @@ def test_simple_CORS():
 
 def test_preflight_CORS():
 
-    app = CORSMiddleWare(hello_world, hosts=["http://example.tld"])
+    app = CORSMiddleware(hello_world, hosts=["http://example.tld"])
     client = Client(app, Response)
 
     rv = client.open(method="OPTIONS", path="/", headers={"ORIGIN": "http://example.tld"})

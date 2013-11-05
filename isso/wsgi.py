@@ -1,5 +1,8 @@
 # -*- encoding: utf-8 -*-
 
+from werkzeug.datastructures import Headers
+
+
 class SubURI(object):
 
     def __init__(self, app):
@@ -17,7 +20,7 @@ class SubURI(object):
         return self.app(environ, start_response)
 
 
-class CORSMiddleWare(object):
+class CORSMiddleware(object):
 
     def __init__(self, app, hosts):
         self.app = app
@@ -34,12 +37,13 @@ class CORSMiddleWare(object):
             else:
                 origin = host.rstrip("/")
 
-            headers.append(("Access-Control-Allow-Origin", origin))
-            headers.append(("Access-Control-Allow-Headers", "Origin, Content-Type"))
-            headers.append(("Access-Control-Allow-Credentials", "true"))
-            headers.append(("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"))
-            headers.append(("Access-Control-Expose-Headers", "X-Set-Cookie"))
-            return start_response(status, headers, exc_info)
+            headers = Headers(headers)
+            headers.add("Access-Control-Allow-Origin", origin)
+            headers.add("Access-Control-Allow-Headers", "Origin, Content-Type")
+            headers.add("Access-Control-Allow-Credentials", "true")
+            headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+            headers.add("Access-Control-Expose-Headers", "X-Set-Cookie")
+            return start_response(status, headers.to_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":
             add_cors_headers("200 Ok", [("Content-Type", "text/plain")])
