@@ -5,10 +5,11 @@ import json
 import time
 import hashlib
 import logging
-import sqlite3
+import functools
 
 from itsdangerous import SignatureExpired, BadSignature
 
+from werkzeug.http import dump_cookie
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
@@ -118,9 +119,13 @@ def new(app, environ, request, uri):
     # success!
     logger.info('comment created: %s', json.dumps(rv))
 
-    resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201,
-        content_type='application/json')
-    resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.conf.getint('general', 'max-age'))
+    cookie = functools.partial(dump_cookie,
+        value=app.sign([rv["id"], checksum]),
+        max_age=app.conf.getint('general', 'max-age'))
+
+    resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201, content_type='application/json')
+    resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
+    resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
     return resp
 
 
@@ -176,8 +181,13 @@ def single(app, environ, request, id):
         checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
         rv["text"] = app.markdown(rv["text"])
 
+        cookie = functools.partial(dump_cookie,
+                value=app.sign([rv["id"], checksum]),
+                max_age=app.conf.getint('general', 'max-age'))
+
         resp = Response(json.dumps(rv), 200, content_type='application/json')
-        resp.set_cookie(str(rv["id"]), app.sign([rv["id"], checksum]), max_age=app.conf.getint('general', 'max-age'))
+        resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
+        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
     if request.method == 'DELETE':
@@ -192,8 +202,11 @@ def single(app, environ, request, id):
 
         logger.info('comment %i deleted', id)
 
+        cookie = functools.partial(dump_cookie, expires=0, max_age=0)
+
         resp = Response(json.dumps(rv), 200, content_type='application/json')
-        resp.delete_cookie(str(id), path='/')
+        resp.headers.add("Set-Cookie", cookie(str(id)))
+        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
 

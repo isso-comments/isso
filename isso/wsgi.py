@@ -38,6 +38,7 @@ class CORSMiddleWare(object):
             headers.append(("Access-Control-Allow-Headers", "Origin, Content-Type"))
             headers.append(("Access-Control-Allow-Credentials", "true"))
             headers.append(("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"))
+            headers.append(("Access-Control-Expose-Headers", "X-Set-Cookie"))
             return start_response(status, headers, exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":

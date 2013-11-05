@@ -76,6 +76,11 @@ define(["q"], function(Q) {
         function onload() {
 
             var rule = url.replace(endpoint, "").split("?", 1)[0];
+            var cookie = xhr.getResponseHeader("X-Set-Cookie");
+
+            if (cookie && cookie.match(/^isso-/)) {
+                document.cookie = cookie;
+            }
 
             if (rule in rules && rules[rule].indexOf(xhr.status) === -1) {
                 response.reject(xhr.responseText);

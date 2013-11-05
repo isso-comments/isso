@@ -241,7 +241,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
 
         // remove edit and delete buttons when cookie is gone
         var clear = function(button) {
-            if (! utils.cookie(comment.id)) {
+            if (! utils.cookie("isso-" + comment.id)) {
                 $(button, footer).remove();
             } else {
                 setTimeout(function() { clear(button); }, 15*1000);
@@ -253,14 +253,14 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
 
         // show direct reply to own comment when cookie is max aged
         var show = function(el) {
-            if (utils.cookie(comment.id)) {
+            if (utils.cookie("isso-" + comment.id)) {
                 setTimeout(function() { show(el); }, 15*1000);
             } else {
                 footer.append(el);
             }
         };
 
-        if (utils.cookie(comment.id)) {
+        if (utils.cookie("isso-" + comment.id)) {
             show($("a.reply", footer).detach());
         }
     };
