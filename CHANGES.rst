@@ -1,10 +1,15 @@
 Changelog for Isso
 ==================
 
-0.4 (unreleased)
+0.4 (2013-11-05)
 ----------------
 
-- Nothing changed yet.
+- Isso now handles cross-domain requests and cookies, fixes #24
+- Isso for Python 2.x now supports werkzeug>=0.8
+- limit email length to 254 to avoid Hash-DDoS
+- override Isso API location with ``data-isso="..."`` in the script tag
+- override HTML title parsing with a custom ``data-title="..."`` attribute
+  in ``<div id="isso-thread"></div>``
 
 
 0.3 (2013-11-01)
