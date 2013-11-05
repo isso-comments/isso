@@ -34,7 +34,7 @@ class CORSMiddleWare(object):
             else:
                 origin = host.rstrip("/")
 
-            headers.append(("Access-Control-Allow-Origin", origin.encode("latin-1")))
+            headers.append(("Access-Control-Allow-Origin", origin))
             headers.append(("Access-Control-Allow-Headers", "Origin, Content-Type"))
             headers.append(("Access-Control-Allow-Credentials", "true"))
             headers.append(("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"))
