@@ -30,19 +30,18 @@ define(["q"], function(Q) {
      *
      *      .. code-block:: html
      *
-     *          <script data-prefix="/path" src="/.../embed.min.js"></script>
+     *          <script data-isso="http://example.tld/path/" src="/.../embed.min.js"></script>
      *
      *   2. use require.js (during development). When using require.js, we
      *      assume that the path to the scripts ends with `/js/`.
-     *
      */
 
     var script, endpoint,
         js = document.getElementsByTagName("script");
 
     for (var i = 0; i < js.length; i++) {
-        if (js[i].dataset.issoPrefix !== undefined) {
-            endpoint = js[i].dataset.issoPrefix;
+        if (js[i].dataset.isso !== undefined) {
+            endpoint = js[i].dataset.isso;
         } else if (js[i].src.match("require\\.js$")) {
             endpoint = js[i].dataset.main.replace(/\/js\/(embed|count)$/, "");
         }
