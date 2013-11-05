@@ -121,10 +121,6 @@ class Isso(object):
             | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
 
     def dispatch(self, request):
-
-        if request.method == "OPTIONS":
-            return Isso.CORS(request, Response("", 200), self.conf.getiter("general", "host"))
-
         adapter = Isso.urls.bind_to_environ(request.environ)
 
         try:
@@ -139,8 +135,8 @@ class Isso(object):
             except Exception:
                 logger.exception("%s %s", request.method, request.environ["PATH_INFO"])
                 return InternalServerError()
-
-            return Isso.CORS(request, response, self.conf.getiter("general", "host"))
+            else:
+                return response
 
     def wsgi_app(self, environ, start_response):
 
@@ -176,10 +172,13 @@ def make_app(conf=None):
         from werkzeug.contrib.profiler import ProfilerMiddleware
         isso = ProfilerMiddleware(isso, sort_by=("cumtime", ), restrictions=("isso/(?!lib)", ))
 
-    app = ProxyFix(wsgi.SubURI(SharedDataMiddleware(isso, {
-        '/js': join(dirname(__file__), 'js/'),
-        '/css': join(dirname(__file__), 'css/')
-        })))
+    app = ProxyFix(
+            wsgi.SubURI(
+                wsgi.CORSMiddleWare(
+                    SharedDataMiddleware(isso, {
+                        '/js': join(dirname(__file__), 'js/'),
+                        '/css': join(dirname(__file__), 'css/')}),
+                    list(isso.conf.getiter("general", "host")))))
 
     return app
 
