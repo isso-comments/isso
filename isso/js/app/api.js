@@ -52,7 +52,7 @@ define(["q"], function(Q) {
             if (js[i].hasAttribute("async") || js[i].hasAttribute("defer")) {
                 throw "Isso's automatic configuration detection failed, please " +
                       "refer to https://github.com/posativ/isso#client-configuration " +
-                      "and add a custom `data-isso-prefix` attribute.";
+                      "and add a custom `data-isso` attribute.";
             }
         }
 
