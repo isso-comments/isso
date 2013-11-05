@@ -169,15 +169,18 @@ def make_app(conf=None):
         logger.warn("unable to connect to HTTP server")
 
     if isso.conf.getboolean("server", "profile"):
-        from werkzeug.contrib.profiler import ProfilerMiddleware
-        isso = ProfilerMiddleware(isso, sort_by=("cumtime", ), restrictions=("isso/(?!lib)", ))
+        from werkzeug.contrib.profiler import ProfilerMiddleware as Profiler
+        ProfilerMiddleware = lambda app: Profiler(app, sort_by=("cumtime", ), restrictions=("isso/(?!lib)", 10))
+    else:
+        ProfilerMiddleware = lambda app: app
 
     app = ProxyFix(
             wsgi.SubURI(
                 wsgi.CORSMiddleware(
-                    SharedDataMiddleware(isso, {
-                        '/js': join(dirname(__file__), 'js/'),
-                        '/css': join(dirname(__file__), 'css/')}),
+                    SharedDataMiddleware(
+                        ProfilerMiddleware(isso), {
+                            '/js': join(dirname(__file__), 'js/'),
+                            '/css': join(dirname(__file__), 'css/')}),
                     list(isso.conf.getiter("general", "host")))))
 
     return app
