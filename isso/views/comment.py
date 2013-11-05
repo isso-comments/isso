@@ -55,7 +55,7 @@ def new(app, environ, request, uri):
     for field in set(data.keys()) - set(['text', 'author', 'website', 'email', 'parent']):
         data.pop(field)
 
-    if not data.get("text"):
+    if "text" not in data or data["text"] is None or len(data["text"]) < 3:
         raise BadRequest("no text given")
 
     if "id" in data and not isinstance(data["id"], int):
@@ -162,7 +162,7 @@ def single(app, environ, request, id):
     if request.method == 'PUT':
         data = request.get_json()
 
-        if data.get("text") is not None and len(data['text']) < 3:
+        if "text" not in data or data["text"] is None or len(data["text"]) < 3:
             raise BadRequest("no text given")
 
         for key in set(data.keys()) - set(["text", "author", "website"]):

@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 
 from __future__ import unicode_literals
 
@@ -91,6 +93,18 @@ class TestComments(unittest.TestCase):
 
         assert rv["mode"] == 1
         assert rv["text"] == '<p>Lorem ipsum ...</p>\n'
+
+    def textCreateWithNonAsciiText(self):
+
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Здравствуй, мир!'}))
+
+        assert rv.status_code == 201
+        assert any(filter(lambda header: header[0] == 'Set-Cookie', rv.headers))
+
+        rv = loads(rv.data)
+
+        assert rv["mode"] == 1
+        assert rv["text"] == '<p>Здравствуй, мир!</p>\n'
 
     def testCreateMultiple(self):
 
