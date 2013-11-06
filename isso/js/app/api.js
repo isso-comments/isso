@@ -6,7 +6,9 @@ define(["q"], function(Q) {
     Q.longStackSupport = true;
 
     var salt = "Eech7co8Ohloopo9Ol6baimi",
-        config = {},
+        config = {
+            "css": true
+        },
         location = window.location.pathname;
 
     var rules = {

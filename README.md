@@ -132,6 +132,15 @@ You can configure the client (the JS part) via `data-` attributes:
      <script data-isso="/isso" src="/path/to/embed.min.js"></script>
      ```
 
+*   data-isso-css
+
+    Set to `false` prevents Isso from automatically appending the stylesheet.
+    Defaults to `true`.
+
+    ```html
+    <script src="..." data-isso-css="false"></script>
+    ```
+
 ### Webserver configuration
 
 *   nginx configuration to run Isso on `/isso`:
