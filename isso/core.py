@@ -92,7 +92,7 @@ class Config:
         "enabled = false",
         "purge-after = 30d",
         "[server]",
-        "host = localhost", "port = 8080",
+        "listen = http://localhost:8080/",
         "reload = off", "profile = off",
         "[smtp]",
         "username = ", "password = ",

@@ -91,25 +91,36 @@ purge-after
 Server
 ------
 
-HTTP server configuration, does **not** apply to uWSGI (except for `profile`).
+HTTP server configuration.
 
 .. code-block:: ini
 
     [server]
-    host = localhost
-    port = 8080
+    listen = http://localhost:8080
     reload = off
     profile = off
 
-host
-    listen on specified interface
+listen
+    interface to listen on. Isso supports TCP/IP and unix domain sockets:
 
-port
-    application port
+    .. code-block:: uni
+
+        ; UNIX domain socket
+        listen = unix:///tmp/isso.sock
+        ; TCP/IP
+        listen = http:///localhost:1234/
+
+    When ``gevent`` is available, it is automatically used for `http://`
+    Currently, gevent can not handle http requests on unix domain socket
+    (see `#295 <https://github.com/surfly/gevent/issues/295>`_ and
+    `#299 <https://github.com/surfly/gevent/issues/299>`_ for details).
+
+    Does not apply for `uWSGI`.
 
 reload
     reload application, when the source code has changed. Useful for
-    development (don't forget to use a fixed `session-key`).
+    development (don't forget to use a fixed `session-key`). Only works
+    when ``gevent`` and ``uwsgi`` are *not* available.
 
 profile
     show 10 most time consuming function in Isso after each request. Do

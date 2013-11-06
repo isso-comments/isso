@@ -30,8 +30,14 @@ from __future__ import print_function
 import pkg_resources
 dist = pkg_resources.get_distribution("isso")
 
+try:
+    import gevent.monkey; gevent.monkey.patch_all()
+except ImportError:
+    pass
+
 import sys
 import os
+import socket
 import logging
 
 from os.path import dirname, join
@@ -46,11 +52,10 @@ import misaka
 from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map, Rule
-from werkzeug.wrappers import Response
 from werkzeug.exceptions import HTTPException, InternalServerError
 
 from werkzeug.wsgi import SharedDataMiddleware
-from werkzeug.serving import run_simple
+from werkzeug.serving import run_simple, WSGIRequestHandler
 from werkzeug.contrib.fixers import ProxyFix
 
 from isso import db, migrate, views, wsgi
@@ -208,8 +213,52 @@ def main():
         migrate.disqus(db.SQLite3(conf.get('general', 'dbpath'), conf), args.dump)
         sys.exit(0)
 
-    run_simple(conf.get('server', 'host'), conf.getint('server', 'port'), make_app(conf),
-               threaded=True, use_reloader=conf.getboolean('server', 'reload'))
+    if conf.get("server", "listen").startswith("http://"):
+        host, port, _ = parse.host(conf.get("server", "listen"))
+        try:
+            from gevent.pywsgi import WSGIServer
+            WSGIServer((host, port), make_app(conf)).serve_forever()
+        except ImportError:
+            run_simple(host, port, make_app(conf), threaded=True,
+                       use_reloader=conf.getboolean('server', 'reload'))
+    else:
+        try:
+            from socketserver import ThreadingMixIn
+            from http.server import HTTPServer
+        except ImportError:
+            from SocketServer import ThreadingMixIn
+            from BaseHTTPServer import HTTPServer
+
+        class SocketWSGIRequestHandler(WSGIRequestHandler):
+
+            def run_wsgi(self):
+                self.client_address = ("<local>", 0)
+                super(SocketWSGIRequestHandler, self).run_wsgi()
+
+        class SocketHTTPServer(HTTPServer, ThreadingMixIn):
+
+            multithread = True
+            multiprocess = False
+
+            allow_reuse_address = 1
+            address_family = socket.AF_UNIX
+
+            request_queue_size = 128
+
+            def __init__(self, sock, app):
+                HTTPServer.__init__(self, sock, SocketWSGIRequestHandler)
+                self.app = app
+                self.ssl_context = None
+                self.shutdown_signal = False
+
+        sock = conf.get("server", "listen").partition("unix://")[2]
+
+        try:
+            os.unlink(sock)
+        except OSError:
+            pass
+
+        SocketHTTPServer(sock, make_app(conf)).serve_forever()
 
 try:
     import uwsgi
