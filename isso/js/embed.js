@@ -8,10 +8,13 @@ require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup", "
     "use strict";
 
     domready(function() {
-        var style = $.new("style");
-        style.type = "text/css";
-        style.textContent = css.inline;
-        $("head").append(style);
+
+        if (api.config["css"]) {
+            var style = $.new("style");
+            style.type = "text/css";
+            style.textContent = css.inline;
+            $("head").append(style);
+        }
 
         count();
 

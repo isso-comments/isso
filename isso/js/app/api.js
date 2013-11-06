@@ -6,6 +6,9 @@ define(["q"], function(Q) {
     Q.longStackSupport = true;
 
     var salt = "Eech7co8Ohloopo9Ol6baimi",
+        config = {
+            "css": true
+        },
         location = window.location.pathname;
 
     var rules = {
@@ -45,6 +48,16 @@ define(["q"], function(Q) {
         } else if (js[i].src.match("require\\.js$")) {
             endpoint = js[i].dataset.main.replace(/\/js\/(embed|count)$/, "");
         }
+
+        [].forEach.call(js[i].attributes, function(attr) {
+            if (/^data-isso-/.test(attr.name)) {
+                try {
+                    config[attr.name.substring(10)] = JSON.parse(attr.value);
+                } catch (ex) {
+                    config[attr.name.substring(10)] = attr.value;
+                }
+            }
+        });
     }
 
     if (! endpoint) {
@@ -181,6 +194,7 @@ define(["q"], function(Q) {
     return {
         endpoint: endpoint,
         salt: salt,
+        config: config,
 
         remote_addr: remote_addr,
 
