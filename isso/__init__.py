@@ -31,9 +31,12 @@ import pkg_resources
 dist = pkg_resources.get_distribution("isso")
 
 try:
-    import gevent.monkey; gevent.monkey.patch_all()
+    import uwsgi
 except ImportError:
-    pass
+    try:
+        import gevent.monkey; gevent.monkey.patch_all()
+    except ImportError:
+        pass
 
 import sys
 import os
