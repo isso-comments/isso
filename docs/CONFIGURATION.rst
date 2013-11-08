@@ -103,7 +103,7 @@ HTTP server configuration.
 listen
     interface to listen on. Isso supports TCP/IP and unix domain sockets:
 
-    .. code-block:: uni
+    .. code-block:: ini
 
         ; UNIX domain socket
         listen = unix:///tmp/isso.sock
