@@ -17,6 +17,7 @@ from isso.compat import text_type as str
 
 from isso import utils, notify, db
 from isso.utils import http, parse
+from isso.views import requires
 from isso.crypto import pbkdf2
 
 logger = logging.getLogger("isso")

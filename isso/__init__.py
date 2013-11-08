@@ -64,7 +64,7 @@ from werkzeug.contrib.fixers import ProxyFix
 from isso import db, migrate, views, wsgi
 from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.utils import parse, http, JSONRequest
-from isso.views import comment
+from isso.views import comments
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 logging.basicConfig(
@@ -78,18 +78,18 @@ class Isso(object):
 
     salt = b"Eech7co8Ohloopo9Ol6baimi"
     urls = Map([
-        Rule('/new', methods=['POST'], endpoint=views.comment.new),
+        Rule('/new', methods=['POST'], endpoint=comments.new),
 
-        Rule('/id/<int:id>', methods=['GET', 'PUT', 'DELETE'], endpoint=views.comment.single),
-        Rule('/id/<int:id>/like', methods=['POST'], endpoint=views.comment.like),
-        Rule('/id/<int:id>/dislike', methods=['POST'], endpoint=views.comment.dislike),
+        Rule('/id/<int:id>', methods=['GET', 'PUT', 'DELETE'], endpoint=comments.single),
+        Rule('/id/<int:id>/like', methods=['POST'], endpoint=comments.like),
+        Rule('/id/<int:id>/dislike', methods=['POST'], endpoint=comments.dislike),
 
-        Rule('/', methods=['GET'], endpoint=views.comment.fetch),
-        Rule('/count', methods=['GET'], endpoint=views.comment.count),
-        Rule('/delete/<string:auth>', endpoint=views.comment.delete),
-        Rule('/activate/<string:auth>', endpoint=views.comment.activate),
+        Rule('/', methods=['GET'], endpoint=comments.fetch),
+        Rule('/count', methods=['GET'], endpoint=comments.count),
+        Rule('/delete/<string:auth>', endpoint=comments.delete),
+        Rule('/activate/<string:auth>', endpoint=comments.activate),
 
-        Rule('/check-ip', endpoint=views.comment.checkip)
+        Rule('/check-ip', endpoint=comments.checkip)
     ])
 
     @classmethod

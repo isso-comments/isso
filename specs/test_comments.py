@@ -18,7 +18,7 @@ from werkzeug.wrappers import Response
 
 from isso import Isso, notify, views, core
 from isso.utils import http
-from isso.views import comment
+from isso.views import comments
 
 class Dummy:
 
@@ -250,7 +250,7 @@ class TestComments(unittest.TestCase):
 
         rv = loads(rv.data)
 
-        for key in comment.FIELDS:
+        for key in comments.FIELDS:
             rv.pop(key)
 
         assert not any(rv.keys())
