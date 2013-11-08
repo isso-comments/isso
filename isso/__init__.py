@@ -46,11 +46,6 @@ import logging
 from os.path import dirname, join
 from argparse import ArgumentParser
 
-try:
-    import httplib
-except ImportError:
-    import http.client as httplib
-
 import misaka
 from itsdangerous import URLSafeTimedSerializer
 
@@ -61,7 +56,7 @@ from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.serving import run_simple, WSGIRequestHandler
 from werkzeug.contrib.fixers import ProxyFix
 
-from isso import db, migrate, views, wsgi
+from isso import db, migrate, wsgi
 from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.utils import parse, http, JSONRequest
 from isso.views import comments
@@ -91,23 +86,6 @@ class Isso(object):
 
         Rule('/check-ip', endpoint=comments.checkip)
     ])
-
-    @classmethod
-    def CORS(cls, request, response, hosts):
-        for host in hosts:
-            if request.environ.get("HTTP_ORIGIN", None) == host.rstrip("/"):
-                origin = host.rstrip("/")
-                break
-        else:
-            origin = host.rstrip("/")
-
-        hdrs = response.headers
-        hdrs["Access-Control-Allow-Origin"] = origin
-        hdrs["Access-Control-Allow-Headers"] = "Origin, Content-Type"
-        hdrs["Access-Control-Allow-Credentials"] = "true"
-        hdrs["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-
-        return response
 
     def __init__(self, conf):
 

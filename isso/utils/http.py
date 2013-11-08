@@ -2,8 +2,6 @@
 
 import socket
 
-from contextlib import closing
-
 try:
     import httplib
 except ImportError:
