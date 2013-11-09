@@ -20,7 +20,7 @@ class requires:
         self.type = type
 
     def __call__(self, func):
-        def dec(app, env, req, *args, **kwargs):
+        def dec(cls, env, req, *args, **kwargs):
 
             if self.param not in req.args:
                 raise BadRequest("missing %s query" % self.param)
@@ -30,6 +30,6 @@ class requires:
             except TypeError:
                 raise BadRequest("invalid type for %s, expected %s" % (self.param, self.type))
 
-            return func(app, env, req, *args, **kwargs)
+            return func(cls, env, req, *args, **kwargs)
 
         return dec

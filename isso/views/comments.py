@@ -4,141 +4,186 @@ import cgi
 import json
 import time
 import hashlib
-import logging
 import functools
 
 from itsdangerous import SignatureExpired, BadSignature
 
 from werkzeug.http import dump_cookie
+from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from isso.compat import text_type as str
 
-from isso import utils, notify, db
-from isso.utils import http, parse
+from isso import utils, local
+from isso.utils import http, parse, markdown
+from isso.utils.crypto import pbkdf2
 from isso.views import requires
-from isso.crypto import pbkdf2
-
-logger = logging.getLogger("isso")
-
-FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email', 'mode',
-              'created', 'modified', 'likes', 'dislikes', 'hash'])
 
 
-@requires(str, 'uri')
-def new(app, environ, request, uri):
+def md5(text):
+    return hashlib.md5(text.encode('utf-8')).hexdigest()
 
-    data = request.get_json()
 
-    for field in set(data.keys()) - set(['text', 'author', 'website', 'email', 'parent']):
-        data.pop(field)
+class JSON(Response):
 
-    if "text" not in data or data["text"] is None or len(data["text"]) < 3:
-        raise BadRequest("no text given")
+    def __init__(self, *args):
+        return super(JSON, self).__init__(*args, content_type='application/json')
 
-    if "id" in data and not isinstance(data["id"], int):
-        raise BadRequest("parent id must be an integer")
 
-    if len(data.get("email") or "") > 254:
-        raise BadRequest("http://tools.ietf.org/html/rfc5321#section-4.5.3")
+class API(object):
 
-    for field in ("author", "email"):
-        if data.get(field):
-            data[field] = cgi.escape(data[field])
+    FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email',
+                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
 
-    data['mode'] = (app.conf.getboolean('moderation', 'enabled') and 2) or 1
-    data['remote_addr'] = utils.anonymize(str(request.remote_addr))
+    # comment fields, that can be submitted
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent'])
 
-    with app.lock:
-        if uri not in app.db.threads:
-            for host in app.conf.getiter('general', 'host'):
-                with http.curl('GET', host, uri) as resp:
+    VIEWS = [
+        ('fetch',   ('GET', '/')),
+        ('new',     ('POST', '/new')),
+        ('count',   ('GET', '/count')),
+        ('view',    ('GET', '/id/<int:id>')),
+        ('edit',    ('PUT', '/id/<int:id>')),
+        ('delete',  ('DELETE', '/id/<int:id>')),
+        ('delete',  ('GET', '/id/<int:id>/delete/<string:key>')),
+        ('like',    ('POST', '/id/<int:id>/like')),
+        ('dislike', ('POST', '/id/<int:id>/dislike')),
+        ('checkip', ('GET', '/check-ip'))
+    ]
+
+    def __init__(self, isso):
+
+        self.isso = isso
+        self.cache = isso.cache
+        self.signal = isso.signal
+
+        self.conf = isso.conf.section("general")
+        self.moderated = isso.conf.getboolean("moderation", "enabled")
+
+        self.threads = isso.db.threads
+        self.comments = isso.db.comments
+
+        for (view, (method, path)) in self.VIEWS:
+            isso.urls.add(
+                Rule(path, methods=[method], endpoint=getattr(self, view)))
+
+    @classmethod
+    def verify(cls, comment):
+
+        if "text" not in comment:
+            return False, "text is missing"
+
+        if not isinstance(comment.get("parent"), (int, type(None))):
+            return False, "parent must be an integer or null"
+
+        for key in ("text", "author", "website", "email"):
+            if not isinstance(comment.get(key), (str, type(None))):
+                return False, "%s must be a string or null" % key
+
+        if len(comment["text"]) < 3:
+            return False, "text is too short (minimum length: 3)"
+
+        if len(comment.get("email") or "") > 254:
+            return False, "http://tools.ietf.org/html/rfc5321#section-4.5.3"
+
+        return True, ""
+
+    @requires(str, 'uri')
+    def new(self, environ, request, uri):
+
+        data = request.get_json()
+
+        for field in set(data.keys()) - API.ACCEPT:
+            data.pop(field)
+
+        for key in ("author", "email", "website", "parent"):
+            data.setdefault(key, None)
+
+        valid, reason = API.verify(data)
+        if not valid:
+            return BadRequest(reason)
+
+        for field in ("author", "email"):
+            if data.get(field) is not None:
+                data[field] = cgi.escape(data[field])
+
+        data['mode'] = 2 if self.moderated else 1
+        data['remote_addr'] = utils.anonymize(str(request.remote_addr))
+
+        with self.isso.lock:
+            if uri not in self.threads:
+                with http.curl('GET', local("origin"), uri) as resp:
                     if resp and resp.status == 200:
                         title = parse.title(resp.read())
-                        break
+                    else:
+                        return NotFound('URI does not exist')
+
+                thread = self.threads.new(uri, title)
+                self.signal("comments.new:new-thread", thread)
             else:
-                return Response('URI does not exist', 404)
+                thread = self.threads[uri]
 
-            app.db.threads.new(uri, title)
-            logger.info('new thread: %s -> %s', uri, title)
-        else:
-            title = app.db.threads[uri].title
+        # notify extensions that the new comment is about to save
+        self.signal("comments.new:before-save", thread, data)
 
-    try:
-        with app.lock:
-            rv = app.db.comments.add(uri, data)
-    except db.IssoDBException:
-        raise Forbidden
+        if data is None:
+            raise Forbidden
 
-    host = list(app.conf.getiter('general', 'host'))[0].rstrip("/")
-    href = host + uri + "#isso-%i" % rv["id"]
+        with self.isso.lock:
+            rv = self.comments.add(uri, data)
 
-    deletion = host + environ["SCRIPT_NAME"] + "/delete/" + app.sign(str(rv["id"]))
-    activation = None
+        # notify extension, that the new comment has been successfully saved
+        self.signal("comments.new:after-save", thread, rv)
 
-    if app.conf.getboolean('moderation', 'enabled'):
-        activation = host + environ["SCRIPT_NAME"] + "/activate/" + app.sign(str(rv["id"]))
+        cookie = functools.partial(dump_cookie,
+            value=self.isso.sign([rv["id"], md5(rv["text"])]),
+            max_age=self.conf.getint('max-age'))
 
-    app.notify(title, notify.format(rv, href, utils.anonymize(str(request.remote_addr)),
-                                    activation_key=activation, deletion_key=deletion))
+        rv["text"] = markdown(rv["text"])
+        rv["hash"] = str(pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6))
 
-    # save checksum of text into cookie, so mallory can't modify/delete a comment, if
-    # he add a comment, then removed it but not the signed cookie.
-    checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
+        self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
 
-    rv["text"] = app.markdown(rv["text"])
-    rv["hash"] = str(pbkdf2(rv['email'] or rv['remote_addr'], app.salt, 1000, 6))
+        for key in set(rv.keys()) - API.FIELDS:
+            rv.pop(key)
 
-    app.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
+        # success!
+        self.signal("comments.new:finish", thread, rv)
 
-    for key in set(rv.keys()) - FIELDS:
-        rv.pop(key)
+        resp = JSON(json.dumps(rv), 202 if rv["mode"] == 2 else 201)
+        resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
+        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
+        return resp
 
-    # success!
-    logger.info('comment created: %s', json.dumps(rv))
+    def view(self, environ, request, id):
 
-    cookie = functools.partial(dump_cookie,
-        value=app.sign([rv["id"], checksum]),
-        max_age=app.conf.getint('general', 'max-age'))
-
-    resp = Response(json.dumps(rv), 202 if rv["mode"] == 2 else 201, content_type='application/json')
-    resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
-    resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
-    return resp
-
-
-def single(app, environ, request, id):
-
-    if request.method == 'GET':
-        rv = app.db.comments.get(id)
+        rv = self.comments.get(id)
         if rv is None:
             raise NotFound
 
-        for key in set(rv.keys()) - FIELDS:
+        for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
 
         if request.args.get('plain', '0') == '0':
-            rv['text'] = app.markdown(rv['text'])
+            rv['text'] = markdown(rv['text'])
 
         return Response(json.dumps(rv), 200, content_type='application/json')
 
-    try:
-        rv = app.unsign(request.cookies.get(str(id), ''))
-    except (SignatureExpired, BadSignature):
+    def edit(self, environ, request, id):
+
         try:
-            rv = app.unsign(request.cookies.get('admin', ''))
+            rv = self.isso.unsign(request.cookies.get(str(id), ''))
         except (SignatureExpired, BadSignature):
             raise Forbidden
 
-    if rv[0] != id:
-        raise Forbidden
+        if rv[0] != id:
+            raise Forbidden
 
-    # verify checksum, mallory might skip cookie deletion when he deletes a comment
-    if rv[1] != hashlib.md5(app.db.comments.get(id)["text"].encode('utf-8')).hexdigest():
-        raise Forbidden
+        # verify checksum, mallory might skip cookie deletion when he deletes a comment
+        if rv[1] != md5(self.comments.get(id)["text"]):
+            raise Forbidden
 
-    if request.method == 'PUT':
         data = request.get_json()
 
         if "text" not in data or data["text"] is None or len(data["text"]) < 3:
@@ -149,123 +194,121 @@ def single(app, environ, request, id):
 
         data['modified'] = time.time()
 
-        with app.lock:
-            rv = app.db.comments.update(id, data)
+        with self.isso.lock:
+            rv = self.comments.update(id, data)
 
-        for key in set(rv.keys()) - FIELDS:
+        for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
 
-        logger.info('comment %i edited: %s', id, json.dumps(rv))
-
-        checksum = hashlib.md5(rv["text"].encode('utf-8')).hexdigest()
-        rv["text"] = app.markdown(rv["text"])
+        self.signal("comments.edit", rv)
 
         cookie = functools.partial(dump_cookie,
-                value=app.sign([rv["id"], checksum]),
-                max_age=app.conf.getint('general', 'max-age'))
+                value=self.isso.sign([rv["id"], md5(rv["text"])]),
+                max_age=self.conf.getint('max-age'))
 
-        resp = Response(json.dumps(rv), 200, content_type='application/json')
+        rv["text"] = markdown(rv["text"])
+
+        resp = JSON(json.dumps(rv), 200)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
-    if request.method == 'DELETE':
+    def delete(self, environ, request, id, key=None):
 
-        item = app.db.comments.get(id)
-        app.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+        try:
+            rv = self.isso.unsign(request.cookies.get(str(id), ""))
+        except (SignatureExpired, BadSignature):
+            try:
+                id = self.isso.unsign(key or "", max_age=2**32)
+            except (BadSignature, SignatureExpired):
+                raise Forbidden
+        else:
+            if rv[0] != id:
+                raise Forbidden
 
-        rv = app.db.comments.delete(id)
+            # verify checksum, mallory might skip cookie deletion when he deletes a comment
+            if rv[1] != md5(self.comments.get(id)["text"]):
+                raise Forbidden
+
+        item = self.comments.get(id)
+
+        if item is None:
+            raise NotFound
+
+        self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+
+        rv = self.comments.delete(id)
         if rv:
-            for key in set(rv.keys()) - FIELDS:
+            for key in set(rv.keys()) - API.FIELDS:
                 rv.pop(key)
 
-        logger.info('comment %i deleted', id)
+        self.signal("comments.delete", id)
 
+        resp = JSON(json.dumps(rv), 200)
         cookie = functools.partial(dump_cookie, expires=0, max_age=0)
-
-        resp = Response(json.dumps(rv), 200, content_type='application/json')
         resp.headers.add("Set-Cookie", cookie(str(id)))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
+    def activate(self, environ, request, _, key):
 
-@requires(str, 'uri')
-def fetch(app, environ, request, uri):
+        try:
+            id = self.isso.unsign(key, max_age=2**32)
+        except (BadSignature, SignatureExpired):
+            raise Forbidden
 
-    rv = list(app.db.comments.fetch(uri))
-    if not rv:
-        raise NotFound
+        with self.isso.lock:
+            self.comments.activate(id)
 
-    for item in rv:
+        self.signal("comments.activate", id)
+        return Response("Yo", 200)
 
-        key = item['email'] or item['remote_addr']
-        val = app.cache.get('hash', key.encode('utf-8'))
+    @requires(str, 'uri')
+    def fetch(self, environ, request, uri):
 
-        if val is None:
-            val = str(pbkdf2(key, app.salt, 1000, 6))
-            app.cache.set('hash', key.encode('utf-8'), val)
+        rv = list(self.comments.fetch(uri))
+        if not rv:
+            raise NotFound
 
-        item['hash'] = val
-
-        for key in set(item.keys()) - FIELDS:
-            item.pop(key)
-
-    if request.args.get('plain', '0') == '0':
         for item in rv:
-            item['text'] = app.markdown(item['text'])
 
-    return Response(json.dumps(rv), 200, content_type='application/json')
+            key = item['email'] or item['remote_addr']
+            val = self.cache.get('hash', key.encode('utf-8'))
 
+            if val is None:
+                val = str(pbkdf2(key, self.isso.salt, 1000, 6))
+                self.cache.set('hash', key.encode('utf-8'), val)
 
-def like(app, environ, request, id):
+            item['hash'] = val
 
-    nv = app.db.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
-    return Response(json.dumps(nv), 200)
+            for key in set(item.keys()) - API.FIELDS:
+                item.pop(key)
 
+        if request.args.get('plain', '0') == '0':
+            for item in rv:
+                item['text'] = markdown(item['text'])
 
-def dislike(app, environ, request, id):
+        return JSON(json.dumps(rv), 200)
 
-    nv = app.db.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
-    return Response(json.dumps(nv), 200)
+    def like(self, environ, request, id):
 
+        nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
+        return Response(json.dumps(nv), 200)
 
-@requires(str, 'uri')
-def count(app, environ, request, uri):
+    def dislike(self, environ, request, id):
 
-    rv = app.db.comments.count(uri)[0]
+        nv = self.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
+        return Response(json.dumps(nv), 200)
 
-    if rv == 0:
-        raise NotFound
+    @requires(str, 'uri')
+    def count(self, environ, request, uri):
 
-    return Response(json.dumps(rv), 200, content_type='application/json')
+        rv = self.comments.count(uri)[0]
 
+        if rv == 0:
+            raise NotFound
 
-def activate(app, environ, request, auth):
+        return JSON(json.dumps(rv), 200)
 
-    try:
-        id = app.unsign(auth, max_age=2**32)
-    except (BadSignature, SignatureExpired):
-        raise Forbidden
-
-    with app.lock:
-        app.db.comments.activate(id)
-
-    logger.info("comment %s activated" % id)
-    return Response("Yo", 200)
-
-def delete(app, environ, request, auth):
-
-    try:
-        id = app.unsign(auth, max_age=2**32)
-    except (BadSignature, SignatureExpired):
-        raise Forbidden
-
-    with app.lock:
-        app.db.comments.delete(id)
-
-    logger.info("comment %s deleted" % id)
-    return Response("%s successfully removed" % id)
-
-
-def checkip(app, env, req):
-    return Response(utils.anonymize(str(req.remote_addr)), 200)
+    def checkip(self, env, req):
+        return Response(utils.anonymize(str(req.remote_addr)), 200)

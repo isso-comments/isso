@@ -14,6 +14,7 @@ from string import ascii_letters, digits
 from werkzeug.wrappers import Request
 from werkzeug.exceptions import BadRequest
 
+import misaka
 import ipaddress
 
 
@@ -103,3 +104,23 @@ class JSONRequest(Request):
             return json.loads(self.get_data(as_text=True))
         except ValueError:
             raise BadRequest('Unable to read JSON request')
+
+
+def markdown(text):
+    return misaka.html(text, extensions= misaka.EXT_STRIKETHROUGH
+        | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK
+        | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
+
+
+def origin(hosts):
+
+    hosts = [x.rstrip("/") for x in hosts]
+
+    def func(environ):
+        for host in hosts:
+            if environ.get("HTTP_ORIGIN", None) == host:
+                return host
+        else:
+            return hosts[0]
+
+    return func

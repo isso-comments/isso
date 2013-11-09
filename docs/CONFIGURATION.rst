@@ -36,6 +36,7 @@ session key and hostname. Here are the default values for this section:
     host = http://localhost:8080/
     max-age = 15m
     session-key = ... # python: binascii.b2a_hex(os.urandom(24))
+    notify =
 
 dbpath
     file location to the SQLite3 database, highly recommended to change this
@@ -66,6 +67,10 @@ session-key
 max-age
     time range that allows users to edit/remove their own comments. See
     :ref:`Appendum: Timedelta <appendum-timedelta>` for valid values.
+
+notify
+    Select notification backend for new comments. Currently, only SMTP
+    is available.
 
 
 Moderation
@@ -131,8 +136,8 @@ SMTP
 ----
 
 Isso can notify you on new comments via SMTP. In the email notification, you
-also can moderate comments. If the server connection fails during startup, a
-null mailer is used.
+also can moderate (=activate or delete) comments. Don't forget to configure
+``notify = smtp`` in the general section.
 
 .. code-block:: ini
 

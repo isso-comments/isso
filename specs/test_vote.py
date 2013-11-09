@@ -9,7 +9,7 @@ import unittest
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, notify, utils, core
+from isso import Isso, core
 from isso.utils import http
 
 class Dummy:
