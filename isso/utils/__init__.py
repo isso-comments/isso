@@ -14,7 +14,10 @@ from string import ascii_letters, digits
 from werkzeug.wrappers import Request
 from werkzeug.exceptions import BadRequest
 
-import ipaddress
+try:
+    import ipaddress
+except ImportError:
+    import ipaddr as ipaddress
 
 
 def anonymize(remote_addr):
