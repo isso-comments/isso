@@ -184,6 +184,8 @@ Documentation
 - [Development](https://github.com/posativ/isso/blob/master/docs/DEVELOPMENT.md)
 - [API overview](https://github.com/posativ/isso/raw/master/docs/API.md)
 
+For further help, join `#isso` on Freenode!
+
 
 Alternatives
 ------------
