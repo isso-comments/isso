@@ -1,12 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 
-class Thread(object):
-
-    def __init__(self, id, uri, title):
-        self.id = id
-        self.uri = uri
-        self.title = title
+def Thread(id, uri, title):
+    return {
+        "id": id,
+        "uri": uri,
+        "title": title
+    }
 
 
 class Threads(object):
@@ -27,3 +27,4 @@ class Threads(object):
 
     def new(self, uri, title):
         self.db.execute("INSERT INTO threads (uri, title) VALUES (?, ?)", (uri, title))
+        return self[uri]

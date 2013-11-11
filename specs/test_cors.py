@@ -5,6 +5,7 @@ from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
 from isso.wsgi import CORSMiddleware
+from isso.utils import origin
 
 
 def hello_world(environ, start_response):
@@ -14,11 +15,11 @@ def hello_world(environ, start_response):
 
 def test_simple_CORS():
 
-    app = CORSMiddleware(hello_world, hosts=[
+    app = CORSMiddleware(hello_world, origin=origin([
         "https://example.tld/",
         "http://example.tld/",
         "http://example.tld",
-    ])
+    ]))
 
     client = Client(app, Response)
 
@@ -30,19 +31,19 @@ def test_simple_CORS():
     assert rv.headers["Access-Control-Allow-Methods"] == "GET, POST, PUT, DELETE"
     assert rv.headers["Access-Control-Expose-Headers"] == "X-Set-Cookie"
 
-    a = client.get("/", headers={"ORIGIN": "http://example.tld/"})
+    a = client.get("/", headers={"ORIGIN": "http://example.tld"})
     assert a.headers["Access-Control-Allow-Origin"] == "http://example.tld"
 
     b = client.get("/", headers={"ORIGIN": "http://example.tld"})
-    assert a.headers["Access-Control-Allow-Origin"] == "http://example.tld"
+    assert b.headers["Access-Control-Allow-Origin"] == "http://example.tld"
 
-    c = client.get("/", headers={"ORIGIN": "http://foo.other/"})
-    assert a.headers["Access-Control-Allow-Origin"] == "http://example.tld"
+    c = client.get("/", headers={"ORIGIN": "http://foo.other"})
+    assert c.headers["Access-Control-Allow-Origin"] == "https://example.tld"
 
 
 def test_preflight_CORS():
 
-    app = CORSMiddleware(hello_world, hosts=["http://example.tld"])
+    app = CORSMiddleware(hello_world, origin=origin(["http://example.tld"]))
     client = Client(app, Response)
 
     rv = client.open(method="OPTIONS", path="/", headers={"ORIGIN": "http://example.tld"})

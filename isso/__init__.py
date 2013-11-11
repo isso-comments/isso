@@ -46,25 +46,25 @@ import logging
 from os.path import dirname, join
 from argparse import ArgumentParser
 
-try:
-    import httplib
-except ImportError:
-    import http.client as httplib
-
-import misaka
 from itsdangerous import URLSafeTimedSerializer
 
-from werkzeug.routing import Map, Rule
+from werkzeug.routing import Map
 from werkzeug.exceptions import HTTPException, InternalServerError
 
 from werkzeug.wsgi import SharedDataMiddleware
+from werkzeug.local import Local, LocalManager
 from werkzeug.serving import run_simple, WSGIRequestHandler
 from werkzeug.contrib.fixers import ProxyFix
 
-from isso import db, migrate, views, wsgi
+local = Local()
+local_manager = LocalManager([local])
+
+from isso import db, migrate, wsgi, ext
 from isso.core import ThreadedMixin, uWSGIMixin, Config
-from isso.utils import parse, http, JSONRequest
-from isso.views import comment
+from isso.utils import parse, http, JSONRequest, origin
+from isso.views import comments
+
+from isso.ext.notifications import Stdout, SMTP
 
 logging.getLogger('werkzeug').setLevel(logging.ERROR)
 logging.basicConfig(
@@ -77,37 +77,6 @@ logger = logging.getLogger("isso")
 class Isso(object):
 
     salt = b"Eech7co8Ohloopo9Ol6baimi"
-    urls = Map([
-        Rule('/new', methods=['POST'], endpoint=views.comment.new),
-
-        Rule('/id/<int:id>', methods=['GET', 'PUT', 'DELETE'], endpoint=views.comment.single),
-        Rule('/id/<int:id>/like', methods=['POST'], endpoint=views.comment.like),
-        Rule('/id/<int:id>/dislike', methods=['POST'], endpoint=views.comment.dislike),
-
-        Rule('/', methods=['GET'], endpoint=views.comment.fetch),
-        Rule('/count', methods=['GET'], endpoint=views.comment.count),
-        Rule('/delete/<string:auth>', endpoint=views.comment.delete),
-        Rule('/activate/<string:auth>', endpoint=views.comment.activate),
-
-        Rule('/check-ip', endpoint=views.comment.checkip)
-    ])
-
-    @classmethod
-    def CORS(cls, request, response, hosts):
-        for host in hosts:
-            if request.environ.get("HTTP_ORIGIN", None) == host.rstrip("/"):
-                origin = host.rstrip("/")
-                break
-        else:
-            origin = host.rstrip("/")
-
-        hdrs = response.headers
-        hdrs["Access-Control-Allow-Origin"] = origin
-        hdrs["Access-Control-Allow-Headers"] = "Origin, Content-Type"
-        hdrs["Access-Control-Allow-Credentials"] = "true"
-        hdrs["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
-
-        return response
 
     def __init__(self, conf):
 
@@ -117,19 +86,30 @@ class Isso(object):
 
         super(Isso, self).__init__(conf)
 
+        subscribers = []
+        subscribers.append(Stdout(None))
+
+        if conf.get("general", "notify") == "smtp":
+            subscribers.append(SMTP(self))
+
+        self.signal = ext.Signal(*subscribers)
+
+        self.urls = Map()
+        self.api = comments.API(self)
+
     def sign(self, obj):
         return self.signer.dumps(obj)
 
     def unsign(self, obj, max_age=None):
         return self.signer.loads(obj, max_age=max_age or self.conf.getint('general', 'max-age'))
 
-    def markdown(self, text):
-        return misaka.html(text, extensions=misaka.EXT_STRIKETHROUGH
-            | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK
-            | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
-
     def dispatch(self, request):
-        adapter = Isso.urls.bind_to_environ(request.environ)
+        local.request = request
+
+        local.host = wsgi.host(request.environ)
+        local.origin = origin(self.conf.getiter("general", "host"))(request.environ)
+
+        adapter = self.urls.bind_to_environ(request.environ)
 
         try:
             handler, values = adapter.match()
@@ -137,7 +117,7 @@ class Isso(object):
             return e
         else:
             try:
-                response = handler(self, request.environ, request, **values)
+                response = handler(request.environ, request, **values)
             except HTTPException as e:
                 return e
             except Exception:
@@ -147,7 +127,6 @@ class Isso(object):
                 return response
 
     def wsgi_app(self, environ, start_response):
-
         response = self.dispatch(JSONRequest(environ))
         return response(environ, start_response)
 
@@ -186,10 +165,11 @@ def make_app(conf=None):
             wsgi.SubURI(
                 wsgi.CORSMiddleware(
                     SharedDataMiddleware(
-                        ProfilerMiddleware(isso), {
-                            '/js': join(dirname(__file__), 'js/'),
-                            '/css': join(dirname(__file__), 'css/')}),
-                    list(isso.conf.getiter("general", "host")))))
+                        ProfilerMiddleware(
+                            local_manager.make_middleware(isso)), {
+                        '/js': join(dirname(__file__), 'js/'),
+                        '/css': join(dirname(__file__), 'css/')}),
+                    origin(isso.conf.getiter("general", "host")))))
 
     return app
 
