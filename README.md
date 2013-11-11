@@ -174,6 +174,12 @@ You can configure the client (the JS part) via `data-` attributes:
     }
     ```
 
+### Init Scripts
+
+  * SystemD: [isso.service](https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service)
+  * SysVinit: [isso.init](https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init)
+  * OpenBSD: [GH:Gist](https://gist.github.com/noqqe/7397719)
+
 
 Documentation
 -------------
