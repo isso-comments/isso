@@ -1,8 +1,4 @@
 # -*- encoding: utf-8 -*-
-#
-# TODO
-#
-# - export does not include website from commenters
 
 from __future__ import division
 
