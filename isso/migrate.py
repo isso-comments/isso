@@ -3,7 +3,6 @@
 # TODO
 #
 # - export does not include website from commenters
-# - Disqus includes already deleted comments
 
 from __future__ import division
 
@@ -61,7 +60,7 @@ def disqus(db, xmlfile):
             'created': mktime(strptime(
                 post.find('%screatedAt' % ns).text, '%Y-%m-%dT%H:%M:%SZ')),
             'remote_addr': '127.0.0.0',
-            'mode': 1
+            'mode': 1 if post.find("%sisDeleted" % ns).text == "false" else 4
         }
 
         if post.find(ns + 'parent') is not None:
@@ -88,6 +87,9 @@ def disqus(db, xmlfile):
         if id in res:
             threads.add(id)
             insert(db, thread, res[id])
+
+    # in case a comment has been deleted (and no further childs)
+    db.comments._remove_stale()
 
     sys.stdout.write("\r%s" % (" "*cols))
     sys.stdout.write("\r[100%%]  %i threads, %i comments\n" % (len(threads), len(comments)))
