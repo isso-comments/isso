@@ -42,6 +42,7 @@ import sys
 import os
 import socket
 import logging
+import tempfile
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -185,6 +186,8 @@ def main():
 
     imprt = subparser.add_parser('import', help="import Disqus XML export")
     imprt.add_argument("dump", metavar="FILE")
+    imprt.add_argument("-n", "--dry-run", dest="dryrun", action="store_true",
+                       help="perform a trial run with no changes made")
 
     serve = subparser.add_parser("run", help="run server")
 
@@ -192,8 +195,11 @@ def main():
     conf = Config.load(args.conf)
 
     if args.command == "import":
+        xxx = tempfile.NamedTemporaryFile()
+        dbpath = conf.get("general", "dbpath") if not args.dryrun else xxx.name
+
         conf.set("guard", "enabled", "off")
-        migrate.disqus(db.SQLite3(conf.get('general', 'dbpath'), conf), args.dump)
+        migrate.disqus(db.SQLite3(dbpath, conf), args.dump)
         sys.exit(0)
 
     if conf.get("server", "listen").startswith("http://"):
