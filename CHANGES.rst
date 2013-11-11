@@ -4,7 +4,39 @@ Changelog for Isso
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Major improvements:
+
+- `listen` option replaces `host` and `port` to support UNIX domain sockets, #25
+
+  Instead of `host = localhost` and `port = 8080`, use
+  `listen = http://localhost:8080`. To listen on a UNIX domain socket, replace
+  `http://` with `unix://`, e.g. `unix:///tmp/isso.sock`.
+
+- new option `notify` (in the general section) is used to choose (one or more)
+  notification backends (currently only SMTP is available, though). Isso will
+  no longer automatically use SMTP for notifications if the initial connection
+  succeeds.
+
+- add an option to prevent the client from appending the CSS to the document, #29
+
+  Enabled by default. Add `data-isso-css="false"` to the <script> tag to disable
+  this behavior.
+
+- add support for `gevent <http://www.gevent.org/>`_, a coroutine-based Python
+  networking library that uses greenlets (lightweight threads). Recommended
+  WSGI server when not running with uWSGI (unfortunately stable gevent is not
+  yet able to listen on a UNIX domain socket).
+
+Minor improvements:
+
+- `ipaddr` is now used as `ipaddress` fallback for Python 2.6 and 2.7, #32
+- changed URL to activate and delete comments to `/id/<N:int>/activate` etc.
+- import command now uses `isDeleted` to mark comments as deleted (and
+  eventually remove stale comments). This seems to affect only a few comments
+  from a previous WordPress import into Disqus.
+- import command lists orphaned comments after import.
+- import command now has a ``--dry-run`` option to do no actual operation on
+  the database.
 
 
 0.4 (2013-11-05)
