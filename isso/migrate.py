@@ -10,6 +10,11 @@ from time import mktime, strptime
 from collections import defaultdict
 
 try:
+    input = raw_input
+except NameError:
+    pass
+
+try:
     from urlparse import urlparse
 except ImportError:
     from urllib.parse import urlparse
@@ -42,6 +47,10 @@ def insert(db, thread, posts):
 
 
 def disqus(db, xmlfile):
+
+    if db.execute("SELECT * FROM comments").fetchone():
+        if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+            raise SystemExit("Abort.")
 
     tree = ElementTree.parse(xmlfile)
     res = defaultdict(list)
