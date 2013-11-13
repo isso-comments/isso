@@ -27,6 +27,15 @@ Major improvements:
   WSGI server when not running with uWSGI (unfortunately stable gevent is not
   yet able to listen on a UNIX domain socket).
 
+- fix a serious issue with the voters bloomfilter. During an Isso run, the
+  ip addresses from all commenters accumulated into the voters bloomfilter
+  for new comments. Thus, previous commenters could no longer vote other
+  comments. This fixes the rare occurences of #5.
+
+  In addition to this fix, the current voters bloomfilter will be re-initialized
+  if you are using Isso 0.4 or below (this is not necessary, but on the
+  other hand, the current bloomfilter for each comment is sort-of useless).
+
 Minor improvements:
 
 - `ipaddr` is now used as `ipaddress` fallback for Python 2.6 and 2.7, #32
