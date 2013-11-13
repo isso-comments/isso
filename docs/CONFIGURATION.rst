@@ -186,13 +186,24 @@ for IPv4, ``/48`` for IPv6).
     [guard]
     enabled = true
     ratelimit = 2
+    direct-reply = 3
+    reply-to-self = false
 
 enabled
     enable guard, recommended in production. Not useful for debugging
     purposes.
 
-ratelimit: N
+ratelimit
     limit to N new comments per minute.
+
+direct-reply
+    how many comments directly to the thread (prevent a simple
+    `while true; do curl ...; done`.
+
+reply-to-self
+    allow commenters to reply to their own comments when they could still edit
+    the comment. After the editing timeframe is gone, commenters can reply to
+    their own comments anyways.
 
 
 Appendum

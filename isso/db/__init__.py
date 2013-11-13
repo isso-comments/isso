@@ -5,11 +5,9 @@ import logging
 
 logger = logging.getLogger("isso")
 
-class IssoDBException(Exception):
-    pass
-
 from isso.db.comments import Comments
 from isso.db.threads import Threads
+from isso.db.spam import Guard
 
 
 class SQLite3:
@@ -34,6 +32,7 @@ class SQLite3:
 
         self.threads = Threads(self)
         self.comments = Comments(self)
+        self.guard = Guard(self)
 
         self.execute([
             'CREATE TRIGGER IF NOT EXISTS remove_stale_threads',

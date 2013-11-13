@@ -12,42 +12,14 @@ from werkzeug.wrappers import Response
 from isso import Isso, core
 from isso.utils import http
 
-class Dummy:
-
-    status = 200
-
-    def __enter__(self):
-        return self
-
-    def read(self):
-        return ''
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-http.curl = lambda method, host, path: Dummy()
-
-loads = lambda data: json.loads(data.decode('utf-8'))
-
-
-class FakeIP(object):
-
-    def __init__(self, app, ip):
-        self.app = app
-        self.ip = ip
-
-    def __call__(self, environ, start_response):
-        environ['REMOTE_ADDR'] = self.ip
-        return self.app(environ, start_response)
+from fixtures import curl, loads, FakeIP
+http.curl = curl
 
 
 class TestVote(unittest.TestCase):
 
     def setUp(self):
-        fd, self.path = tempfile.mkstemp()
-
-    def tearDown(self):
-        os.unlink(self.path)
+        self.path = tempfile.NamedTemporaryFile().name
 
     def makeClient(self, ip):
 

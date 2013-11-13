@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-
 from __future__ import unicode_literals
 
 import os
@@ -20,32 +19,8 @@ from isso import Isso, core
 from isso.utils import http
 from isso.views import comments
 
-class Dummy:
-
-    status = 200
-
-    def __enter__(self):
-        return self
-
-    def read(self):
-        return ''
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-http.curl = lambda method, host, path: Dummy()
-
-loads = lambda data: json.loads(data.decode('utf-8'))
-
-
-class FakeIP(object):
-
-    def __init__(self, app):
-        self.app = app
-
-    def __call__(self, environ, start_response):
-        environ['REMOTE_ADDR'] = '192.168.1.1'
-        return self.app(environ, start_response)
+from fixtures import curl, loads, FakeIP
+http.curl = curl
 
 
 class TestComments(unittest.TestCase):
@@ -60,7 +35,7 @@ class TestComments(unittest.TestCase):
             pass
 
         self.app = App(conf)
-        self.app.wsgi_app = FakeIP(self.app.wsgi_app)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
 
         self.client = Client(self.app, Response)
         self.get = self.client.get
@@ -307,7 +282,7 @@ class TestModeratedComments(unittest.TestCase):
             pass
 
         self.app = App(conf)
-        self.app.wsgi_app = FakeIP(self.app.wsgi_app)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
         self.client = Client(self.app, Response)
 
     def tearDown(self):
@@ -338,7 +313,7 @@ class TestPurgeComments(unittest.TestCase):
             pass
 
         self.app = App(conf)
-        self.app.wsgi_app = FakeIP(self.app.wsgi_app)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
         self.client = Client(self.app, Response)
 
     def testPurgeDoesNoHarm(self):
