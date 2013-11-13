@@ -24,7 +24,7 @@ setup(
     include_package_data=True,
     zip_safe=True,
     url='https://github.com/posativ/isso/',
-    license='BSD revised',
+    license='MIT',
     description='lightweight Disqus alternative',
     classifiers=[
         "Development Status :: 3 - Alpha",
