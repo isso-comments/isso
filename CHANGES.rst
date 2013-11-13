@@ -1,8 +1,8 @@
 Changelog for Isso
 ==================
 
-0.4 (2013-11-05)
-----------------
+0.4.1 (2013-11-13)
+------------------
 
 - Isso now handles cross-domain requests and cookies, fixes #24
 - Isso for Python 2.x now supports werkzeug>=0.8
