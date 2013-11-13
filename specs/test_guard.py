@@ -51,7 +51,7 @@ class TestGuard(unittest.TestCase):
         rv = bob.post('/new?uri=test', data=self.data)
 
         assert rv.status_code == 403
-        assert "ratelimit exceeded" in rv.data
+        assert "ratelimit exceeded" in rv.get_data(as_text=True)
 
         alice = self.makeClient("1.2.3.4", 2)
         for i in range(2):
@@ -78,7 +78,7 @@ class TestGuard(unittest.TestCase):
             rv = client.post("/new?uri=%s" % url, data=self.data)
 
             assert rv.status_code == 403
-            assert "direct responses to" in rv.data
+            assert "direct responses to" in rv.get_data(as_text=True)
 
     def testSelfReply(self):
 
