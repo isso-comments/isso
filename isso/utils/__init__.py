@@ -61,15 +61,31 @@ class Bloomfilter:
     of space efficiency (array is saved for each comment) and 11 hash functions
     because of best overall false-positive rate in that range.
 
+    >>> bf = Bloomfilter()
+    >>> bf.add("127.0.0.1")
+    >>> not any(map(bf.__contains__, ("1.2.%i.4" for i in range(256))))
+    True
+
+    >>> bf = Bloomfilter()
+    >>> for i in range(256):
+    ...     bf.add("1.2.%i.4" % i)
+    ...
+    >>> len(bf)
+    256
+    >>> "1.2.3.4" in bf
+    True
+    >>> "127.0.0.1" in bf
+    False
+
     -- via Raymond Hettinger
        http://code.activestate.com/recipes/577684-bloom-filter/
     """
 
-    def __init__(self, array=bytearray(256), elements=0, iterable=()):
-        self.array = array
+    def __init__(self, array=None, elements=0, iterable=()):
+        self.array = array or bytearray(256)
         self.elements = elements
         self.k = 11
-        self.m = len(array) * 8
+        self.m = len(self.array) * 8
 
         for item in iterable:
             self.add(item)
