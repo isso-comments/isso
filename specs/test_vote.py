@@ -19,10 +19,7 @@ http.curl = curl
 class TestVote(unittest.TestCase):
 
     def setUp(self):
-        fd, self.path = tempfile.mkstemp()
-
-    def tearDown(self):
-        os.unlink(self.path)
+        self.path = tempfile.NamedTemporaryFile().name
 
     def makeClient(self, ip):
 
