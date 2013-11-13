@@ -23,13 +23,14 @@ class TestGuard(unittest.TestCase):
     def setUp(self):
         self.path = tempfile.NamedTemporaryFile().name
 
-    def makeClient(self, ip, ratelimit=2, direct_reply=3):
+    def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False):
 
         conf = core.Config.load(None)
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "true")
         conf.set("guard", "ratelimit", str(ratelimit))
         conf.set("guard", "direct-reply", str(direct_reply))
+        conf.set("guard", "reply-to-self", "1" if self_reply else "0")
 
         class App(Isso, core.Mixin):
             pass
@@ -78,3 +79,24 @@ class TestGuard(unittest.TestCase):
 
             assert rv.status_code == 403
             assert "direct responses to" in rv.data
+
+    def testSelfReply(self):
+
+        payload = lambda id: json.dumps({"text": "...", "parent": id})
+
+        client = self.makeClient("127.0.0.1", self_reply=False)
+        assert client.post("/new?uri=test", data=self.data).status_code == 201
+        assert client.post("/new?uri=test", data=payload(1)).status_code == 403
+
+        client.application.db.execute([
+            "UPDATE comments SET",
+            "    created = created - ?",
+            "WHERE id = 1"
+        ], (client.application.conf.getint("general", "max-age"), ))
+
+        assert client.post("/new?uri=test", data=payload(1)).status_code == 201
+
+        client = self.makeClient("128.0.0.1", ratelimit=3, self_reply=False)
+        assert client.post("/new?uri=test", data=self.data).status_code == 201
+        assert client.post("/new?uri=test", data=payload(1)).status_code == 201
+        assert client.post("/new?uri=test", data=payload(2)).status_code == 201

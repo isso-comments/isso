@@ -120,7 +120,8 @@ class Config:
         "[guard]",
         "enabled = true",
         "ratelimit = 2",
-        "direct-reply = 3"
+        "direct-reply = 3",
+        "reply-to-self = false"
     ]
 
     @classmethod

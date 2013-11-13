@@ -10,6 +10,7 @@ class Guard:
 
         self.db = db
         self.conf = db.conf.section("guard")
+        self.max_age = db.conf.getint("general", "max-age")
 
     def validate(self, uri, comment):
 
@@ -48,6 +49,18 @@ class Guard:
 
             if len(rv) >= self.conf.getint("direct-reply"):
                 return False, "%i direct responses to %s" % (len(rv), uri)
+
+        elif self.conf.getboolean("reply-to-self") == False:
+            rv = self.db.execute([
+                'SELECT id FROM comments WHERE'
+                '    remote_addr = ?',
+                'AND id = ?',
+                'AND ? - created < ?'
+            ], (comment["remote_addr"], comment["parent"],
+                time.time(), self.max_age)).fetchall()
+
+            if len(rv) > 0:
+                return False, "edit time frame is still open"
 
         return True, ""
 
