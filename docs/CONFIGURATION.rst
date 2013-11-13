@@ -186,13 +186,18 @@ for IPv4, ``/48`` for IPv6).
     [guard]
     enabled = true
     ratelimit = 2
+    direct-reply = 3
 
 enabled
     enable guard, recommended in production. Not useful for debugging
     purposes.
 
-ratelimit: N
+ratelimit
     limit to N new comments per minute.
+
+direct-reply
+    how many comments directly to the thread (prevent a simple
+    `while true; do curl ...; done`.
 
 
 Appendum

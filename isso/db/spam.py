@@ -1,47 +1,55 @@
 # -*- encoding: utf-8 -*-
 
 import time
-
-from isso.db import IssoDBException
-
-
-class TooManyComments(IssoDBException):
-    pass
+import functools
 
 
-def check(func):
+class Guard:
 
-    def dec(self, uri, c):
+    def __init__(self, db):
 
-        if not self.db.conf.getboolean("guard", "enabled"):
-            return func(self, uri, c)
+        self.db = db
+        self.conf = db.conf.section("guard")
 
-        # block more than two comments per minute
+    def validate(self, uri, comment):
+
+        if not self.conf.getboolean("enabled"):
+            return True, ""
+
+        for func in (self._limit, self._spam):
+            valid, reason = func(uri, comment)
+            if not valid:
+                return False, reason
+        return True, ""
+
+    @classmethod
+    def ids(cls, rv):
+        return [str(col[0]) for col in rv]
+
+    def _limit(self, uri, comment):
+
+        # block more than :param:`ratelimit` comments per minute
         rv = self.db.execute([
-            'SELECT id FROM comments WHERE remote_addr = ? AND created > ?;'
-        ], (c["remote_addr"], time.time() + 60)).fetchall()
+            'SELECT id FROM comments WHERE remote_addr = ? AND ? - created < 60;'
+        ], (comment["remote_addr"], time.time())).fetchall()
 
-        if len(rv) >= self.db.conf.getint("guard", "ratelimit"):
-            raise TooManyComments
+        if len(rv) >= self.conf.getint("ratelimit"):
+            return False, "{0}: ratelimit exceeded ({1})".format(
+                comment["remote_addr"], ', '.join(Guard.ids(rv)))
 
         # block more than three comments as direct response to the post
-        rv = self.db.execute([
-            'SELECT id FROM comments WHERE remote_addr = ? AND parent IS NULL;'
-        ], (c["remote_addr"], )).fetchall()
-
-        if len(rv) >= 3:
-            raise TooManyComments
-
-        # block reply to own comment if the cookie is still available (max age)
-        if "parent" in c:
+        if comment["parent"] is None:
             rv = self.db.execute([
-                'SELECT id FROM comments WHERE remote_addr = ? AND id = ? AND ? - created < ?;'
-            ], (c["remote_addr"], c["parent"], time.time(),
-                self.db.conf.getint("general", "max-age"))).fetchall()
+                'SELECT id FROM comments WHERE',
+                '    tid = (SELECT id FROM threads WHERE uri = ?)',
+                'AND remote_addr = ?',
+                'AND parent IS NULL;'
+            ], (uri, comment["remote_addr"])).fetchall()
 
-            if len(rv) > 0:
-                raise TooManyComments
+            if len(rv) >= self.conf.getint("direct-reply"):
+                return False, "%i direct responses to %s" % (len(rv), uri)
 
-        return func(self, uri, c)
+        return True, ""
 
-    return dec
+    def _spam(self, uri, comment):
+        return True, ""

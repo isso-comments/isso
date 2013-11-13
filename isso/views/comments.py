@@ -15,7 +15,7 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from isso.compat import text_type as str
 
-from isso import utils, local
+from isso import utils, local, db
 from isso.utils import http, parse, markdown
 from isso.utils.crypto import pbkdf2
 from isso.views import requires
@@ -61,6 +61,7 @@ class API(object):
         self.conf = isso.conf.section("general")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
 
+        self.guard = isso.db.guard
         self.threads = isso.db.threads
         self.comments = isso.db.comments
 
@@ -127,8 +128,10 @@ class API(object):
         # notify extensions that the new comment is about to save
         self.signal("comments.new:before-save", thread, data)
 
-        if data is None:
-            raise Forbidden
+        valid, reason = self.guard.validate(uri, data)
+        if not valid:
+            self.signal("comments.new:guard", reason)
+            raise Forbidden(reason)
 
         with self.isso.lock:
             rv = self.comments.add(uri, data)

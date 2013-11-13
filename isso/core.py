@@ -119,8 +119,8 @@ class Config:
         "to = ", "from = ",
         "[guard]",
         "enabled = true",
-        "ratelimit = 2"
-        ""
+        "ratelimit = 2",
+        "direct-reply = 3"
     ]
 
     @classmethod
