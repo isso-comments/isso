@@ -1,6 +1,8 @@
 Isso – Ich schrei sonst
 =======================
 
+![Build Status](http://posativ.org/ci/status/isso.png)
+
 You love static blog generators (especially [Acrylamid][1] *cough*) and the
 only option to interact with your community is [Disqus][2]. There's nothing
 wrong with it, but if you care about the privacy of your audience you are
