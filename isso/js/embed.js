@@ -3,13 +3,13 @@
  * Distributed under the MIT license
  */
 
-require(["ready", "app/api", "app/isso", "app/count", "app/dom", "app/markup", "app/text/css"], function(domready, api, isso, count, $, Mark, css) {
+require(["ready", "app/config", "app/api", "app/isso", "app/count", "app/dom", "app/markup", "app/text/css"], function(domready, config, api, isso, count, $, Mark, css) {
 
     "use strict";
 
     domready(function() {
 
-        if (api.config["css"]) {
+        if (config["css"]) {
             var style = $.new("style");
             style.type = "text/css";
             style.textContent = css.inline;

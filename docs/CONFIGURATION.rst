@@ -205,6 +205,8 @@ reply-to-self
     the comment. After the editing timeframe is gone, commenters can reply to
     their own comments anyways.
 
+    Do not forget to configure the client.
+
 
 Appendum
 ---------

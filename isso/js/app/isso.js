@@ -1,7 +1,7 @@
 /* Isso – Ich schrei sonst!
  */
-define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i18n", "app/lib", "app/fancy"],
-    function(templates, $, utils, api, Mark, i18n, lib, fancy) {
+define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/markup", "app/i18n", "app/lib", "app/fancy"],
+    function(templates, $, utils, config, api, Mark, i18n, lib, fancy) {
 
     "use strict";
 
@@ -275,7 +275,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             }
         };
 
-        if (utils.cookie("isso-" + comment.id)) {
+        if (! config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
             show($("a.reply", footer).detach());
         }
     };

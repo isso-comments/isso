@@ -143,6 +143,10 @@ You can configure the client (the JS part) via `data-` attributes:
     <script src="..." data-isso-css="false"></script>
     ```
 
+*   data-isso-reply-to-self
+
+    Set to `true` when spam guard is configured with `reply-to-self = true`.
+
 ### Webserver configuration
 
 *   nginx configuration to run Isso on `/isso`:
