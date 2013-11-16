@@ -144,6 +144,13 @@ class Config:
         if diff:
             for item in diff:
                 logger.warn("no such option: [%s] %s", *item)
+                if item in (("server", "host"), ("server", "port")):
+                    logger.warn("use `listen = http://$host:$port` instead")
+
+        if rv.get("smtp", "username") and not rv.get("general", "notify"):
+            logger.warn(("SMTP is no longer enabled by default, add "
+                         "`notify = smtp` to the general section to "
+                         "enable SMTP nofications."))
 
         return rv
 
