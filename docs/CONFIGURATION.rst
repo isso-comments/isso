@@ -216,7 +216,7 @@ comments for a relative URL to support HTTP, HTTPS and even domain transfers
 without manual intervention. But you can chain Isso to support multiple
 websites on different domains.
 
-The following example uses [gunicorn](http://gunicorn.org/) as WSGI server (you
+The following example uses `gunicorn <http://gunicorn.org/>`_ as WSGI server (you
 can use uWSGI as well). It is *not* possible to run the isso executable for
 multiple sites.
 
@@ -228,17 +228,23 @@ Let's say you maintain two websites, like foo.example and other.foo:
     [general]
     host = http://foo.example/
     dbpath = /var/lib/isso/foo.example.db
+
     $ cat /etc/isso.d/other.foo.cfg
     [general]
     host = http://other.foo/
     dbpath = /var/lib/isso/other.foo.db
+
+Then you run Isso with gunicorn like this:
+
+.. code-block:: bash
+
     $ export ISSO_SETTINGS="/etc/isso.d/foo.example.cfg;/etc/isso.d/other.foo.cfg"
     $ gunicorn isso.dispatch -b localhost:8080
 
 Now, there are two options to configure the webserver:
 
-  1. using a single host to serve comments for both websites
-  2. different hosts for both websites
+1. using a single host to serve comments for both websites
+2. different hosts for both websites
 
 In the former case, Isso dispatches based on the HTTP Referer and (if provided)
 HTTP Origin. If you expect users to supress their referer completely, you
@@ -246,49 +252,49 @@ should use the second option.
 
 1. Using a single host to serve comments.
 
-  .. code-block:: nginx
+   .. code-block:: nginx
 
-        server {
-            listen [::]:80;
-            server_name comments.example;
+         server {
+             listen [::]:80;
+             server_name comments.example;
 
-            location / {
-                proxy_pass http://localhost:8080;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Real-IP $remote_addr;
-            }
-        }
+             location / {
+                 proxy_pass http://localhost:8080;
+                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                 proxy_set_header X-Real-IP $remote_addr;
+             }
+         }
 
-  To verify the setup, run:
+   To verify the setup, run:
 
-  .. code-block:: bash
+   .. code-block:: bash
 
-        $ curl -vH "Origin: http://foo.example" http://comments.example/
-        ...
-        $ curl -vH "Origin: http://other.foo" http://comments.example/
-        ...
+         $ curl -vH "Origin: http://foo.example" http://comments.example/
+         ...
+         $ curl -vH "Origin: http://other.foo" http://comments.example/
+         ...
 
-  In case of a 418 (I'm a teapot), the setup is *not* correctly configured.
+   In case of a 418 (I'm a teapot), the setup is *not* correctly configured.
 
 2. Using different hosts for both websites (no need for a dedicated domain,
-     you can also proxy Isso on a sub-uri like /isso).
+   you can also proxy Isso on a sub-uri like /isso).
 
-  .. code-block:: nginx
+   .. code-block:: nginx
 
-        server {
-            listen [::]:80;
-            server_name comments.foo.example comments.other.foo;
+         server {
+             listen [::]:80;
+             server_name comments.foo.example comments.other.foo;
 
-            location / {
-                proxy_pass http://localhost:8080;
-                proxy_set_header Host $host;
-                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                proxy_set_header X-Real-IP $remote_addr;
-            }
-        }
+             location / {
+                 proxy_pass http://localhost:8080;
+                 proxy_set_header Host $host;
+                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                 proxy_set_header X-Real-IP $remote_addr;
+             }
+         }
 
-  No need to verify this setup, here the webserver automatically sets the
-  proper host.
+   No need to verify this setup, here the webserver automatically sets the
+   proper host.
 
 
 Appendum
