@@ -22,7 +22,8 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             }
         });
 
-        // update identicon, when the user provices an email address
+        // update identicon on email input. Listens on keyup, after 200ms the
+        // new identicon is generated.
         var active;
         $(".input-wrapper > [type=email]", el).on("keyup", function() {
             if (active) {
@@ -40,6 +41,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             clearTimeout(active);
         }, false);
 
+        // callback on success (e.g. to toggle the reply button)
         el.onsuccess = function() {};
 
         el.validate = function() {
@@ -50,6 +52,8 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             return true;
         };
 
+        // submit form, initialize optional fields with `null` and reset form.
+        // If replied to a comment, remove form completely.
         $("[type=submit]", el).on("click", function() {
             if (! el.validate()) {
                 return;
@@ -75,11 +79,13 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             });
         });
 
+        // copy'n'paste sluggy automagically dynamic textarea resize
         fancy.autoresize($("textarea", el), 48);
 
         return el;
     };
 
+    // lookup table for responses (to link to the parent)
     var map  = {id: {}, name: {}};
 
     var insert = function(comment, scrollIntoView) {
@@ -91,10 +97,15 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
 
         var el = $.htmlify(Mark.up(templates["comment"], comment));
 
+        // update datetime every 60 seconds
         var refresh = function() {
-            $(".permalink > date", el).textContent = utils.ago(new Date(parseInt(comment.created, 10) * 1000));
+            $(".permalink > date", el).textContent = utils.ago(
+                new Date(parseInt(comment.created, 10) * 1000));
             setTimeout(refresh, 60*1000);
-        };  refresh();
+        };
+
+        // run once to activate
+        refresh();
 
         $("div.avatar > svg", el).replace(lib.identicons.generate(comment.hash, 4, 48));
 
@@ -120,7 +131,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             header = $("#isso-" + comment.id + " > .text-wrapper > .isso-comment-header"),
             text   = $("#isso-" + comment.id + " > .text-wrapper > .text");
 
-        var form = null;
+        var form = null;  // XXX: probably a good place for a closure
         $("a.reply", footer).toggle("click",
             function(toggler) {
                 form = footer.insertAfter(new Postbox(comment.id));
@@ -143,12 +154,12 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
             });
         }
 
-        var votes = function (value) {
+        // update vote counter, but hide if votes sum to 0
+        var votes = function(value) {
             var span = $("span.votes", footer);
             if (span === null) {
                 if (value === 0) {
                     span.remove();
-                    return;
                 } else {
                     footer.prepend($.new("span.votes", value));
                 }
