@@ -1,7 +1,7 @@
 /* Isso – Ich schrei sonst!
  */
-define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/markup", "app/i18n", "app/lib", "app/fancy"],
-    function(templates, $, utils, config, api, Mark, i18n, lib, fancy) {
+define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/markup", "app/i18n", "app/lib"],
+    function(templates, $, utils, config, api, Mark, i18n, lib) {
 
     "use strict";
 
@@ -80,7 +80,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         });
 
         // copy'n'paste sluggy automagically dynamic textarea resize
-        fancy.autoresize($("textarea", el), 48);
+        lib.fancy.autoresize($("textarea", el), 48);
 
         return el;
     };
@@ -198,7 +198,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
 
                 api.view(comment.id, 1).then(function(rv) {
                     var textarea = $.new("textarea", rv.text);
-                    fancy.autoresize(textarea, 48);
+                    lib.fancy.autoresize(textarea, 48);
                     text.className = "textarea-wrapper";
                     text.textContent = "";
                     text.append(textarea);
