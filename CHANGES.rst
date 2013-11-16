@@ -36,10 +36,14 @@ Major improvements:
   if you are using Isso 0.4 or below (this is not necessary, but on the
   other hand, the current bloomfilter for each comment is sort-of useless).
 
+- french translation (thanks to @sploinga), #38
+
 Minor improvements:
 
 - `ipaddr` is now used as `ipaddress` fallback for Python 2.6 and 2.7, #32
 - changed URL to activate and delete comments to `/id/<N:int>/activate` etc.
+- import command uses `<link>` tag instead of `<id>` to extract the relative
+  URL path, #37
 - import command now uses `isDeleted` to mark comments as deleted (and
   eventually remove stale comments). This seems to affect only a few comments
   from a previous WordPress import into Disqus.
