@@ -30,7 +30,7 @@ comments = set([])
 
 def insert(db, thread, posts):
 
-    path = urlparse(thread.find('%sid' % ns).text).path
+    path = urlparse(thread.find('%slink' % ns).text).path
     remap = dict()
 
     if path not in db.threads:
