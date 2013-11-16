@@ -244,6 +244,8 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
                     } else {
                         $("span.note", header).textContent = msgs["comment-deleted"];
                         text.innerHTML = "<p>&nbsp;</p>";
+                        $("a.edit", footer).remove()
+                        $("a.delete", footer).remove()
                     }
                     del.textContent = msgs["comment-delete"];
                 });
@@ -253,7 +255,9 @@ define(["app/text/html", "app/dom", "app/utils", "app/api", "app/markup", "app/i
         // remove edit and delete buttons when cookie is gone
         var clear = function(button) {
             if (! utils.cookie("isso-" + comment.id)) {
-                $(button, footer).remove();
+                if ($(button, footer) !== null) {
+                    $(button, footer).remove();
+                }
             } else {
                 setTimeout(function() { clear(button); }, 15*1000);
             }
