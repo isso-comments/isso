@@ -26,7 +26,7 @@ def test_simple_CORS():
     rv = client.get("/", headers={"ORIGIN": "https://example.tld"})
 
     assert rv.headers["Access-Control-Allow-Origin"] == "https://example.tld"
-    assert rv.headers["Access-Control-Allow-Headers"] == "Origin, Content-Type"
+    assert rv.headers["Access-Control-Allow-Headers"] == "Origin, Content-Type, X-Origin"
     assert rv.headers["Access-Control-Allow-Credentials"] == "true"
     assert rv.headers["Access-Control-Allow-Methods"] == "GET, POST, PUT, DELETE"
     assert rv.headers["Access-Control-Expose-Headers"] == "X-Set-Cookie"
