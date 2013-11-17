@@ -92,7 +92,12 @@ define(["q"], function(Q) {
 
         try {
             xhr.open(method, url, true);
-            xhr.withCredentials = true;  // fuck you, fuck you, fuck you IE
+            xhr.withCredentials = true;
+
+            if (method === "GET") {
+                xhr.setRequestHeader("X-Origin", window.location.origin);
+            }
+
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     onload();

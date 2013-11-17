@@ -7,6 +7,7 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
+from werkzeug.wrappers import Request
 from werkzeug.exceptions import ImATeapot
 
 from isso import make_app, wsgi
@@ -34,13 +35,13 @@ class Dispatcher(object):
 
     def __call__(self, environ, start_response):
 
-        if "HTTP_ORIGIN" in environ:
-            origin = environ["HTTP_ORIGIN"]
-        elif "HTTP_REFERER" in environ:
-            rv = urlparse(environ["HTTP_REFERER"])
-            origin = rv.scheme + "://" + rv.hostname + (":" + str(rv.port) if rv.port else "")
-        else:
-            origin = wsgi.host(environ)
+        if Request(environ).url.endswith((".js", ".css")):
+            return self.isso.values()[0](environ, start_response)
+
+        if "HTTP_X_ORIGIN" in environ and "HTTP_ORIGIN" not in environ:
+            environ["HTTP_ORIGIN"] = environ["HTTP_X_ORIGIN"]
+
+        origin = environ.get("HTTP_ORIGIN", wsgi.host(environ))
 
         try:
             # logger.info("dispatch %s", origin)
