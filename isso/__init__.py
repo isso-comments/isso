@@ -40,7 +40,7 @@ except ImportError:
 
 import sys
 import os
-import socket
+import errno
 import logging
 import tempfile
 
@@ -54,7 +54,7 @@ from werkzeug.exceptions import HTTPException, InternalServerError
 
 from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.local import Local, LocalManager
-from werkzeug.serving import run_simple, WSGIRequestHandler
+from werkzeug.serving import run_simple
 from werkzeug.contrib.fixers import ProxyFix
 
 local = Local()
@@ -211,43 +211,13 @@ def main():
             run_simple(host, port, make_app(conf), threaded=True,
                        use_reloader=conf.getboolean('server', 'reload'))
     else:
-        try:
-            from socketserver import ThreadingMixIn
-            from http.server import HTTPServer
-        except ImportError:
-            from SocketServer import ThreadingMixIn
-            from BaseHTTPServer import HTTPServer
-
-        class SocketWSGIRequestHandler(WSGIRequestHandler):
-
-            def run_wsgi(self):
-                self.client_address = ("<local>", 0)
-                super(SocketWSGIRequestHandler, self).run_wsgi()
-
-        class SocketHTTPServer(HTTPServer, ThreadingMixIn):
-
-            multithread = True
-            multiprocess = False
-
-            allow_reuse_address = 1
-            address_family = socket.AF_UNIX
-
-            request_queue_size = 128
-
-            def __init__(self, sock, app):
-                HTTPServer.__init__(self, sock, SocketWSGIRequestHandler)
-                self.app = app
-                self.ssl_context = None
-                self.shutdown_signal = False
-
         sock = conf.get("server", "listen").partition("unix://")[2]
-
         try:
             os.unlink(sock)
-        except OSError:
-            pass
-
-        SocketHTTPServer(sock, make_app(conf)).serve_forever()
+        except OSError as ex:
+            if ex.errno != errno.ENOENT:
+                raise
+        wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
 
 try:
     import uwsgi
