@@ -17,10 +17,16 @@ Major improvements:
   no longer automatically use SMTP for notifications if the initial connection
   succeeds.
 
-- add an option to prevent the client from appending the CSS to the document, #29
+- new options to control the client integration
 
-  Enabled by default. Add `data-isso-css="false"` to the <script> tag to disable
-  this behavior.
+  * ``data-isso-css="false"`` prevents the client from appending the CSS to the
+    document. Enabled by default.
+
+  * ``data-isso-lang="de"`` overrides the useragent's preferred language (de, en
+    and fr are currently supported).
+
+  * ``data-isso-reply-to-self="true"`` should be set, when you allow reply to
+    own comments (see server configuration for details).
 
 - add support for `gevent <http://www.gevent.org/>`_, a coroutine-based Python
   networking library that uses greenlets (lightweight threads). Recommended
@@ -37,6 +43,8 @@ Major improvements:
   other hand, the current bloomfilter for each comment is sort-of useless).
 
 - french translation (thanks to @sploinga), #38
+
+- support for multiple sites, part of #34
 
 Minor improvements:
 
