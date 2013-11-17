@@ -11,8 +11,8 @@ define(["app/i18n/de", "app/i18n/en"], function(de, en) {
 
     plurals["de"] = plurals["en"];
 
-    // the user's language. you can replace this with your own code
-    var lang = (navigator.language || navigator.userLanguage).split("-")[0];
+    // useragent's prefered language (or manually overridden)
+    var lang = config.lang;
 
     // fall back to English
     if (!plurals[lang]) {

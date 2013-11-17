@@ -3,6 +3,7 @@ define(function() {
 
     var config = {
         "css": true,
+        "lang": (navigator.language || navigator.userLanguage).split("-")[0],
         "reply-to-self": false
     };
 

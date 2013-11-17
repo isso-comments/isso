@@ -143,6 +143,11 @@ You can configure the client (the JS part) via `data-` attributes:
     <script src="..." data-isso-css="false"></script>
     ```
 
+*   data-isso-lang
+
+    Override useragent's preferred language. Currently available: german (de),
+    english (en) and french (fr).
+
 *   data-isso-reply-to-self
 
     Set to `true` when spam guard is configured with `reply-to-self = true`.
