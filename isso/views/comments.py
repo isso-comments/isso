@@ -15,7 +15,7 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from isso.compat import text_type as str
 
-from isso import utils, local, db
+from isso import utils, local
 from isso.utils import http, parse, markdown
 from isso.utils.crypto import pbkdf2
 from isso.views import requires

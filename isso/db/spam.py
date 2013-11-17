@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import time
-import functools
 
 
 class Guard:

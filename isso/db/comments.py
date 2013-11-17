@@ -2,7 +2,6 @@
 
 import time
 
-from isso.db import spam
 from isso.utils import Bloomfilter
 from isso.compat import buffer
 
