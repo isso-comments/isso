@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+import io
 import time
 import json
 
@@ -72,31 +73,36 @@ class SMTP(object):
 
     def format(self, thread, comment):
 
-        permalink = local("origin") + thread["uri"] + "#isso-%i" % comment["id"]
 
-        rv = []
-        rv.append("%s schrieb:" % (comment["author"] or "Jemand"))
-        rv.append("")
-        rv.append(comment["text"])
-        rv.append("")
+        rv = io.StringIO()
+
+        author = comment["author"] or "Anonymous"
+        if comment["email"]:
+            author += " <%s>" % comment["email"]
+
+        rv.write(author + " wrote:\n")
+        rv.write("\n")
+        rv.write(comment["text"] + "\n")
+        rv.write("\n")
 
         if comment["website"]:
-            rv.append("Webseite des Kommentators: %s" % comment["website"])
+            rv.write("User's URL: %s\n" % comment["website"])
 
-        rv.append("IP Adresse: %s" % comment["remote_addr"])
-        rv.append("Link zum Kommentar: %s" % permalink)
-        rv.append("")
+        rv.write("IP address: %s\n" % comment["remote_addr"])
+        rv.write("Link to comment: %s\n" % (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+        rv.write("\n")
 
         uri = local("host") + "/id/%i" % comment["id"]
         key = self.isso.sign(comment["id"])
 
-        rv.append("---")
-        rv.append("Kommentar löschen: %s" % uri + "/delete/" + key)
+        rv.write("---\n")
+        rv.write("Kommentar löschen: %s\n" % (uri + "/delete/" + key))
 
         if comment["mode"] == 2:
-            rv.append("Kommentar freischalten: %s" % uri + "/activate/" + key)
+            rv.write("Kommentar freischalten: %s\n" % (uri + "/activate/" + key))
 
-        return u'\n'.join(rv)
+        rv.seek(0)
+        return rv.read()
 
     def notify(self, thread, comment):
 
