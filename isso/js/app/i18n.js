@@ -1,4 +1,4 @@
-define(["app/i18n/de", "app/i18n/en"], function(de, en) {
+define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr"], function(config, de, en, fr) {
 
     "use strict";
 
@@ -10,6 +10,7 @@ define(["app/i18n/de", "app/i18n/en"], function(de, en) {
     };
 
     plurals["de"] = plurals["en"];
+    plurals["fr"] = plurals["en"];
 
     // useragent's prefered language (or manually overridden)
     var lang = config.lang;
@@ -23,6 +24,7 @@ define(["app/i18n/de", "app/i18n/en"], function(de, en) {
         plurals: plurals,
         lang: lang,
         de: de,
-        en: en
+        en: en,
+        fr: fr
     };
 });
