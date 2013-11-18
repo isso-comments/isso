@@ -1,11 +1,20 @@
-define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr"], function(config, de, en, fr) {
+define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"], function(config, de, en, fr, ru) {
 
     "use strict";
 
     // pluralization functions for each language you support
     var plurals = {
-        "en": function (msgs, n) {
+        "en": function(msgs, n) {
             return msgs[n === 1 ? 0 : 1];
+        },
+        "ru": function(msg, n) {
+            if (n % 10 === 1 && n % 100 !== 11) {
+                return msg[0];
+            } else if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) {
+                return msg[1];
+            } else {
+                return msg[2] !== undefined ? msg[2] : msg[1];
+            }
         }
     };
 
@@ -25,6 +34,7 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr"], function(con
         lang: lang,
         de: de,
         en: en,
-        fr: fr
+        fr: fr,
+        ru: ru
     };
 });
