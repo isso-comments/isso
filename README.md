@@ -1,7 +1,7 @@
 Isso – Ich schrei sonst
 =======================
 
-![Build Status](http://posativ.org/ci/status/isso.png?query)
+[![Build Status](https://travis-ci.org/posativ/isso.png?branch=master)](https://travis-ci.org/posativ/isso)
 
 You love static blog generators (especially [Acrylamid][1] *cough*) and the
 only option to interact with your community is [Disqus][2]. There's nothing
