@@ -60,7 +60,7 @@ from werkzeug.contrib.fixers import ProxyFix
 local = Local()
 local_manager = LocalManager([local])
 
-from isso import db, migrate, wsgi, ext
+from isso import db, migrate, wsgi, ext, views
 from isso.core import ThreadedMixin, uWSGIMixin, Config
 from isso.utils import parse, http, JSONRequest, origin
 from isso.views import comments
@@ -96,7 +96,9 @@ class Isso(object):
         self.signal = ext.Signal(*subscribers)
 
         self.urls = Map()
-        self.api = comments.API(self)
+
+        views.Info(self)
+        comments.API(self)
 
     def sign(self, obj):
         return self.signer.dumps(obj)
