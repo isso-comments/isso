@@ -96,10 +96,10 @@ class SMTP(object):
         key = self.isso.sign(comment["id"])
 
         rv.write("---\n")
-        rv.write("Kommentar löschen: %s\n" % (uri + "/delete/" + key))
+        rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
 
         if comment["mode"] == 2:
-            rv.write("Kommentar freischalten: %s\n" % (uri + "/activate/" + key))
+            rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
 
         rv.seek(0)
         return rv.read()
