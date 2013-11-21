@@ -47,6 +47,7 @@ class API(object):
         ('edit',    ('PUT', '/id/<int:id>')),
         ('delete',  ('DELETE', '/id/<int:id>')),
         ('delete',  ('GET', '/id/<int:id>/delete/<string:key>')),
+        ('activate',('GET', '/id/<int:id>/activate/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('checkip', ('GET', '/check-ip'))
@@ -253,7 +254,7 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
-    def activate(self, environ, request, _, key):
+    def activate(self, environ, request, id, key):
 
         try:
             id = self.isso.unsign(key, max_age=2**32)
