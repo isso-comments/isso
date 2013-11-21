@@ -1,6 +1,18 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
+import pkg_resources
+dist = pkg_resources.get_distribution("isso")
+
+import json
+
+from werkzeug.wrappers import Response
+from werkzeug.routing import Rule
 from werkzeug.exceptions import BadRequest
+
+from isso import local
+from isso.compat import text_type as str
 
 
 class requires:
@@ -33,3 +45,21 @@ class requires:
             return func(cls, env, req, *args, **kwargs)
 
         return dec
+
+
+class Info(object):
+
+    def __init__(self, isso):
+        self.moderation = isso.conf.getboolean("moderation", "enabled")
+        isso.urls.add(Rule('/info', endpoint=self.show))
+
+    def show(self, environ, request):
+
+        rv = {
+            "version": dist.version,
+            "host": str(local("host")),
+            "origin": str(local("origin")),
+            "moderation": self.moderation,
+        }
+
+        return Response(json.dumps(rv), 200, content_type="application/json")
