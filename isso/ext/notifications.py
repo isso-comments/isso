@@ -41,7 +41,7 @@ class SMTP(object):
             with self:
                 logger.info("connected to SMTP server")
         except (socket.error, smtplib.SMTPException):
-            logger.warn("unable to connect to SMTP server")
+            logger.exception("unable to connect to SMTP server")
 
         if uwsgi:
             def spooler(args):
