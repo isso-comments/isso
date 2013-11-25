@@ -33,10 +33,11 @@ dist = pkg_resources.get_distribution("isso")
 try:
     import uwsgi
 except ImportError:
+    uwsgi = None
     try:
         import gevent.monkey; gevent.monkey.patch_all()
     except ImportError:
-        pass
+        gevent = None
 
 import sys
 import os
@@ -63,7 +64,7 @@ local = Local()
 local_manager = LocalManager([local])
 
 from isso import db, migrate, wsgi, ext, views
-from isso.core import ThreadedMixin, uWSGIMixin, Config
+from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
 from isso.utils import parse, http, JSONRequest, origin
 from isso.views import comments
 
@@ -141,13 +142,14 @@ class Isso(object):
 
 def make_app(conf=None):
 
-    try:
-        import uwsgi
-    except ImportError:
+    if uwsgi:
+        class App(Isso, uWSGIMixin):
+            pass
+    elif gevent or sys.argv[0].endswith("isso"):
         class App(Isso, ThreadedMixin):
             pass
     else:
-        class App(Isso, uWSGIMixin):
+        class App(Isso, ProcessMixin):
             pass
 
     isso = App(conf)
@@ -222,9 +224,5 @@ def main():
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
 
-try:
-    import uwsgi
-except ImportError:
-    pass
-else:
-    application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))
+
+application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))

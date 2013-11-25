@@ -214,6 +214,14 @@ class ThreadedMixin(Mixin):
             time.sleep(delta)
 
 
+class ProcessMixin(ThreadedMixin):
+
+    def __init__(self, conf):
+
+        super(ProcessMixin, self).__init__(conf)
+        self.lock = multiprocessing.Lock()
+
+
 class uWSGICache(object):
     """Uses uWSGI Caching Framework. INI configuration:
 
