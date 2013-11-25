@@ -5,9 +5,10 @@ from __future__ import print_function
 import io
 import os
 import time
+import logging
 import binascii
 import threading
-import logging
+import multiprocessing
 
 from configparser import ConfigParser
 
@@ -213,6 +214,14 @@ class ThreadedMixin(Mixin):
             time.sleep(delta)
 
 
+class ProcessMixin(ThreadedMixin):
+
+    def __init__(self, conf):
+
+        super(ProcessMixin, self).__init__(conf)
+        self.lock = multiprocessing.Lock()
+
+
 class uWSGICache(object):
     """Uses uWSGI Caching Framework. INI configuration:
 
@@ -241,15 +250,7 @@ class uWSGIMixin(Mixin):
 
         super(uWSGIMixin, self).__init__(conf)
 
-        class Lock():
-
-            def __enter__(self):
-                uwsgi.lock()
-
-            def __exit__(self, exc_type, exc_val, exc_tb):
-                uwsgi.unlock()
-
-        self.lock = Lock()
+        self.lock = multiprocessing.Lock()
         self.cache = uWSGICache
 
         timedelta = conf.getint("moderation", "purge-after")

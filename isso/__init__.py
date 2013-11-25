@@ -33,10 +33,11 @@ dist = pkg_resources.get_distribution("isso")
 try:
     import uwsgi
 except ImportError:
+    uwsgi = None
     try:
         import gevent.monkey; gevent.monkey.patch_all()
     except ImportError:
-        pass
+        gevent = None
 
 import sys
 import os
@@ -46,6 +47,7 @@ import tempfile
 
 from os.path import dirname, join
 from argparse import ArgumentParser
+from functools import partial, reduce
 
 from itsdangerous import URLSafeTimedSerializer
 
@@ -56,12 +58,13 @@ from werkzeug.wsgi import SharedDataMiddleware
 from werkzeug.local import Local, LocalManager
 from werkzeug.serving import run_simple
 from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.contrib.profiler import ProfilerMiddleware
 
 local = Local()
 local_manager = LocalManager([local])
 
 from isso import db, migrate, wsgi, ext, views
-from isso.core import ThreadedMixin, uWSGIMixin, Config
+from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
 from isso.utils import parse, http, JSONRequest, origin
 from isso.views import comments
 
@@ -139,13 +142,14 @@ class Isso(object):
 
 def make_app(conf=None):
 
-    try:
-        import uwsgi
-    except ImportError:
+    if uwsgi:
+        class App(Isso, uWSGIMixin):
+            pass
+    elif gevent or sys.argv[0].endswith("isso"):
         class App(Isso, ThreadedMixin):
             pass
     else:
-        class App(Isso, uWSGIMixin):
+        class App(Isso, ProcessMixin):
             pass
 
     isso = App(conf)
@@ -158,23 +162,22 @@ def make_app(conf=None):
     else:
         logger.warn("unable to connect to HTTP server")
 
+    wrapper = [local_manager.make_middleware]
+
     if isso.conf.getboolean("server", "profile"):
-        from werkzeug.contrib.profiler import ProfilerMiddleware as Profiler
-        ProfilerMiddleware = lambda app: Profiler(app, sort_by=("cumtime", ), restrictions=("isso/(?!lib)", 10))
-    else:
-        ProfilerMiddleware = lambda app: app
+        wrapper.append(partial(ProfilerMiddleware,
+            sort_by=("cumtime", ), restrictions=("isso/(?!lib)", 10)))
 
-    app = ProxyFix(
-            wsgi.SubURI(
-                wsgi.CORSMiddleware(
-                    SharedDataMiddleware(
-                        ProfilerMiddleware(
-                            local_manager.make_middleware(isso)), {
-                        '/js': join(dirname(__file__), 'js/'),
-                        '/css': join(dirname(__file__), 'css/')}),
-                    origin(isso.conf.getiter("general", "host")))))
+    wrapper.append(partial(SharedDataMiddleware, exports={
+        '/js': join(dirname(__file__), 'js/'),
+        '/css': join(dirname(__file__), 'css/')}))
 
-    return app
+    wrapper.append(partial(wsgi.CORSMiddleware,
+        origin=origin(isso.conf.getiter("general", "host"))))
+
+    wrapper.extend([wsgi.SubURI, ProxyFix])
+
+    return reduce(lambda x, f: f(x), wrapper, isso)
 
 
 def main():
@@ -221,9 +224,5 @@ def main():
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
 
-try:
-    import uwsgi
-except ImportError:
-    pass
-else:
-    application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))
+
+application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))
