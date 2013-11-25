@@ -1,0 +1,16 @@
+{%- extends "layout.html" %}
+{% block header  %}
+    <header>
+        <h1>{{- title -}}</h1>
+    </header>
+{% endblock %}
+{% block body %}
+    <div class="sidebar">
+    {% if pagename.startswith("docs/") %}
+        {% include "sidebar-docs.html" %}
+    {% endif %}
+    </div>
+    <div class="docs">
+        {{ body }}
+    </div>
+{% endblock %}

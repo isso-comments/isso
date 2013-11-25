@@ -1,0 +1,118 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+* {
+  margin: 0;
+  padding: 0; }
+
+body {
+  background-color: green;
+  font-family: Open Sans, sans-serif; }
+
+.wrapper, main {
+  margin: 0 auto;
+  max-width: 960px; }
+
+nav {
+  *zoom: 1;
+  max-width: 68em;
+  margin-left: auto;
+  margin-right: auto;
+  border-bottom: solid black 1px;
+  height: 80px;
+  max-width: none;
+  color: #f2efe3; }
+  nav:before, nav:after {
+    content: " ";
+    display: table; }
+  nav:after {
+    clear: both; }
+  nav header {
+    display: block;
+    float: left;
+    margin-right: 3.57866%;
+    width: 48.21067%;
+    text-align: left; }
+    nav header:last-child {
+      margin-right: 0; }
+  nav ul {
+    display: block;
+    float: left;
+    margin-right: 3.57866%;
+    width: 48.21067%;
+    margin-top: 30px; }
+    nav ul:last-child {
+      margin-right: 0; }
+    nav ul li {
+      display: block;
+      float: right;
+      margin-left: 2em; }
+  nav a {
+    color: #f2efe3;
+    font-weight: 400;
+    text-decoration: none; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 20px; }
+
+p, ul, ol, table, pre, dl {
+  margin: 0 0 20px; }
+
+h1, h2, h3 {
+  line-height: 1.1; }
+
+h1 {
+  font-size: 28px; }
+
+a small {
+  font-size: 11px;
+  margin-top: -0.6em;
+  display: block; }
+
+main {
+  *zoom: 1;
+  max-width: 68em;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 840px;
+  padding: 17px 30px 20px 30px;
+  background-color: #fbfbfb;
+  border: 1px solid #c5c1b4;
+  font-size: 14px;
+  color: #585755;
+  line-height: 1.75em; }
+  main:before, main:after {
+    content: " ";
+    display: table; }
+  main:after {
+    clear: both; }
+  main #left {
+    display: block;
+    float: left;
+    margin-right: 3.57866%;
+    width: 61.158%; }
+    main #left:last-child {
+      margin-right: 0; }
+    main #left figure {
+      text-align: center; }
+      main #left figure img {
+        margin: 0 auto; }
+    main #left #demo {
+      margin-top: 20px; }
+  main #right {
+    display: block;
+    float: left;
+    margin-right: 3.57866%;
+    width: 35.26334%; }
+    main #right:last-child {
+      margin-right: 0; }
+    main #right ul {
+      margin-left: 20px; }
+    main #right pre {
+      font-size: 0.90em; }
+    main #right #features > ul > li strong {
+      color: #222;
+      font-weight: 700; }

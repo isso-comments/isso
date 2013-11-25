@@ -1,0 +1,27 @@
+{% macro doc(path, title) %}
+    {%- if pagename == path -%}
+    <li class="active">
+    {% else %}
+    <li>
+    {%- endif -%}
+    <a href="{{ pathto(path) }}">{{ title }}</a></li>
+{% endmacro %}
+
+<strong>Getting Started</strong>
+<ul>
+    {{ doc("docs/install", "Installation") }}
+    {{ doc("docs/quickstart", "Quickstart") }}
+    {{ doc("docs/troubleshooting", "Troubleshooting") }}
+</ul>
+<strong>Configuration</strong>
+<ul>
+    {{ doc("docs/configuration/setup", "Setup") }}
+    {{ doc("docs/configuration/server", "Server") }}
+    {{ doc("docs/configuration/client", "Client") }}
+</ul>
+<strong>Advanced</strong>
+<ul>
+    {{ doc("docs/extras/multi-site", "Multiple Sites") }}
+    {{ doc("docs/extras/uwsgi", "uWSGI") }}
+    {{ doc("docs/extras/api", "API") }}
+</ul>

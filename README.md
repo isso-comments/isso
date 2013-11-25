@@ -92,66 +92,6 @@ This functionality is already included when you embed `embed.min.js`, do
 
 ### Client Configuration
 
-You can configure the client (the JS part) via `data-` attributes:
-
-*   data-title
-
-    When you start a new thread (= first comment on a page), Isso sends
-    a GET request that page to see if it a) exists and b) parse the site's
-    heading (currently used as subject in emails).
-
-    Isso assumes that the title is inside an `h1` tag near the isso thread:
-
-    ```html
-    <html>
-        <body>
-            <h1>Website Title</h1>
-            <article>
-                <header>
-                    <h1>Post Title</h1>
-                <section id="isso-thread">
-            ...
-    ```
-
-    In this example, the detected title is `Post Title` as expected, but some
-    older sites may only use a  single `h1` as their website's maintitle, and
-    a `h2` for the post title. Unfortunately this is unambiguous and you have
-    to tell Isso what's the actual post title:
-
-    ```html
-    <section data-title="Post Title" id="isso-thread">
-    ```
-
-    Make sure to escape the attribute value.
-
-*   data-isso
-
-    Isso usually detects the REST API automatically, but when you serve the JS
-    script on a different location, this may fail. Use `data-isso` to
-    override the API location:
-
-     ```html
-     <script data-isso="/isso" src="/path/to/embed.min.js"></script>
-     ```
-
-*   data-isso-css
-
-    Set to `false` prevents Isso from automatically appending the stylesheet.
-    Defaults to `true`.
-
-    ```html
-    <script src="..." data-isso-css="false"></script>
-    ```
-
-*   data-isso-lang
-
-    Override useragent's preferred language. Currently available: german (de),
-    english (en) and french (fr).
-
-*   data-isso-reply-to-self
-
-    Set to `true` when spam guard is configured with `reply-to-self = true`.
-
 ### Webserver configuration
 
 *   nginx configuration to run Isso on `/isso`:

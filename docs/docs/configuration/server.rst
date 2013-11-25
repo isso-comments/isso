@@ -1,8 +1,8 @@
-Isso Configuration
-==================
+Server Configuration
+====================
 
-The Isso configuration file is an `INI-style`__ textfile.  Below is an example for
-a basic Isso configuration. Each section has its own documentation.
+The Isso configuration file is an `INI-style`__ textfile. It reads integers,
+booleans and strings.  Below is a basic example:
 
 .. code-block:: ini
 
@@ -12,8 +12,8 @@ a basic Isso configuration. Each section has its own documentation.
     [server]
     port = 1234
 
-You can point Isso to your configuration file either witg a command-line parameter
-or using an environment variable:
+To use your configuration file with Isso, append ``-c /path/to/cfg`` to the
+executable or run Isso with an environment variable:
 
 .. code-block:: sh
 
@@ -21,6 +21,11 @@ or using an environment variable:
     ~> env ISSO_SETTINGS=path/to/isso.cfg isso
 
 __ https://en.wikipedia.org/wiki/INI_file
+
+Sections covered in this document:
+
+.. contents::
+    :local:
 
 
 General
@@ -35,7 +40,7 @@ session key and hostname. Here are the default values for this section:
     dbpath = /tmp/isso.db
     host = http://localhost:8080/
     max-age = 15m
-    session-key = ... # python: binascii.b2a_hex(os.urandom(24))
+    session-key = ... ; python: binascii.b2a_hex(os.urandom(24))
     notify =
 
 dbpath
@@ -131,6 +136,7 @@ profile
     show 10 most time consuming function in Isso after each request. Do
     not use in production.
 
+.. _configure-smtp:
 
 SMTP
 ----
@@ -208,66 +214,8 @@ reply-to-self
     Do not forget to configure the client.
 
 
-Multiple Sites
---------------
-
-Isso is designed to serve comments for a single website and therefore stores
-comments for a relative URL to support HTTP, HTTPS and even domain transfers
-without manual intervention. But you can chain Isso to support multiple
-websites on different domains.
-
-The following example uses `gunicorn <http://gunicorn.org/>`_ as WSGI server (
-you can use uWSGI as well). Let's say you maintain two websites, like
-foo.example and other.foo:
-
-.. code-block:: bash
-
-    $ cat /etc/isso.d/foo.example.cfg
-    [general]
-    host = http://foo.example/
-    dbpath = /var/lib/isso/foo.example.db
-
-    $ cat /etc/isso.d/other.foo.cfg
-    [general]
-    host = http://other.foo/
-    dbpath = /var/lib/isso/other.foo.db
-
-Then you run Isso using gunicorn:
-
-.. code-block:: bash
-
-    $ export ISSO_SETTINGS="/etc/isso.d/foo.example.cfg;/etc/isso.d/other.foo.cfg"
-    $ gunicorn isso.dispatch -b localhost:8080
-
-In your webserver configuration, proxy Isso as usual:
-
-.. code-block:: nginx
-
-      server {
-          listen [::]:80;
-          server_name comments.example;
-
-          location / {
-              proxy_pass http://localhost:8080;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Real-IP $remote_addr;
-          }
-      }
-
-To verify the setup, run:
-
-.. code-block:: bash
-
-      $ curl -vH "Origin: http://foo.example" http://comments.example/
-      ...
-      $ curl -vH "Origin: http://other.foo" http://comments.example/
-      ...
-
-In case of a 418 (I'm a teapot), the setup is *not* correctly configured.
-
-
 Appendum
----------
+--------
 
 .. _appendum-timedelta:
 
