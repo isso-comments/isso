@@ -157,10 +157,10 @@ def make_app(conf=None):
     for host in conf.getiter("general", "host"):
         with http.curl('HEAD', host, '/', 5) as resp:
             if resp is not None:
-                logger.info("connected to HTTP server")
+                logger.info("connected to %s", host)
                 break
     else:
-        logger.warn("unable to connect to HTTP server")
+        logger.warn("unable to connect to %s", ", ".join(conf.getiter("general", "host")))
 
     wrapper = [local_manager.make_middleware]
 
