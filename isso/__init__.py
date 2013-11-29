@@ -225,4 +225,5 @@ def main():
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
 
 
-application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))
+if sys.argv[0].endswith(("uwsgi", "gunicorn")):
+    application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))
