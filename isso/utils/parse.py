@@ -76,14 +76,14 @@ def host(name):
     return (rv.netloc.rsplit(':')[0], rv.port or 80, rv.scheme == 'https')
 
 
-def title(data, default=u"Untitled."):
+def thread(data, default=u"Untitled.", id=None):
     """
     Extract <h1> title from web page. The title is *probably* the text node,
     which is the nearest H1 node in context to an element with the `isso-thread` id.
 
-    >>> title("asdf")  # doctest: +IGNORE_UNICODE
-    'Untitled.'
-    >>> title('''
+    >>> thread("asdf")  # doctest: +IGNORE_UNICODE
+    (None, 'Untitled.')
+    >>> thread('''
     ... <html>
     ... <head>
     ...     <title>Foo!</title>
@@ -102,14 +102,22 @@ def title(data, default=u"Untitled."):
     ...     </article>
     ... </body>
     ... </html>''')  # doctest: +IGNORE_UNICODE
-    'Can you find me?'
-    >>> title('''
+    (None, 'Can you find me?')
+    >>> thread('''
     ... <html>
     ... <body>
     ... <h1>I'm the real title!1
     ... <section data-title="No way%21" id="isso-thread">
     ... ''')  # doctest: +IGNORE_UNICODE
-    'No way!'
+    (None, 'No way!')
+    >>> thread('''
+    ... <section id="isso-thread" data-title="Test" data-isso-id="test">
+    ... ''')  # doctest: +IGNORE_UNICODE
+    ('test', 'Test')
+    >>> thread('''
+    ... <section id="isso-thread" data-isso-id="Fuu.">
+    ... ''')  # doctest: +IGNORE_UNICODE
+    ('Fuu.', 'Untitled.')
     """
 
     html = html5lib.parse(data, treebuilder="dom")
@@ -123,7 +131,7 @@ def title(data, default=u"Untitled."):
                      chain(*map(html.getElementsByTagName, ("div", "section"))))))
 
     if not el:
-        return default
+        return id, default
 
     el = el[0]
     visited = []
@@ -146,7 +154,12 @@ def title(data, default=u"Untitled."):
                     yield item
 
     try:
-        return unquote(el.attributes["data-title"].value)
+        id = unquote(el.attributes["data-isso-id"].value)
+    except (KeyError, AttributeError):
+        pass
+
+    try:
+        return id, unquote(el.attributes["data-title"].value)
     except (KeyError, AttributeError):
         pass
 
@@ -156,8 +169,8 @@ def title(data, default=u"Untitled."):
         rv = recurse(el)
 
         if rv:
-            return ''.join(gettext(rv)).strip()
+            return id, ''.join(gettext(rv)).strip()
 
         el = el.parentNode
 
-    return default
+    return id, default
