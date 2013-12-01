@@ -44,7 +44,7 @@ def csrf(view):
 
     def dec(self, environ, request, *args, **kwargs):
 
-        origin = request.headers.get("Origin")
+        origin = request.headers.get("Origin", "")
         if parse.host(origin) not in map(parse.host, self.conf.getiter("host")):
             raise Forbidden("CSRF")
 

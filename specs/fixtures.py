@@ -11,6 +11,7 @@ class FakeIP(object):
 
     def __call__(self, environ, start_response):
         environ['REMOTE_ADDR'] = self.ip
+        environ['HTTP_ORIGIN'] = "http://localhost:8080"
         return self.app(environ, start_response)
 
 
