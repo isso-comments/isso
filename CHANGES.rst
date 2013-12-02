@@ -4,12 +4,6 @@ Changelog for Isso
 0.5.2 (2013-12-02)
 ------------------
 
-- Nothing changed yet.
-
-
-0.5.1 (2013-11-21)
-------------------
-
 Major improvements:
 
 - `listen` option replaces `host` and `port` to support UNIX domain sockets, #25
