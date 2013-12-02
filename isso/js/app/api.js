@@ -31,25 +31,21 @@ define(["q"], function(Q) {
      *      .. code-block:: html
      *
      *          <script data-isso="http://example.tld/path/" src="/.../embed.min.js"></script>
-     *
-     *   2. use require.js (during development). When using require.js, we
-     *      assume that the path to the scripts ends with `/js/`.
      */
 
     var script, endpoint,
         js = document.getElementsByTagName("script");
 
     for (var i = 0; i < js.length; i++) {
-        if (js[i].dataset.isso !== undefined) {
-            endpoint = js[i].dataset.isso;
-        } else if (js[i].src.match("require\\.js$")) {
-            endpoint = js[i].dataset.main.replace(/\/js\/(embed|count)$/, "");
+        if (js[i].hasAttribute("data-isso")) {
+            endpoint = js[i].getAttribute("data-isso");
+            break;
         }
     }
 
     if (! endpoint) {
         for (i = 0; i < js.length; i++) {
-            if (js[i].hasAttribute("async") || js[i].hasAttribute("defer")) {
+            if (js[i].getAttribute("async") || js[i].getAttribute("defer")) {
                 throw "Isso's automatic configuration detection failed, please " +
                       "refer to https://github.com/posativ/isso#client-configuration " +
                       "and add a custom `data-isso` attribute.";
@@ -57,14 +53,10 @@ define(["q"], function(Q) {
         }
 
         script = js[js.length - 1];
-
-        if (script.dataset.prefix) {
-            endpoint = script.dataset.prefix;
-        } else {
-            endpoint = script.src.substring(0, script.src.length - "/js/embed.min.js".length);
-        }
+        endpoint = script.src.substring(0, script.src.length - "/js/embed.min.js".length);
     }
 
+    //  strip trailing slash
     if (endpoint[endpoint.length - 1] === "/") {
         endpoint = endpoint.substring(0, endpoint.length - 1);
     }
