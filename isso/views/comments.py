@@ -12,6 +12,7 @@ from werkzeug.http import dump_cookie
 from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
+from werkzeug.useragents import UserAgent
 
 from isso.compat import text_type as str
 
@@ -29,6 +30,31 @@ class JSON(Response):
 
     def __init__(self, *args):
         return super(JSON, self).__init__(*args, content_type='application/json')
+
+
+def csrf(view):
+    """A decorator to check if HTTP_Origin matches configured host. If not,
+    return 401 Forbidden. See
+
+       * https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Checking_The_Origin_Header
+       * http://tools.ietf.org/html/draft-abarth-origin-09
+       * https://wiki.mozilla.org/Security/Origin
+
+    for details.
+    """
+
+    def dec(self, environ, request, *args, **kwargs):
+
+        if UserAgent(environ).browser == "msie":  # yup
+            origin = request.headers.get("Referer", "")
+        else:
+            origin = request.headers.get("Origin", "")
+        if parse.host(origin) not in map(parse.host, self.conf.getiter("host")):
+            raise Forbidden("CSRF")
+
+        return view(self, environ, request, *args, **kwargs)
+
+    return dec
 
 
 class API(object):
@@ -91,6 +117,7 @@ class API(object):
 
         return True, ""
 
+    @csrf
     @requires(str, 'uri')
     def new(self, environ, request, uri):
 
@@ -174,6 +201,7 @@ class API(object):
 
         return Response(json.dumps(rv), 200, content_type='application/json')
 
+    @csrf
     def edit(self, environ, request, id):
 
         try:
@@ -217,6 +245,7 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
+    @csrf
     def delete(self, environ, request, id, key=None):
 
         try:
@@ -294,11 +323,13 @@ class API(object):
 
         return JSON(json.dumps(rv), 200)
 
+    @csrf
     def like(self, environ, request, id):
 
         nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
         return Response(json.dumps(nv), 200)
 
+    @csrf
     def dislike(self, environ, request, id):
 
         nv = self.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
