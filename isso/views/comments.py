@@ -72,8 +72,8 @@ class API(object):
         ('view',    ('GET', '/id/<int:id>')),
         ('edit',    ('PUT', '/id/<int:id>')),
         ('delete',  ('DELETE', '/id/<int:id>')),
-        ('delete',  ('GET', '/id/<int:id>/delete/<string:key>')),
-        ('activate',('GET', '/id/<int:id>/activate/<string:key>')),
+        ('moderate',('GET',  '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
+        ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('checkip', ('GET', '/check-ip'))
@@ -251,10 +251,7 @@ class API(object):
         try:
             rv = self.isso.unsign(request.cookies.get(str(id), ""))
         except (SignatureExpired, BadSignature):
-            try:
-                id = self.isso.unsign(key or "", max_age=2**32)
-            except (BadSignature, SignatureExpired):
-                raise Forbidden
+            raise Forbidden
         else:
             if rv[0] != id:
                 raise Forbidden
@@ -270,7 +267,9 @@ class API(object):
 
         self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
 
-        rv = self.comments.delete(id)
+        with self.isso.lock:
+            rv = self.comments.delete(id)
+
         if rv:
             for key in set(rv.keys()) - API.FIELDS:
                 rv.pop(key)
@@ -283,17 +282,43 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
-    def activate(self, environ, request, id, key):
+    def moderate(self, environ, request, id, action, key):
 
         try:
             id = self.isso.unsign(key, max_age=2**32)
         except (BadSignature, SignatureExpired):
             raise Forbidden
 
-        with self.isso.lock:
-            self.comments.activate(id)
+        item = self.comments.get(id)
 
-        self.signal("comments.activate", id)
+        if item is None:
+            raise NotFound
+
+        if request.method == "GET":
+            modal = (
+                "<!DOCTYPE html>"
+                "<html>"
+                "<head>"
+                "<script>"
+                "  if (confirm('%s: Are you sure?')) {"
+                "      xhr = new XMLHttpRequest;"
+                "      xhr.open('POST', window.location.href);"
+                "      xhr.send(null);"
+                "  }"
+                "</script>" % action.capitalize())
+
+            return Response(modal, 200, content_type="text/html")
+
+        if action == "activate":
+            with self.isso.lock:
+                self.comments.activate(id)
+            self.signal("comments.activate", id)
+        else:
+            with self.isso.lock:
+                self.comments.delete(id)
+            self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+            self.signal("comments.delete", id)
+
         return Response("Yo", 200)
 
     @requires(str, 'uri')
