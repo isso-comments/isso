@@ -33,8 +33,8 @@ class JSON(Response):
 
 
 def csrf(view):
-    """A decorator to check if HTTP_Origin matches configured host. If not,
-    return 401 Forbidden. See
+    """A decorator to check if Origin matches Host (may be empty if in the same
+    origin, except for IE of course). When MSIE, use Referer. See
 
        * https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet#Checking_The_Origin_Header
        * http://tools.ietf.org/html/draft-abarth-origin-09
@@ -45,12 +45,14 @@ def csrf(view):
 
     def dec(self, environ, request, *args, **kwargs):
 
+        hosts = map(parse.host, self.conf.getiter("host"))
+
         if UserAgent(environ).browser == "msie":  # yup
-            origin = request.headers.get("Referer", "")
-        else:
-            origin = request.headers.get("Origin", "")
-        if parse.host(origin) not in map(parse.host, self.conf.getiter("host")):
-            raise Forbidden("CSRF")
+            if parse.host(request.headers.get("Referer", "")) not in hosts:
+                raise Forbidden("CSRF")
+        elif "Origin" in request.headers:
+            if parse.host(request.headers.get("Origin", "")) not in hosts:
+                raise Forbidden("CSRF")
 
         return view(self, environ, request, *args, **kwargs)
 

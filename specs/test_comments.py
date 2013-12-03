@@ -269,10 +269,27 @@ class TestComments(unittest.TestCase):
 
     def testDeleteCommentRemovesThread(self):
 
-            rv = self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
-            assert '/' in self.app.db.threads
-            self.client.delete('/id/1')
-            assert '/' not in self.app.db.threads
+        rv = self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+        assert '/' in self.app.db.threads
+        self.client.delete('/id/1')
+        assert '/' not in self.app.db.threads
+
+    def testCSRF(self):
+
+        payload = json.dumps({"text": "..."})
+
+        assert self.client.post('/new?uri=%2F', data=payload,
+                                headers={"Origin": "http://localhost:8080"}
+        ).status_code == 201
+
+        assert self.client.post('/new?uri=%2F', data=payload,
+                                headers={"Referer": "http://other.example/asdf",
+                                         "User-Agent": "msie"}
+        ).status_code == 403
+
+        assert self.client.post('/new?uri=%2F', data=payload,
+                                headers={"Origin": "http://other.example"}
+        ).status_code == 403
 
 
 class TestModeratedComments(unittest.TestCase):
