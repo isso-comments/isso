@@ -102,6 +102,12 @@ class TestComments(unittest.TestCase):
         rv = loads(r.data)
         assert len(rv) == 20
 
+    def testCreateBlank(self):
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': ''}))
+        assert rv.status_code == 400
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': "\n\n\n"}))
+        assert rv.status_code == 400
+
     def testGetInvalid(self):
 
         assert self.get('/?uri=%2Fpath%2F&id=123').status_code == 404
