@@ -109,7 +109,7 @@ class API(object):
             if not isinstance(comment.get(key), (str, type(None))):
                 return False, "%s must be a string or null" % key
 
-        if len(comment["text"]) < 3:
+        if len(comment["text"].rstrip()) < 3:
             return False, "text is too short (minimum length: 3)"
 
         if len(comment.get("email") or "") > 254:
