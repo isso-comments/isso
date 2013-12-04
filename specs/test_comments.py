@@ -12,14 +12,13 @@ try:
 except ImportError:
     from urllib import urlencode
 
-from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
 from isso import Isso, core
 from isso.utils import http
 from isso.views import comments
 
-from fixtures import curl, loads, FakeIP
+from fixtures import curl, loads, FakeIP, JSONClient
 http.curl = curl
 
 
@@ -37,7 +36,7 @@ class TestComments(unittest.TestCase):
         self.app = App(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
 
-        self.client = Client(self.app, Response)
+        self.client = JSONClient(self.app, Response)
         self.get = self.client.get
         self.put = self.client.put
         self.post = self.client.post
@@ -139,7 +138,7 @@ class TestComments(unittest.TestCase):
 
     def testDeleteWithReference(self):
 
-        client = Client(self.app, Response)
+        client = JSONClient(self.app, Response)
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First', 'parent': 1}))
 
@@ -166,7 +165,7 @@ class TestComments(unittest.TestCase):
                     --- [ comment 4, ref 2 ]
         [ comment 5 ]
         """
-        client = Client(self.app, Response)
+        client = JSONClient(self.app, Response)
 
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Second', 'parent': 1}))
@@ -199,11 +198,11 @@ class TestComments(unittest.TestCase):
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
 
-        mallory = Client(self.app, Response)
+        mallory = JSONClient(self.app, Response)
         mallory.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Foo'}))
         mallory.delete('/id/1')
 
-        bob = Client(self.app, Response)
+        bob = JSONClient(self.app, Response)
         bob.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Bar'}))
 
         assert mallory.delete('/id/1').status_code == 403
@@ -269,10 +268,27 @@ class TestComments(unittest.TestCase):
 
     def testDeleteCommentRemovesThread(self):
 
-            rv = self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
-            assert '/' in self.app.db.threads
-            self.client.delete('/id/1')
-            assert '/' not in self.app.db.threads
+        rv = self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+        assert '/' in self.app.db.threads
+        self.client.delete('/id/1')
+        assert '/' not in self.app.db.threads
+
+    def testCSRF(self):
+
+        js = "application/json"
+        form = "application/x-www-form-urlencoded"
+
+        self.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+
+        # no header is fine (default for XHR)
+        assert self.post('/id/1/dislike', content_type="").status_code == 200
+
+        # x-www-form-urlencoded is definitely not RESTful
+        assert self.post('/id/1/dislike', content_type=form).status_code == 403
+        assert self.post('/new?uri=%2F', data=json.dumps({"text": "..."}),
+                                         content_type=form).status_code == 403
+        # just for the record
+        assert self.post('/id/1/dislike', content_type=js).status_code == 200
 
 
 class TestModeratedComments(unittest.TestCase):
@@ -289,7 +305,7 @@ class TestModeratedComments(unittest.TestCase):
 
         self.app = App(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
-        self.client = Client(self.app, Response)
+        self.client = JSONClient(self.app, Response)
 
     def tearDown(self):
         os.unlink(self.path)
@@ -320,7 +336,7 @@ class TestPurgeComments(unittest.TestCase):
 
         self.app = App(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
-        self.client = Client(self.app, Response)
+        self.client = JSONClient(self.app, Response)
 
     def testPurgeDoesNoHarm(self):
         self.client.post('/new?uri=test', data=json.dumps({"text": "..."}))
