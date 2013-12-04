@@ -6,13 +6,12 @@ import json
 import tempfile
 import unittest
 
-from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
 from isso import Isso, core
 from isso.utils import http
 
-from fixtures import curl, loads, FakeIP
+from fixtures import curl, loads, FakeIP, JSONClient
 http.curl = curl
 
 
@@ -33,7 +32,7 @@ class TestVote(unittest.TestCase):
         app = App(conf)
         app.wsgi_app = FakeIP(app.wsgi_app, ip)
 
-        return Client(app, Response)
+        return JSONClient(app, Response)
 
     def testZeroLikes(self):
 

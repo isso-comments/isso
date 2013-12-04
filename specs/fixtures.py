@@ -2,6 +2,7 @@
 
 import json
 
+from werkzeug.test import Client
 
 class FakeIP(object):
 
@@ -12,6 +13,13 @@ class FakeIP(object):
     def __call__(self, environ, start_response):
         environ['REMOTE_ADDR'] = self.ip
         return self.app(environ, start_response)
+
+
+class JSONClient(Client):
+
+    def open(self, *args, **kwargs):
+        kwargs.setdefault('content_type', 'application/json')
+        return super(JSONClient, self).open(*args, **kwargs)
 
 
 class Dummy:

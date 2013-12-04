@@ -31,6 +31,30 @@ class JSON(Response):
         return super(JSON, self).__init__(*args, content_type='application/json')
 
 
+def xhr(func):
+    """A decorator to check for CSRF on POST/PUT/DELETE using a <form>
+    element and JS to execute automatically (see #40 for a proof-of-concept).
+
+    When an attacker uses a <form> to downvote a comment, the browser *should*
+    add a `Content-Type: ...` header with three possible values:
+
+    * application/x-www-form-urlencoded
+    * multipart/form-data
+    * text/plain
+
+    If the header is not sent or requests `application/json`, the request is
+    not forged (XHR is restricted by CORS separately).
+    """
+
+    def dec(self, env, req, *args, **kwargs):
+
+        if req.content_type and not req.content_type.startswith("application/json"):
+            raise Forbidden("CSRF")
+        return func(self, env, req, *args, **kwargs)
+
+    return dec
+
+
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email',
@@ -91,6 +115,7 @@ class API(object):
 
         return True, ""
 
+    @xhr
     @requires(str, 'uri')
     def new(self, environ, request, uri):
 
@@ -174,6 +199,7 @@ class API(object):
 
         return Response(json.dumps(rv), 200, content_type='application/json')
 
+    @xhr
     def edit(self, environ, request, id):
 
         try:
@@ -217,6 +243,7 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
+    @xhr
     def delete(self, environ, request, id, key=None):
 
         try:
@@ -294,11 +321,13 @@ class API(object):
 
         return JSON(json.dumps(rv), 200)
 
+    @xhr
     def like(self, environ, request, id):
 
         nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
         return Response(json.dumps(nv), 200)
 
+    @xhr
     def dislike(self, environ, request, id):
 
         nv = self.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
