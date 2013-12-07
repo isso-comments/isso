@@ -9,6 +9,7 @@ import json
 import socket
 import smtplib
 
+from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
@@ -73,7 +74,6 @@ class SMTP(object):
 
     def format(self, thread, comment):
 
-
         rv = io.StringIO()
 
         author = comment["author"] or "Anonymous"
@@ -122,6 +122,7 @@ class SMTP(object):
         msg = MIMEText(body, 'plain', 'utf-8')
         msg['From'] = "Ich schrei sonst! <%s>" % from_addr
         msg['To'] = to_addr
+        msg['Date'] = formatdate(localtime=True)
         msg['Subject'] = Header(subject, 'utf-8')
 
         with self as con:
