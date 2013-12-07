@@ -41,7 +41,10 @@ Isso is not the first open-source commenting server:
     No threaded comments, nice administration webinterface, but... yeah... Ruby.
 
   * `Tildehash.com <http://www.tildehash.com/?article=why-im-reinventing-disqus>`_,
-    written in PHP. Did I forgot something?
+    written in PHP__ (compare to Python__). Did I forgot something?
 
   * `Unobtrusive, self-hosted comments <http://stackoverflow.com/q/2053217>`_,
     discussion on StackOverflow.
+
+.. __: http://www.cvedetails.com/vendor/74/PHP.html
+.. __: http://www.cvedetails.com/vendor/10210/Python.html
