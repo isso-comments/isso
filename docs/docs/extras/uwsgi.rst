@@ -36,7 +36,7 @@ supply everything as command-line arguments):
     processes = 4
     cache2 = name=hash,items=1024,blocksize=32
     spooler = %d/mail
-    module = isso
+    module = isso.run
     virtualenv = %d
     env = ISSO_SETTINGS=%d/sample.cfg
 

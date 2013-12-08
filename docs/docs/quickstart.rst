@@ -184,4 +184,4 @@ To execute Isso, use a command similar to:
 .. code-block:: sh
 
     $ export ISSO_SETTINGS="/path/to/isso.cfg"
-    $ gunicorn -b localhost:8080 -w 4 --preload isso
+    $ gunicorn -b localhost:8080 -w 4 --preload isso.run

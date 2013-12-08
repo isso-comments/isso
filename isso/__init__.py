@@ -223,7 +223,3 @@ def main():
             if ex.errno != errno.ENOENT:
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
-
-
-if sys.argv[0].endswith(("uwsgi", "gunicorn")):
-    application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')))
