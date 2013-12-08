@@ -87,10 +87,6 @@ define(["q"], function(Q) {
             xhr.withCredentials = true;
             xhr.setRequestHeader("Content-Type", "application/json");
 
-            if (method === "GET") {
-                xhr.setRequestHeader("X-Origin", window.location.origin);
-            }
-
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
                     onload();
