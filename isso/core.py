@@ -105,6 +105,7 @@ class Config:
 
     default = [
         "[general]",
+        "name = ",
         "dbpath = /tmp/isso.db", "session-key = %r" % binascii.b2a_hex(os.urandom(24)),
         "host = http://localhost:8080/", "max-age = 15m",
         "notify = ",

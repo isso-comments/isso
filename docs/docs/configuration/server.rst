@@ -38,6 +38,7 @@ session key and hostname. Here are the default values for this section:
 
     [general]
     dbpath = /tmp/isso.db
+    name =
     host = http://localhost:8080/
     max-age = 15m
     session-key = ... ; python: binascii.b2a_hex(os.urandom(24))
@@ -46,6 +47,10 @@ session key and hostname. Here are the default values for this section:
 dbpath
     file location to the SQLite3 database, highly recommended to change this
     location to a non-temporary location!
+
+name
+    required to dispatch :ref:`multiple websites <configure-multiple-sites>`,
+    not used otherwise.
 
 host
     URL to your website. When you start Isso, it will probe your website with
