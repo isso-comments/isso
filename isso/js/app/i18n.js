@@ -7,6 +7,9 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"
         "en": function(msgs, n) {
             return msgs[n === 1 ? 0 : 1];
         },
+        "fr": function(msgs, n) {
+            return msgs[n > 1 ? 0 : 1]
+        },
         "ru": function(msg, n) {
             if (n % 10 === 1 && n % 100 !== 11) {
                 return msg[0];
@@ -19,7 +22,6 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"
     };
 
     plurals["de"] = plurals["en"];
-    plurals["fr"] = plurals["en"];
 
     // useragent's prefered language (or manually overridden)
     var lang = config.lang;
