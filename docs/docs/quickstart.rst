@@ -192,7 +192,7 @@ mod_wsgi
 I have no experience at all with `mod_wsgi`, most things are taken from
 `Flask: Configuring Apache <http://flask.pocoo.org/docs/deploying/mod_wsgi/#configuring-apache>`_:
 
-.. code-block:: xml
+.. code-block:: apache
 
     <VirtualHost *>
         ServerName example.org
@@ -218,5 +218,6 @@ your `isso.cfg`:
 .. code-block:: ini
 
     [general]
+    ; cat /dev/urandom | strings | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'
     session-key = superrandomkey1
 
