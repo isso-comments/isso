@@ -62,7 +62,7 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 local = Local()
 local_manager = LocalManager([local])
 
-from isso import db, migrate, wsgi, ext, views
+from isso import db, wsgi, ext, views
 from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
 from isso.utils import parse, http, JSONRequest, origin
 from isso.views import comments
@@ -194,23 +194,10 @@ def main():
     parser.add_argument("-c", dest="conf", default="/etc/isso.conf",
             metavar="/etc/isso.conf", help="set configuration file")
 
-    imprt = subparser.add_parser('import', help="import Disqus XML export")
-    imprt.add_argument("dump", metavar="FILE")
-    imprt.add_argument("-n", "--dry-run", dest="dryrun", action="store_true",
-                       help="perform a trial run with no changes made")
-
     serve = subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
     conf = Config.load(args.conf)
-
-    if args.command == "import":
-        xxx = tempfile.NamedTemporaryFile()
-        dbpath = conf.get("general", "dbpath") if not args.dryrun else xxx.name
-
-        conf.set("guard", "enabled", "off")
-        migrate.disqus(db.SQLite3(dbpath, conf), args.dump)
-        sys.exit(0)
 
     if conf.get("server", "listen").startswith("http://"):
         host, port, _ = parse.host(conf.get("server", "listen"))

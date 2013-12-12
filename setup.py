@@ -38,7 +38,9 @@ setup(
     ],
     install_requires=requires,
     entry_points={
-        'console_scripts':
-            ['isso = isso:main'],
+        'console_scripts': [
+            'isso = isso:main',
+            'wynaut = wynaut:main'
+        ],
     },
 )
