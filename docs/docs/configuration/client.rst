@@ -50,3 +50,13 @@ data-isso-reply-to-self
 -----------------------
 
 Set to `true` when spam guard is configured with `reply-to-self = true`.
+
+data-isso-id
+------------
+
+Set a custom thread id, defaults to current URI. If you a comment counter, add
+this attribute to the link tag, too.
+
+.. code-block:: html
+
+    <section data-isso-id="test.abc" id="isso-thread"></section>
