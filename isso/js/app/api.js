@@ -111,8 +111,8 @@ define(["q"], function(Q) {
         return rv.substring(0, rv.length - 1);  // chop off trailing "&"
     };
 
-    var create = function(data) {
-        return curl("POST", endpoint + "/new?" + qs({uri: location}), JSON.stringify(data)).then(
+    var create = function(tid, data) {
+        return curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data)).then(
             function (rv) { return JSON.parse(rv.body); });
     };
 
@@ -137,9 +137,9 @@ define(["q"], function(Q) {
         });
     };
 
-    var fetch = function(plain) {
+    var fetch = function(tid) {
 
-        return curl("GET", endpoint + "/?" + qs({uri: location, plain: plain}), null).then(function (rv) {
+        return curl("GET", endpoint + "/?" + qs({uri: tid || location}), null).then(function (rv) {
             if (rv.status === 200) {
                 return JSON.parse(rv.body);
             } else {
@@ -148,8 +148,8 @@ define(["q"], function(Q) {
         });
     };
 
-    var count = function(uri) {
-        return curl("GET", endpoint + "/count?" + qs({uri: uri}), null).then(function(rv) {
+    var count = function(tid) {
+        return curl("GET", endpoint + "/count?" + qs({uri: tid || location}), null).then(function(rv) {
             return JSON.parse(rv.body);
         });
     };

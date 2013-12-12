@@ -59,7 +59,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 return;
             }
 
-            api.create({
+            api.create($("#isso-thread").getAttribute("data-isso-id"), {
                 author: $("[name=author]", el).value || null,
                 email: $("[name=email]", el).value || null,
                 text: $("textarea", el).value,

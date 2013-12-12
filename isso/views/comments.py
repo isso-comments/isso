@@ -142,7 +142,7 @@ class API(object):
             if uri not in self.threads:
                 with http.curl('GET', local("origin"), uri) as resp:
                     if resp and resp.status == 200:
-                        title = parse.title(resp.read())
+                        uri, title = parse.thread(resp.read(), id=uri)
                     else:
                         return NotFound('URI does not exist')
 
