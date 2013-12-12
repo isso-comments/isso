@@ -185,3 +185,38 @@ To execute Isso, use a command similar to:
 
     $ export ISSO_SETTINGS="/path/to/isso.cfg"
     $ gunicorn -b localhost:8080 -w 4 --preload isso.run
+
+mod_wsgi
+^^^^^^^^
+
+I have no experience at all with `mod_wsgi`, most things are taken from
+`Flask: Configuring Apache <http://flask.pocoo.org/docs/deploying/mod_wsgi/#configuring-apache>`_:
+
+.. code-block:: xml
+
+    <VirtualHost *>
+        ServerName example.org
+
+        WSGIDaemonProcess isso user=... group=... threads=5
+        WSGIScriptAlias / /var/www/isso.wsgi
+    </VirtualHost>
+
+Now, you need to create a new `isso.wsgi` file:
+
+.. code-block:: python
+
+    import os
+
+    from isso import make_app
+    from isso.core import Config
+
+    application = make_app(Config.load("/path/to/isso.cfg"))
+
+Unless you know how to preload the application, add a static session key to
+your `isso.cfg`:
+
+.. code-block:: ini
+
+    [general]
+    session-key = superrandomkey1
+
