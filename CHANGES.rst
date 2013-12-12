@@ -4,7 +4,29 @@ Changelog for Isso
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+Major improvements:
+
+- `isso.dispatch` now dispatches multiple websites (= configurations) based on
+  a URL prefix
+
+- fix a cross-site request forgery vulnerability for comment creation, voting,
+  editing and deletion, #40
+
+- show modal dialog to confirm comment deletion and activation, #36
+
+- new, comprehensive documentation based on reST + Sphinx:
+  http://posativ.org/docs (or docs/ in the repository). Also includes an
+  annotated `example.conf`, #43
+
+Minor improvements:
+
+- move `isso:application` to `isso.run:application` to avoid uneccessary
+  initialization in some cases (change the module if you use uWSGI or Gunicorn)
+- add Date header to email notifications, #42
+- check for blank text in new comment, #41
+- work around IE10 HTML5 abilities for custom data-attributes
+- add support for Gunicorn (and other pre-forking wsgi servers)
+- new russian translation
 
 
 0.5 (2013-11-17)
