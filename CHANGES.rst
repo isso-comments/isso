@@ -1,13 +1,19 @@
 Changelog for Isso
 ==================
 
-0.6 (unreleased)
+0.6 (2013-12-16)
 ----------------
 
 Major improvements:
 
+- override thread discovery with data-isso-id="...", #27
+
+  To use the same thread for different URLs, you can now add a custom
+  ``data-isso-id="my-id"`` attribute which is used to identify and retrieve
+  comments (defaults to current URL aka `window.location.pathname`).
+
 - `isso.dispatch` now dispatches multiple websites (= configurations) based on
-  a URL prefix
+  URL prefixes
 
 - fix a cross-site request forgery vulnerability for comment creation, voting,
   editing and deletion, #40
@@ -18,15 +24,16 @@ Major improvements:
   http://posativ.org/docs (or docs/ in the repository). Also includes an
   annotated `example.conf`, #43
 
+- new italian and russian translations
+
 Minor improvements:
 
 - move `isso:application` to `isso.run:application` to avoid uneccessary
-  initialization in some cases (change the module if you use uWSGI or Gunicorn)
+  initialization in some cases (change module if you use uWSGI or Gunicorn)
 - add Date header to email notifications, #42
 - check for blank text in new comment, #41
-- work around IE10 HTML5 abilities for custom data-attributes
-- add support for Gunicorn (and other pre-forking wsgi servers)
-- new russian translation
+- work around IE10's HTML5 abilities for custom data-attributes
+- add support for Gunicorn (and other pre-forking WSGI servers)
 
 
 0.5 (2013-11-17)
