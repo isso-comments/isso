@@ -10,13 +10,13 @@ class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
     comment-related actions.  Here's a short scheme overview:
 
-        | tid (thread id) | cid (comment id) | parent | ... | likes | remote_addr |
-        +-----------------+------------------+--------+-----+-------+-------------+
-        | 1               | 1                | null   | ... | BLOB  | 127.0.0.0   |
-        | 1               | 2                | 1      | ... | BLOB  | 127.0.0.0   |
-        +-----------------+------------------+--------+-----+-------+-------------+
+        | tid (thread id) | id (comment id) | parent | ... | voters | remote_addr |
+        +-----------------+-----------------+--------+-----+--------+-------------+
+        | 1               | 1               | null   | ... | BLOB   | 127.0.0.0   |
+        | 1               | 2               | 1      | ... | BLOB   | 127.0.0.0   |
+        +-----------------+-----------------+--------+-----+--------+-------------+
 
-    The tuple (tid, cid) is unique and thus primary key.
+    The tuple (tid, id) is unique and thus primary key.
     """
 
     fields = ['tid', 'id', 'parent', 'created', 'modified', 'mode', 'remote_addr',
@@ -34,9 +34,8 @@ class Comments:
 
     def add(self, uri, c):
         """
-        Add a new comment to the database and return public fields as dict.
-        Initializes voter bloom array with provided :param:`remote_addr` and
-        adds a new thread to the `main.threads` table.
+        Add new comment to DB and return a mapping of :attribute:`fields` and
+        database values.
         """
         self.db.execute([
             'INSERT INTO comments (',
@@ -60,7 +59,9 @@ class Comments:
             (uri, )).fetchone()))
 
     def activate(self, id):
-        """Activate comment id if pending and return comment for (path, id)."""
+        """
+        Activate comment id if pending.
+        """
         self.db.execute([
             'UPDATE comments SET',
             '    mode=1',
@@ -68,11 +69,9 @@ class Comments:
 
     def update(self, id, data):
         """
-        Update an existing comment, but only writeable fields such as text,
-        author, email, website and parent. This method should set the modified
-        field to the current time.
+        Update comment :param:`id` with values from :param:`data` and return
+        updated comment.
         """
-
         self.db.execute([
             'UPDATE comments SET',
                 ','.join(key + '=' + '?' for key in data),
@@ -82,7 +81,10 @@ class Comments:
         return self.get(id)
 
     def get(self, id):
-
+        """
+        Search for comment :param:`id` and return a mapping of :attr:`fields`
+        and values.
+        """
         rv = self.db.execute('SELECT * FROM comments WHERE id=?', (id, )).fetchone()
         if rv:
             return dict(zip(Comments.fields, rv))
@@ -91,7 +93,7 @@ class Comments:
 
     def fetch(self, uri, mode=5):
         """
-        Return all comments for `path` with `mode`.
+        Return comments for :param:`uri` with :param:`mode`.
         """
         rv = self.db.execute([
             'SELECT comments.* FROM comments INNER JOIN threads ON',
@@ -175,7 +177,7 @@ class Comments:
 
     def count(self, uri):
         """
-        return count of comments for uri.
+        Return comment count for :param:`uri`.
         """
         return self.db.execute([
             'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
@@ -183,6 +185,9 @@ class Comments:
             (uri, )).fetchone()
 
     def purge(self, delta):
+        """
+        Remove comments older than :param:`delta`.
+        """
         self.db.execute([
             'DELETE FROM comments WHERE mode = 2 AND ? - created > ?;'
         ], (time.time(), delta))
