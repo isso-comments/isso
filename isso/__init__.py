@@ -155,6 +155,10 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     isso = App(conf)
 
+    # show session-key (to see that it changes randomely if unset)
+    logger.info("session-key = %s", isso.conf.get("general", "session-key"))
+
+    # check HTTP server connection
     for host in conf.getiter("general", "host"):
         with http.curl('HEAD', host, '/', 5) as resp:
             if resp is not None:
