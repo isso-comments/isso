@@ -18,7 +18,6 @@ class SQLite3:
 
         self.path = path
         self.conf = conf
-        self.mode = 1
 
         rv = self.execute([
             "SELECT name FROM sqlite_master"
