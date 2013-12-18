@@ -16,9 +16,7 @@ Install Isso with PIP_:
 
 Init scripts:
 
--  SystemD: `isso.service
-   <https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service>`_
--  SysVinit: `isso.init
-   <https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init>`_
--  OpenBSD: `GH:Gist <https://gist.github.com/noqqe/7397719>`_
-
+-  SystemD: https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
+-  SysVinit: https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
+-  OpenBSD: https://gist.github.com/noqqe/7397719
+-  Supervisor: https://github.com/posativ/isso/issues/47
