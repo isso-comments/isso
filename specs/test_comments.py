@@ -290,6 +290,9 @@ class TestComments(unittest.TestCase):
         # just for the record
         assert self.post('/id/1/dislike', content_type=js).status_code == 200
 
+    def testCheckIP(self):
+        assert self.get('/check-ip').data.decode("utf-8") == '192.168.1.0'
+
 
 class TestModeratedComments(unittest.TestCase):
 
