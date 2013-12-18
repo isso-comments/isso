@@ -298,6 +298,21 @@ main {
       margin-bottom: 0;
     }
 
+    blockquote {
+      margin: 1em;
+      text-align: center;
+      font-size:125%;
+      font-style:italic;
+
+    }
+    blockquote:before {
+      content: "» ";
+    }
+
+    blockquote:after {
+      content: " «";
+    }
+
     ul {
 
       margin: 1em 0;

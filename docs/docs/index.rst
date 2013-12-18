@@ -33,18 +33,18 @@ times).
 
 Isso is not the first open-source commenting server:
 
-  * `talkatv <https://github.com/talkatv/talkatv>`_, written in Python.
-    Unfortunately, talkatv's (read "talkative") development stalled. Neither
-    anonymous nor threaded comments.
+* `talkatv <https://github.com/talkatv/talkatv>`_, written in Python.
+  Unfortunately, talkatv's (read "talkative") development stalled. Neither
+  anonymous nor threaded comments.
 
-  * `Juvia <https://github.com/phusion/juvia>`_, written in Ruby (on Rails).
-    No threaded comments, nice administration webinterface, but... yeah... Ruby.
+* `Juvia <https://github.com/phusion/juvia>`_, written in Ruby (on Rails).
+  No threaded comments, nice administration webinterface, but... yeah... Ruby.
 
-  * `Tildehash.com <http://www.tildehash.com/?article=why-im-reinventing-disqus>`_,
-    written in PHP__ (compare to Python__). Did I forgot something?
+* `Tildehash.com <http://www.tildehash.com/?article=why-im-reinventing-disqus>`_,
+  written in PHP__ (compare to Python__). Did I forgot something?
 
-  * `Unobtrusive, self-hosted comments <http://stackoverflow.com/q/2053217>`_,
-    discussion on StackOverflow.
+* `Unobtrusive, self-hosted comments <http://stackoverflow.com/q/2053217>`_,
+  discussion on StackOverflow.
 
 .. __: http://www.cvedetails.com/vendor/74/PHP.html
 .. __: http://www.cvedetails.com/vendor/10210/Python.html
