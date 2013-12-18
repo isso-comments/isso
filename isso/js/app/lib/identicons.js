@@ -1,17 +1,15 @@
+/*
+  Copyright (C) 2013 Gregory Schier <gschier1990@gmail.com>
+  Copyright (C) 2013 Martin Zimmermann <info@posativ.org>
+
+  Inspired by http://codepen.io/gschier/pen/GLvAy
+*/
 define(["q"], function(Q) {
 
     "use strict";
 
-    // JS Identicon generation via Gregory Schier (http://codepen.io/gschier/pen/GLvAy)
-    // extended to produce the same identicon for a given hash
-
-    // Size of a grid square in pixels
-    var SQUARE = 8;
-
     // Number of squares width and height
     var GRID = 5;
-
-    // Padding on the edge of the canvas in px
 
     var pad = function(n, width) {
         return n.length >= width ? n : new Array(width - n.length + 1).join("0") + n;
