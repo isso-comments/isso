@@ -6,10 +6,7 @@ import pkg_resources
 werkzeug = pkg_resources.get_distribution("werkzeug")
 
 import json
-import random
 import hashlib
-
-from string import ascii_letters, digits
 
 from werkzeug.wrappers import Request
 from werkzeug.exceptions import BadRequest
@@ -40,14 +37,6 @@ def anonymize(remote_addr):
         if ipv6.ipv4_mapped is not None:
             return anonymize(ipv6.ipv4_mapped)
         return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*5)
-
-
-def salt(value, s=u'\x082@t9*\x17\xad\xc1\x1c\xa5\x98'):
-    return hashlib.sha1((value + s).encode('utf-8')).hexdigest()
-
-
-def mksecret(length):
-    return ''.join(random.choice(ascii_letters + digits) for x in range(length))
 
 
 class Bloomfilter:
@@ -100,11 +89,6 @@ class Bloomfilter:
         for i in self.get_probes(key):
             self.array[i//8] |= 2 ** (i%8)
         self.elements += 1
-
-    @property
-    def density(self):
-        c = ''.join(format(x, '08b') for x in self.array)
-        return c.count('1') / len(c)
 
     def __contains__(self, key):
         return all(self.array[i//8] & (2 ** (i%8)) for i in self.get_probes(key))
