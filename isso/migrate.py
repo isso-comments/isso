@@ -74,7 +74,7 @@ def disqus(db, xmlfile):
         res[post.find('%sthread' % ns).attrib.get(dsq + 'id')].append(item)
 
     num = len(tree.findall('%sthread' % ns))
-    cols = int(os.popen('stty size', 'r').read().split()[1])
+    cols = int((os.popen('stty size', 'r').read() or "25 80").split()[1])
 
     for i, thread in enumerate(tree.findall('%sthread' % ns)):
 
