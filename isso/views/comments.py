@@ -21,8 +21,8 @@ from isso.utils.crypto import pbkdf2
 from isso.views import requires
 
 
-def md5(text):
-    return hashlib.md5(text.encode('utf-8')).hexdigest()
+def sha1(text):
+    return hashlib.sha1(text.encode('utf-8')).hexdigest()
 
 
 class JSON(Response):
@@ -166,7 +166,7 @@ class API(object):
         self.signal("comments.new:after-save", thread, rv)
 
         cookie = functools.partial(dump_cookie,
-            value=self.isso.sign([rv["id"], md5(rv["text"])]),
+            value=self.isso.sign([rv["id"], sha1(rv["text"])]),
             max_age=self.conf.getint('max-age'))
 
         rv["text"] = markdown(rv["text"])
@@ -211,7 +211,7 @@ class API(object):
             raise Forbidden
 
         # verify checksum, mallory might skip cookie deletion when he deletes a comment
-        if rv[1] != md5(self.comments.get(id)["text"]):
+        if rv[1] != sha1(self.comments.get(id)["text"]):
             raise Forbidden
 
         data = request.get_json()
@@ -233,7 +233,7 @@ class API(object):
         self.signal("comments.edit", rv)
 
         cookie = functools.partial(dump_cookie,
-                value=self.isso.sign([rv["id"], md5(rv["text"])]),
+                value=self.isso.sign([rv["id"], sha1(rv["text"])]),
                 max_age=self.conf.getint('max-age'))
 
         rv["text"] = markdown(rv["text"])
@@ -255,7 +255,7 @@ class API(object):
                 raise Forbidden
 
             # verify checksum, mallory might skip cookie deletion when he deletes a comment
-            if rv[1] != md5(self.comments.get(id)["text"]):
+            if rv[1] != sha1(self.comments.get(id)["text"]):
                 raise Forbidden
 
         item = self.comments.get(id)
