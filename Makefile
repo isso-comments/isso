@@ -12,3 +12,7 @@ site:
 	cd docs/ && sphinx-build -E -b dirhtml -a . _build
 	scss docs/_static/css/site.scss docs/_build/_static/css/site.css
 
+coverage:
+	nosetests --with-doctest --with-doctest-ignore-unicode --with-coverage \
+	          --cover-package=isso --cover-html isso/ specs/
+
