@@ -8,7 +8,7 @@ werkzeug = pkg_resources.get_distribution("werkzeug")
 import json
 import hashlib
 
-from werkzeug.wrappers import Request
+from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import BadRequest
 
 try:
@@ -110,6 +110,14 @@ class JSONRequest(Request):
             return json.loads(self.get_data(as_text=True))
         except ValueError:
             raise BadRequest('Unable to read JSON request')
+
+
+class JSONResponse(Response):
+
+    def __init__(self, obj, *args, **kwargs):
+        kwargs["content_type"] = "application/json"
+        return super(JSONResponse, self).__init__(
+            json.dumps(obj).encode("utf-8"), *args, **kwargs)
 
 
 def markdown(text):

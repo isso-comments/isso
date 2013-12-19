@@ -16,19 +16,13 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from isso.compat import text_type as str
 
 from isso import utils, local
-from isso.utils import http, parse, markdown
+from isso.utils import http, parse, markdown, JSONResponse as JSON
 from isso.utils.crypto import pbkdf2
 from isso.views import requires
 
 
 def sha1(text):
     return hashlib.sha1(text.encode('utf-8')).hexdigest()
-
-
-class JSON(Response):
-
-    def __init__(self, *args):
-        return super(JSON, self).__init__(*args, content_type='application/json')
 
 
 def xhr(func):
@@ -180,7 +174,7 @@ class API(object):
         # success!
         self.signal("comments.new:finish", thread, rv)
 
-        resp = JSON(json.dumps(rv), 202 if rv["mode"] == 2 else 201)
+        resp = JSON(rv, 202 if rv["mode"] == 2 else 201)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
@@ -197,7 +191,7 @@ class API(object):
         if request.args.get('plain', '0') == '0':
             rv['text'] = markdown(rv['text'])
 
-        return Response(json.dumps(rv), 200, content_type='application/json')
+        return JSON(rv, 200)
 
     @xhr
     def edit(self, environ, request, id):
@@ -238,7 +232,7 @@ class API(object):
 
         rv["text"] = markdown(rv["text"])
 
-        resp = JSON(json.dumps(rv), 200)
+        resp = JSON(rv, 200)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
@@ -274,7 +268,7 @@ class API(object):
 
         self.signal("comments.delete", id)
 
-        resp = JSON(json.dumps(rv), 200)
+        resp = JSON(rv, 200)
         cookie = functools.partial(dump_cookie, expires=0, max_age=0)
         resp.headers.add("Set-Cookie", cookie(str(id)))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
@@ -344,19 +338,19 @@ class API(object):
             for item in rv:
                 item['text'] = markdown(item['text'])
 
-        return JSON(json.dumps(rv), 200)
+        return JSON(rv, 200)
 
     @xhr
     def like(self, environ, request, id):
 
         nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
-        return Response(json.dumps(nv), 200)
+        return JSON(nv, 200)
 
     @xhr
     def dislike(self, environ, request, id):
 
         nv = self.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
-        return Response(json.dumps(nv), 200)
+        return JSON(nv, 200)
 
     @requires(str, 'uri')
     def count(self, environ, request, uri):
@@ -366,7 +360,7 @@ class API(object):
         if rv == 0:
             raise NotFound
 
-        return JSON(json.dumps(rv), 200)
+        return JSON(rv, 200)
 
     def checkip(self, env, req):
         return Response(utils.anonymize(str(req.remote_addr)), 200)
