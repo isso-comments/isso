@@ -219,6 +219,7 @@ class TestComments(unittest.TestCase):
         b = loads(b.data)
         c = loads(c.data)
 
+        assert isinstance(int(a['hash'], 16), int)
         assert a['hash'] != '192.168.1.1'
         assert a['hash'] == b['hash']
         assert a['hash'] != c['hash']

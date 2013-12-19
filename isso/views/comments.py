@@ -170,7 +170,7 @@ class API(object):
             max_age=self.conf.getint('max-age'))
 
         rv["text"] = markdown(rv["text"])
-        rv["hash"] = str(pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6))
+        rv["hash"] = pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6).decode("utf-8")
 
         self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
 
@@ -332,7 +332,7 @@ class API(object):
             val = self.cache.get('hash', key.encode('utf-8'))
 
             if val is None:
-                val = str(pbkdf2(key, self.isso.salt, 1000, 6))
+                val = pbkdf2(key, self.isso.salt, 1000, 6).decode("utf-8")
                 self.cache.set('hash', key.encode('utf-8'), val)
 
             item['hash'] = val
