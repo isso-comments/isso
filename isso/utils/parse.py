@@ -14,7 +14,7 @@ except ImportError:
 
 import html5lib
 
-from isso.compat import map, filter, PY2K
+from isso.compat import map, filter, PY2K, string_types, text_type as str
 
 if PY2K:  # http://bugs.python.org/issue12984
     from xml.dom.minidom import NamedNodeMap
@@ -66,6 +66,9 @@ def host(name):
     >>> host("https://example.tld:80/")
     ('example.tld', 80, True)
     """
+
+    if not (isinstance(name, string_types)):
+        name = str(name)
 
     if not name.startswith(('http://', 'https://')):
         name = 'http://' + name
