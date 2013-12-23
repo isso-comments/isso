@@ -57,8 +57,11 @@ class SMTP(object):
             uwsgi.spooler = spooler
 
     def __enter__(self):
-        klass = (smtplib.SMTP_SSL if self.conf.getboolean('ssl') else smtplib.SMTP)
+        klass = (smtplib.SMTP_SSL if self.conf.get('security') == 'ssl' else smtplib.SMTP)
         self.client = klass(host=self.conf.get('host'), port=self.conf.getint('port'))
+
+        if self.conf.get('security') == 'starttls':
+            self.client.starttls();
 
         if self.conf.get('username') and self.conf.get('password'):
             self.client.login(self.conf.get('username'),
