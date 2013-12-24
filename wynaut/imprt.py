@@ -5,6 +5,7 @@ from __future__ import division
 import sys
 import os
 import time
+import tempfile
 import textwrap
 
 from time import mktime, strptime
@@ -16,7 +17,17 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 from werkzeug.utils import cached_property
+
+from isso.db import SQLite3
+from isso.core import Config
+
+from wynaut import get_parser
 
 
 class Import(object):
@@ -141,3 +152,33 @@ class Disqus(Import):
             remap[dsq_id] = rv["id"]
 
         self._posts.update(set(remap.keys()))
+
+
+def main():
+
+    parser = get_parser("import Disqus XML export")
+    parser.add_argument("dump", metavar="FILE")
+    parser.add_argument("-y", "--yes", dest="yes", action="store_true",
+        help="always confirm actions")
+    parser.add_argument("-n", "--dry-run", dest="dryrun", action="store_true",
+        help="perform a trial run with no changes made")
+    parser.add_argument("-f", "--from", dest="type", choices=["disqus", "csv"])
+
+    args = parser.parse_args()
+    conf = Config.load(args.conf)
+
+    xxx = tempfile.NamedTemporaryFile()
+    dbpath = conf.get("general", "dbpath") if not args.dryrun else xxx.name
+
+    if args.type == "disqus":
+        importer = Disqus(args.dump)
+    elif args.type == "csv":
+        pass
+
+    db = SQLite3(dbpath, conf)
+
+    if db.execute("SELECT * FROM comments").fetchone():
+        if not args.yes and input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+            raise SystemExit("Abort.")
+
+    importer.migrate(db)
