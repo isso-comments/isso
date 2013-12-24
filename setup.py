@@ -40,7 +40,8 @@ setup(
     entry_points={
         'console_scripts': [
             'isso = isso:main',
-            'wynaut-import = wynaut.imprt:main'
+            'wynaut-import = wynaut.imprt:main',
+            'wynaut-export = wynaut.export:main'
         ],
     },
 )
