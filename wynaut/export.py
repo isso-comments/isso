@@ -49,14 +49,18 @@ def csv(db, threads=True, comments=False):
 
     fp.seek(0)
     for line in fp:
-        sys.stdout.write(line.encode("utf-8"))
+        try:
+            sys.stdout.write(line.encode("utf-8"))
+            sys.stdout.flush()
+        except IOError:  # head(1) reads from stdout then closes it.
+            break
 
 
 def main():
 
     parser = get_parser("export to various formats")
     parser.add_argument("-t", "--to", dest="type", choices=["csv"],
-        help="export format")
+        help="export format", required=True)
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--threads", action="store_true",
