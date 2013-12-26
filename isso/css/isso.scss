@@ -214,5 +214,11 @@ a {
         }
       }
     }
+
+    > .notification-section {
+        display: none;
+        padding-bottom: 10px;
+      }
+
   }
 }

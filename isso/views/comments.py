@@ -52,10 +52,10 @@ def xhr(func):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email',
-                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
+                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'notification'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'notification'])
 
     VIEWS = [
         ('fetch',   ('GET', '/')),
@@ -123,6 +123,7 @@ class API(object):
 
         valid, reason = API.verify(data)
         if not valid:
+            print valid, "VALID"
             return BadRequest(reason)
 
         for field in ("author", "email"):
@@ -134,6 +135,7 @@ class API(object):
 
         with self.isso.lock:
             if uri not in self.threads:
+                print "URI", uri, local('origin')
                 with http.curl('GET', local("origin"), uri) as resp:
                     if resp and resp.status == 200:
                         uri, title = parse.thread(resp.read(), id=uri)

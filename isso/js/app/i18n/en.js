@@ -3,6 +3,7 @@ define({
     "postbox-author": "Name (optional)",
     "postbox-email": "E-mail (optional)",
     "postbox-submit": "Submit",
+    "postbox-notification": "Subscribe to email notification of replies",
 
     "num-comments": "One Comment\n{{ n }} Comments",
     "no-comments": "No Comments Yet",

@@ -34,6 +34,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 .then(function(rv) {
                     $(".avatar svg", el).replace(lib.identicons.generate(rv, 4, 48));
                 });
+                $(".notification-section").style.display = "block";
             }, 200);
         }, false);
 
@@ -63,7 +64,8 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 author: $("[name=author]", el).value || null,
                 email: $("[name=email]", el).value || null,
                 text: $("textarea", el).value,
-                parent: parent || null
+                parent: parent || null,
+                notification: $("[name=notification]", el).checked ? 1 : 0,
             }).then(function(comment) {
                 $("[name=author]", el).value = "";
                 $("[name=email]", el).value = "";

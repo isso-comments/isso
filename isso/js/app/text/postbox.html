@@ -6,6 +6,7 @@
         <div class="textarea-wrapper">
             <textarea name="text" rows="2" placeholder="{{ i18n-postbox-text }}"></textarea>
         </div>
+
         <section class="auth-section">
             <p class="input-wrapper">
                 <input type="text" name="author" placeholder="{{ i18n-postbox-author }}"/>
@@ -16,6 +17,9 @@
             <p class="post-action">
                 <input type="submit" value="{{ i18n-postbox-submit }}"/>
             </p>
+        </section>
+        <section class="notification-section">
+            <label><input type="checkbox" name="notification"/> {{ i18n-postbox-notification }}</label>
         </section>
     </div>
 </div>
