@@ -41,7 +41,8 @@ setup(
         'console_scripts': [
             'isso = isso:main',
             'wynaut-import = wynaut.imprt:main',
-            'wynaut-export = wynaut.export:main'
+            'wynaut-export = wynaut.export:main',
+            'wynaut-comments = wynaut.comments:main'
         ],
     },
 )
