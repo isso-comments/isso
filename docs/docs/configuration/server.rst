@@ -10,7 +10,7 @@ booleans and strings.  Below is a basic example:
     dbpath = /var/lib/isso/comments.db
     host = https://example.tld/
     [server]
-    port = 1234
+    listen = http://localhost:1234/
 
 To use your configuration file with Isso, append ``-c /path/to/cfg`` to the
 executable or run Isso with an environment variable:
