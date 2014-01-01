@@ -157,7 +157,7 @@ also can moderate (=activate or delete) comments. Don't forget to configure
     password =
     host = localhost
     port = 465
-    ssl = on
+    security = ssl
     to =
     from =
 
@@ -174,10 +174,10 @@ host
 port
     SMTP port
 
-ssl
-    use SSL to connect to the server. Python probably does not validate the
-    certificate. Needs research, though. But you should use a dedicated
-    email account anyways.
+security
+    use a secure connection to the server, possible values: *none*, *starttls*
+    or *ssl*. Python 2.X probably does not validate certificates (needs
+    research). But you should use a dedicated email account anyways.
 
 to
     recipient address, e.g. your email address

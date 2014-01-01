@@ -148,6 +148,8 @@ class Config:
                 logger.warn("no such option: [%s] %s", *item)
                 if item in (("server", "host"), ("server", "port")):
                     logger.warn("use `listen = http://$host:$port` instead")
+                if item == ("smtp", "ssl"):
+                    logger.warn("use `security = none | starttls | ssl` instead")
 
         if rv.get("smtp", "username") and not rv.get("general", "notify"):
             logger.warn(("SMTP is no longer enabled by default, add "
