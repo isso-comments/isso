@@ -39,7 +39,7 @@ Compile SCSS to CSS:
 Install JS components:
 
     ~> cd isso/js
-    ~> bower install almond q requirejs requirejs-domready requirejs-text
+    ~> bower install almond requirejs requirejs-domready requirejs-text
 
 
 Integration

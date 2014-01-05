@@ -1,41 +1,14 @@
-define(["q"], function(Q) {
+define(["app/lib/promise"], function(Q) {
 
     "use strict";
-
-    Q.stopUnhandledRejectionTracking();
-    Q.longStackSupport = true;
 
     var salt = "Eech7co8Ohloopo9Ol6baimi",
         location = window.location.pathname;
 
-    var rules = {
-        "/": [200, 404],
-        "/new": [201, 202],
-        "/id/\\d+": [200, 403, 404],
-        "/id/\\d+/(like/dislike)": [200],
-        "/count": [200]
-    };
-
-    /*
-     * Detect Isso API endpoint. There are typically two use cases:
-     *
-     *   1. use minified, single-file JavaScript. The browser interprets
-     *      scripts sequentially, thus we can safely use the last script
-     *      tag. Then, we chop off some characters -- /js/embed.min.s --
-     *      and we're done.
-     *
-     *      If the script is not served by Isso directly, a custom data
-     *      attribute can be used to override the default detection
-     *      mechanism:
-     *
-     *      .. code-block:: html
-     *
-     *          <script data-isso="http://example.tld/path/" src="/.../embed.min.js"></script>
-     */
-
     var script, endpoint,
         js = document.getElementsByTagName("script");
 
+    // prefer `data-isso="//host/api/endpoint"` if provided
     for (var i = 0; i < js.length; i++) {
         if (js[i].hasAttribute("data-isso")) {
             endpoint = js[i].getAttribute("data-isso");
@@ -43,6 +16,7 @@ define(["q"], function(Q) {
         }
     }
 
+    // if no async-script is embedded, use the last script tag of `js`
     if (! endpoint) {
         for (i = 0; i < js.length; i++) {
             if (js[i].getAttribute("async") || js[i].getAttribute("defer")) {
@@ -61,25 +35,19 @@ define(["q"], function(Q) {
         endpoint = endpoint.substring(0, endpoint.length - 1);
     }
 
-    var curl = function(method, url, data) {
+    var curl = function(method, url, data, resolve, reject) {
 
         var xhr = new XMLHttpRequest();
-        var response = Q.defer();
 
         function onload() {
 
-            var rule = url.replace(endpoint, "").split("?", 1)[0];
             var cookie = xhr.getResponseHeader("X-Set-Cookie");
 
             if (cookie && cookie.match(/^isso-/)) {
                 document.cookie = cookie;
             }
 
-            if (rule in rules && rules[rule].indexOf(xhr.status) === -1) {
-                response.reject(xhr.responseText);
-            } else {
-                response.resolve({status: xhr.status, body: xhr.responseText});
-            }
+            resolve({status: xhr.status, body: xhr.responseText});
         }
 
         try {
@@ -93,11 +61,10 @@ define(["q"], function(Q) {
                 }
             };
         } catch (exception) {
-            response.reject(exception.message);
+            (reject || console.log)(exception.message);
         }
 
         xhr.send(data);
-        return response.promise;
     };
 
     var qs = function(params) {
@@ -112,70 +79,98 @@ define(["q"], function(Q) {
     };
 
     var create = function(tid, data) {
-        return curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data)).then(
-            function (rv) { return JSON.parse(rv.body); });
+        var deferred = Q.defer();
+        curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data),
+            function (rv) { deferred.resolve(JSON.parse(rv.body)); });
+        return deferred.promise;
     };
 
     var modify = function(id, data) {
-        return curl("PUT", endpoint + "/id/" + id, JSON.stringify(data)).then(
-            function (rv) { return JSON.parse(rv.body); });
+        var deferred = Q.defer();
+        curl("PUT", endpoint + "/id/" + id, JSON.stringify(data), function (rv) {
+            deferred.resolve(JSON.parse(rv.body));
+        });
+        return deferred.promise;
     };
 
     var remove = function(id) {
-        return curl("DELETE", endpoint + "/id/" + id, null).then(function(rv) {
+        var deferred = Q.defer();
+        curl("DELETE", endpoint + "/id/" + id, null, function(rv) {
             if (rv.status === 403) {
-                throw "Not authorized to remove this comment!";
+                deferred.reject("Not authorized to remove this comment!");
+            } else if (rv.status === 200) {
+                deferred.resolve(JSON.parse(rv.body) === null);
+            } else {
+                deferred.reject(rv.body);
             }
-
-            return JSON.parse(rv.body) === null;
         });
+        return deferred.promise;
     };
 
     var view = function(id, plain) {
-        return curl("GET", endpoint + "/id/" + id + "?" + qs({plain: plain}), null).then(function (rv) {
-            return JSON.parse(rv.body);
-        });
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/id/" + id + "?" + qs({plain: plain}), null,
+            function(rv) { deferred.resolve(JSON.parse(rv.body)); });
+        return deferred.promise;
     };
 
     var fetch = function(tid) {
-
-        return curl("GET", endpoint + "/?" + qs({uri: tid || location}), null).then(function (rv) {
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/?" + qs({uri: tid || location}), null, function(rv) {
             if (rv.status === 200) {
-                return JSON.parse(rv.body);
+                deferred.resolve(JSON.parse(rv.body));
+            } else if (rv.status === 404) {
+                deferred.resolve([]);
             } else {
-                return [];
+                deferred.reject(rv.body);
             }
         });
+        return deferred.promise;
     };
 
     var count = function(tid) {
-        return curl("GET", endpoint + "/count?" + qs({uri: tid || location}), null).then(function(rv) {
-            return JSON.parse(rv.body);
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/count?" + qs({uri: tid || location}), null, function(rv) {
+            if (rv.status === 200) {
+                deferred.resolve(JSON.parse(rv.body));
+            } else if (rv.status === 404) {
+                deferred.resolve(0);
+            } else {
+                deferred.reject(rv.body);
+            }
         });
+        return deferred.promise;
     };
 
     var like = function(id) {
-        return curl("POST", endpoint + "/id/" + id + "/like", null).then(function(rv) {
-            return JSON.parse(rv.body);
-        });
+        var deferred = Q.defer();
+        curl("POST", endpoint + "/id/" + id + "/like", null,
+            function(rv) { deferred.resolve(JSON.parse(rv.body)); });
+        return deferred.promise;
     };
 
     var dislike = function(id) {
-        return curl("POST", endpoint + "/id/" + id + "/dislike", null).then(function(rv) {
-            return JSON.parse(rv.body);
-        });
+        var deferred = Q.defer();
+        curl("POST", endpoint + "/id/" + id + "/dislike", null,
+            function(rv) { deferred.resolve(JSON.parse(rv.body)); });
+        return deferred.promise;
     };
 
     var remote_addr = function() {
-        return curl("GET", endpoint + "/check-ip", null).then(function(rv) {
-                return rv.body;
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/check-ip", null, function(rv) {
+            if (rv.status === 200) {
+                deferred.resolve(rv.body);
+            } else {
+                deferred.reject(rv.body);
+            }
         });
+        return deferred.promise;
     };
 
     return {
         endpoint: endpoint,
         salt: salt,
-
         remote_addr: remote_addr,
 
         create: create,

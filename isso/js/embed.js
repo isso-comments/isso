@@ -26,23 +26,25 @@ require(["ready", "app/config", "app/api", "app/isso", "app/count", "app/dom", "
         $("#isso-thread").append(new isso.Postbox(null));
         $("#isso-thread").append('<div id="isso-root"></div>');
 
-        api.fetch($("#isso-thread").getAttribute("data-isso-id")).then(function(rv) {
+        api.fetch($("#isso-thread").getAttribute("data-isso-id")).then(
+            function(rv) {
+                if (! rv.length) {
+                    $("#isso-thread > h4").textContent = Mark.up("{{ i18n-no-comments }}");
+                    return;
+                }
 
-            if (! rv.length) {
-                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-no-comments }}");
-                return;
-            }
+                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv.length});
+                for (var i=0; i < rv.length; i++) {
+                    isso.insert(rv[i], false);
+                }
 
-            $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv.length});
-            for (var i=0; i < rv.length; i++) {
-                isso.insert(rv[i], false);
+                if (window.location.hash.length > 0) {
+                    $(window.location.hash).scrollIntoView();
+                }
+            },
+            function(err) {
+                console.log(err);
             }
-        }).fail(function(err) {
-            console.log(err);
-        }).done(function() {
-            if (window.location.hash.length > 0) {
-                $(window.location.hash).scrollIntoView();
-            }
-        });
+        );
     });
 });
