@@ -2,6 +2,8 @@ define(function() {
 
     "use strict";
 
+    var stderr = function(text) { console.log(text); };
+
     var Promise = function() {
         this.success = [];
         this.errors = [];
@@ -12,7 +14,7 @@ define(function() {
         if (onError) {
             this.errors.push(onError);
         } else {
-            this.errors.push(console.log);
+            this.errors.push(stderr);
         }
     };
 

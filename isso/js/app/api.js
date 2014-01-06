@@ -47,7 +47,11 @@ define(["app/lib/promise"], function(Q) {
                 document.cookie = cookie;
             }
 
-            resolve({status: xhr.status, body: xhr.responseText});
+            if (xhr.status >= 500) {
+                reject(xhr.body);
+            } else {
+                resolve({status: xhr.status, body: xhr.responseText});
+            }
         }
 
         try {
@@ -88,7 +92,13 @@ define(["app/lib/promise"], function(Q) {
     var modify = function(id, data) {
         var deferred = Q.defer();
         curl("PUT", endpoint + "/id/" + id, JSON.stringify(data), function (rv) {
-            deferred.resolve(JSON.parse(rv.body));
+            if (rv.status === 403) {
+                deferred.reject("Not authorized to modify this comment!");
+            } else if (rv.status === 200) {
+                deferred.resolve(JSON.parse(rv.body));
+            } else {
+                deferred.reject(rv.body);
+            }
         });
         return deferred.promise;
     };
