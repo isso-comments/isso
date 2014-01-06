@@ -1,12 +1,10 @@
 define({
-    "postbox-text" : "Комментировать здесь  (миниум 3 символа)",
-    "postbox-author" : "Имя (необязательно)",
-    "postbox-email" : "Email (необязательно)",
+    "postbox-text": "Комментировать здесь  (миниум 3 символа)",
+    "postbox-author": "Имя (необязательно)",
+    "postbox-email": "Email (необязательно)",
     "postbox-submit": "Отправить",
-
     "num-comments": "1 Комментарий\n{{ n }} Комментарии",
     "no-comments": "Нет Комментарев",
-
     "comment-reply": "Ответить",
     "comment-edit": "Правка",
     "comment-save": "Сохранить",
@@ -17,7 +15,6 @@ define({
     "comment-deleted": "Удалить комментарий",
     "comment-queued": "Комментарий должен быть разблокирован",
     "comment-anonymous": "Аномимый",
-
     "date-now": "Сейчас",
     "date-minute": "Минут назад\n{{ n }} минут",
     "date-hour": "Час назад\n{{ n }} часов",
