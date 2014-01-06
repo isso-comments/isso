@@ -1,0 +1,13 @@
+#!/usr/bin/env fish
+
+set -g TRANSIFEX ".tx/js/"
+set -g JS "isso/js/app/i18n/%s.js"
+
+# fetch latest translations to .tx/<ressource>/<lang>
+tx pull -a
+
+for lang in (ls $TRANSIFEX)
+    printf "define(" > (printf $JS $lang)
+    cat .tx/js/$lang >> (printf $JS $lang)
+    printf ");\n" >> (printf $JS $lang)
+end
