@@ -4,7 +4,7 @@
 
   Inspired by http://codepen.io/gschier/pen/GLvAy
 */
-define(["q"], function(Q) {
+define(["app/lib/promise"], function(Q) {
 
     "use strict";
 

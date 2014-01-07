@@ -1,4 +1,4 @@
-define(["q", "app/lib/sha1"], function(Q, sha1) {
+define(["app/lib/promise", "app/lib/sha1"], function(Q, sha1) {
     /*
      * JavaScript implementation of Password-Based Key Derivation Function 2
      * (PBKDF2) as defined in RFC 2898.
@@ -191,10 +191,10 @@ define(["q", "app/lib/sha1"], function(Q, sha1) {
 
         Q.when(text, function(text) {
             var pbkdf2 = new PBKDF2(text, salt, iterations, size);
-            pbkdf2.deriveKey(function(bla) {}, function(rv) {
+            pbkdf2.deriveKey(function() {}, function(rv) {
                 deferred.resolve(rv);
             });
-        })
+        });
 
         return deferred.promise;
     }
