@@ -54,7 +54,7 @@ class TestComments(unittest.TestCase):
         rv = loads(r.data)
 
         assert rv['id'] == 1
-        assert rv['text'] == '<p>Lorem ipsum ...</p>\n'
+        assert rv['text'] == '<p>Lorem ipsum ...</p>'
 
     def testCreate(self):
 
@@ -66,7 +66,7 @@ class TestComments(unittest.TestCase):
         rv = loads(rv.data)
 
         assert rv["mode"] == 1
-        assert rv["text"] == '<p>Lorem ipsum ...</p>\n'
+        assert rv["text"] == '<p>Lorem ipsum ...</p>'
 
     def textCreateWithNonAsciiText(self):
 
@@ -78,7 +78,7 @@ class TestComments(unittest.TestCase):
         rv = loads(rv.data)
 
         assert rv["mode"] == 1
-        assert rv["text"] == '<p>Здравствуй, мир!</p>\n'
+        assert rv["text"] == '<p>Здравствуй, мир!</p>'
 
     def testCreateMultiple(self):
 
@@ -262,10 +262,10 @@ class TestComments(unittest.TestCase):
         self.post('/new?uri=test', data=json.dumps({"text": "Tpyo"}))
 
         self.put('/id/1', data=json.dumps({"text": "Tyop"}))
-        assert loads(self.get('/id/1').data)["text"] == "<p>Tyop</p>\n"
+        assert loads(self.get('/id/1').data)["text"] == "<p>Tyop</p>"
 
         self.put('/id/1', data=json.dumps({"text": "Typo"}))
-        assert loads(self.get('/id/1').data)["text"] == "<p>Typo</p>\n"
+        assert loads(self.get('/id/1').data)["text"] == "<p>Typo</p>"
 
     def testDeleteCommentRemovesThread(self):
 
