@@ -121,9 +121,23 @@ class JSONResponse(Response):
 
 
 def markdown(text):
-    return misaka.html(text, extensions= misaka.EXT_STRIKETHROUGH
-        | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK
-        | misaka.HTML_SKIP_HTML  | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK)
+    """Convert Markdown to (safe) HTML.
+
+    >>> markdown("*Ohai!*") # doctest: +IGNORE_UNICODE
+    '<p><em>Ohai!</em></p>'
+    >>> markdown("<script>alert('Onoe')</script>") # doctest: +IGNORE_UNICODE
+    '<p>alert(&#39;Onoe&#39;)</p>'
+    >>> markdown("http://example.org/ and sms:+1234567890") # doctest: +IGNORE_UNICODE
+    '<p><a href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>'
+    """
+
+    # ~~strike through~~, sub script: 2^(nd) and http://example.org/ auto-link
+    exts = misaka.EXT_STRIKETHROUGH | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK
+
+    # remove HTML tags, skip <img> (for now) and only render "safe" protocols
+    html = misaka.HTML_SKIP_HTML | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK
+
+    return misaka.html(text, extensions=exts, render_flags=html).strip("\n")
 
 
 def origin(hosts):
