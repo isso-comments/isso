@@ -2,7 +2,9 @@ Server Configuration
 ====================
 
 The Isso configuration file is an `INI-style`__ textfile. It reads integers,
-booleans and strings.  Below is a basic example:
+booleans, strings and lists. Here's the default isso configuration:
+:download:`isso.example.cfg </isso.example.cfg>`. A basic configuration from
+scratch looks like this:
 
 .. code-block:: ini
 

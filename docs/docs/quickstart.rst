@@ -2,20 +2,25 @@ Quickstart
 ==========
 
 Assuming you have successfully :doc:`installed <install>` Isso, here's
-a quickstart quide that covers common setups.
+a quickstart quide that covers common setups. Sections covered:
+
+.. contents::
+    :local:
+    :depth: 1
 
 
 Configuration
 -------------
 
 You must provide a custom configuration. Most default parameters are useful for
-development, not persistence. Two most important options are `dbpath` to set
-the location of your database and `host` which is your website:
+development, not persistence. The two most important options are `dbpath` to
+set the location of your database and your website's name `host` where you want
+to comment on:
 
 .. code-block:: ini
 
     [general]
-    ; database location, check permissions
+    ; database location, check permissions, created if not exists
     dbpath = /var/lib/isso/comments.db
     ; your website or blog (not the location of Isso!)
     host = http://example.tld/
@@ -51,6 +56,8 @@ URLs for activation and deletion:
     [smtp]
     ; SMTP settings
 
+For more details, see :doc:`server <configuration/server>` and
+:doc:`client <configuration/client>` configuration.
 
 Migration
 ---------
@@ -107,6 +114,9 @@ configuration looks like this:
         }
     }
 
+Integration
+-----------
+
 Now, you embed Isso to your website:
 
 .. code-block:: html
@@ -129,13 +139,13 @@ a comment to see if the setup works. If not, see :doc:`troubleshooting`.
 Deployment
 ----------
 
-Isso ships with a built-in web server, which is useful for the initial setup.
-But it is not recommended to use the built-in web server for production. A few
-WSGI servers are supported out-of-the-box:
+Isso ships with a built-in web server, which is useful for the initial setup
+and may be used in production for low-traffic sites (up to 20 requests per
+second). It is recommended to use a "real" WSGI server to run Isso, e.g:
 
-  * gevent_, coroutine-based network library
-  * uWSGI_, full-featured uWSGI server
-  * gunicorn_, Python WSGI HTTP Server for UNIX
+* gevent_, coroutine-based network library
+* uWSGI_, full-featured uWSGI server
+* gunicorn_, Python WSGI HTTP Server for UNIX
 
 .. _gevent: http://www.gevent.org/
 .. _uWSGI: http://uwsgi-docs.readthedocs.org/en/latest/
