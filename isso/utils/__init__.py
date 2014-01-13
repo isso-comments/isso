@@ -14,7 +14,6 @@ try:
 except ImportError:
     from HTMLParser import HTMLParser, HTMLParseError
 
-from werkzeug.utils import escape
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import BadRequest
 
@@ -22,8 +21,6 @@ try:
     import ipaddress
 except ImportError:
     import ipaddr as ipaddress
-
-import misaka
 
 
 def anonymize(remote_addr):
@@ -125,86 +122,6 @@ class JSONResponse(Response):
         kwargs["content_type"] = "application/json"
         return super(JSONResponse, self).__init__(
             json.dumps(obj).encode("utf-8"), *args, **kwargs)
-
-
-class Sanitizer(HTMLParser, object):
-    """Sanitize HTML output: remove unsafe HTML tags such as iframe or
-    script based on a whitelist of allowed tags."""
-
-    safe = set([
-        "p", "a", "pre", "blockquote",
-        "h1", "h2", "h3", "h4", "h5", "h6",
-        "em", "sub", "sup", "del", "ins", "math",
-        "dl", "ol", "ul", "li"])
-
-    @classmethod
-    def format(cls, attrs):
-        res = []
-        for key, value in attrs:
-            if value is None:
-                res.append(key)
-            else:
-                res.append(u'{0}="{1}"'.format(key, escape(value)))
-        return ' '.join(res)
-
-    def __init__(self, html):
-        super(Sanitizer, self).__init__()
-        self.result = io.StringIO()
-        self.feed(html)
-        self.result.seek(0)
-
-    def handle_starttag(self, tag, attrs):
-        if tag in Sanitizer.safe:
-            self.result.write(u"<" + tag)
-            if attrs:
-                self.result.write(" " + Sanitizer.format(attrs))
-            self.result.write(u">")
-
-    def handle_data(self, data):
-        self.result.write(data)
-
-    def handle_endtag(self, tag):
-        if tag in Sanitizer.safe:
-            self.result.write(u"</" + tag + ">")
-
-    def handle_startendtag(self, tag, attrs):
-        if tag in Sanitizer.safe:
-            self.result.write(u"<" + tag)
-            if attrs:
-                self.result.write(" " + Sanitizer.format(attrs))
-            self.result.write(u"/>")
-
-    def handle_entityref(self, name):
-        self.result.write(u'&' + name + ';')
-
-    def handle_charref(self, char):
-        self.result.write(u'&#' + char + ';')
-
-
-def markdown(text):
-    """Convert Markdown to (safe) HTML.
-
-    >>> markdown("*Ohai!*") # doctest: +IGNORE_UNICODE
-    '<p><em>Ohai!</em></p>'
-    >>> markdown("<em>Hi</em>") # doctest: +IGNORE_UNICODE
-    '<p><em>Hi</em></p>'
-    >>> markdown("<script>alert('Onoe')</script>") # doctest: +IGNORE_UNICODE
-    "<p>alert('Onoe')</p>"
-    >>> markdown("http://example.org/ and sms:+1234567890") # doctest: +IGNORE_UNICODE
-    '<p><a href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>'
-    """
-
-    # ~~strike through~~, sub script: 2^(nd) and http://example.org/ auto-link
-    exts = misaka.EXT_STRIKETHROUGH | misaka.EXT_SUPERSCRIPT | misaka.EXT_AUTOLINK
-
-    # remove HTML tags, skip <img> (for now) and only render "safe" protocols
-    html = misaka.HTML_SKIP_STYLE | misaka.HTML_SKIP_IMAGES | misaka.HTML_SAFELINK
-
-    rv = misaka.html(text, extensions=exts, render_flags=html).rstrip("\n")
-    if not rv.startswith("<p>") and not rv.endswith("</p>"):
-        rv = "<p>" + rv + "</p>"
-
-    return Sanitizer(rv).result.read()
 
 
 def origin(hosts):

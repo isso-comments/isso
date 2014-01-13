@@ -16,7 +16,7 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from isso.compat import text_type as str
 
 from isso import utils, local
-from isso.utils import http, parse, markdown, JSONResponse as JSON
+from isso.utils import http, parse, html, JSONResponse as JSON
 from isso.utils.crypto import pbkdf2
 from isso.views import requires
 
@@ -163,7 +163,7 @@ class API(object):
             value=self.isso.sign([rv["id"], sha1(rv["text"])]),
             max_age=self.conf.getint('max-age'))
 
-        rv["text"] = markdown(rv["text"])
+        rv["text"] = html.markdown(rv["text"])
         rv["hash"] = pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6).decode("utf-8")
 
         self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
@@ -189,7 +189,7 @@ class API(object):
             rv.pop(key)
 
         if request.args.get('plain', '0') == '0':
-            rv['text'] = markdown(rv['text'])
+            rv['text'] = html.markdown(rv['text'])
 
         return JSON(rv, 200)
 
@@ -230,7 +230,7 @@ class API(object):
                 value=self.isso.sign([rv["id"], sha1(rv["text"])]),
                 max_age=self.conf.getint('max-age'))
 
-        rv["text"] = markdown(rv["text"])
+        rv["text"] = html.markdown(rv["text"])
 
         resp = JSON(rv, 200)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
@@ -336,7 +336,7 @@ class API(object):
 
         if request.args.get('plain', '0') == '0':
             for item in rv:
-                item['text'] = markdown(item['text'])
+                item['text'] = html.markdown(item['text'])
 
         return JSON(rv, 200)
 
