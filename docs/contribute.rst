@@ -30,6 +30,20 @@ Report issues
 - **Isso-related issues** – Copy and paste traceback into a ticket and provide
   some details of your usage.
 
+Translations
+------------
+
+Isso supports multiple languages and it is fairly easy to add new translations.
+You can either use the `english translation file`__ or use Transifex_. Contact
+me on IRC (@posativ) if you want to be the main contributor for a language.
+
+You may notice some "weird" newlines in translations -- that's the separator
+for pluralforms_ in the templating engine.
+
+.. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/en.js
+.. _Transifex: https://www.transifex.com/projects/p/isso/
+.. _pluralforms: http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms
+
 Where I need help.
 ------------------
 

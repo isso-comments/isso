@@ -3,10 +3,8 @@ define({
     "postbox-author": "Nome (opzionale)",
     "postbox-email": "E-mail (opzionale)",
     "postbox-submit": "Invia",
-
     "num-comments": "Un Commento\n{{ n }} Commenti",
     "no-comments": "Ancora Nessun Commento",
-
     "comment-reply": "Rispondi",
     "comment-edit": "Modifica",
     "comment-save": "Salva",
@@ -17,7 +15,6 @@ define({
     "comment-deleted": "Commento eliminato.",
     "comment-queued": "Commento in coda per moderazione.",
     "comment-anonymous": "Anonimo",
-
     "date-now": "poco fa",
     "date-minute": "un minuto fa\n{{ n }} minuti fa",
     "date-hour": "un ora fa\n{{ n }} ore fa",

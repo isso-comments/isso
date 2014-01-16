@@ -1,12 +1,10 @@
 define({
-    "postbox-text" : "Kommentar hier eintippen (mindestens 3 Zeichen)",
-    "postbox-author" : "Name (optional)",
-    "postbox-email" : "Email (optional)",
+    "postbox-text": "Kommentar hier eintippen (mindestens 3 Zeichen)",
+    "postbox-author": "Name (optional)",
+    "postbox-email": "Email (optional)",
     "postbox-submit": "Abschicken",
-
     "num-comments": "1 Kommentar\n{{ n }} Kommentare",
     "no-comments": "Keine Kommentare bis jetzt",
-
     "comment-reply": "Antworten",
     "comment-edit": "Bearbeiten",
     "comment-save": "Speichern",
@@ -17,7 +15,6 @@ define({
     "comment-deleted": "Kommentar gelöscht.",
     "comment-queued": "Kommentar muss noch freigeschaltet werden.",
     "comment-anonymous": "Anonym",
-
     "date-now": "eben jetzt",
     "date-minute": "vor einer Minute\nvor {{ n }} Minuten",
     "date-hour": "vor einer Stunde\nvor {{ n }} Stunden",
