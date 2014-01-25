@@ -132,6 +132,9 @@ Note, that `data-isso` is optional, but when a website includes a script using
 That's it. When you open your website, you should see a commenting form. Leave
 a comment to see if the setup works. If not, see :doc:`troubleshooting`.
 
+
+For further integration, look at :doc:`advanced-integration`.
+
 .. _Nginx: http://nginx.org/
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
