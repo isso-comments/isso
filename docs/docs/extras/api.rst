@@ -174,4 +174,15 @@ Up- and downvote comments
 Get comment count
 -----------------
 
-...
+Counts all publicly visible comments for thread `uri`:
+
+.. code-block:: text
+
+    GET /count?uri=%2Fhello-world%2F
+    2
+    
+uri :
+    URI to count comments for, required.
+
+returns an integer
+    
