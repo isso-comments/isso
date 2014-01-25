@@ -8,7 +8,7 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"
             return msgs[n === 1 ? 0 : 1];
         },
         "fr": function(msgs, n) {
-            return msgs[n > 1 ? 0 : 1]
+            return msgs[n > 1 ? 1 : 0]
         },
         "ru": function(msg, n) {
             if (n % 10 === 1 && n % 100 !== 11) {

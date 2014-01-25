@@ -3,7 +3,7 @@ define({
     "postbox-author": "Nom (optionel)",
     "postbox-email": "Courriel (optionel)",
     "postbox-submit": "Soumettre",
-    "num-comments": "Un commentaire\n{{ n }} commentaires",
+    "num-comments": "{{ n }} commentaire\n{{ n }} commentaires",
     "no-comments": "Aucun commentaire pour l'instant",
     "comment-reply": "Répondre",
     "comment-edit": "Éditer",
