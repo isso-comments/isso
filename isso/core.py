@@ -117,7 +117,7 @@ class Config:
         "reload = off", "profile = off",
         "[smtp]",
         "username = ", "password = ",
-        "host = localhost", "port = 587", "security = tls",
+        "host = localhost", "port = 587", "security = starttls",
         "to = ", "from = ",
         "[guard]",
         "enabled = true",
