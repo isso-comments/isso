@@ -158,8 +158,8 @@ also can moderate (=activate or delete) comments. Don't forget to configure
     username =
     password =
     host = localhost
-    port = 465
-    security = ssl
+    port = 587
+    security = starttls
     to =
     from =
 
