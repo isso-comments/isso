@@ -9,7 +9,7 @@ preferably in the script tag which embeds the JS:
     <script data-isso="/prefix/"
             data-isso-css="true"
             data-isso-lang="ru"
-            data-isso-reply-toself="false"
+            data-isso-reply-to-self="false"
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
