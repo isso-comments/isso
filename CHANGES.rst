@@ -4,7 +4,31 @@ Changelog for Isso
 0.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- fix malicious HTML injection (due to wrong API usage). All unknown/unsafe
+  HTML tags are now removed from the output (`html5lib` 0.99(9) or later) or
+  properly escaped (older `html5lib` versions).
+
+  See 36d702c and 3a1f92b for more details.
+
+- remove kriskowal/q JS library (promises implementation) in favour of a
+  self-made 50 LoC implementation to ease packaging (for Debian), #51
+
+- add documentation to display a comment counter, #56 and #57
+
+- SMTP notifications now support STARTTLS and use this transport security
+  by default, #48 and #58. This also changes the configuration option from
+  `ssl = [yes|no]` to `security = [none|starttls|ssl]`.
+
+- translation can now be made (and updated) with Transifex_. If you want to
+  take ownership for a language, contact me on IRC.
+
+- fix french pluralform
+
+- the (by default random) session-key is now shown on application startup
+  to make different keys per startup more visible
+- use `threading.lock` by default for systems without semaphore support
+
+.. _Transifex: https://www.transifex.com/projects/p/isso/
 
 
 0.6 (2013-12-16)
