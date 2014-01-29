@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.7 (unreleased)
+0.7 (2014-01-29)
 ----------------
 
 - fix malicious HTML injection (due to wrong API usage). All unknown/unsafe
