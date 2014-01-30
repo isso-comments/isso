@@ -1,8 +1,8 @@
 Changelog for Isso
 ==================
 
-0.7 (2014-01-29)
-----------------
+0.7.1 (2014-01-30)
+------------------
 
 - fix malicious HTML injection (due to wrong API usage). All unknown/unsafe
   HTML tags are now removed from the output (`html5lib` 0.99(9) or later) or
