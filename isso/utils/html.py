@@ -1,6 +1,9 @@
 # -*- encoding: utf-8 -*-
 
+import pkg_resources
+
 import html5lib
+setattr(html5lib, "version", pkg_resources.get_distribution("html5lib").version)
 
 from html5lib.sanitizer import HTMLSanitizer
 from html5lib.serializer import HTMLSerializer
@@ -34,7 +37,8 @@ def sanitize(document):
     parser = html5lib.HTMLParser(tokenizer=MarkdownSanitizer)
     domtree = parser.parseFragment(document)
 
-    stream = html5lib.treewalkers.getTreeWalker('etree')(domtree)
+    builder = "simpletree" if html5lib.version == "0.95" else "etree"
+    stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
     serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
 
     return serializer.render(stream)
