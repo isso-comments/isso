@@ -5,6 +5,9 @@ env:
   - TOX_ENV=py27
   - TOX_ENV=py33
   - TOX_ENV=backport
+matrix:
+  allow_failures:
+    - env: TOX_ENV=backport
 install:
   - pip install tox
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
