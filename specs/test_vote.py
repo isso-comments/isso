@@ -26,7 +26,7 @@ class TestVote(unittest.TestCase):
     def makeClient(self, ip):
 
         conf = core.Config.load(None)
-        conf.set("general", "dbpath", self.path)
+        conf.set("general", "database", "sqlite:///" + self.path)
         conf.set("guard", "enabled", "off")
 
         class App(Isso, core.Mixin):

@@ -106,7 +106,7 @@ class Config:
     default = [
         "[general]",
         "name = ",
-        "database = sqlite:///:memory:",
+        "database = sqlite:////tmp/isso.db",
         "session-key = %s" % binascii.b2a_hex(os.urandom(16)),
         "host = http://localhost:8080/",
         "max-age = 15m",

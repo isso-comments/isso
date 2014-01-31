@@ -22,7 +22,7 @@ class Adapter:
         """
         Create new database adapter based on given DB-URI.
 
-        The DB URI must be a string like `sqlite:///var/lib/isso/comments.db`
+        The DB URI must be a string like `sqlite:////var/lib/isso/comments.db`
         that is understand by SQLAlchemy's `create_engine`.
         """
 
@@ -41,8 +41,7 @@ class Adapter:
         if isinstance(sql, (list, tuple)):
             sql = ' '.join(sql)
 
-        with self.engine.connect() as con:
-            return con.execute(sql, args)
+        return self.engine.execute(sql, args)
 
 class SQLite3Depricated:
     """DB-dependend wrapper around SQLite3.
