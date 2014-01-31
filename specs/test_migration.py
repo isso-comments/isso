@@ -5,16 +5,15 @@ from os.path import join, dirname
 
 from isso.core import Config
 
-from isso.db import SQLite3
+from isso.db import Adapter
 from isso.migrate import disqus
 
 
 def test_disqus():
 
     xml = join(dirname(__file__), "disqus.xml")
-    xxx = tempfile.NamedTemporaryFile()
 
-    db = SQLite3(xxx.name, Config.load(None))
+    db = Adapter("sqlite:///:memory:", Config.load(None))
     disqus(db, xml)
 
     assert db.threads["/"]["title"] == "Hello, World!"

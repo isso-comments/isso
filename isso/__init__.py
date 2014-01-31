@@ -84,7 +84,7 @@ class Isso(object):
     def __init__(self, conf):
 
         self.conf = conf
-        self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
+        self.db = db.Adapter(conf.get('general', 'database'), conf)
         self.signer = URLSafeTimedSerializer(conf.get('general', 'session-key'))
 
         super(Isso, self).__init__(conf)
