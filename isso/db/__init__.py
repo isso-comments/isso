@@ -33,6 +33,13 @@ class Adapter:
         self.comments = Comments(self)
         self.guard    = Guard(self)
 
+        self.execute([
+            'CREATE TRIGGER IF NOT EXISTS remove_stale_threads',
+            'AFTER DELETE ON comments',
+            'BEGIN',
+            '    DELETE FROM threads WHERE id NOT IN (SELECT tid FROM comments);',
+            'END'])
+
     def execute(self, sql, args=()):
         """
         Execute given SQL. If given SQL is a list or tuple it will be concatenated.
