@@ -180,6 +180,14 @@ main {
       margin-top: 0;
     }
 
+    p + p {
+      margin-top: 1em;
+    }
+
+    p + p:last-child {
+      margin-top: 0;
+    }
+
     li {
       list-style-type: none;
     }
@@ -275,7 +283,7 @@ main {
     pre, code {
       color: rgb(77, 77, 76);
       font-size: 12px;
-      font-family: Monaco, Menlo, Consolas, monospaced;
+      font-family: Monaco, Menlo, Consolas, monospace;
     }
 
     .highlight {
