@@ -1,7 +1,6 @@
 var requirejs = {
     paths: {
         text : "components/requirejs-text/text",
-        ready: "components/requirejs-domready/domReady"
     },
 
     config: {
