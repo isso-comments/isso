@@ -38,8 +38,8 @@ Compile SCSS to CSS:
 
 Install JS components:
 
-    ~> cd isso/js
-    ~> bower install almond requirejs requirejs-domready requirejs-text
+    ~> make init
+    ~> # or cd isso/js && bower install almond requirejs requirejs-text
 
 
 Integration
@@ -55,6 +55,5 @@ Optimization
 ------------
 
     ~> npm install -g requirejs uglifyjs
-    ~> cd isso/js
-    ~> r.js -o build.embed.js
-    ~> r.js -o build.count.js
+    ~> make js
+    ~> # or r.js -o /isso/js/build.embed.js
