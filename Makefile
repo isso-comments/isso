@@ -1,7 +1,7 @@
 all: css js
 
 init:
-	bower install almond requirejs requirejs-domready
+	bower install almond requirejs requirejs-text
 
 css:
 	scss isso/css/isso.scss isso/css/isso.css
