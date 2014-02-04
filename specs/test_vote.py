@@ -1,16 +1,11 @@
 
 from __future__ import unicode_literals
 
-import os
 import json
-import tempfile
-import unittest
-
 from werkzeug.wrappers import Response
 
 from isso import Isso, core
 from isso.utils import http
-
 from fixtures import curl, loads, FakeIP, JSONClient
 import base
 http.curl = curl

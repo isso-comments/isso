@@ -16,10 +16,10 @@ class Threads:
         self.db = db
 
         self.table = Table('threads', metadata,
-                             Column('id', Integer, primary_key=True),
-                             Column('uri', String(255), unique=True, nullable=False),
-                             Column('title', String(255))
-                             )
+                           Column('id', Integer, primary_key=True),
+                           Column('uri', String(255), unique=True, nullable=False),
+                           Column('title', String(255))
+                           )
 
     def __contains__(self, uri):
         return self.db.execute(

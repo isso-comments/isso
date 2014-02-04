@@ -8,7 +8,7 @@ from isso.db.comments import Comments
 from isso.db.threads import Threads
 from isso.db.spam import Guard
 
-from sqlalchemy import MetaData, create_engine
+from sqlalchemy import MetaData, create_engine, Table, Column, Integer, desc
 
 
 class Adapter:
@@ -31,8 +31,17 @@ class Adapter:
         self.engine = create_engine(uri, echo=True)
         self.conf = conf
 
+        if self.engine.driver == 'pysqlite':
+            self.sqlite = True
+        else:
+            self.sqlite = False
+
         # Get table definitions from all modules
         self.metadata = MetaData()
+
+        if not self.sqlite:
+            self.version_table = Table(
+                'schema_version', self.metadata, Column('version', Integer))
 
         self.threads = Threads(self, self.metadata)
         self.comments = Comments(self, self.metadata)
@@ -51,7 +60,14 @@ class Adapter:
         #     """)
 
     def drop(self):
+        """
+        Drop all tables. Reset database schema version.
+        """
+
         self.metadata.drop_all(self.engine)
+
+        if self.sqlite:
+            self.execute('PRAGMA user_version = 0')
 
     def execute(self, statement, *multiparams, **params):
         """
@@ -63,8 +79,30 @@ class Adapter:
 
         return self.engine.execute(statement, *multiparams, **params)
 
+    @property
     def version(self):
-        if self.engine.driver == 'pysqlite':
+        """
+        Return current database schema version.
+
+        On SQLite it will be read from user_version pragma, on other DBMS from the `schema_version`
+        table.
+        """
+        if self.sqlite:
             return self.execute('PRAGMA user_version').fetchone()[0]
         else:
-            return self.execute('SELECT version FROM schema_version').fetchone()[0]
+            return self.execute(self.version_table.select()).fetchone()[0]
+
+    @version.setter
+    def version(self, version):
+        """
+        Save new version integer to database.
+
+        On SQLite it will be saved is user_version pragma. On other DBMS a table called
+        `schema_version` will be used.
+        """
+
+        if self.sqlite:
+            self.execute('PRAGMA user_version = ?', version)
+        else:
+            self.execute(self.version_table.delete())
+            self.execute(self.version_table.insert().values(version=version))

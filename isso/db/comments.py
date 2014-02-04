@@ -5,7 +5,8 @@ import time
 from isso.utils import Bloomfilter
 from isso.compat import buffer
 
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Text, LargeBinary, select
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Text, LargeBinary, \
+    select, func
 
 
 class Comments:
@@ -73,17 +74,17 @@ class Comments:
             mode=c['mode'],
             remote_addr=c['remote_addr'],
             text=c['text'],
-            author=c['author'],
-            email=c['email'],
-            website=c['website'],
+            author=c.get('author'),
+            email=c.get('email'),
+            website=c.get('website'),
             voters=buffer(Bloomfilter(iterable=[c['remote_addr']]).array),
         ))
 
-        res = self.db.execute(self.table.select())
+        res = self.db.execute(select(self.table.columns, self.db.threads.table.c.uri == uri,
+                                     from_obj=[self.table.join(self.db.threads.table)]))
+        res = res.fetchone()
 
-        return dict(zip(Comments.fields, self.db.execute(
-            'SELECT *, MAX(c.id) FROM comments AS c INNER JOIN threads ON threads.uri = ?',
-            (uri, )).fetchone()))
+        return dict(zip(Comments.fields, res))
 
     def activate(self, id):
         """
@@ -205,10 +206,27 @@ class Comments:
         """
         Return comment count for :param:`uri`.
         """
-        return self.db.execute([
-                                   'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
-                                   '    threads.uri=? AND comments.tid=threads.id AND comments.mode=1;'],
-                               (uri, )).fetchone()
+
+        # TODO: Does not work - no idea why
+        # return self.db.execute(select([func.count(self.table.c.id)],
+        #                               ((self.db.threads.table.c.uri == uri) & (
+        #                                   self.table.c.mode == 1)),
+        #                        from_obj=[self.table.join(self.db.threads.table)])).fetchone()
+
+        join = [self.table.join(self.db.threads.table,
+                                self.db.threads.table.c.id == self.table.c.tid)]
+        query = select(
+            [func.count(self.table.c.id)],
+            ((self.db.threads.table.c.uri == uri) & (self.table.c.mode == 1)),
+            from_obj=join
+        )
+
+        return self.db.execute(query).fetchone()[0]
+
+        # [
+        #     'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
+        #     '    threads.uri=? AND comments.tid=threads.id AND comments.mode=1;'],
+        # (uri, )).fetchone()
 
     def purge(self, delta):
         """

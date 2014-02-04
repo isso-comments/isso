@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
 
 import os
-import unittest
 from os.path import join, dirname
 from isso.core import Config
 from isso.db import Adapter
 from isso.migrate import disqus
+import base
 
-
-class TestMigration(unittest.TestCase):
+class TestMigration(base.TestCase):
     def database_uri(self):
         env = os.getenv('DB', 'sqlite')
         if env == 'sqlite':
