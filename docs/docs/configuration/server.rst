@@ -178,8 +178,9 @@ port
 
 security
     use a secure connection to the server, possible values: *none*, *starttls*
-    or *ssl*. Python 2.X probably does not validate certificates (needs
-    research). But you should use a dedicated email account anyways.
+    or *ssl*. Note, that Python does not validate the server's certificate and
+    thus the connection is vulnerable to Man-in-the-Middle attacks. Therefore,
+    you should definitely use a dedicated SMTP account for Isso.
 
 to
     recipient address, e.g. your email address
