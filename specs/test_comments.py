@@ -23,15 +23,18 @@ from isso.utils import http
 from isso.views import comments
 
 from fixtures import curl, loads, FakeIP, JSONClient
+import base
 http.curl = curl
 
 
-class TestComments(unittest.TestCase):
+class TestComments(base.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
         conf = core.Config.load(None)
-        conf.set("general", "dbpath", self.path)
+
+        self.database_conf(conf)
+
         conf.set("guard", "enabled", "off")
 
         class App(Isso, core.Mixin):
@@ -48,6 +51,7 @@ class TestComments(unittest.TestCase):
 
     def tearDown(self):
         os.unlink(self.path)
+        self.app.db.drop()
 
     def testGet(self):
 
@@ -295,7 +299,7 @@ class TestComments(unittest.TestCase):
         js = "application/json"
         form = "application/x-www-form-urlencoded"
 
-        self.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+        # self.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
 
         # no header is fine (default for XHR)
         self.assertEqual(self.post('/id/1/dislike', content_type="").status_code, 200)

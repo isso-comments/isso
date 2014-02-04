@@ -355,7 +355,7 @@ class API(object):
     @requires(str, 'uri')
     def count(self, environ, request, uri):
 
-        rv = self.comments.count(uri)[0]
+        rv = self.comments.count(uri)
 
         if rv == 0:
             raise NotFound

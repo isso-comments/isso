@@ -22,3 +22,6 @@
 
 /docs/_build
 /docs/_static/css/site.css
+
+*.iml
+.idea
