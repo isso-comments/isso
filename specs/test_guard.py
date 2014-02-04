@@ -5,6 +5,7 @@ try:
 except ImportError:
     import unittest
 
+import os
 import json
 import tempfile
 
@@ -35,7 +36,15 @@ class TestGuard(unittest.TestCase):
     def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False):
 
         conf = core.Config.load(None)
-        conf.set("general", "dbpath", self.path)
+
+        env = os.getenv('DB', 'sqlite')
+        if env == 'sqlite':
+            conf.set("general", "dbpath", self.path)
+        elif env == 'postgresql':
+            conf.set("general", "database", "postgresql:///isso-test")
+        elif env == 'mysql':
+            conf.set("general", "database", "mysql:///isso-test")
+
         conf.set("guard", "enabled", "true")
         conf.set("guard", "ratelimit", str(ratelimit))
         conf.set("guard", "direct-reply", str(direct_reply))
@@ -44,10 +53,13 @@ class TestGuard(unittest.TestCase):
         class App(Isso, core.Mixin):
             pass
 
-        app = App(conf)
-        app.wsgi_app = FakeIP(app.wsgi_app, ip)
+        self.app = App(conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, ip)
 
-        return Client(app, Response)
+        return Client(self.app, Response)
+
+    def tearDown(self):
+        self.app.db.drop()
 
     def testRateLimit(self):
 

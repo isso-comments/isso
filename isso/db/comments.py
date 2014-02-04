@@ -5,6 +5,8 @@ import time
 from isso.utils import Bloomfilter
 from isso.compat import buffer
 
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Text, LargeBinary, select
+
 
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
@@ -22,37 +24,62 @@ class Comments:
     fields = ['tid', 'id', 'parent', 'created', 'modified', 'mode', 'remote_addr',
               'text', 'author', 'email', 'website', 'likes', 'dislikes', 'voters']
 
-    def __init__(self, db):
-
+    def __init__(self, db, metadata):
         self.db = db
-        self.db.execute([
-            'CREATE TABLE IF NOT EXISTS comments (',
-            '    tid REFERENCES threads(id), id INTEGER PRIMARY KEY, parent INTEGER,',
-            '    created FLOAT NOT NULL, modified FLOAT, mode INTEGER, remote_addr VARCHAR,',
-            '    text VARCHAR, author VARCHAR, email VARCHAR, website VARCHAR,',
-            '    likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL);'])
+
+        self.table = Table('comments', metadata,
+                           Column('tid', ForeignKey("threads.id")),
+                           Column('id', Integer, primary_key=True),
+                           Column('parent', Integer),
+                           Column('created', Float, nullable=False),
+                           Column('modified', Float),
+                           Column('mode', Integer),
+                           Column('remote_addr', String(255)),
+                           Column('text', Text),
+                           Column('author', String(255)),
+                           Column('email', String(255)),
+                           Column('website', String(255)),
+                           Column('likes', Integer, default=0),
+                           Column('dislikes', Integer, default=0),
+                           Column('voters', LargeBinary, nullable=False),
+        )
 
     def add(self, uri, c):
         """
         Add new comment to DB and return a mapping of :attribute:`fields` and
         database values.
         """
-        self.db.execute([
-            'INSERT INTO comments (',
-            '    tid, parent,'
-            '    created, modified, mode, remote_addr,',
-            '    text, author, email, website, voters )',
-            'SELECT',
-            '    threads.id, ?,',
-            '    ?, ?, ?, ?,',
-            '    ?, ?, ?, ?, ?',
-            'FROM threads WHERE threads.uri = ?;'], (
-            c.get('parent'),
-            c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
-            c['text'], c.get('author'), c.get('email'), c.get('website'), buffer(
-                Bloomfilter(iterable=[c['remote_addr']]).array),
-            uri)
-        )
+        # self.db.execute([
+        #                     'INSERT INTO comments (',
+        #                     '    tid, parent,'
+        #                     '    created, modified, mode, remote_addr,',
+        #                     '    text, author, email, website, voters )',
+        #                     'SELECT',
+        #                     '    threads.id, ?,',
+        #                     '    ?, ?, ?, ?,',
+        #                     '    ?, ?, ?, ?, ?',
+        #                     'FROM threads WHERE threads.uri = ?;'], (
+        #                     c.get('parent'),
+        #                     c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
+        #                     c['text'], c.get('author'), c.get('email'), c.get('website'), buffer(
+        #                         Bloomfilter(iterable=[c['remote_addr']]).array),
+        #                     uri)
+        # )
+
+        self.db.execute(self.table.insert().values(
+            tid=self.db.threads[uri]['id'],
+            parent=c.get('parent'),
+            created=c.get('created') or time.time(),
+            mode=c['mode'],
+            remote_addr=c['remote_addr'],
+            text=c['text'],
+            author=c['author'],
+            email=c['email'],
+            website=c['website'],
+            voters=buffer(Bloomfilter(iterable=[c['remote_addr']]).array),
+        ))
+
+        res = self.db.execute(self.table.select())
 
         return dict(zip(Comments.fields, self.db.execute(
             'SELECT *, MAX(c.id) FROM comments AS c INNER JOIN threads ON threads.uri = ?',
@@ -63,9 +90,9 @@ class Comments:
         Activate comment id if pending.
         """
         self.db.execute([
-            'UPDATE comments SET',
-            '    mode=1',
-            'WHERE id=? AND mode=2'], (id, ))
+                            'UPDATE comments SET',
+                            '    mode=1',
+                            'WHERE id=? AND mode=2'], (id, ))
 
     def update(self, id, data):
         """
@@ -73,10 +100,10 @@ class Comments:
         updated comment.
         """
         self.db.execute([
-            'UPDATE comments SET',
-                ','.join(key + '=' + '?' for key in data),
-            'WHERE id=?;'],
-            list(data.values()) + [id])
+                            'UPDATE comments SET',
+                            ','.join(key + '=' + '?' for key in data),
+                            'WHERE id=?;'],
+                        list(data.values()) + [id])
 
         return self.get(id)
 
@@ -96,9 +123,9 @@ class Comments:
         Return comments for :param:`uri` with :param:`mode`.
         """
         rv = self.db.execute([
-            'SELECT comments.* FROM comments INNER JOIN threads ON',
-            '    threads.uri=? AND comments.tid=threads.id AND (? | comments.mode) = ?'
-            'ORDER BY id ASC;'], (uri, mode, mode)).fetchall()
+                                 'SELECT comments.* FROM comments INNER JOIN threads ON',
+                                 '    threads.uri=? AND comments.tid=threads.id AND (? | comments.mode) = ?'
+                                 'ORDER BY id ASC;'], (uri, mode, mode)).fetchall()
 
         for item in rv:
             yield dict(zip(Comments.fields, item))
@@ -149,9 +176,8 @@ class Comments:
         the creater can't vote on his/her own comment and multiple votes from the
         same ip address are ignored as well)."""
 
-        rv = self.db.execute(
-            'SELECT likes, dislikes, voters FROM comments WHERE id=?', (id, )) \
-            .fetchone()
+        rv = self.db.execute(select([self.table.c.likes, self.table.c.dislikes,
+                                     self.table.c.voters], self.table.c.id == id)).fetchone()
 
         if rv is None:
             return None
@@ -166,10 +192,10 @@ class Comments:
 
         bf.add(remote_addr)
         self.db.execute([
-            'UPDATE comments SET',
-            '    likes = likes + 1,' if upvote else 'dislikes = dislikes + 1,',
-            '    voters = ?'
-            'WHERE id=?;'], (buffer(bf.array), id))
+                            'UPDATE comments SET',
+                            '    likes = likes + 1,' if upvote else 'dislikes = dislikes + 1,',
+                            '    voters = ?'
+                            'WHERE id=?;'], (buffer(bf.array), id))
 
         if upvote:
             return {'likes': likes + 1, 'dislikes': dislikes}
@@ -180,15 +206,15 @@ class Comments:
         Return comment count for :param:`uri`.
         """
         return self.db.execute([
-            'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
-            '    threads.uri=? AND comments.tid=threads.id AND comments.mode=1;'],
-            (uri, )).fetchone()
+                                   'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
+                                   '    threads.uri=? AND comments.tid=threads.id AND comments.mode=1;'],
+                               (uri, )).fetchone()
 
     def purge(self, delta):
         """
         Remove comments older than :param:`delta`.
         """
         self.db.execute([
-            'DELETE FROM comments WHERE mode = 2 AND ? - created > ?;'
-        ], (time.time(), delta))
+                            'DELETE FROM comments WHERE mode = 2 AND ? - created > ?;'
+                        ], (time.time(), delta))
         self._remove_stale()

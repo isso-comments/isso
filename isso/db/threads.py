@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from sqlalchemy import Table, Column, Integer, String, select
+
 
 def Thread(id, uri, title):
     return {
@@ -9,22 +11,24 @@ def Thread(id, uri, title):
     }
 
 
-class Threads(object):
-
-    def __init__(self, db):
-
+class Threads:
+    def __init__(self, db, metadata):
         self.db = db
-        self.db.execute([
-            'CREATE TABLE IF NOT EXISTS threads (',
-            '    id INTEGER PRIMARY KEY, uri VARCHAR(256) UNIQUE, title VARCHAR(256))'])
+
+        self.table = Table('threads', metadata,
+                             Column('id', Integer, primary_key=True),
+                             Column('uri', String(255), unique=True, nullable=False),
+                             Column('title', String(255))
+                             )
 
     def __contains__(self, uri):
-        return self.db.execute("SELECT title FROM threads WHERE uri=?", (uri, )) \
-                      .fetchone() is not None
+        return self.db.execute(
+            select([self.table.c.title], self.table.c.uri == uri)
+        ).fetchone() is not None
 
     def __getitem__(self, uri):
-        return Thread(*self.db.execute("SELECT * FROM threads WHERE uri=?", (uri, )).fetchone())
+        return Thread(*self.db.execute(self.table.select(self.table.c.uri == uri)).fetchone())
 
     def new(self, uri, title):
-        self.db.execute("INSERT INTO threads (uri, title) VALUES (?, ?)", (uri, title))
+        self.db.execute(self.table.insert().values(uri=uri, title=title))
         return self[uri]

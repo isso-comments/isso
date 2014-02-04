@@ -1,29 +1,37 @@
 # -*- encoding: utf-8 -*-
 
-import tempfile
+import os
+import unittest
 from os.path import join, dirname
-
 from isso.core import Config
-
 from isso.db import Adapter
 from isso.migrate import disqus
 
 
-def test_disqus():
+class TestMigration(unittest.TestCase):
+    def database_uri(self):
+        env = os.getenv('DB', 'sqlite')
+        if env == 'sqlite':
+            return 'sqlite:///:memory:'
+        elif env == 'postgresql':
+            return 'postgresql:///isso-test'
+        elif env == 'mysql':
+            return 'mysql:///isso-test'
 
-    xml = join(dirname(__file__), "disqus.xml")
+    def setUp(self):
+        self.db = Adapter(self.database_uri(), Config.load(None))
+        self.xml = join(dirname(__file__), "disqus.xml")
 
-    db = Adapter("sqlite:///:memory:", Config.load(None))
-    disqus(db, xml)
+    def test_disqus(self):
+        disqus(self.db, self.xml)
 
-    assert db.threads["/"]["title"] == "Hello, World!"
-    assert db.threads["/"]["id"] == 1
+        assert self.db.threads["/"]["title"] == "Hello, World!"
+        assert self.db.threads["/"]["id"] == 1
 
+        a = self.db.comments.get(1)
 
-    a = db.comments.get(1)
+        assert a["author"] == "peter"
+        assert a["email"] == "foo@bar.com"
 
-    assert a["author"] == "peter"
-    assert a["email"] == "foo@bar.com"
-
-    b = db.comments.get(2)
-    assert b["parent"] == a["id"]
+        b = self.db.comments.get(2)
+        assert b["parent"] == a["id"]
