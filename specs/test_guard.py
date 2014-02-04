@@ -1,6 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 import json
 import tempfile
@@ -52,16 +55,16 @@ class TestGuard(unittest.TestCase):
 
         for i in range(2):
             rv = bob.post('/new?uri=test', data=self.data)
-            assert rv.status_code == 201
+            self.assertEqual(rv.status_code, 201)
 
         rv = bob.post('/new?uri=test', data=self.data)
 
-        assert rv.status_code == 403
-        assert "ratelimit exceeded" in rv.get_data(as_text=True)
+        self.assertEqual(rv.status_code, 403)
+        self.assertIn("ratelimit exceeded", rv.get_data(as_text=True))
 
         alice = self.makeClient("1.2.3.4", 2)
         for i in range(2):
-            assert alice.post("/new?uri=test", data=self.data).status_code == 201
+            self.assertEqual(alice.post("/new?uri=test", data=self.data).status_code, 201)
 
         bob.application.db.execute([
             "UPDATE comments SET",
@@ -69,7 +72,7 @@ class TestGuard(unittest.TestCase):
             "WHERE remote_addr = '127.0.0.0'"
         ])
 
-        assert bob.post("/new?uri=test", data=self.data).status_code == 201
+        self.assertEqual(bob.post("/new?uri=test", data=self.data).status_code, 201)
 
     def testDirectReply(self):
 
@@ -78,21 +81,21 @@ class TestGuard(unittest.TestCase):
         for url in ("foo", "bar", "baz", "spam"):
             for _ in range(3):
                 rv = client.post("/new?uri=%s" % url, data=self.data)
-                assert rv.status_code == 201
+                self.assertEqual(rv.status_code, 201)
 
         for url in ("foo", "bar", "baz", "spam"):
             rv = client.post("/new?uri=%s" % url, data=self.data)
 
-            assert rv.status_code == 403
-            assert "direct responses to" in rv.get_data(as_text=True)
+            self.assertEqual(rv.status_code, 403)
+            self.assertIn("direct responses to", rv.get_data(as_text=True))
 
     def testSelfReply(self):
 
         payload = lambda id: json.dumps({"text": "...", "parent": id})
 
         client = self.makeClient("127.0.0.1", self_reply=False)
-        assert client.post("/new?uri=test", data=self.data).status_code == 201
-        assert client.post("/new?uri=test", data=payload(1)).status_code == 403
+        self.assertEqual(client.post("/new?uri=test", data=self.data).status_code, 201)
+        self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 403)
 
         client.application.db.execute([
             "UPDATE comments SET",
@@ -100,9 +103,9 @@ class TestGuard(unittest.TestCase):
             "WHERE id = 1"
         ], (client.application.conf.getint("general", "max-age"), ))
 
-        assert client.post("/new?uri=test", data=payload(1)).status_code == 201
+        self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 201)
 
         client = self.makeClient("128.0.0.1", ratelimit=3, self_reply=False)
-        assert client.post("/new?uri=test", data=self.data).status_code == 201
-        assert client.post("/new?uri=test", data=payload(1)).status_code == 201
-        assert client.post("/new?uri=test", data=payload(2)).status_code == 201
+        self.assertEqual(client.post("/new?uri=test", data=self.data).status_code, 201)
+        self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 201)
+        self.assertEqual(client.post("/new?uri=test", data=payload(2)).status_code, 201)

@@ -1,6 +1,11 @@
 
 from __future__ import unicode_literals
 
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
+
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
@@ -13,43 +18,45 @@ def hello_world(environ, start_response):
     return ["Hello, World."]
 
 
-def test_simple_CORS():
+class CORSTest(unittest.TestCase):
 
-    app = CORSMiddleware(hello_world, origin=origin([
-        "https://example.tld/",
-        "http://example.tld/",
-        "http://example.tld",
-    ]))
+    def test_simple(self):
 
-    client = Client(app, Response)
+        app = CORSMiddleware(hello_world, origin=origin([
+            "https://example.tld/",
+            "http://example.tld/",
+            "http://example.tld",
+        ]))
 
-    rv = client.get("/", headers={"ORIGIN": "https://example.tld"})
+        client = Client(app, Response)
 
-    assert rv.headers["Access-Control-Allow-Origin"] == "https://example.tld"
-    assert rv.headers["Access-Control-Allow-Headers"] == "Origin, Content-Type"
-    assert rv.headers["Access-Control-Allow-Credentials"] == "true"
-    assert rv.headers["Access-Control-Allow-Methods"] == "GET, POST, PUT, DELETE"
-    assert rv.headers["Access-Control-Expose-Headers"] == "X-Set-Cookie"
+        rv = client.get("/", headers={"ORIGIN": "https://example.tld"})
 
-    a = client.get("/", headers={"ORIGIN": "http://example.tld"})
-    assert a.headers["Access-Control-Allow-Origin"] == "http://example.tld"
+        self.assertEqual(rv.headers["Access-Control-Allow-Origin"], "https://example.tld")
+        self.assertEqual(rv.headers["Access-Control-Allow-Headers"], "Origin, Content-Type")
+        self.assertEqual(rv.headers["Access-Control-Allow-Credentials"], "true")
+        self.assertEqual(rv.headers["Access-Control-Allow-Methods"], "GET, POST, PUT, DELETE")
+        self.assertEqual(rv.headers["Access-Control-Expose-Headers"], "X-Set-Cookie")
 
-    b = client.get("/", headers={"ORIGIN": "http://example.tld"})
-    assert b.headers["Access-Control-Allow-Origin"] == "http://example.tld"
+        a = client.get("/", headers={"ORIGIN": "http://example.tld"})
+        self.assertEqual(a.headers["Access-Control-Allow-Origin"], "http://example.tld")
 
-    c = client.get("/", headers={"ORIGIN": "http://foo.other"})
-    assert c.headers["Access-Control-Allow-Origin"] == "https://example.tld"
+        b = client.get("/", headers={"ORIGIN": "http://example.tld"})
+        self.assertEqual(b.headers["Access-Control-Allow-Origin"], "http://example.tld")
+
+        c = client.get("/", headers={"ORIGIN": "http://foo.other"})
+        self.assertEqual(c.headers["Access-Control-Allow-Origin"], "https://example.tld")
 
 
-def test_preflight_CORS():
+    def test_preflight(self):
 
-    app = CORSMiddleware(hello_world, origin=origin(["http://example.tld"]))
-    client = Client(app, Response)
+        app = CORSMiddleware(hello_world, origin=origin(["http://example.tld"]))
+        client = Client(app, Response)
 
-    rv = client.open(method="OPTIONS", path="/", headers={"ORIGIN": "http://example.tld"})
-    assert rv.status_code == 200
+        rv = client.open(method="OPTIONS", path="/", headers={"ORIGIN": "http://example.tld"})
+        self.assertEqual(rv.status_code, 200)
 
-    for hdr in ("Origin", "Headers", "Credentials", "Methods"):
-        assert "Access-Control-Allow-%s" % hdr in rv.headers
+        for hdr in ("Origin", "Headers", "Credentials", "Methods"):
+            self.assertIn("Access-Control-Allow-%s" % hdr, rv.headers)
 
-    assert rv.headers["Access-Control-Allow-Origin"] == "http://example.tld"
+        self.assertEqual(rv.headers["Access-Control-Allow-Origin"], "http://example.tld")
