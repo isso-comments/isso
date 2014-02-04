@@ -107,10 +107,22 @@ class TestComments(unittest.TestCase):
 
     def testVerifyFields(self):
 
-        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': ''}))
-        self.assertEqual(rv.status_code, 400)
-        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': "\n\n\n"}))
-        self.assertEqual(rv.status_code, 400)
+        verify = lambda comment: comments.API.verify(comment)[0]
+
+        # text is missing
+        self.assertFalse(verify({}))
+
+        # invalid types
+        self.assertFalse(verify({"text": "...", "parent": "xxx"}))
+        for key in ("author", "website", "email"):
+            self.assertFalse(verify({"text": True, key: 3.14}))
+
+        # text too short and/or blank
+        for text in ("", "\n\n\n"):
+            self.assertFalse(verify({"text": text}))
+
+        # email length
+        self.assertFalse(verify({"text": "...", "email": "*"*1024}))
 
     def testGetInvalid(self):
 
@@ -230,7 +242,7 @@ class TestComments(unittest.TestCase):
 
     def testVisibleFields(self):
 
-        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "...", "invalid": "field"}))
         self.assertEqual(rv.status_code, 201)
 
         rv = loads(rv.data)
