@@ -298,6 +298,10 @@ main {
       overflow: auto;
     }
 
+    .headerlink {
+      visibility: hidden;
+    }
+
     p + p {
       margin-top: 1em;
     }
