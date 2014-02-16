@@ -161,7 +161,7 @@ Next, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
 
 .. code-block:: python
 
-    #!/usr/bin/env python2.7
+    #!/usr/bin/env python
 
     from isso import make_app
     from isso.core import Config
