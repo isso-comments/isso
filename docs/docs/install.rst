@@ -3,7 +3,7 @@ Installation
 
 Requirements:
 
--  Python 2.6, 2.7 or 3.3
+-  Python 2.6, 2.7 or 3.3 (+ devel headers)
 -  a working C compiler
 
 Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:

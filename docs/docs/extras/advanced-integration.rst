@@ -2,7 +2,7 @@ Advanced integration
 ====================
 
 Comment counter
-----------------
+---------------
 
 If you want to display a comment counter for a given thread, simply
 put a link to that comments thread anchor:
@@ -19,7 +19,7 @@ Alternatively, if guessing from `href` is not relevant, you could use a
 
 Now, either include `count.min.js` if you want to show only the comment count
 (e.g. on an index page) or `embed.min.js` for the full comment client (see
-:doc:`quickstart`); do not mix both.
+:doc:`../quickstart`); do not mix both.
 
 You can have as many comments counters as you want in a page but be aware that it
 implies one `GET` request per comment anchor.

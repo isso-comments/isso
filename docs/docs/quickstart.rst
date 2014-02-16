@@ -89,8 +89,7 @@ To run Isso, simply execute:
 
 Next, we configure Nginx_ to proxy Isso. Do not run Isso on a public interface!
 A popular but often error-prone (because of CORS_) setup to host Isso uses a
-dedicated domain such as ``comments.example.tld``; see
-:doc:`configuration/setup` for alternate ways.
+dedicated domain such as ``comments.example.tld``.
 
 Assuming both, your website and Isso are on the same server, the nginx
 configuration looks like this:
@@ -122,8 +121,8 @@ Now, you embed Isso to your website:
 
 .. code-block:: html
 
-    <script data-isso="http://comments.example.tld/"
-            src="http://comments.example.tld/js/embed.min.js"></script>
+    <script data-isso="//comments.example.tld/"
+            src="//comments.example.tld/js/embed.min.js"></script>
 
     <section id="isso-thread"></section>
 
@@ -133,105 +132,19 @@ Note, that `data-isso` is optional, but when a website includes a script using
 That's it. When you open your website, you should see a commenting form. Leave
 a comment to see if the setup works. If not, see :doc:`troubleshooting`.
 
+Going Further
+-------------
 
-For further integration, look at :doc:`advanced-integration`.
+There are several server and client configuration options uncovered in this
+quickstart, check out :doc:`configuration/server` and
+:doc:`configuration/client` for more information. For further website
+integration, see :doc:`extras/advanced-integration`.
+
+If you wondered how to automatically start Isso you may find a short script
+for various popular init/supervisor daemons here: :doc:`install`. Another
+important topic is the actual :doc:`deployment of Isso <extras/deployment>`
+(and every Python web application in general).
+
 
 .. _Nginx: http://nginx.org/
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
-
-
-Deployment
-----------
-
-Isso ships with a built-in web server, which is useful for the initial setup
-and may be used in production for low-traffic sites (up to 20 requests per
-second). It is recommended to use a "real" WSGI server to run Isso, e.g:
-
-* gevent_, coroutine-based network library
-* uWSGI_, full-featured uWSGI server
-* gunicorn_, Python WSGI HTTP Server for UNIX
-
-.. _gevent: http://www.gevent.org/
-.. _uWSGI: http://uwsgi-docs.readthedocs.org/en/latest/
-.. _gunicorn: http://gunicorn.org/
-
-gevent
-^^^^^^
-
-Probably the easiest deployment method. Install with PIP (requires libevent):
-
-.. code-block:: sh
-
-    $ pip install gevent
-
-Then, just use the ``isso`` executable as usual. Gevent monkey-patches Python's
-standard library to work with greenlets.
-
-To execute Isso, just use the commandline interface:
-
-.. code-block:: sh
-
-    $ isso -c my.cfg run
-
-Unfortunately, gevent 0.13.2 does not support UNIX domain sockets (see `#295
-<https://github.com/surfly/gevent/issues/295>`_ and `#299
-<https://github.com/surfly/gevent/issues/299>`_ for details).
-
-uWSGI
-^^^^^
-
-The author's favourite WSGI server. Due the complexity of uWSGI, there is a
-:doc:`separate document <extras/uwsgi>` on how to setup uWSGI for use
-with Isso.
-
-gunicorn
-^^^^^^^^
-
-Install gunicorn_ via PIP:
-
-.. code-block:: sh
-
-    $ pip install gunicorn
-
-To execute Isso, use a command similar to:
-
-.. code-block:: sh
-
-    $ export ISSO_SETTINGS="/path/to/isso.cfg"
-    $ gunicorn -b localhost:8080 -w 4 --preload isso.run
-
-mod_wsgi
-^^^^^^^^
-
-I have no experience at all with `mod_wsgi`, most things are taken from
-`Flask: Configuring Apache <http://flask.pocoo.org/docs/deploying/mod_wsgi/#configuring-apache>`_:
-
-.. code-block:: apache
-
-    <VirtualHost *>
-        ServerName example.org
-
-        WSGIDaemonProcess isso user=... group=... threads=5
-        WSGIScriptAlias / /var/www/isso.wsgi
-    </VirtualHost>
-
-Now, you need to create a new `isso.wsgi` file:
-
-.. code-block:: python
-
-    import os
-
-    from isso import make_app
-    from isso.core import Config
-
-    application = make_app(Config.load("/path/to/isso.cfg"))
-
-Unless you know how to preload the application, add a static session key to
-your `isso.cfg`:
-
-.. code-block:: ini
-
-    [general]
-    ; cat /dev/urandom | strings | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'
-    session-key = superrandomkey1
-
