@@ -163,7 +163,7 @@ class API(object):
             value=self.isso.sign([rv["id"], sha1(rv["text"])]),
             max_age=self.conf.getint('max-age'))
 
-        rv["text"] = html.markdown(rv["text"])
+        rv["text"] = self.isso.render(rv["text"])
         rv["hash"] = pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6).decode("utf-8")
 
         self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
@@ -189,7 +189,7 @@ class API(object):
             rv.pop(key)
 
         if request.args.get('plain', '0') == '0':
-            rv['text'] = html.markdown(rv['text'])
+            rv['text'] = self.isso.render(rv['text'])
 
         return JSON(rv, 200)
 
@@ -230,7 +230,7 @@ class API(object):
                 value=self.isso.sign([rv["id"], sha1(rv["text"])]),
                 max_age=self.conf.getint('max-age'))
 
-        rv["text"] = html.markdown(rv["text"])
+        rv["text"] = self.isso.render(rv["text"])
 
         resp = JSON(rv, 200)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
@@ -336,7 +336,7 @@ class API(object):
 
         if request.args.get('plain', '0') == '0':
             for item in rv:
-                item['text'] = html.markdown(item['text'])
+                item['text'] = self.isso.render(item['text'])
 
         return JSON(rv, 200)
 

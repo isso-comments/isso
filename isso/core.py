@@ -132,7 +132,11 @@ class Config:
         "enabled = true",
         "ratelimit = 2",
         "direct-reply = 3",
-        "reply-to-self = false"
+        "reply-to-self = false",
+        "[markup]",
+        "options = strikethrough, superscript, autolink",
+        "allowed-elements = ",
+        "allowed-attributes = "
     ]
 
     @classmethod
