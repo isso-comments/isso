@@ -44,6 +44,9 @@ class Section:
     def getint(self, key):
         return self.conf.getint(self.section, key)
 
+    def getlist(self, key):
+        return self.conf.getlist(self.section, key)
+
     def getiter(self, key):
         return self.conf.getiter(self.section, key)
 
@@ -62,6 +65,7 @@ class IssoParser(ConfigParser):
     ... [foo]
     ... bar = 1h
     ... baz = 12
+    ... spam = a, b, cdef
     ... bla =
     ...     spam
     ...     ham
@@ -71,6 +75,8 @@ class IssoParser(ConfigParser):
     3600
     >>> parser.getint("foo", "baz")
     12
+    >>> parser.getlist("foo", "spam")  # doctest: +IGNORE_UNICODE
+    ['a', 'b', 'cdef']
     >>> list(parser.getiter("foo", "bla"))  # doctest: +IGNORE_UNICODE
     ['spam', 'ham']
     >>> list(parser.getiter("foo", "asd"))  # doctest: +IGNORE_UNICODE
@@ -91,6 +97,9 @@ class IssoParser(ConfigParser):
                 return int(delta.total_seconds())
             except AttributeError:
                 return int(IssoParser._total_seconds(delta))
+
+    def getlist(self, section, key):
+        return list(map(str.strip, self.get(section, key).split(',')))
 
     def getiter(self, section, key):
         for item in map(str.strip, self.get(section, key).split('\n')):
@@ -123,7 +132,11 @@ class Config:
         "enabled = true",
         "ratelimit = 2",
         "direct-reply = 3",
-        "reply-to-self = false"
+        "reply-to-self = false",
+        "[markup]",
+        "options = strikethrough, superscript, autolink",
+        "allowed-elements = ",
+        "allowed-attributes = "
     ]
 
     @classmethod

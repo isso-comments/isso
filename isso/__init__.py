@@ -64,7 +64,7 @@ local_manager = LocalManager([local])
 
 from isso import db, migrate, wsgi, ext, views
 from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
-from isso.utils import parse, http, JSONRequest, origin
+from isso.utils import parse, http, JSONRequest, origin, html
 from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
@@ -86,6 +86,7 @@ class Isso(object):
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(conf.get('general', 'session-key'))
+        self.markup = html.Markup(conf.section('markup'))
 
         super(Isso, self).__init__(conf)
 
@@ -101,6 +102,9 @@ class Isso(object):
 
         views.Info(self)
         comments.API(self)
+
+    def render(self, text):
+        return self.markup.render(text)
 
     def sign(self, obj):
         return self.signer.dumps(obj)
