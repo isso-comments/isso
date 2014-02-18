@@ -2,6 +2,7 @@
 
 import sqlite3
 import logging
+import os.path
 
 logger = logging.getLogger("isso")
 
@@ -21,7 +22,7 @@ class SQLite3:
 
     def __init__(self, path, conf):
 
-        self.path = path
+        self.path = os.path.expanduser(path)
         self.conf = conf
 
         rv = self.execute([
