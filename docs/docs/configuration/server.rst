@@ -221,6 +221,37 @@ reply-to-self
 
     Do not forget to configure the client.
 
+Markup
+------
+
+Customize markup and sanitized HTML. Currently, only Markdown (via Misaka) is
+supported, but new languages are relatively easy to add.
+
+.. code-block:: ini
+
+    [markup]
+    options = strikethrough, superscript, autolink
+    allowed-elements =
+    allowed-attributes =
+
+options
+    `Misaka-specific Markdown extensions <http://misaka.61924.nl/api/>`_, all
+    flags starting with `EXT_` can be used there, separated by comma.
+
+allowed-elements
+    Additional HTML tags to allow in the generated output, comma-separated. By
+    default, only *a*, *blockquote*, *br*, *code*, *del*, *em*, *h1*, *h2*,
+    *h3*, *h4*, *h5*, *h6*, *hr*, *ins*, *li*, *ol*, *p*, *pre*, *strong*,
+    *table*, *tbody*, *td*, *th*, *thead* and *ul* are allowed.
+
+allowed-attributes
+    Additional HTML attributes (independent from elements) to allow in the
+    generated output, comma-separated. By default, only *align* and *href* are
+    allowed.
+
+To allow images in comments, you just need to add ``allowed-elements = img`` and
+``allowed-attributes = src``.
+
 
 Appendum
 --------
