@@ -11,7 +11,7 @@ define(["app/markup"], function(Mark) {
             day_diff = Math.floor(diff / 86400);
 
         if (isNaN(day_diff) || day_diff < 0) {
-            return;
+            day_diff = diff = 0;
         }
 
         var i18n = function(msgid, n) {
