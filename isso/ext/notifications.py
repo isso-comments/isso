@@ -58,7 +58,9 @@ class SMTP(object):
 
     def __enter__(self):
         klass = (smtplib.SMTP_SSL if self.conf.get('security') == 'ssl' else smtplib.SMTP)
-        self.client = klass(host=self.conf.get('host'), port=self.conf.getint('port'))
+        self.client = klass(host=self.conf.get('host'),
+                            port=self.conf.getint('port'),
+                            timeout=5)
 
         if self.conf.get('security') == 'starttls':
             self.client.starttls();
