@@ -162,6 +162,7 @@ also can moderate (=activate or delete) comments. Don't forget to configure
     security = starttls
     to =
     from =
+    timeout = 10
 
 username
     self-explanatory, optional
@@ -187,6 +188,10 @@ to
 
 from
     sender address, e.g. isso@example.tld
+
+timeout
+    specify a timeout in seconds for blocking operations like the
+    connection attempt.
 
 
 Guard

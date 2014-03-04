@@ -128,6 +128,7 @@ class Config:
         "username = ", "password = ",
         "host = localhost", "port = 587", "security = starttls",
         "to = ", "from = ",
+        "timeout = 10",
         "[guard]",
         "enabled = true",
         "ratelimit = 2",
