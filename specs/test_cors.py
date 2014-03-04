@@ -22,21 +22,23 @@ class CORSTest(unittest.TestCase):
 
     def test_simple(self):
 
-        app = CORSMiddleware(hello_world, origin=origin([
-            "https://example.tld/",
-            "http://example.tld/",
-            "http://example.tld",
-        ]))
+        app = CORSMiddleware(hello_world,
+            origin=origin([
+                "https://example.tld/",
+                "http://example.tld/",
+                "http://example.tld",
+            ]),
+            allowed=("Foo", "Bar"), exposed=("Spam", ))
 
         client = Client(app, Response)
 
         rv = client.get("/", headers={"ORIGIN": "https://example.tld"})
 
         self.assertEqual(rv.headers["Access-Control-Allow-Origin"], "https://example.tld")
-        self.assertEqual(rv.headers["Access-Control-Allow-Headers"], "Origin, Content-Type")
         self.assertEqual(rv.headers["Access-Control-Allow-Credentials"], "true")
-        self.assertEqual(rv.headers["Access-Control-Allow-Methods"], "GET, POST, PUT, DELETE")
-        self.assertEqual(rv.headers["Access-Control-Expose-Headers"], "X-Set-Cookie")
+        self.assertEqual(rv.headers["Access-Control-Allow-Methods"], "HEAD, GET, POST, PUT, DELETE")
+        self.assertEqual(rv.headers["Access-Control-Allow-Headers"], "Foo, Bar")
+        self.assertEqual(rv.headers["Access-Control-Expose-Headers"], "Spam")
 
         a = client.get("/", headers={"ORIGIN": "http://example.tld"})
         self.assertEqual(a.headers["Access-Control-Allow-Origin"], "http://example.tld")
@@ -50,7 +52,8 @@ class CORSTest(unittest.TestCase):
 
     def test_preflight(self):
 
-        app = CORSMiddleware(hello_world, origin=origin(["http://example.tld"]))
+        app = CORSMiddleware(hello_world, origin=origin(["http://example.tld"]),
+                             allowed=("Foo", ), exposed=("Bar", ))
         client = Client(app, Response)
 
         rv = client.open(method="OPTIONS", path="/", headers={"ORIGIN": "http://example.tld"})
