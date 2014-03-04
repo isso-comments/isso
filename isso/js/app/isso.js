@@ -1,7 +1,7 @@
 /* Isso – Ich schrei sonst!
  */
-define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/markup", "app/i18n", "app/lib"],
-    function(templates, $, utils, config, api, Mark, i18n, lib) {
+define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/markup", "app/i18n", "app/lib", "app/globals"],
+    function(templates, $, utils, config, api, Mark, i18n, lib, globals) {
 
     "use strict";
 
@@ -100,7 +100,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         // update datetime every 60 seconds
         var refresh = function() {
             $(".permalink > date", el).textContent = utils.ago(
-                new Date(parseInt(comment.created, 10) * 1000));
+                globals.offset.localTime(), new Date(parseInt(comment.created, 10) * 1000));
             setTimeout(refresh, 60*1000);
         };
 

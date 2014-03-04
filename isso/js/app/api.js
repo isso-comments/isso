@@ -1,4 +1,4 @@
-define(["app/lib/promise"], function(Q) {
+define(["app/lib/promise", "app/globals"], function(Q, globals) {
 
     "use strict";
 
@@ -41,8 +41,9 @@ define(["app/lib/promise"], function(Q) {
 
         function onload() {
 
-            var cookie = xhr.getResponseHeader("X-Set-Cookie");
+            globals.offset.update(new Date(xhr.getResponseHeader("Date")));
 
+            var cookie = xhr.getResponseHeader("X-Set-Cookie");
             if (cookie && cookie.match(/^isso-/)) {
                 document.cookie = cookie;
             }
