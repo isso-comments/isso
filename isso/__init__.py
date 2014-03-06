@@ -183,7 +183,8 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
         '/css': join(dirname(__file__), 'css/')}))
 
     wrapper.append(partial(wsgi.CORSMiddleware,
-        origin=origin(isso.conf.getiter("general", "host"))))
+        origin=origin(isso.conf.getiter("general", "host")),
+        allowed=("Origin", "Content-Type"), exposed=("X-Set-Cookie", "Date")))
 
     wrapper.extend([wsgi.SubURI, ProxyFix])
 

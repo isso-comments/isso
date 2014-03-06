@@ -60,19 +60,25 @@ class SubURI(object):
 class CORSMiddleware(object):
     """Add Cross-origin resource sharing headers to every request."""
 
-    def __init__(self, app, origin):
+    methods = ("HEAD", "GET", "POST", "PUT", "DELETE")
+
+    def __init__(self, app, origin, allowed=[], exposed=[]):
         self.app = app
         self.origin = origin
+        self.allowed = allowed
+        self.exposed = exposed
 
     def __call__(self, environ, start_response):
 
         def add_cors_headers(status, headers, exc_info=None):
             headers = Headers(headers)
             headers.add("Access-Control-Allow-Origin", self.origin(environ))
-            headers.add("Access-Control-Allow-Headers", "Origin, Content-Type")
             headers.add("Access-Control-Allow-Credentials", "true")
-            headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-            headers.add("Access-Control-Expose-Headers", "X-Set-Cookie")
+            headers.add("Access-Control-Allow-Methods", ", ".join(self.methods))
+            if self.allowed:
+                headers.add("Access-Control-Allow-Headers", ", ".join(self.allowed))
+            if self.exposed:
+                headers.add("Access-Control-Expose-Headers", ", ".join(self.exposed))
             return start_response(status, headers.to_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":
