@@ -145,15 +145,16 @@ class Isso(object):
 
 def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
+    if not any((threading, multiprocessing, uwsgi)):
+        raise RuntimeError("either set threading, multiprocessing or uwsgi")
+
     if threading:
         class App(Isso, ThreadedMixin):
             pass
-
-    if multiprocessing:
+    elif multiprocessing:
         class App(Isso, ProcessMixin):
             pass
-
-    if uwsgi:
+    else:
         class App(Isso, uWSGIMixin):
             pass
 
