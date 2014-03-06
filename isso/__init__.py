@@ -176,7 +176,7 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     if isso.conf.getboolean("server", "profile"):
         wrapper.append(partial(ProfilerMiddleware,
-            sort_by=("cumtime", ), restrictions=("isso/(?!lib)", 10)))
+            sort_by=("cumulative", ), restrictions=("isso/(?!lib)", 10)))
 
     wrapper.append(partial(SharedDataMiddleware, exports={
         '/js': join(dirname(__file__), 'js/'),
