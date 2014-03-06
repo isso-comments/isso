@@ -7,12 +7,14 @@ define(["app/markup"], function(Mark) {
 
     var ago = function(localTime, date) {
 
-        var diff = ((localTime.getTime() - date.getTime()) / 1000),
-            day_diff = Math.floor(diff / 86400);
+        var secs = ((localTime.getTime() - date.getTime()) / 1000)
 
-        if (isNaN(day_diff) || day_diff < 0) {
-            day_diff = diff = 0;
+        if (isNaN(secs) || secs < 0 ) {
+            secs = 0;
         }
+
+        var mins = Math.ceil(secs / 60), hours = Math.ceil(mins / 60),
+            days = Math.ceil(hours / 24);
 
         var i18n = function(msgid, n) {
             if (! n) {
@@ -22,14 +24,19 @@ define(["app/markup"], function(Mark) {
             }
         };
 
-        return day_diff === 0 && (
-                diff <    60 && i18n("date-now")  ||
-                diff <  3600 && i18n("date-minute", Math.floor(diff / 60)) ||
-                diff < 86400 && i18n("date-hour", Math.floor(diff / 3600))) ||
-            day_diff <   7 && i18n("date-day", day_diff) ||
-            day_diff <  31 && i18n("date-week", Math.ceil(day_diff / 7)) ||
-            day_diff < 365 && i18n("date-month", Math.ceil(day_diff / 30)) ||
-            i18n("date-year", Math.ceil(day_diff / 365.25));
+        return secs  <=  45 && i18n("date-now")  ||
+               secs  <=  90 && i18n("date-minute", 1) ||
+               mins  <=  45 && i18n("date-minute", mins) ||
+               mins  <=  90 && i18n("date-hour", 1) ||
+               hours <=  22 && i18n("date-hour", hours) ||
+               hours <=  36 && i18n("date-day", 1) ||
+               days  <=   5 && i18n("date-day", days) ||
+               days  <=   8 && i18n("date-week", 1) ||
+               days  <=  21 && i18n("date-week", Math.ceil(days / 7)) ||
+               days  <=  45 && i18n("date-month", 1) ||
+               days  <= 345 && i18n("date-month", Math.ceil(days / 30)) ||
+               days  <= 547 && i18n("date-year", 1) ||
+                               i18n("date-year", Math.ceil(days / 365.25));
     };
 
     return {
