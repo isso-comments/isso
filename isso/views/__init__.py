@@ -2,7 +2,8 @@
 
 from __future__ import unicode_literals
 
-import isso as dist
+import pkg_resources
+dist = pkg_resources.get_distribution("isso")
 
 import json
 

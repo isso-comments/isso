@@ -27,7 +27,8 @@
 
 from __future__ import print_function
 
-import isso as dist
+import pkg_resources
+dist = pkg_resources.get_distribution("isso")
 
 # check if exectuable is `isso` and gevent is available
 import sys
