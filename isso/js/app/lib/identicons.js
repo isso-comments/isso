@@ -4,7 +4,7 @@
 
   Inspired by http://codepen.io/gschier/pen/GLvAy
 */
-define(["app/lib/promise"], function(Q) {
+define(["app/lib/promise", "app/config"], function(Q, config) {
 
     "use strict";
 
@@ -40,7 +40,7 @@ define(["app/lib/promise"], function(Q) {
         svg.setAttribute("viewBox", "0 0 " + size + " " + size);
         svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
         svg.setAttribute("shape-rendering", "crispEdges");
-        fill(svg, 0, 0, 0, size + 2*padding, "#F0F0F0");
+        fill(svg, 0, 0, 0, size + 2*padding, config["avatar-bg"]);
 
         if (typeof key === null) {
             return svg;
@@ -48,46 +48,20 @@ define(["app/lib/promise"], function(Q) {
 
         Q.when(key, function(key) {
             var hash = pad((parseInt(key, 16) % Math.pow(2, 18)).toString(2), 18),
-                index = 0, color = null;
+                index = 0;
 
             svg.setAttribute("data-hash", key);
 
-            // via http://colrd.com/palette/19308/
-            switch (hash.substring(hash.length - 3, hash.length)) {
-            case "000":
-                color = "#9abf88";
-                break;
-            case "001":
-                color = "#5698c4";
-                break;
-            case "010":
-                color = "#e279a3";
-                break;
-            case "011":
-                color = "#9163b6";
-                break;
-            case "100":
-                color = "#be5168";
-                break;
-            case "101":
-                color = "#f19670";
-                break;
-            case "110":
-                color = "#e4bf80";
-                break;
-            case "111":
-                color = "#447c69";
-                break;
-            }
+            var i = parseInt(hash.substring(hash.length - 3, hash.length), 2),
+                color = config["avatar-fg"][i % config["avatar-fg"].length];
 
-            // FILL THE SQUARES
             for (var x=0; x<Math.ceil(GRID/2); x++) {
                 for (var y=0; y<GRID; y++) {
 
                     if (hash.charAt(index) === "1") {
                         fill(svg, x, y, padding, 8, color);
 
-                        // FILL RIGHT SIDE SYMMETRICALLY
+                        // fill right sight symmetrically
                         if (x < Math.floor(GRID/2)) {
                             fill(svg, (GRID-1) - x, y, padding, 8, color);
                         }

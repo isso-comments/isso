@@ -4,7 +4,10 @@ define(function() {
     var config = {
         "css": true,
         "lang": (navigator.language || navigator.userLanguage).split("-")[0],
-        "reply-to-self": false
+        "reply-to-self": false,
+        "avatar-bg": "#f0f0f0",
+        "avatar-fg": ["#9abf88", "#5698c4", "#e279a3", "#9163b6",
+                      "#be5168", "#f19670", "#e4bf80", "#447c69"].join(" ")
     };
 
     var js = document.getElementsByTagName("script");
@@ -20,6 +23,9 @@ define(function() {
             }
         });
     }
+
+    // split avatar-fg on whitespace
+    config["avatar-fg"] = config["avatar-fg"].split(" ");
 
     return config;
 
