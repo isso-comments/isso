@@ -232,8 +232,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'isso', u'Isso Documentation',
-     [u'Martin Zimmermann'], 1)
+    ('docs/man/index', 'man1/isso', u'a Disqus alternative',
+     [u'Martin Zimmermann'], 1),
+    ('docs/configuration/server', 'man5/isso.conf', u'server configuration',
+     [u'Martin Zimmermann'], 5)
 ]
 
 # If true, show URL addresses after external links.
