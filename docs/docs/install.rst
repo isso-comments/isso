@@ -4,6 +4,7 @@ Installation
 Requirements:
 
 -  Python 2.6, 2.7 or 3.3 (+ devel headers)
+-  SQLite 3.3.8 or later
 -  a working C compiler
 
 Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:
