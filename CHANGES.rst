@@ -4,7 +4,30 @@ Changelog for Isso
 0.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- fix undefined timestamp when client time differs for more than 1 second.
+  The human-readable "time ago" deltas have been refined to match `Moment.js`_
+  behavior.
+
+- avatar colors and background can now be customized:
+
+  * ``data-isso-avatar-bg="#f0f0f0"`` sets the background color
+  * ``data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."`` sets possible
+    avatar colors (up to 8 colors are possible).
+
+- new [markup] section to customize Misaka's Markdown generation (strikethrough,
+  superscript and autolink enabled by default). Furthermore, you can now allow
+  certain HTML elemenets and attributes in the generated output, e.g. to enable
+  images, set
+
+      [markup]
+      allowed-elements = img
+      allowed-attributes = src
+
+  Check docs/configuration/server.rst for more details.
+
+- replace requirejs-domready with a (self-made) HTML5 idiom, #51
+
+.. _Moment.js: http://momentjs.com/docs/#/displaying/fromnow/
 
 
 0.7 (2014-01-29)
@@ -32,6 +55,7 @@ Changelog for Isso
 
 - the (by default random) session-key is now shown on application startup
   to make different keys per startup more visible
+
 - use `threading.lock` by default for systems without semaphore support
 
 .. _Transifex: https://www.transifex.com/projects/p/isso/
