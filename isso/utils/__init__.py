@@ -125,10 +125,18 @@ class JSONResponse(Response):
 
 
 def origin(hosts):
+    """
+    Return a function that returns a valid HTTP Origin or localhost
+    if none found.
+    """
 
     hosts = [x.rstrip("/") for x in hosts]
 
     def func(environ):
+
+        if not hosts:
+            return "http://localhost/"
+
         for host in hosts:
             if environ.get("HTTP_ORIGIN", None) == host:
                 return host

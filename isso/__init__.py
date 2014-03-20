@@ -167,7 +167,9 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
                 logger.info("connected to %s", host)
                 break
     else:
-        logger.warn("unable to connect to %s", ", ".join(conf.getiter("general", "host")))
+        logger.warn("unable to connect to your website, Isso will probably not "
+                    "work correctly. Please make sure, Isso can reach your "
+                    "website via HTTP(S).")
 
     wrapper = [local_manager.make_middleware]
 
@@ -214,6 +216,10 @@ def main():
         conf.set("guard", "enabled", "off")
         migrate.disqus(db.SQLite3(dbpath, conf), args.dump)
         sys.exit(0)
+
+    if not any(conf.getiter("general", "host")):
+        logger.error("No website(s) configured, Isso won't work.")
+        sys.exit(1)
 
     if conf.get("server", "listen").startswith("http://"):
         host, port, _ = parse.host(conf.get("server", "listen"))
