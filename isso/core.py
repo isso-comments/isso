@@ -167,11 +167,6 @@ class Config:
                     logger.info("Your `session-key` has been stored in the "
                                 "database itself, this option is now unused")
 
-        if rv.get("smtp", "username") and not rv.get("general", "notify"):
-            logger.warn(("SMTP is no longer enabled by default, add "
-                         "`notify = smtp` to the general section to "
-                         "enable SMTP nofications."))
-
         return rv
 
 
