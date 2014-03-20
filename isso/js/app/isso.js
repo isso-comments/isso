@@ -157,7 +157,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         // update vote counter, but hide if votes sum to 0
         var votes = function(value) {
             var span = $("span.votes", footer);
-            if (span === null && value === 0) {
+            if (span === null && value !== 0) {
                 footer.prepend($.new("span.votes", value));
             } else {
                 if (value === 0) {
@@ -240,8 +240,8 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                     } else {
                         $("span.note", header).textContent = msgs["comment-deleted"];
                         text.innerHTML = "<p>&nbsp;</p>";
-                        $("a.edit", footer).remove()
-                        $("a.delete", footer).remove()
+                        $("a.edit", footer).remove();
+                        $("a.delete", footer).remove();
                     }
                     del.textContent = msgs["comment-delete"];
                 });
