@@ -3,10 +3,8 @@
 from __future__ import print_function
 
 import io
-import os
 import time
 import logging
-import binascii
 import threading
 import multiprocessing
 
@@ -115,7 +113,7 @@ class Config:
     default = [
         "[general]",
         "name = ",
-        "dbpath = /tmp/isso.db", "session-key = %s" % binascii.b2a_hex(os.urandom(16)),
+        "dbpath = /tmp/isso.db",
         "host = http://localhost:8080/", "max-age = 15m",
         "notify = ",
         "[moderation]",
@@ -164,6 +162,9 @@ class Config:
                     logger.warn("use `listen = http://$host:$port` instead")
                 if item == ("smtp", "ssl"):
                     logger.warn("use `security = none | starttls | ssl` instead")
+                if item == ("general", "session-key"):
+                    logger.info("Your `session-key` has been stored in the "
+                                "database itself, this option is now unused")
 
         if rv.get("smtp", "username") and not rv.get("general", "notify"):
             logger.warn(("SMTP is no longer enabled by default, add "

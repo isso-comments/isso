@@ -43,7 +43,6 @@ session key and hostname. Here are the default values for this section:
     name =
     host = http://localhost:8080/
     max-age = 15m
-    session-key = ... ; python: binascii.b2a_hex(os.urandom(24))
     notify =
 
 dbpath
@@ -70,11 +69,6 @@ host
             https://localhost/
 
     This is useful, when your website is available on HTTP and HTTPS.
-
-session-key
-    private session key to validate client cookies. If you restart the
-    application several times per hour for whatever reason, use a fixed
-    key.
 
 max-age
     time range that allows users to edit/remove their own comments. See
@@ -136,8 +130,7 @@ listen
 
 reload
     reload application, when the source code has changed. Useful for
-    development (don't forget to use a fixed `session-key`). Only works
-    when ``gevent`` and ``uwsgi`` are *not* available.
+    development. Only works with the internal webserver.
 
 profile
     show 10 most time consuming function in Isso after each request. Do

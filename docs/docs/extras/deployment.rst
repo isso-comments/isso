@@ -121,15 +121,6 @@ Next, copy'n'paste to `/var/www/isso.wsgi`:
 
     application = make_app(Config.load("/path/to/isso.cfg"))
 
-Also make sure, you set a static key because `mod_wsgi` generates a session
-key per thread/process. This may result in random 403 errors when you edit or
-delete comments.
-
-.. code-block:: ini
-
-    [general]
-    ; cat /dev/urandom | strings | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'
-    session-key = superrandomkey1
 
 `mod_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -170,12 +161,3 @@ Next, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
 
     application = make_app(Config.load("/path/to/isso.cfg"))
     WSGIServer(application).run()
-
-Similar to mod_wsgi_, set a static session key if you are using more than one process
-to avoid random errors.
-
-.. code-block:: ini
-
-    [general]
-    ; cat /dev/urandom | strings | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'
-    session-key = superrandomkey1

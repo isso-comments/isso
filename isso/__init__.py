@@ -85,7 +85,7 @@ class Isso(object):
 
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
-        self.signer = URLSafeTimedSerializer(conf.get('general', 'session-key'))
+        self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
         self.markup = html.Markup(conf.section('markup'))
 
         super(Isso, self).__init__(conf)
@@ -159,9 +159,6 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
             pass
 
     isso = App(conf)
-
-    # show session-key (to see that it changes randomely if unset)
-    logger.info("session-key = %s", isso.conf.get("general", "session-key"))
 
     # check HTTP server connection
     for host in conf.getiter("general", "host"):
