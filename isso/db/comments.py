@@ -182,7 +182,7 @@ class Comments:
 
         threads = dict(self.db.execute([
             'SELECT threads.uri, COUNT(comments.id) FROM comments',
-            'LEFT OUTER JOIN threads ON threads.id = tid',
+            'LEFT OUTER JOIN threads ON threads.id = tid AND comments.mode = 1',
             'GROUP BY threads.uri'
         ]).fetchall())
 
