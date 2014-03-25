@@ -8,7 +8,7 @@ ISSO_CSS_SRC_DEPS := $(shell find isso/css -type f | grep .scss)
 RST := $(shell find docs/ -type f -name  '*.rst')
 MAN := man/man1/isso.1 man/man5/isso.conf.5
 
-WWW := docs/index.html docs/isso.example.cfg $(wildcard docs/_static/*)
+WWW := docs/index.html share/isso.conf $(wildcard docs/_static/*)
 CSS := docs/_static/css/site.css
 
 all: man js site

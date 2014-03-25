@@ -1,6 +1,8 @@
 include man/man1/isso.1
 include man/man5/isso.conf.5
 
+include share/isso.conf
+
 include isso/js/embed.min.js
 include isso/js/embed.dev.js
 include isso/js/count.min.js
