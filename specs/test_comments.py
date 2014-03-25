@@ -79,8 +79,6 @@ class TestComments(unittest.TestCase):
         rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Здравствуй, мир!'}))
 
         self.assertEqual(rv.status_code, 201)
-        self.assertEqual(any(filter(lambda header: header[0], 'Set-Cookie', rv.headers)))
-
         rv = loads(rv.data)
 
         self.assertEqual(rv["mode"], 1)
