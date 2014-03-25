@@ -134,7 +134,7 @@ class Config:
         "direct-reply = 3",
         "reply-to-self = false",
         "[markup]",
-        "options = strikethrough, superscript, autolink",
+        "options = strikethrough, autolink",
         "allowed-elements = ",
         "allowed-attributes = "
     ]
