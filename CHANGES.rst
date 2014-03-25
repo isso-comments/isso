@@ -4,6 +4,17 @@ Changelog for Isso
 0.8 (unreleased)
 ----------------
 
+- comment count requests are now bundled into a single POST request, but the old
+  API is still there (deprecated though).
+
+- store *session-key* in database (once generated on database creation). That
+  means links to activate, edit or delete comments are now always valid even
+  when you restart Isso.
+
+  Currently statically set session keys in ``[general]`` are automatically
+  migrated into the database on startup and you will get a notice that you can
+  remove this option.
+
 - fix undefined timestamp when client time differs for more than 1 second.
   The human-readable "time ago" deltas have been refined to match `Moment.js`_
   behavior.
