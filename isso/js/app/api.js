@@ -139,13 +139,11 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    var count = function(tid) {
+    var count = function(urls) {
         var deferred = Q.defer();
-        curl("GET", endpoint + "/count?" + qs({uri: tid || location}), null, function(rv) {
+        curl("POST", endpoint + "/count", JSON.stringify(urls), function(rv) {
             if (rv.status === 200) {
                 deferred.resolve(JSON.parse(rv.body));
-            } else if (rv.status === 404) {
-                deferred.resolve(0);
             } else {
                 deferred.reject(rv.body);
             }

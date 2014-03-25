@@ -22,6 +22,8 @@ from isso import Isso, core
 from isso.utils import http
 from isso.views import comments
 
+from isso.compat import iteritems
+
 from fixtures import curl, loads, FakeIP, JSONClient
 http.curl = curl
 
@@ -273,6 +275,17 @@ class TestComments(unittest.TestCase):
 
         rv = self.get('/count?uri=%2Fpath%2F')
         self.assertEqual(rv.status_code, 404)
+
+    def testMultipleCounts(self):
+
+        expected = {'a': 1, 'b': 2, 'c': 0}
+
+        for uri, count in iteritems(expected):
+            for _ in range(count):
+                self.post('/new?uri=%s' % uri, data=json.dumps({"text": "..."}))
+
+        rv = self.post('/count', data=json.dumps(list(expected.keys())))
+        self.assertEqual(loads(rv.data), list(expected.values()))
 
     def testModify(self):
         self.post('/new?uri=test', data=json.dumps({"text": "Tpyo"}))

@@ -175,14 +175,18 @@ class Comments:
             return {'likes': likes + 1, 'dislikes': dislikes}
         return {'likes': likes, 'dislikes': dislikes + 1}
 
-    def count(self, uri):
+    def count(self, *urls):
         """
-        Return comment count for :param:`uri`.
+        Return comment count for one ore more urls..
         """
-        return self.db.execute([
-            'SELECT COUNT(comments.id) FROM comments INNER JOIN threads ON',
-            '    threads.uri=? AND comments.tid=threads.id AND comments.mode=1;'],
-            (uri, )).fetchone()
+
+        threads = dict(self.db.execute([
+            'SELECT threads.uri, COUNT(comments.id) FROM comments',
+            'LEFT OUTER JOIN threads ON threads.id = tid',
+            'GROUP BY threads.uri'
+        ]).fetchall())
+
+        return [threads.get(url, 0) for url in urls]
 
     def purge(self, delta):
         """
