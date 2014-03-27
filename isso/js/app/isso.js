@@ -15,7 +15,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         $(".avatar > svg", el).replace(lib.identicons.blank(4, 48));
 
         // on text area focus, generate identicon from IP address
-        $(".textarea-wrapper > textarea", el).on("focus", function() {
+        $(".textarea-wrapper > .textarea", el).on("focus", function() {
             if ($(".avatar svg", el).getAttribute("className") === "blank") {
                 $(".avatar svg", el).replace(
                     lib.identicons.generate(lib.pbkdf2(api.remote_addr(), api.salt, 1000, 6), 4, 48));
@@ -45,8 +45,10 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         el.onsuccess = function() {};
 
         el.validate = function() {
-            if ($("textarea", this).value.length < 3) {
-                $("textarea", this).focus();
+            if (utils.text($(".textarea", this).innerHTML).length < 3 ||
+                $(".textarea", this).classList.contains("placeholder"))
+            {
+                $(".textarea", this).focus();
                 return false;
             }
             return true;
@@ -62,14 +64,13 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
                 author: $("[name=author]", el).value || null,
                 email: $("[name=email]", el).value || null,
-                text: $("textarea", el).value,
+                text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
             }).then(function(comment) {
                 $("[name=author]", el).value = "";
                 $("[name=email]", el).value = "";
-                $("textarea", el).value = "";
-                $("textarea", el).rows = 2;
-                $("textarea", el).blur();
+                $(".textarea", el).innerHTML = "";
+                $(".textarea", el).blur();
                 insert(comment, true);
 
                 if (parent !== null) {
@@ -79,8 +80,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             });
         });
 
-        // copy'n'paste sluggy automagically dynamic textarea resize
-        lib.fancy.autoresize($("textarea", el), 48);
+        lib.editorify($(".textarea", el));
 
         return el;
     };
@@ -136,7 +136,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             function(toggler) {
                 form = footer.insertAfter(new Postbox(comment.id));
                 form.onsuccess = function() { toggler.next(); };
-                $("textarea", form).focus();
+                $(".textarea", form).focus();
                 $("a.reply", footer).textContent = msgs["comment-close"];
             },
             function() {
@@ -186,34 +186,44 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
 
                 edit.textContent = msgs["comment-save"];
                 edit.insertAfter($.new("a.cancel", msgs["comment-cancel"])).on("click", function() {
-                    text.textContent = "";
-                    text.className = "text";
-                    text.append(comment.text);
+                    toggler.canceled = true;
                     toggler.next();
                 });
 
+                toggler.canceled = false;
                 api.view(comment.id, 1).then(function(rv) {
-                    var textarea = $.new("textarea", rv.text);
-                    lib.fancy.autoresize(textarea, 48);
-                    text.className = "textarea-wrapper";
+                    var textarea = lib.editorify($.new("div.textarea"));
+
+                    textarea.textContent = rv.text;
+                    textarea.focus();
+
+                    text.classList.remove("text");
+                    text.classList.add("textarea-wrapper");
+
                     text.textContent = "";
                     text.append(textarea);
-                    textarea.focus();
                 });
             },
             function(toggler) {
-                var textarea = $("textarea", text);
-                if (textarea && textarea.value.length < 3) {
-                    textarea.focus();
-                    toggler.wait();
-                    return;
-                } else if (textarea) {
-                    api.modify(comment.id, {"text": textarea.value}).then(function(rv) {
-                        text.innerHTML = rv.text;
-                        text.className = "text";
-                        comment.text = rv.text;
-                    });
+                var textarea = $(".textarea", text);
+
+                if (! toggler.canceled && textarea !== null) {
+                    if (utils.text(textarea.innerHTML).length < 3) {
+                        textarea.focus();
+                        toggler.wait();
+                        return;
+                    } else {
+                        api.modify(comment.id, {"text": utils.text(textarea.innerHTML)}).then(function(rv) {
+                            text.innerHTML = rv.text;
+                            comment.text = rv.text;
+                        });
+                    }
+                } else {
+                    text.innerHTML = comment.text;
                 }
+
+                text.classList.remove("textarea-wrapper");
+                text.classList.add("text");
 
                 $("a.cancel", footer).remove();
                 $("a.edit", footer).textContent = msgs["comment-edit"];

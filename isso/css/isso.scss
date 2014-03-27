@@ -27,6 +27,16 @@ a {
     font-weight: bold;
     font-family: "Helvetica", Arial, sans-serif;
   }
+
+  .textarea {
+    white-space: pre;
+    outline: 0px solid transparent;
+  }
+
+  .textarea.placeholder {
+    color: #AAA;
+  }
+
 }
 
 .parent-highlight {
@@ -82,6 +92,10 @@ a {
       }
     }
 
+    > .textarea-wrapper .textarea {
+      margin-top: 0.2em;
+    }
+
     > div.text {
 
       p {
@@ -98,9 +112,10 @@ a {
 
     }
 
-    > div.textarea-wrapper textarea {
+    > div.textarea-wrapper .textarea {
       @include fill-parent;
       @include isso-shadow;
+      min-height: 48px;
       font: inherit;
     }
 
@@ -155,12 +170,9 @@ a {
   > .form-wrapper {
     @include span-columns(10 of 11);
 
-    textarea {
+    .textarea {
       @include fill-parent;
       @include isso-shadow;
-      @include placeholder {
-        color: #AAA;
-      }
 
       min-height: 48px;
       font: inherit;

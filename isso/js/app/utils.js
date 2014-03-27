@@ -1,4 +1,5 @@
 define(["app/markup"], function(Mark) {
+    "use strict";
 
     // return `cookie` string if set
     var cookie = function(cookie) {
@@ -7,7 +8,7 @@ define(["app/markup"], function(Mark) {
 
     var ago = function(localTime, date) {
 
-        var secs = ((localTime.getTime() - date.getTime()) / 1000)
+        var secs = ((localTime.getTime() - date.getTime()) / 1000);
 
         if (isNaN(secs) || secs < 0 ) {
             secs = 0;
@@ -39,8 +40,17 @@ define(["app/markup"], function(Mark) {
                                i18n("date-year", Math.ceil(days / 365.25));
     };
 
+    var text = function(html) {
+        var _ = document.createElement("div");
+        _.innerHTML = html.replace(/<div><br><\/div>/gi, '<br>')
+                          .replace(/<div>/gi,'<br>')
+                          .replace(/<br>/gi, '\n');
+        return _.textContent.trim();
+    };
+
     return {
         cookie: cookie,
-        ago: ago
+        ago: ago,
+        text: text
     };
 });
