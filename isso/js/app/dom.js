@@ -32,7 +32,7 @@ define(function() {
         by default, set :param prevents: to `false` to change that behavior.
          */
         this.addEventListener(type, function(event) {
-            listener();
+            listener(event);
             if (prevent === undefined || prevent) {
                 event.preventDefault();
             }
