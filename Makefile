@@ -43,8 +43,11 @@ coverage: $(ISSO_PY_SRC)
 	nosetests --with-doctest --with-coverage --cover-package=isso \
 	--cover-html isso/ specs/
 
+test: $($ISSO_PY_SRC)
+	python setup.py nosetests
+
 clean:
 	rm -f $(MAN) $(CSS) $(ISSO_JS_DST) $(ISSO_CSS_DST)
 
-.PHONY: clean site man init js css coverage
+.PHONY: clean site man init js css coverage test
 

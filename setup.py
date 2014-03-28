@@ -40,5 +40,5 @@ setup(
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
-    },
+    }
 )
