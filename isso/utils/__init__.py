@@ -27,12 +27,6 @@ def anonymize(remote_addr):
     Anonymize IPv4 and IPv6 :param remote_addr: to /24 (zero'd)
     and /48 (zero'd).
 
-    >>> anonymize(u'12.34.56.78')  # doctest: +IGNORE_UNICODE
-    '12.34.56.0'
-    >>> anonymize(u'1234:5678:90ab:cdef:fedc:ba09:8765:4321') # doctest: +IGNORE_UNICODE
-    '1234:5678:90ab:0000:0000:0000:0000:0000'
-    >>> anonymize(u'::ffff:127.0.0.1')  # doctest: +IGNORE_UNICODE
-    '127.0.0.0'
     """
     try:
         ipv4 = ipaddress.IPv4Address(remote_addr)

@@ -57,28 +57,6 @@ class IssoParser(ConfigParser):
     Extended :class:`ConfigParser` to parse human-readable timedeltas
     into seconds and handles multiple values per key.
 
-    >>> import io
-    >>> parser = IssoParser(allow_no_value=True)
-    >>> parser.read_file(io.StringIO(u'''
-    ... [foo]
-    ... bar = 1h
-    ... baz = 12
-    ... spam = a, b, cdef
-    ... bla =
-    ...     spam
-    ...     ham
-    ... asd = fgh
-    ... '''))
-    >>> parser.getint("foo", "bar")
-    3600
-    >>> parser.getint("foo", "baz")
-    12
-    >>> parser.getlist("foo", "spam")  # doctest: +IGNORE_UNICODE
-    ['a', 'b', 'cdef']
-    >>> list(parser.getiter("foo", "bla"))  # doctest: +IGNORE_UNICODE
-    ['spam', 'ham']
-    >>> list(parser.getiter("foo", "asd"))  # doctest: +IGNORE_UNICODE
-    ['fgh']
     """
 
     @classmethod

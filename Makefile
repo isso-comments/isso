@@ -38,8 +38,8 @@ site: $(RST) $(WWW) $(CSS)
 	cd docs && sphinx-build -b dirhtml . _build/html
 
 coverage:
-	nosetests --with-doctest --with-doctest-ignore-unicode --with-coverage \
-	          --cover-package=isso --cover-html isso/ specs/
+	nosetests --with-doctest --with-coverage --cover-package=isso \
+	--cover-html isso/ specs/
 
 clean:
 	rm -f $(MAN) $(CSS) $(ISSO_JS_DST) $(ISSO_CSS_DST)

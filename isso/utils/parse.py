@@ -56,44 +56,6 @@ def thread(data, default=u"Untitled.", id=None):
     """
     Extract <h1> title from web page. The title is *probably* the text node,
     which is the nearest H1 node in context to an element with the `isso-thread` id.
-
-    >>> thread("asdf")  # doctest: +IGNORE_UNICODE
-    (None, 'Untitled.')
-    >>> thread('''
-    ... <html>
-    ... <head>
-    ...     <title>Foo!</title>
-    ... </head>
-    ... <body>
-    ...     <header>
-    ...         <h1>generic website title.</h1>
-    ...         <h2>subtile title.</h2>
-    ...     </header>
-    ...     <article>
-    ...         <header>
-    ...             <h1>Can you find me?</h1>
-    ...         </header>
-    ...         <section id="isso-thread">
-    ...         </section>
-    ...     </article>
-    ... </body>
-    ... </html>''')  # doctest: +IGNORE_UNICODE
-    (None, 'Can you find me?')
-    >>> thread('''
-    ... <html>
-    ... <body>
-    ... <h1>I'm the real title!1
-    ... <section data-title="No way%21" id="isso-thread">
-    ... ''')  # doctest: +IGNORE_UNICODE
-    (None, 'No way!')
-    >>> thread('''
-    ... <section id="isso-thread" data-title="Test" data-isso-id="test">
-    ... ''')  # doctest: +IGNORE_UNICODE
-    ('test', 'Test')
-    >>> thread('''
-    ... <section id="isso-thread" data-isso-id="Fuu.">
-    ... ''')  # doctest: +IGNORE_UNICODE
-    ('Fuu.', 'Untitled.')
     """
 
     html = html5lib.parse(data, treebuilder="dom")
