@@ -4,6 +4,20 @@ Changelog for Isso
 0.8 (unreleased)
 ----------------
 
+- replace ``<textarea>`` with ``<div contentedtiable="true">`` to remove the
+  sluggish auto-resize on input feature. If you use a custom CSS, replace
+  ``textarea`` with ``.textarea`` and also set ``white-space: pre``.
+
+- remove superscript extension from Markdown defaults as it may lead to
+  unexpected behavior for certain smileys such as "^^". To enable the extension,
+  add
+
+    [markup]
+    options = superscript
+    allowed-elements = sup
+
+  to your configuration.
+
 - comment count requests are now bundled into a single POST request, but the old
   API is still there (deprecated though).
 
