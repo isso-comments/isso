@@ -7,7 +7,7 @@ try:
 except ImportError:
     import http.client as httplib
 
-from isso.utils import parse
+from isso.wsgi import urlsplit
 
 
 class curl(object):
@@ -29,7 +29,7 @@ class curl(object):
 
     def __enter__(self):
 
-        host, port, ssl = parse.host(self.host)
+        host, port, ssl = urlsplit(self.host)
         http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
 
         self.con = http(host, port, timeout=self.timeout)

@@ -3,18 +3,21 @@
 import socket
 
 try:
-    from urllib.parse import quote
+    from urllib.parse import quote, urlparse
 
     from socketserver import ThreadingMixIn
     from http.server import HTTPServer
 except ImportError:
     from urllib import quote
+    from urlparse import urlparse
 
     from SocketServer import ThreadingMixIn
     from BaseHTTPServer import HTTPServer
 
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.datastructures import Headers
+
+from isso.compat import string_types
 
 
 def host(environ):
@@ -38,6 +41,58 @@ def host(environ):
                 url += ':' + environ['SERVER_PORT']
 
     return url + quote(environ.get('SCRIPT_NAME', ''))
+
+
+def urlsplit(name):
+    """
+    Parse :param:`name` into (netloc, port, ssl)
+    """
+
+    if not (isinstance(name, string_types)):
+        name = str(name)
+
+    if not name.startswith(('http://', 'https://')):
+        name = 'http://' + name
+
+    rv = urlparse(name)
+    if rv.scheme == 'https' and rv.port is None:
+        return (rv.netloc, 443, True)
+    return (rv.netloc.rsplit(':')[0], rv.port or 80, rv.scheme == 'https')
+
+
+def urljoin(netloc, port, ssl):
+    """
+    Basically the counter-part of :func:`urlsplit`.
+    """
+
+    rv = ("https" if ssl else "http") + "://" + netloc
+    if ssl and port != 443 or not ssl and port != 80:
+        rv += ":%i" % port
+    return rv
+
+
+def origin(hosts):
+    """
+    Return a function that returns a valid HTTP Origin or localhost
+    if none found.
+    """
+
+    hosts = [urlsplit(h) for h in hosts]
+
+    def func(environ):
+
+        loc = environ.get("HTTP_ORIGIN", environ.get("HTTP_REFERER", None))
+
+        if not hosts or not loc:
+            return "http://invalid.local"
+
+        for split in hosts:
+            if urlsplit(loc) == split:
+                return urljoin(*split)
+        else:
+            return urljoin(*hosts[0])
+
+    return func
 
 
 class SubURI(object):

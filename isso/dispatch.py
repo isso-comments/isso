@@ -3,11 +3,6 @@
 import os
 import logging
 
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
-
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.wrappers import Response
 

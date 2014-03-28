@@ -64,7 +64,8 @@ local_manager = LocalManager([local])
 
 from isso import db, migrate, wsgi, ext, views
 from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
-from isso.utils import parse, http, JSONRequest, origin, html
+from isso.wsgi import origin, urlsplit
+from isso.utils import http, JSONRequest, html
 from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
@@ -183,7 +184,8 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     wrapper.append(partial(wsgi.CORSMiddleware,
         origin=origin(isso.conf.getiter("general", "host")),
-        allowed=("Origin", "Content-Type"), exposed=("X-Set-Cookie", "Date")))
+        allowed=("Origin", "Referer", "Content-Type"),
+        exposed=("X-Set-Cookie", "Date")))
 
     wrapper.extend([wsgi.SubURI, ProxyFix])
 
@@ -222,7 +224,7 @@ def main():
         sys.exit(1)
 
     if conf.get("server", "listen").startswith("http://"):
-        host, port, _ = parse.host(conf.get("server", "listen"))
+        host, port, _ = urlsplit(conf.get("server", "listen"))
         try:
             from gevent.pywsgi import WSGIServer
             WSGIServer((host, port), make_app(conf)).serve_forever()

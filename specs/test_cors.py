@@ -9,8 +9,7 @@ except ImportError:
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso.wsgi import CORSMiddleware
-from isso.utils import origin
+from isso.wsgi import CORSMiddleware, origin
 
 
 def hello_world(environ, start_response):

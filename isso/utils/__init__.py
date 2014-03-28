@@ -5,7 +5,6 @@ from __future__ import division
 import pkg_resources
 werkzeug = pkg_resources.get_distribution("werkzeug")
 
-import io
 import json
 import hashlib
 
@@ -120,27 +119,5 @@ class JSONResponse(Response):
 
     def __init__(self, obj, *args, **kwargs):
         kwargs["content_type"] = "application/json"
-        return super(JSONResponse, self).__init__(
+        super(JSONResponse, self).__init__(
             json.dumps(obj).encode("utf-8"), *args, **kwargs)
-
-
-def origin(hosts):
-    """
-    Return a function that returns a valid HTTP Origin or localhost
-    if none found.
-    """
-
-    hosts = [x.rstrip("/") for x in hosts]
-
-    def func(environ):
-
-        if not hosts:
-            return "http://localhost/"
-
-        for host in hosts:
-            if environ.get("HTTP_ORIGIN", None) == host:
-                return host
-        else:
-            return hosts[0]
-
-    return func
