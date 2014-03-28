@@ -232,9 +232,9 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('docs/man/index', 'man1/isso', u'a Disqus alternative',
+    ('docs/man/index', 'isso', u'a Disqus alternative',
      [u'Martin Zimmermann'], 1),
-    ('docs/configuration/server', 'man5/isso.conf', u'server configuration',
+    ('docs/configuration/server', 'isso.conf', u'server configuration',
      [u'Martin Zimmermann'], 5)
 ]
 

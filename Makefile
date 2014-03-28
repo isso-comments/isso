@@ -32,6 +32,8 @@ css: $(ISSO_CSS_DST)
 
 man: $(RST)
 	sphinx-build -b man docs/ man/
+	mv man/isso.1 man/man1/isso.1
+	mv man/isso.conf.5 man/man5/isso.conf.5
 
 ${CSS}: docs/_static/css/site.scss
 	scss --no-cache $< $@
