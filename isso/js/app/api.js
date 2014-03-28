@@ -41,7 +41,10 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
 
         function onload() {
 
-            globals.offset.update(new Date(xhr.getResponseHeader("Date")));
+            var date = xhr.getResponseHeader("Date");
+            if (date !== null) {
+                globals.offset.update(new Date(date));
+            }
 
             var cookie = xhr.getResponseHeader("X-Set-Cookie");
             if (cookie && cookie.match(/^isso-/)) {

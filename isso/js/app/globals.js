@@ -6,7 +6,7 @@ define(function() {
     };
 
     Offset.prototype.update = function(remoteTime) {
-        this.values.push((new Date()).getTime() - remoteTime);
+        this.values.push((new Date()).getTime() - remoteTime.getTime());
     };
 
     Offset.prototype.localTime = function() {
