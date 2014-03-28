@@ -20,7 +20,7 @@ from werkzeug.datastructures import Headers
 from isso.compat import string_types
 
 
-def host(environ):
+def host(environ):  # pragma: no cover
     """
     Reconstruct host from environment. A modified version
     of http://www.python.org/dev/peps/pep-0333/#url-reconstruction

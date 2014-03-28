@@ -5,6 +5,8 @@ ISSO_CSS_DST := isso/css/isso.css
 ISSO_CSS_SRC := isso/css/isso.scss
 ISSO_CSS_SRC_DEPS := $(shell find isso/css -type f | grep .scss)
 
+ISSO_PY_SRC := $(shell git ls-files | grep .py)
+
 RST := $(shell find docs/ -type f -name  '*.rst')
 MAN := man/man1/isso.1 man/man5/isso.conf.5
 
@@ -37,12 +39,12 @@ ${CSS}: docs/_static/css/site.scss
 site: $(RST) $(WWW) $(CSS)
 	cd docs && sphinx-build -b dirhtml . _build/html
 
-coverage:
+coverage: $(ISSO_PY_SRC)
 	nosetests --with-doctest --with-coverage --cover-package=isso \
 	--cover-html isso/ specs/
 
 clean:
 	rm -f $(MAN) $(CSS) $(ISSO_JS_DST) $(ISSO_CSS_DST)
 
-.PHONY: clean site man init js css
+.PHONY: clean site man init js css coverage
 
