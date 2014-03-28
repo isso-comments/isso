@@ -40,8 +40,7 @@ site: $(RST) $(WWW) $(CSS)
 	cd docs && sphinx-build -b dirhtml . _build/html
 
 coverage: $(ISSO_PY_SRC)
-	nosetests --with-doctest --with-coverage --cover-package=isso \
-	--cover-html isso/ specs/
+	nosetests --with-doctest --with-coverage --cover-package=isso --cover-html isso/
 
 test: $($ISSO_PY_SRC)
 	python setup.py nosetests
