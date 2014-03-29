@@ -29,7 +29,7 @@ a {
   }
 
   .textarea {
-    white-space: pre;
+    min-height: 48px;
     outline: 0px solid transparent;
   }
 
@@ -115,8 +115,6 @@ a {
     > div.textarea-wrapper .textarea {
       @include fill-parent;
       @include isso-shadow;
-      min-height: 48px;
-      font: inherit;
     }
 
     > .isso-comment-footer {
@@ -173,9 +171,6 @@ a {
     .textarea {
       @include fill-parent;
       @include isso-shadow;
-
-      min-height: 48px;
-      font: inherit;
     }
 
     > .textarea-wrapper {
