@@ -81,10 +81,13 @@ def origin(hosts):
 
     def func(environ):
 
+        if not hosts:
+            return "http://invalid.local"
+
         loc = environ.get("HTTP_ORIGIN", environ.get("HTTP_REFERER", None))
 
-        if not hosts or not loc:
-            return "http://invalid.local"
+        if loc is None:
+            return urljoin(*hosts[0])
 
         for split in hosts:
             if urlsplit(loc) == split:

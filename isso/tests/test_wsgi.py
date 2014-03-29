@@ -46,3 +46,4 @@ class TestWSGIUtilities(unittest.TestCase):
                          "http://foo.bar")
         self.assertEqual(origin({"HTTP_ORIGIN": "http://spam.baz"}),
                          "http://foo.bar")
+        self.assertEqual(origin({}), "http://foo.bar")

@@ -41,7 +41,7 @@ session key and hostname. Here are the default values for this section:
     [general]
     dbpath = /tmp/isso.db
     name =
-    host = http://localhost:8080/
+    host =
     max-age = 15m
     notify =
 
@@ -54,21 +54,22 @@ name
     not used otherwise.
 
 host
-    URL to your website. When you start Isso, it will probe your website with
-    a simple ``GET /`` request to see if it can reach the webserver. If this
-    fails, Isso may not be able check if a web page exists, thus fails to
-    accept new comments.
+    Your website(s). If Isso is unable to connect to at least on site, you'll
+    get a warning during startup and comments are most likely non-functional.
 
-    You can supply more than one host:
+    You'll need at least one host/website to run Isso. This is due to security
+    reasons: Isso uses CORS_ to embed comments and to restrict comments only to
+    your website, you have to "whitelist" your website(s).
+
+    I recommend the first value to be a non-SSL website that is used as fallback
+    if Firefox users (and only those) supress their HTTP referer completely.
 
     .. code-block:: ini
 
         [general]
         host =
-            http://localhost/
-            https://localhost/
-
-    This is useful, when your website is available on HTTP and HTTPS.
+            http://example.tld/
+            https://example.tld/
 
 max-age
     time range that allows users to edit/remove their own comments. See
@@ -77,6 +78,9 @@ max-age
 notify
     Select notification backend for new comments. Currently, only SMTP
     is available.
+
+
+.. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
 
 Moderation
