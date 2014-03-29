@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.8.1 (2014-03-29)
+0.8.2 (2014-03-29)
 ------------------
 
 - replace ``<textarea>`` with ``<div contentedtiable="true">`` to remove the
