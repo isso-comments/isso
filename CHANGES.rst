@@ -1,8 +1,8 @@
 Changelog for Isso
 ==================
 
-0.8 (2014-03-28)
-----------------
+0.8.1 (2014-03-29)
+------------------
 
 - replace ``<textarea>`` with ``<div contentedtiable="true">`` to remove the
   sluggish auto-resize on input feature. If you use a custom CSS, replace
