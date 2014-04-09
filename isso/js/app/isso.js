@@ -194,7 +194,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 api.view(comment.id, 1).then(function(rv) {
                     var textarea = lib.editorify($.new("div.textarea"));
 
-                    textarea.textContent = rv.text;
+                    textarea.innerHTML = utils.detext(rv.text);
                     textarea.focus();
 
                     text.classList.remove("text");
