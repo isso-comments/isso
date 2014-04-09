@@ -48,9 +48,15 @@ define(["app/markup"], function(Mark) {
         return _.textContent.trim();
     };
 
+    var detext = function(text) {
+        return text.replace(/\n\n/gi, '<br><div><br></div>')
+                   .replace(/\n/gi, '<br>');
+    };
+
     return {
         cookie: cookie,
         ago: ago,
-        text: text
+        text: text,
+        detext: detext
     };
 });
