@@ -37,6 +37,12 @@ class Comments:
         Add new comment to DB and return a mapping of :attribute:`fields` and
         database values.
         """
+
+        if "parent" in c:
+            rv = self.db.execute("SELECT parent FROM comments WHERE id=?", (c.get('parent'), )).fetchone()
+            if rv and rv[0] is not None:
+                c["parent"] = None
+
         self.db.execute([
             'INSERT INTO comments (',
             '    tid, parent,'
