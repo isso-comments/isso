@@ -320,11 +320,53 @@ class API(object):
     @requires(str, 'uri')
     def fetch(self, environ, request, uri):
 
-        rv = list(self.comments.fetch(uri))
-        if not rv:
+        fetch_args={'uri': uri}
+        if request.args.get('after'):
+            fetch_args['after'] = request.args.get('after')
+        if request.args.get('limit'):
+            try:
+                fetch_args['limit'] = int(request.args.get('limit'))
+            except ValueError:
+                return BadRequest("Limit should be integer")
+        if request.args.get('parent'):
+            try:
+                fetch_args['parent'] = int(request.args.get('parent'))
+                root_id = int(request.args.get('parent'))
+            except ValueError:
+                return BadRequest("Parent should be integer")
+        else:
+            root_id = None
+
+        if request.args.get('plain', '0') == '0':
+            plain = True
+        else:
+            plain = False
+
+        reply_counts = self.comments.reply_count(uri)
+
+        full_list = list(self.comments.fetch(**fetch_args))
+        root_list = [i for i in full_list if i['parent'] == root_id]
+        if not root_list:
             raise NotFound
 
-        for item in rv:
+        rv = {
+            'id'             : root_id,
+            'passed_replies' : len(root_list),
+            'total_replies'  : reply_counts[root_id],
+            'replies'        : self.process_fetched_list(root_list, plain)
+        }
+        # We are only checking for one level deep comments
+        if root_id is None:
+            for comment in rv['replies']:
+                replies = [i for i in full_list if i['parent'] == comment['id']]
+                comment['passed_replies'] = len(replies)
+                comment['total_replies']  = reply_counts[comment['id']]
+                comment['replies']        = self.process_fetched_list(replies, plain)
+
+        return JSON(rv, 200)
+
+    def process_fetched_list(self, fetched_list, plain=False):
+        for item in fetched_list:
 
             key = item['email'] or item['remote_addr']
             val = self.cache.get('hash', key.encode('utf-8'))
@@ -338,11 +380,11 @@ class API(object):
             for key in set(item.keys()) - API.FIELDS:
                 item.pop(key)
 
-        if request.args.get('plain', '0') == '0':
-            for item in rv:
+        if plain:
+            for item in fetched_list:
                 item['text'] = self.isso.render(item['text'])
 
-        return JSON(rv, 200)
+        return fetched_list
 
     @xhr
     def like(self, environ, request, id):
