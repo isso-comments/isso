@@ -75,7 +75,6 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
 
                 if (parent !== null) {
                     el.onsuccess();
-                    el.remove();
                 }
             });
         });
@@ -85,15 +84,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         return el;
     };
 
-    // lookup table for responses (to link to the parent)
-    var map  = {id: {}, name: {}};
-
     var insert = function(comment, scrollIntoView) {
-
-        map.name[comment.id] = comment.author;
-        if (comment.parent) {
-            comment["replyto"] = map.name[comment.parent];
-        }
 
         var el = $.htmlify(Mark.up(templates["comment"], comment));
 
@@ -113,12 +104,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         if (comment.parent === null) {
             entrypoint = $("#isso-root");
         } else {
-            var key = comment.parent;
-            while (key in map.id) {
-                key = map.id[key];
-            }
-            map.id[comment.id] = comment.parent;
-            entrypoint = $("#isso-" + key + " > .text-wrapper > .isso-follow-up");
+            entrypoint = $("#isso-" + comment.parent + " > .text-wrapper > .isso-follow-up");
         }
 
         entrypoint.append(el);
@@ -134,25 +120,16 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         var form = null;  // XXX: probably a good place for a closure
         $("a.reply", footer).toggle("click",
             function(toggler) {
-                form = footer.insertAfter(new Postbox(comment.id));
+                form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
                 form.onsuccess = function() { toggler.next(); };
                 $(".textarea", form).focus();
                 $("a.reply", footer).textContent = msgs["comment-close"];
             },
             function() {
-                form.remove();
+                form.remove()
                 $("a.reply", footer).textContent = msgs["comment-reply"];
             }
         );
-
-        if (comment.parent !== null) {
-            $("a.parent", header).on("mouseover", function() {
-                $("#isso-" + comment.parent).classList.add("parent-highlight");
-            });
-            $("a.parent", header).on("mouseout", function() {
-                $("#isso-" + comment.parent).classList.remove("parent-highlight");
-            });
-        }
 
         // update vote counter, but hide if votes sum to 0
         var votes = function(value) {

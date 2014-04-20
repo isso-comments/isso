@@ -9,7 +9,6 @@ import sqlite3
 import tempfile
 
 from isso.db import SQLite3
-from isso.db.comments import Comments
 from isso.core import Config
 
 from isso.compat import iteritems
