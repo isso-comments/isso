@@ -114,3 +114,6 @@ class SQLite3:
                 for id in flattened.keys():
                     for n in flattened[id]:
                         con.execute("UPDATE comments SET parent=? WHERE id=?", (id, n))
+
+                con.execute('PRAGMA user_version = 3')
+                logger.info("%i rows changed", con.total_changes)
