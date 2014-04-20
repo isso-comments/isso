@@ -345,6 +345,8 @@ class API(object):
         root_list = [i for i in full_list if i['parent'] == root_id]
         if not root_list:
             raise NotFound
+        if root_id not in reply_counts:
+            reply_counts[root_id] = 0
 
         rv = {
             'id'             : root_id,
@@ -357,8 +359,11 @@ class API(object):
             for comment in rv['replies']:
                 replies = [i for i in full_list if i['parent'] == comment['id']]
                 comment['passed_replies'] = len(replies)
-                comment['total_replies']  = reply_counts[comment['id']]
-                comment['replies']        = self.process_fetched_list(replies, plain)
+                if comment['id'] in reply_counts:
+                    comment['total_replies'] = reply_counts[comment['id']]
+                else:
+                    comment['total_replies'] = 0
+                comment['replies'] = self.process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
 
