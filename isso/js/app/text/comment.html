@@ -14,13 +14,6 @@
                 </span>
             {{ /if }}
 
-            {{ if parent }}
-            <span class="spacer">•</span>
-            <a class="parent" href="#isso-{{ parent }}">
-                <i>{{ svg-forward }}</i>{{ replyto | blank: `i18n-comment-anonymous` }}
-            </a>
-            {{ /if }}
-
             <span class="spacer">•</span>
 
             <a class="permalink" href="#isso-{{ id }}">

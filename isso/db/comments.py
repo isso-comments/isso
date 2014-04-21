@@ -37,6 +37,12 @@ class Comments:
         Add new comment to DB and return a mapping of :attribute:`fields` and
         database values.
         """
+
+        if c.get("parent") is not None:
+            ref = self.get(c["parent"])
+            if ref.get("parent") is not None:
+                c["parent"] = ref["parent"]
+
         self.db.execute([
             'INSERT INTO comments (',
             '    tid, parent,'
