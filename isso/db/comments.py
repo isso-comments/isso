@@ -38,10 +38,10 @@ class Comments:
         database values.
         """
 
-        if "parent" in c:
-            rv = self.db.execute("SELECT parent FROM comments WHERE id=?", (c.get('parent'), )).fetchone()
-            if rv and rv[0] is not None:
-                c["parent"] = None
+        if c.get("parent") is not None:
+            ref = self.get(c["parent"])
+            if ref.get("parent") is not None:
+                c["parent"] = ref["parent"]
 
         self.db.execute([
             'INSERT INTO comments (',

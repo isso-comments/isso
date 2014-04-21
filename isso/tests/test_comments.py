@@ -105,6 +105,14 @@ class TestComments(unittest.TestCase):
         rv = loads(r.data)
         self.assertEqual(len(rv), 20)
 
+    def testCreateInvalidParent(self):
+
+        self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 1}))
+        invalid = self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 2}))
+
+        self.assertEqual(loads(invalid.data)["parent"], 1)
+
     def testVerifyFields(self):
 
         verify = lambda comment: comments.API.verify(comment)[0]
@@ -176,19 +184,16 @@ class TestComments(unittest.TestCase):
         [ comment 1 ]
             |
             --- [ comment 2, ref 1 ]
-                    |
-                    --- [ comment 3, ref 2 ]
-                    |
-                    --- [ comment 4, ref 2 ]
-        [ comment 5 ]
+            |
+            --- [ comment 3, ref 1 ]
+        [ comment 4 ]
         """
         client = JSONClient(self.app, Response)
 
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Second', 'parent': 1}))
-        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third 1', 'parent': 2}))
-        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third 2', 'parent': 2}))
-        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': '...'}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third', 'parent': 1}))
+        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Last'}))
 
         client.delete('/id/1')
         self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 200)
@@ -197,8 +202,6 @@ class TestComments(unittest.TestCase):
         client.delete('/id/3')
         self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 200)
         client.delete('/id/4')
-        self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 200)
-        client.delete('/id/5')
         self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 404)
 
     def testPathVariations(self):
