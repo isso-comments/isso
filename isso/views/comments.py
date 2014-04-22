@@ -323,6 +323,9 @@ class API(object):
         fetch_args={'uri': uri}
         if request.args.get('after'):
             fetch_args['after'] = request.args.get('after')
+            after = request.args.get('after')
+        else:
+            after = 0
         if request.args.get('limit'):
             try:
                 fetch_args['limit'] = int(request.args.get('limit'))
@@ -342,7 +345,7 @@ class API(object):
         else:
             plain = False
 
-        reply_counts = self.comments.reply_count(uri)
+        reply_counts = self.comments.reply_count(uri, after)
 
         full_list = list(self.comments.fetch(**fetch_args))
         root_list = [i for i in full_list if i['parent'] == root_id]
