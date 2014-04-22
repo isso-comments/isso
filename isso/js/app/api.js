@@ -128,13 +128,15 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    var fetch = function(tid) {
+    var fetch = function(tid, limit, parent, lastcreated) {
+        if(typeof(limit) == 'undefined') limit = 0;
+        if(typeof(parent) == 'undefined') parent = null;
         var deferred = Q.defer();
-        curl("GET", endpoint + "/?" + qs({uri: tid || location}), null, function(rv) {
+        curl("GET", endpoint + "/?" + qs({uri: tid || location, limit: limit, parent: parent, after: lastcreated}), null, function(rv) {
             if (rv.status === 200) {
                 deferred.resolve(JSON.parse(rv.body));
             } else if (rv.status === 404) {
-                deferred.resolve([]);
+                deferred.resolve({total_replies: 0});
             } else {
                 deferred.reject(rv.body);
             }
