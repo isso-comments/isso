@@ -356,19 +356,19 @@ class API(object):
 
         rv = {
             'id'             : root_id,
-            'passed_replies' : len(root_list),
             'total_replies'  : reply_counts[root_id],
+            'hidden_replies' : reply_counts[root_id] - len(root_list),
             'replies'        : self.process_fetched_list(root_list, plain)
         }
         # We are only checking for one level deep comments
         if root_id is None:
             for comment in rv['replies']:
                 replies = [i for i in full_list if i['parent'] == comment['id']]
-                comment['passed_replies'] = len(replies)
                 if comment['id'] in reply_counts:
                     comment['total_replies'] = reply_counts[comment['id']]
                 else:
                     comment['total_replies'] = 0
+                comment['hidden_replies'] = comment['total_replies'] - len(replies)
                 comment['replies'] = self.process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
