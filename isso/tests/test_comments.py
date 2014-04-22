@@ -103,7 +103,7 @@ class TestComments(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
 
         rv = loads(r.data)
-        self.assertEqual(len(rv), 20)
+        self.assertEqual(len(rv['replies']), 20)
 
     def testCreateInvalidParent(self):
 

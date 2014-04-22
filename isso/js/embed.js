@@ -26,16 +26,24 @@ require(["app/lib/ready", "app/config", "app/api", "app/isso", "app/count", "app
         $("#isso-thread").append(new isso.Postbox(null));
         $("#isso-thread").append('<div id="isso-root"></div>');
 
-        api.fetch($("#isso-thread").getAttribute("data-isso-id")).then(
+        api.fetch($("#isso-thread").getAttribute("data-isso-id"), limit=20).then(
             function(rv) {
-                if (! rv.length) {
+                if (rv.total_replies == 0) {
                     $("#isso-thread > h4").textContent = Mark.up("{{ i18n-no-comments }}");
                     return;
                 }
 
-                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv.length});
-                for (var i=0; i < rv.length; i++) {
-                    isso.insert(rv[i], false);
+                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv.total_replies});
+                var lastcreated = 0;
+                rv.replies.forEach(function(commentObject) {
+                    isso.insert(commentObject, false);
+                    if(commentObject.created > lastcreated) {
+                        lastcreated = commentObject.created;
+                    }
+                });
+
+                if(rv.hidden_replies > 0) {
+                    isso.insert_loader(rv, lastcreated);
                 }
 
                 if (window.location.hash.length > 0) {

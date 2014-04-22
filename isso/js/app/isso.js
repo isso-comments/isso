@@ -84,8 +84,51 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         return el;
     };
 
-    var insert = function(comment, scrollIntoView) {
+    var insert_loader = function(commentWrapper, lastcreated) {
+        var entrypoint;
+        if (commentWrapper.id === null) {
+            entrypoint = $("#isso-root");
+            commentWrapper.name = 'null';
+        } else {
+            entrypoint = $("#isso-" + commentWrapper.id + " > .text-wrapper > .isso-follow-up");
+            commentWrapper.name = commentWrapper.id;
+        }
+        var el = $.htmlify(Mark.up(templates["comment_loader"], commentWrapper));
 
+        entrypoint.append(el);
+
+        $("a.load_hidden", el).toggle("click",
+            function() {
+                el.remove();
+                api.fetch($("#isso-thread").getAttribute("data-isso-id"), limit=20, parent=commentWrapper.id, lastcreated=lastcreated).then(
+                    function(rv) {
+                        if (rv.total_replies == 0) {
+                            return;
+                        }
+
+                        var lastcreated = 0;
+                        rv.replies.forEach(function(commentObject) {
+                            insert(commentObject, false);
+                            if(commentObject.created > lastcreated) {
+                                lastcreated = commentObject.created;
+                            }
+                        });
+
+                        if(rv.hidden_replies > 0) {
+                            insert_loader(rv, lastcreated);
+                        }
+
+                        if (window.location.hash.length > 0) {
+                            $(window.location.hash).scrollIntoView();
+                        }
+                    },
+                    function(err) {
+                        console.log(err);
+                    });
+            });
+    };
+
+    var insert = function(comment, scrollIntoView) {
         var el = $.htmlify(Mark.up(templates["comment"], comment));
 
         // update datetime every 60 seconds
@@ -132,7 +175,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         );
 
         // update vote counter, but hide if votes sum to 0
-        var votes = function(value) {
+        var votes = function(value) {
             var span = $("span.votes", footer);
             if (span === null && value !== 0) {
                 footer.prepend($.new("span.votes", value));
@@ -261,10 +304,27 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         if (! config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
             show($("a.reply", footer).detach());
         }
+
+        if(comment.hasOwnProperty('replies')) {
+            var lastcreated = 0;
+            comment.replies.forEach(function(replyObject) {
+                insert(replyObject, false);
+                if(replyObject.created > lastcreated) {
+                    lastcreated = replyObject.created;
+                }
+
+            });
+            if(comment.hidden_replies > 0) {
+                insert_loader(comment, lastcreated);
+            }
+
+        }
+
     };
 
     return {
         insert: insert,
+        insert_loader: insert_loader,
         Postbox: Postbox
     };
 });
