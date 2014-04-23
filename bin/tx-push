@@ -16,7 +16,7 @@ set user (cat ~/.transifexrc | grep -E "^username" | awk -F " ?= ?" '{ print $2 
 set pass (cat ~/.transifexrc | grep -E "^password" | awk -F " ?= ?" '{ print $2 }')
 
 set lang (echo $argv | cut -d / -f 5 | cut -d . -f 1)
-set trans (mktemp -t tx)
+set trans (mktemp -t tx.XXX)
 
 if [ $lang = "en" ]
     set url "$TRANSIFEX/project/isso/resource/js/content/"
