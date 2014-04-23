@@ -12,6 +12,8 @@ from werkzeug.http import dump_cookie
 from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
+from werkzeug.wsgi import get_current_url
+from werkzeug.utils import redirect
 
 from isso.compat import text_type as str
 
@@ -69,7 +71,8 @@ class API(object):
         ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('checkip', ('GET', '/check-ip'))
+        ('checkip', ('GET', '/check-ip')),
+        ('demo',    ('GET', '/demo'))
     ]
 
     def __init__(self, isso):
@@ -375,3 +378,6 @@ class API(object):
 
     def checkip(self, env, req):
         return Response(utils.anonymize(str(req.remote_addr)), 200)
+
+    def demo(self, env, req):
+        return redirect(get_current_url(env) + '/index.html')
