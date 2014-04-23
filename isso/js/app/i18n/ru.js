@@ -14,7 +14,7 @@ define({
     "comment-cancel": "Отменить",
     "comment-deleted": "Удалить комментарий",
     "comment-queued": "Комментарий должен быть разблокирован",
-    "comment-anonymous": "Аномимый",
+    "comment-anonymous": "Анонимный",
     "date-now": "Сейчас",
     "date-minute": "Минут назад\n{{ n }} минут",
     "date-hour": "Час назад\n{{ n }} часов",
