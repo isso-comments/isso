@@ -33,14 +33,16 @@ require(["app/lib/ready", "app/config", "app/api", "app/isso", "app/count", "app
                     return;
                 }
 
-                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: rv.total_replies});
                 var lastcreated = 0;
+                var total_count = rv.total_replies;
                 rv.replies.forEach(function(commentObject) {
                     isso.insert(commentObject, false);
                     if(commentObject.created > lastcreated) {
                         lastcreated = commentObject.created;
                     }
+                    total_count = total_count + commentObject.total_replies;
                 });
+                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: total_count});
 
                 if(rv.hidden_replies > 0) {
                     isso.insert_loader(rv, lastcreated);
