@@ -100,7 +100,10 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         $("a.load_hidden", el).toggle("click",
             function() {
                 el.remove();
-                api.fetch($("#isso-thread").getAttribute("data-isso-id"), limit = config["max-comments"], parent=commentWrapper.id, lastcreated=lastcreated).then(
+                api.fetch($("#isso-thread").getAttribute("data-isso-id"), 
+                    limit = config["max-comments-top"], nested_limit=0,
+                    parent=commentWrapper.id, 
+                    lastcreated=lastcreated).then(
                     function(rv) {
                         if (rv.total_replies == 0) {
                             return;

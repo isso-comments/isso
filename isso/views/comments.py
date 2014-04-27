@@ -330,14 +330,20 @@ class API(object):
             try:
                 fetch_args['limit'] = int(request.args.get('limit'))
             except ValueError:
-                return BadRequest("Limit should be integer")
+                return BadRequest("limit should be integer")
         if request.args.get('parent'):
-            try:
-                fetch_args['parent'] = int(request.args.get('parent'))
-                root_id = int(request.args.get('parent'))
-            except ValueError:
-                return BadRequest("Parent should be integer")
+            parent_arg = request.args.get('parent')
+            if parent_arg == 'NULL':
+                fetch_args['parent'] = parent_arg
+                root_id = None
+            else:
+                try:
+                    fetch_args['parent'] = int(parent_arg)
+                    root_id = int(parent_arg)
+                except ValueError:
+                    return BadRequest("parent should be integer or NULL")
         else:
+            fetch_args['parent'] = 'NULL'
             root_id = None
 
         if request.args.get('plain', '0') == '0':
@@ -347,12 +353,19 @@ class API(object):
 
         reply_counts = self.comments.reply_count(uri, after)
 
-        full_list = list(self.comments.fetch(**fetch_args))
-        root_list = [i for i in full_list if i['parent'] == root_id]
+        root_list = list(self.comments.fetch(**fetch_args))
         if not root_list:
             raise NotFound
         if root_id not in reply_counts:
             reply_counts[root_id] = 0
+
+        if request.args.get('nested_limit'):
+            try:
+                nested_limit = int(request.args.get('nested_limit'))
+            except ValueError:
+                return BadRequest("nested_limit should be integer")
+        else:
+            nested_limit = 0
 
         rv = {
             'id'             : root_id,
@@ -363,11 +376,17 @@ class API(object):
         # We are only checking for one level deep comments
         if root_id is None:
             for comment in rv['replies']:
-                replies = [i for i in full_list if i['parent'] == comment['id']]
                 if comment['id'] in reply_counts:
                     comment['total_replies'] = reply_counts[comment['id']]
+                    if nested_limit > 0:
+                        fetch_args['parent'] = comment['id']
+                        fetch_args['limit'] = nested_limit
+                        replies = list(self.comments.fetch(**fetch_args))
+                    else:
+                        replies = []
                 else:
                     comment['total_replies'] = 0
+                    replies = []
                 comment['hidden_replies'] = comment['total_replies'] - len(replies)
                 comment['replies'] = self.process_fetched_list(replies, plain)
 
