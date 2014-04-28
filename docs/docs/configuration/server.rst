@@ -3,8 +3,8 @@ Server Configuration
 
 The Isso configuration file is an `INI-style`__ textfile. It reads integers,
 booleans, strings and lists. Here's the default isso configuration:
-:download:`isso.conf <isso.conf>`. A basic configuration from
-scratch looks like this:
+`isso.conf <https://github.com/posativ/isso/blob/master/share/isso.conf>`. A
+basic configuration from scratch looks like this:
 
 .. code-block:: ini
 

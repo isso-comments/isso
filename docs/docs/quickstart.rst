@@ -2,7 +2,7 @@ Quickstart
 ==========
 
 Assuming you have successfully :doc:`installed <install>` Isso, here's
-a quickstart quide that covers common setups. Sections covered:
+a quickstart quide that covers the most common setup. Sections covered:
 
 .. contents::
     :local:
@@ -12,15 +12,14 @@ a quickstart quide that covers common setups. Sections covered:
 Configuration
 -------------
 
-You must provide a custom configuration. Most default parameters are useful for
-development, not persistence. The two most important options are `dbpath` to
-set the location of your database and your website's name `host` where you want
-to comment on:
+You must provide a custom configuration to set `dbpath` (your database
+location) and `host` (a list of websites for CORS_). All other options have
+sane defaults.
 
 .. code-block:: ini
 
     [general]
-    ; database location, check permissions, created if not exists
+    ; database location, check permissions, automatically created if not exists
     dbpath = /var/lib/isso/comments.db
     ; your website or blog (not the location of Isso!)
     host = http://example.tld/
@@ -36,9 +35,9 @@ Note, that multiple, *different* websites are **not** supported in a single
 configuration. To serve comments for diffent websites, refer to
 :ref:`Multiple Sites <configure-multiple-sites>`.
 
-You moderate Isso through signed URLs sent by email or logged. By default,
-comments are accepted and immediately shown to other users. To enable
-moderation queue, add:
+The moderation is done with signed URLs sent by email or logged to stdout.
+By default, comments are accepted and immediately shown to other users. To
+enable moderation queue, add:
 
 .. code-block:: ini
 
@@ -56,8 +55,8 @@ URLs for activation and deletion:
     [smtp]
     ; SMTP settings
 
-For more details, see :doc:`server <configuration/server>` and
-:doc:`client <configuration/client>` configuration.
+For more options, see :doc:`server <configuration/server>` and :doc:`client
+<configuration/client>` configuration.
 
 Migration
 ---------
@@ -67,12 +66,16 @@ your website, click on *Discussions* and select the *Export* tab. You'll
 receive an email with your comments. Unfortunately, Disqus does not export
 up- and downvotes.
 
-To import existing comments, run Isso with your new configuration file:
+To import existing comments, run Isso with your configuration file:
 
 .. code-block:: sh
 
     ~> isso -c /path/to/isso.cfg import user-2013-09-02T11_39_22.971478-all.xml
     [100%]  53 threads, 192 comments
+
+Migration from WordPress_ is not possible, yet (WordPress does not export
+comments). As a workaround, install the Disqus plugin, export to Disqus and
+then migrate to Isso.
 
 .. _Disqus: <https://disqus.com/>
 

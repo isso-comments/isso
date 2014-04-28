@@ -20,8 +20,8 @@ libraries, but most likely not all required by Isso (or in an up-to-date
 version – looking at you, Debian!).
 
 That's why most Python developers use the `Python Package Index`_ to get their
-packages. But the most important rule: never install *anything* from PyPi as
-root. Not because of malicious software, but because you *will* break your
+dependencies. But the most important rule: never install *anything* from PyPi
+as root. Not because of malicious software, but because you *will* break your
 system.
 ``easy_install`` is one tool to mess up your system. Another package manager is
 ``pip``. If you ever searched for an issue with Python/pip and Stackoverflow is
@@ -56,10 +56,9 @@ folder. Inside this virtual environment, you may also execute the example
 commands from above to upgrade your Python Package Manager (although it barely
 makes sense), it is completely independent from your global system.
 
-With a virtualenv ready, you may now continue to :ref:`install-from-pypi`!
-Note, that if you are using a slightly more advanced shared-hoster or virtual
-machines, you may not need virtual environments.
-
+With a virtualenv active, you may now continue to :ref:`install-from-pypi`!
+Of course you may not need a virtualenv when you are running dedicated virtual
+machines or a shared host (e.g. Uberspace.de).
 
 .. _Python Package Index: https://pypi.python.org/pypi
 .. _Why you should not use Python's easy_install carelessly on Debian:
@@ -72,7 +71,7 @@ Install from PyPi
 
 Requirements:
 
--  Python 2.6, 2.7 or 3.3 (+ devel headers)
+-  Python 2.6, 2.7 or 3.3+ (+ devel headers)
 -  SQLite 3.3.8 or later
 -  a working C compiler
 
@@ -88,15 +87,14 @@ Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:
 
     ~> easy_install isso  # cross your fingers
 
-If you are using a virtualenv, you don't need to activate the environment
-every time you want to start Isso. You can symlink the executable to a location
-in your PATH:
+For easier execution, you can symlink the executable to a location in your
+PATH:
 
 .. code-block:: sh
 
     ~> ln -s /path/to/isso-venv/bin/isso /usr/local/bin/isso
 
-To upgrade Isso, activate your virtual environment once again, and run
+To upgrade Isso, activate your virtual environment again, and run
 
 .. code-block:: sh
 
@@ -125,11 +123,12 @@ Install from Source
 If you want to hack on Isso or track down issues, there's an alternate
 way to set up Isso. It requires a lot more dependencies and effort:
 
-- Python 2.6, 2.7 or 3.3 (+ devel headers)
+- Python 2.6, 2.7 or 3.3+ (+ devel headers)
+- Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
 - Ruby 1.8 or higher
-- SASS 3.0 or higher
+- a `SCSS <http://sass-lang.com/>`_ compiler
 - Node.js, `NPM <https://npmjs.org/>`__ and `Bower <http://bower.io/>`__
 
 Get a fresh copy of Isso:
@@ -143,7 +142,6 @@ To create a virtual environment (recommended), run:
 
 .. code-block:: sh
 
-    ~> pip install virtualenv
     ~> virtualenv .
     ~> source ./bin/activate
 
@@ -166,14 +164,14 @@ Install JavaScript modules:
 
     ~> make init
 
-Integration without previous optimzation:
+Integration without previous optimization:
 
 .. code-block:: html
 
     <script src="/js/config.js"></script>
     <script data-main="/js/embed" src="/js/components/requirejs/require.js"></script>
 
-Optimization
+Optimization:
 
 .. code-block:: sh
 

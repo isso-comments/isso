@@ -69,6 +69,8 @@ and not a multiple of 2, the color distribution is not even.
 data-isso-id
 ------------
 
+Broken – do not use. https://github.com/posativ/isso/issues/27
+
 Set a custom thread id, defaults to current URI. If you a comment counter, add
 this attribute to the link tag, too.
 
