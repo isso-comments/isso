@@ -207,6 +207,8 @@ def main():
     imprt.add_argument("dump", metavar="FILE")
     imprt.add_argument("-n", "--dry-run", dest="dryrun", action="store_true",
                        help="perform a trial run with no changes made")
+    imprt.add_argument("-t", "--type", dest="type", default=None,
+                       choices=["disqus", "wordpress"], help="export type")
 
     serve = subparser.add_parser("run", help="run server")
 
@@ -223,7 +225,7 @@ def main():
             dbpath = conf.get("general", "dbpath")
 
         mydb = db.SQLite3(dbpath, conf)
-        migrate.dispatch(mydb, args.dump)
+        migrate.dispatch(args.type, mydb, args.dump)
 
         sys.exit(0)
 

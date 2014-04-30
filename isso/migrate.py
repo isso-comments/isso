@@ -1,13 +1,17 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import division
+from __future__ import division, print_function
 
 import sys
 import os
+import io
 import textwrap
 
-from time import mktime, strptime
+from time import mktime, strptime, time
 from collections import defaultdict
+
+from isso.utils import anonymize
+from isso.compat import string_types
 
 try:
     input = raw_input
@@ -20,6 +24,39 @@ except ImportError:
     from urllib.parse import urlparse
 
 from xml.etree import ElementTree
+
+
+def strip(val):
+    if isinstance(val, string_types):
+        return val.strip()
+    return val
+
+
+class Progress(object):
+
+    def __init__(self, end):
+        self.end = end or 1
+
+        self.istty = sys.stdout.isatty()
+        self.last = 0
+
+    def update(self, i, message):
+
+        if not self.istty or message is None:
+            return
+
+        cols = int((os.popen('stty size', 'r').read()).split()[1])
+        message = message[:cols - 7]
+
+        if time() - self.last > 0.2:
+            sys.stdout.write("\r{0}".format(" " * cols))
+            sys.stdout.write("\r[{0:.0%}]  {1}".format(i/self.end, message))
+            sys.stdout.flush()
+            self.last = time()
+
+    def finish(self, message):
+        self.last = 0
+        self.update(self.end, message + "\n")
 
 
 class Disqus(object):
@@ -116,9 +153,94 @@ class Disqus(object):
                 print("")
 
 
-def dispatch(db, dump):
+class WordPress(object):
+
+    ns = "{http://wordpress.org/export/1.0/}"
+
+    def __init__(self, db, xmlfile):
+        self.db = db
+        self.xmlfile = xmlfile
+        self.count = 0
+
+    def insert(self, thread):
+
+        path = urlparse(thread.find("link").text).path
+        self.db.threads.new(path, thread.find("title").text.strip())
+
+        comments = list(map(WordPress.Comment, thread.findall(WordPress.ns + "comment")))
+        comments.sort(key=lambda k: k["id"])
+
+        remap = {}
+        ids = set(c["id"] for c in comments)
+
+        self.count += len(ids)
+
+        while comments:
+            for i, item in enumerate(comments):
+                if item["parent"] in ids:
+                    continue
+
+                item["parent"] = remap.get(item["parent"], None)
+                rv = self.db.comments.add(path, item)
+                remap[item["id"]] = rv["id"]
+
+                ids.remove(item["id"])
+                comments.pop(i)
+
+                break
+            else:
+                # should never happen, but... it's WordPress.
+                return
+
+    def migrate(self):
+
+        tree = ElementTree.parse(self.xmlfile)
+        items = tree.findall("channel/item")
+
+        progress = Progress(len(items))
+        for i, thread in enumerate(items):
+            progress.update(i, thread.find("title").text)
+            self.insert(thread)
+
+        progress.finish("{0} threads, {1} comments".format(len(items), self.count))
+
+    @classmethod
+    def Comment(cls, el):
+        return {
+            "text": strip(el.find(WordPress.ns + "comment_content").text),
+            "author": strip(el.find(WordPress.ns + "comment_author").text),
+            "email": strip(el.find(WordPress.ns + "comment_author_email").text),
+            "website": strip(el.find(WordPress.ns + "comment_author_url").text),
+            "remote_addr": anonymize(
+                strip(el.find(WordPress.ns + "comment_author_IP").text)),
+            "created": mktime(strptime(
+                strip(el.find(WordPress.ns + "comment_date_gmt").text),
+                "%Y-%m-%d %H:%M:%S")),
+            "mode": 1 if el.find(WordPress.ns + "comment_approved").text == "1" else 2,
+            "id": int(el.find(WordPress.ns + "comment_id").text),
+            "parent": int(el.find(WordPress.ns + "comment_parent").text) or None
+        }
+
+
+def dispatch(type, db, dump):
         if db.execute("SELECT * FROM comments").fetchone():
             if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
                 raise SystemExit("Abort.")
 
-        Disqus(db, dump).migrate()
+        if type is None:
+
+            with io.open(dump) as fp:
+                peek = fp.read(2048)
+
+            if 'xmlns:wp="%s"' % WordPress.ns[1:-1] in peek:
+                type = "wordpress"
+
+            if '<disqus xmlns=' in peek:
+                type = "disqus"
+
+        if type == "wordpress":
+            WordPress(db, dump).migrate()
+        elif type == "disqus":
+            Disqus(db, dump).migrate()
+        else:
+            raise SystemExit("Unknown format, abort.")

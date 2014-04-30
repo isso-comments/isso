@@ -11,7 +11,7 @@ from os.path import join, dirname
 from isso.core import Config
 
 from isso.db import SQLite3
-from isso.migrate import Disqus
+from isso.migrate import Disqus, WordPress
 
 
 class TestMigration(unittest.TestCase):
@@ -33,13 +33,32 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(a["email"], "foo@bar.com")
 
         b = db.comments.get(2)
-        self.assertEqual(b["parent"] ,a["id"])
+        self.assertEqual(b["parent"], a["id"])
 
+    def test_wordpress(self):
 
-    a = db.comments.get(1)
+        xml = join(dirname(__file__), "wordpress.xml")
+        xxx = tempfile.NamedTemporaryFile()
 
-    assert a["author"] == "peter"
-    assert a["email"] == "foo@bar.com"
+        db = SQLite3(xxx.name, Config.load(None))
+        WordPress(db, xml).migrate()
 
-    b = db.comments.get(2)
-    assert b["parent"] == a["id"]
+        self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World!")
+        self.assertEqual(db.threads["/2014/test/"]["id"], 1)
+
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 6)
+
+        first = db.comments.get(1)
+        self.assertEqual(first["author"], "Ohai")
+        self.assertEqual(first["text"], "Erster!1")
+
+        second = db.comments.get(2)
+        self.assertEqual(second["author"], "Tester")
+        self.assertEqual(second["text"], "Zweiter.")
+
+        for i in (3, 4, 5):
+            self.assertEqual(db.comments.get(i)["parent"], second["id"])
+
+        last = db.comments.get(6)
+        self.assertEqual(last["author"], "Letzter :/")
+        self.assertEqual(last["parent"], None)
