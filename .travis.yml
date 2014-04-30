@@ -14,3 +14,9 @@ install:
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
   - tox -e $TOX_ENV
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#isso"
+    on_success: change
+    on_failure: always
