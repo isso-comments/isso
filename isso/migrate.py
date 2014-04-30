@@ -21,94 +21,104 @@ except ImportError:
 
 from xml.etree import ElementTree
 
-ns = '{http://disqus.com}'
-dsq = '{http://disqus.com/disqus-internals}'
 
-threads = set([])
-comments = set([])
+class Disqus(object):
 
+    ns = '{http://disqus.com}'
+    internals = '{http://disqus.com/disqus-internals}'
 
-def insert(db, thread, posts):
+    def __init__(self, db, xmlfile):
+        self.threads = set([])
+        self.comments = set([])
 
-    path = urlparse(thread.find('%slink' % ns).text).path
-    remap = dict()
+        self.db = db
+        self.xmlfile = xmlfile
 
-    if path not in db.threads:
-        db.threads.new(path, thread.find('%stitle' % ns).text.strip())
+    def insert(self, thread, posts):
 
-    for item in sorted(posts, key=lambda k: k['created']):
+        path = urlparse(thread.find('%slink' % Disqus.ns).text).path
+        remap = dict()
 
-        dsq_id = item.pop('dsq:id')
-        item['parent'] = remap.get(item.pop('dsq:parent', None))
-        rv = db.comments.add(path, item)
-        remap[dsq_id] = rv["id"]
+        if path not in self.db.threads:
+            self.db.threads.new(path, thread.find(Disqus.ns + 'title').text.strip())
 
-    comments.update(set(remap.keys()))
+        for item in sorted(posts, key=lambda k: k['created']):
 
+            dsq_id = item.pop('dsq:id')
+            item['parent'] = remap.get(item.pop('dsq:parent', None))
+            rv = self.db.comments.add(path, item)
+            remap[dsq_id] = rv["id"]
 
-def disqus(db, xmlfile):
+        self.comments.update(set(remap.keys()))
 
-    if db.execute("SELECT * FROM comments").fetchone():
-        if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
-            raise SystemExit("Abort.")
+    def migrate(self):
 
-    tree = ElementTree.parse(xmlfile)
-    res = defaultdict(list)
+        tree = ElementTree.parse(self.xmlfile)
+        res = defaultdict(list)
 
-    for post in tree.findall('%spost' % ns):
+        for post in tree.findall('%spost' % Disqus.ns):
 
-        item = {
-            'dsq:id': post.attrib.get(dsq + 'id'),
-            'text': post.find('%smessage' % ns).text,
-            'author': post.find('%sauthor/%sname' % (ns, ns)).text,
-            'email': post.find('%sauthor/%semail' % (ns, ns)).text,
-            'created': mktime(strptime(
-                post.find('%screatedAt' % ns).text, '%Y-%m-%dT%H:%M:%SZ')),
-            'remote_addr': '127.0.0.0',
-            'mode': 1 if post.find("%sisDeleted" % ns).text == "false" else 4
-        }
+            item = {
+                'dsq:id': post.attrib.get(Disqus.internals + 'id'),
+                'text': post.find(Disqus.ns + 'message').text,
+                'author': post.find('{0}author/{0}name'.format(Disqus.ns)).text,
+                'email': post.find('{0}author/{0}email'.format(Disqus.ns)).text,
+                'created': mktime(strptime(
+                    post.find(Disqus.ns + 'createdAt').text, '%Y-%m-%dT%H:%M:%SZ')),
+                'remote_addr': '127.0.0.0',
+                'mode': 1 if post.find(Disqus.ns + "isDeleted").text == "false" else 4
+            }
 
-        if post.find(ns + 'parent') is not None:
-            item['dsq:parent'] = post.find(ns + 'parent').attrib.get(dsq + 'id')
+            if post.find(Disqus.ns + 'parent') is not None:
+                item['dsq:parent'] = post.find(Disqus.ns + 'parent').attrib.get(Disqus.internals + 'id')
 
-        res[post.find('%sthread' % ns).attrib.get(dsq + 'id')].append(item)
+            res[post.find('%sthread' % Disqus.ns).attrib.get(Disqus.internals + 'id')].append(item)
 
-    num = len(tree.findall('%sthread' % ns))
-    cols = int((os.popen('stty size', 'r').read() or "25 80").split()[1])
+        num = len(tree.findall(Disqus.ns + 'thread'))
+        cols = int((os.popen('stty size', 'r').read() or "25 80").split()[1])
 
-    for i, thread in enumerate(tree.findall('%sthread' % ns)):
+        for i, thread in enumerate(tree.findall(Disqus.ns + 'thread')):
 
-        if int(round((i+1)/num, 2) * 100) % 13 == 0:
+            if int(round((i+1)/num, 2) * 100) % 13 == 0:
+                sys.stdout.write("\r%s" % (" "*cols))
+                sys.stdout.write("\r[%i%%]  %s" % (((i+1)/num * 100), thread.find(Disqus.ns + 'id').text))
+                sys.stdout.flush()
 
-            sys.stdout.write("\r%s" % (" "*cols))
-            sys.stdout.write("\r[%i%%]  %s" % (((i+1)/num * 100), thread.find('%sid' % ns).text))
-            sys.stdout.flush()
-
-        # skip (possibly?) duplicate, but empty thread elements
-        if thread.find('%sid' % ns).text is None:
-            continue
-
-        id = thread.attrib.get(dsq + 'id')
-        if id in res:
-            threads.add(id)
-            insert(db, thread, res[id])
-
-    # in case a comment has been deleted (and no further childs)
-    db.comments._remove_stale()
-
-    sys.stdout.write("\r%s" % (" "*cols))
-    sys.stdout.write("\r[100%%]  %i threads, %i comments\n" % (len(threads), len(comments)))
-
-    orphans = set(map(lambda e: e.attrib.get(dsq + "id"), tree.findall("%spost" % ns))) - comments
-    if orphans:
-        print("Found %i orphans:" % len(orphans))
-        for post in tree.findall("%spost" % ns):
-            if post.attrib.get(dsq + "id") not in orphans:
+            # skip (possibly?) duplicate, but empty thread elements
+            if thread.find(Disqus.ns + 'id').text is None:
                 continue
 
-            print(" * %s by %s <%s>" % (post.attrib.get(dsq + "id"),
-                                        post.find("%sauthor/%sname" % (ns, ns)).text,
-                                        post.find("%sauthor/%semail" % (ns, ns)).text))
-            print(textwrap.fill(post.find("%smessage" % ns).text,
-                                initial_indent="  ", subsequent_indent="  "))
-            print("")
+            id = thread.attrib.get(Disqus.internals + 'id')
+            if id in res:
+                self.threads.add(id)
+                self.insert(thread, res[id])
+
+        # in case a comment has been deleted (and no further childs)
+        self.db.comments._remove_stale()
+
+        sys.stdout.write("\r%s" % (" "*cols))
+        sys.stdout.write("\r[100%]  {0} threads, {1} comments\n".format(
+            len(self.threads), len(self.comments)))
+
+        orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"), tree.findall(Disqus.ns + "post"))) - self.comments
+        if orphans:
+            print("Found %i orphans:" % len(orphans))
+            for post in tree.findall(Disqus.ns + "post"):
+                if post.attrib.get(Disqus.internals + "id") not in orphans:
+                    continue
+
+                print(" * {0} by {1} <{2}>".format(
+                    post.attrib.get(Disqus.internals + "id"),
+                    post.find("{0}author/{0}name".format(Disqus.ns)).text,
+                    post.find("{0}author/{0}email".format(Disqus.ns)).text))
+                print(textwrap.fill(post.find(Disqus.ns + "message").text,
+                                    initial_indent="  ", subsequent_indent="  "))
+                print("")
+
+
+def dispatch(db, dump):
+        if db.execute("SELECT * FROM comments").fetchone():
+            if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+                raise SystemExit("Abort.")
+
+        Disqus(db, dump).migrate()

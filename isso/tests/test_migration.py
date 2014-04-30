@@ -6,7 +6,7 @@ from os.path import join, dirname
 from isso.core import Config
 
 from isso.db import SQLite3
-from isso.migrate import disqus
+from isso.migrate import Disqus
 
 
 def test_disqus():
@@ -15,7 +15,7 @@ def test_disqus():
     xxx = tempfile.NamedTemporaryFile()
 
     db = SQLite3(xxx.name, Config.load(None))
-    disqus(db, xml)
+    Disqus(db, xml).migrate()
 
     assert db.threads["/"]["title"] == "Hello, World!"
     assert db.threads["/"]["id"] == 1
