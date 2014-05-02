@@ -61,24 +61,24 @@ For more options, see :doc:`server <configuration/server>` and :doc:`client
 Migration
 ---------
 
-You can migrate your existing comments from Disqus_. Log into Disqus, go to
-your website, click on *Discussions* and select the *Export* tab. You'll
-receive an email with your comments. Unfortunately, Disqus does not export
-up- and downvotes.
+You can import comments from Disqus_ or WordPress_.
 
-To import existing comments, run Isso with your configuration file:
+To export your comments from Disqus, log into Disqus, go to your website, click
+on *Discussions* and select the *Export* tab. You'll receive an email with your
+comments. Unfortunately, Disqus does not export up- and downvotes.
+
+To export comments from your previous WordPress installation, go to *Tools*,
+export your data.
+
+Now import the XML dump:
 
 .. code-block:: sh
 
-    ~> isso -c /path/to/isso.cfg import user-2013-09-02T11_39_22.971478-all.xml
+    ~> isso -c /path/to/isso.cfg import disqus-or-wordpress.xml
     [100%]  53 threads, 192 comments
 
-Migration from WordPress_ is not possible, yet (WordPress does not export
-comments). As a workaround, install the Disqus plugin, export to Disqus and
-then migrate to Isso.
-
-.. _Disqus: <https://disqus.com/>
-
+.. _Disqus: https://disqus.com/
+.. _WordPress: https://wordpress.org/
 
 Running Isso
 ------------
