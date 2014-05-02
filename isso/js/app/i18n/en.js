@@ -17,6 +17,7 @@ define({
     "comment-deleted": "Comment deleted.",
     "comment-queued": "Comment in queue for moderation.",
     "comment-anonymous": "Anonymous",
+    "comment-hidden": "Hidden",
 
     "date-now": "right now",
     "date-minute": "a minute ago\n{{ n }} minutes ago",
