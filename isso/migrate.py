@@ -5,6 +5,7 @@ from __future__ import division, print_function
 import sys
 import os
 import io
+import re
 import textwrap
 
 from time import mktime, strptime, time
@@ -145,6 +146,14 @@ class Disqus(object):
                                     initial_indent="  ", subsequent_indent="  "))
                 print("")
 
+    @classmethod
+    def detect(cls, peek):
+
+        if 'xmlns="http://disqus.com' in peek:
+            return "http://disqus.com"
+
+        return None
+
 
 class WordPress(object):
 
@@ -155,12 +164,23 @@ class WordPress(object):
         self.xmlfile = xmlfile
         self.count = 0
 
+        with io.open(xmlfile) as fp:
+            ns = WordPress.detect(fp.read(io.DEFAULT_BUFFER_SIZE))
+
+        if ns:
+            self.ns = "{" + ns + "}"
+
     def insert(self, thread):
 
-        path = urlparse(thread.find("link").text).path
+        url = urlparse(thread.find("link").text)
+        path = url.path
+
+        if url.query:
+            path += "?" + url.query
+
         self.db.threads.new(path, thread.find("title").text.strip())
 
-        comments = list(map(WordPress.Comment, thread.findall(WordPress.ns + "comment")))
+        comments = list(map(self.Comment, thread.findall(self.ns + "comment")))
         comments.sort(key=lambda k: k["id"])
 
         remap = {}
@@ -188,31 +208,46 @@ class WordPress(object):
     def migrate(self):
 
         tree = ElementTree.parse(self.xmlfile)
+
+        skip = 0
         items = tree.findall("channel/item")
 
         progress = Progress(len(items))
         for i, thread in enumerate(items):
+            if thread.find("title").text is None or thread.find(self.ns + "comment") is None:
+                skip += 1
+                continue
+
             progress.update(i, thread.find("title").text)
             self.insert(thread)
 
-        progress.finish("{0} threads, {1} comments".format(len(items), self.count))
+        progress.finish("{0} threads, {1} comments".format(
+            len(items) - skip, self.count))
+
+    def Comment(self, el):
+        return {
+            "text": strip(el.find(self.ns + "comment_content").text),
+            "author": strip(el.find(self.ns + "comment_author").text),
+            "email": strip(el.find(self.ns + "comment_author_email").text),
+            "website": strip(el.find(self.ns + "comment_author_url").text),
+            "remote_addr": anonymize(
+                strip(el.find(self.ns + "comment_author_IP").text)),
+            "created": mktime(strptime(
+                strip(el.find(self.ns + "comment_date_gmt").text),
+                "%Y-%m-%d %H:%M:%S")),
+            "mode": 1 if el.find(self.ns + "comment_approved").text == "1" else 2,
+            "id": int(el.find(self.ns + "comment_id").text),
+            "parent": int(el.find(self.ns + "comment_parent").text) or None
+        }
 
     @classmethod
-    def Comment(cls, el):
-        return {
-            "text": strip(el.find(WordPress.ns + "comment_content").text),
-            "author": strip(el.find(WordPress.ns + "comment_author").text),
-            "email": strip(el.find(WordPress.ns + "comment_author_email").text),
-            "website": strip(el.find(WordPress.ns + "comment_author_url").text),
-            "remote_addr": anonymize(
-                strip(el.find(WordPress.ns + "comment_author_IP").text)),
-            "created": mktime(strptime(
-                strip(el.find(WordPress.ns + "comment_date_gmt").text),
-                "%Y-%m-%d %H:%M:%S")),
-            "mode": 1 if el.find(WordPress.ns + "comment_approved").text == "1" else 2,
-            "id": int(el.find(WordPress.ns + "comment_id").text),
-            "parent": int(el.find(WordPress.ns + "comment_parent").text) or None
-        }
+    def detect(cls, peek):
+
+        m = re.search("http://wordpress.org/export/1\.\d/", peek)
+        if m:
+            return m.group(0)
+
+        return None
 
 
 def dispatch(type, db, dump):
@@ -223,12 +258,12 @@ def dispatch(type, db, dump):
         if type is None:
 
             with io.open(dump) as fp:
-                peek = fp.read(2048)
+                peek = fp.read(io.DEFAULT_BUFFER_SIZE)
 
-            if 'xmlns:wp="%s"' % WordPress.ns[1:-1] in peek:
+            if WordPress.detect(peek):
                 type = "wordpress"
 
-            if '<disqus xmlns=' in peek:
+            if Disqus.detect(peek):
                 type = "disqus"
 
         if type == "wordpress":

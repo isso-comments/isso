@@ -68,7 +68,8 @@ on *Discussions* and select the *Export* tab. You'll receive an email with your
 comments. Unfortunately, Disqus does not export up- and downvotes.
 
 To export comments from your previous WordPress installation, go to *Tools*,
-export your data.
+export your data. WordPress WXR import is quite new and may not work for you;
+please report any failures.
 
 Now import the XML dump:
 

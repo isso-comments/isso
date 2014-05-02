@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 try:
     import unittest2 as unittest
 except ImportError:
@@ -49,7 +51,11 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World!")
         self.assertEqual(db.threads["/2014/test/"]["id"], 1)
 
-        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 6)
+        self.assertEqual(db.threads["/?p=4"]["title"], "...")
+        self.assertEqual(db.threads["/?p=4"]["id"], 2)
+
+        self.assertEqual(len(db.execute("SELECT id FROM threads").fetchall()), 2)
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 7)
 
         first = db.comments.get(1)
         self.assertEqual(first["author"], "Ohai")
@@ -66,3 +72,24 @@ class TestMigration(unittest.TestCase):
         last = db.comments.get(6)
         self.assertEqual(last["author"], "Letzter :/")
         self.assertEqual(last["parent"], None)
+
+    def test_detection(self):
+
+        wp = """\
+                <?xml version="1.0" encoding="UTF-8"?>
+                <rss version="2.0"
+                    xmlns:content="http://purl.org/rss/1.0/modules/content/"
+                    xmlns:dc="http://purl.org/dc/elements/1.1/"
+                    xmlns:wp="http://wordpress.org/export/%s/">"""
+
+        self.assertEqual(WordPress.detect(wp % "invalid"), None)
+
+        for version in ("1.0", "1.1", "1.2", "1.3"):
+            self.assertEqual(WordPress.detect(wp % version),
+                             "http://wordpress.org/export/%s/" % version)
+
+        dq = '''\
+        <?xml version="1.0"?>
+        <disqus xmlns="http://disqus.com"
+                xmlns:dsq="http://disqus.com/disqus-internals"'''
+        self.assertIsNotNone(Disqus.detect(dq))

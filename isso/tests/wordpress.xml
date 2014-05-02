@@ -115,5 +115,30 @@
                 <wp:comment_user_id>1</wp:comment_user_id>
             </wp:comment>
         </item>
+
+        <!-- handle ?p=X urls -->
+        <item>
+            <title>...</title>
+            <link>http://example.tld/?p=4</link>
+             <wp:comment>
+                <wp:comment_id>11</wp:comment_id>
+                <wp:comment_author><![CDATA[Anonymous]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date>2014-04-29 15:21:56</wp:comment_date>
+                <wp:comment_date_gmt>2014-04-29 15:21:57</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[...]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>0</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+        </item>
+        <item>
+            <title>No comments</title>
+            <link>http://example.tld/?p=6</link>
+        </item>
     </channel>
 </rss>
