@@ -10,6 +10,9 @@ preferably in the script tag which embeds the JS:
             data-isso-css="true"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
+            data-isso-max-comments-top="10"
+            data-isso-max-comments-nested="5"
+            data-isso-reveal-on-click="5"
             data-avatar-bg="#f0f0f0"
             data-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             src="/prefix/js/embed.js"></script>
@@ -52,6 +55,19 @@ data-isso-reply-to-self
 -----------------------
 
 Set to `true` when spam guard is configured with `reply-to-self = true`.
+
+data-isso-max-comments-top and data-isso-max-comments-nested
+------------------------------------------------------------
+
+Number of top level (or nested) comments to show by default. If some
+comments are not shown, an "X Hidden" link is shown.
+
+Set to `"inf"` to show all, or `"0"` to hide all.
+
+data-isso-reveal-on-click
+-------------------------
+
+Number of comments to reveal on clicking the "X Hidden" link.
 
 data-isso-avatar-bg
 -------------------
