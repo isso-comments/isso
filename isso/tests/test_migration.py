@@ -33,6 +33,7 @@ class TestMigration(unittest.TestCase):
 
         self.assertEqual(a["author"], "peter")
         self.assertEqual(a["email"], "foo@bar.com")
+        self.assertEqual(a["remote_addr"], "127.0.0.0")
 
         b = db.comments.get(2)
         self.assertEqual(b["parent"], a["id"])
@@ -53,6 +54,7 @@ class TestMigration(unittest.TestCase):
         first = db.comments.get(1)
         self.assertEqual(first["author"], "Ohai")
         self.assertEqual(first["text"], "Erster!1")
+        self.assertEqual(first["remote_addr"], "82.119.20.0")
 
         second = db.comments.get(2)
         self.assertEqual(second["author"], "Tester")

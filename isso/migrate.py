@@ -102,7 +102,7 @@ class Disqus(object):
                 'email': post.find('{0}author/{0}email'.format(Disqus.ns)).text,
                 'created': mktime(strptime(
                     post.find(Disqus.ns + 'createdAt').text, '%Y-%m-%dT%H:%M:%SZ')),
-                'remote_addr': '127.0.0.0',
+                'remote_addr': anonymize(post.find(Disqus.ns + 'ipAddress').text),
                 'mode': 1 if post.find(Disqus.ns + "isDeleted").text == "false" else 4
             }
 
