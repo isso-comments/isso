@@ -93,7 +93,7 @@ class Disqus(object):
         tree = ElementTree.parse(self.xmlfile)
         res = defaultdict(list)
 
-        for post in tree.findall('%spost' % Disqus.ns):
+        for post in tree.findall(Disqus.ns + 'post'):
 
             item = {
                 'dsq:id': post.attrib.get(Disqus.internals + 'id'),
@@ -111,15 +111,9 @@ class Disqus(object):
 
             res[post.find('%sthread' % Disqus.ns).attrib.get(Disqus.internals + 'id')].append(item)
 
-        num = len(tree.findall(Disqus.ns + 'thread'))
-        cols = int((os.popen('stty size', 'r').read() or "25 80").split()[1])
-
+        progress = Progress(len(tree.findall(Disqus.ns + 'thread')))
         for i, thread in enumerate(tree.findall(Disqus.ns + 'thread')):
-
-            if int(round((i+1)/num, 2) * 100) % 13 == 0:
-                sys.stdout.write("\r%s" % (" "*cols))
-                sys.stdout.write("\r[%i%%]  %s" % (((i+1)/num * 100), thread.find(Disqus.ns + 'id').text))
-                sys.stdout.flush()
+            progress.update(i, thread.find(Disqus.ns + 'id').text)
 
             # skip (possibly?) duplicate, but empty thread elements
             if thread.find(Disqus.ns + 'id').text is None:
@@ -133,8 +127,7 @@ class Disqus(object):
         # in case a comment has been deleted (and no further childs)
         self.db.comments._remove_stale()
 
-        sys.stdout.write("\r%s" % (" "*cols))
-        sys.stdout.write("\r[100%]  {0} threads, {1} comments\n".format(
+        progress.finish("{0} threads, {1} comments".format(
             len(self.threads), len(self.comments)))
 
         orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"), tree.findall(Disqus.ns + "post"))) - self.comments

@@ -24,6 +24,8 @@ class TestMigration(unittest.TestCase):
         db = SQLite3(xxx.name, Config.load(None))
         Disqus(db, xml).migrate()
 
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
+
         self.assertEqual(db.threads["/"]["title"], "Hello, World!")
         self.assertEqual(db.threads["/"]["id"], 1)
 
