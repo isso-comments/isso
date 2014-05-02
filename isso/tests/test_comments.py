@@ -138,6 +138,40 @@ class TestComments(unittest.TestCase):
         self.assertEqual(self.get('/?uri=%2Fpath%2Fspam%2F&id=123').status_code, 404)
         self.assertEqual(self.get('/?uri=?uri=%foo%2F').status_code, 404)
 
+    def testGetLimited(self):
+
+        for i in range(20):
+            self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        r = self.get('/?uri=test&limit=10')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(len(rv['replies']), 10)
+
+    def testGetNested(self):
+
+        self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 1}))
+
+        r = self.get('/?uri=test&parent=1')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(len(rv['replies']), 1)
+
+    def testGetLimitedNested(self):
+
+        self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        for i in range(20):
+            self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 1}))
+
+        r = self.get('/?uri=test&parent=1&limit=10')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(len(rv['replies']), 10)
+
     def testUpdate(self):
 
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
