@@ -1,30 +1,95 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
+
 import tempfile
 from os.path import join, dirname
 
 from isso.core import Config
 
 from isso.db import SQLite3
-from isso.migrate import disqus
+from isso.migrate import Disqus, WordPress
 
 
-def test_disqus():
+class TestMigration(unittest.TestCase):
 
-    xml = join(dirname(__file__), "disqus.xml")
-    xxx = tempfile.NamedTemporaryFile()
+    def test_disqus(self):
 
-    db = SQLite3(xxx.name, Config.load(None))
-    disqus(db, xml)
+        xml = join(dirname(__file__), "disqus.xml")
+        xxx = tempfile.NamedTemporaryFile()
 
-    assert db.threads["/"]["title"] == "Hello, World!"
-    assert db.threads["/"]["id"] == 1
+        db = SQLite3(xxx.name, Config.load(None))
+        Disqus(db, xml).migrate()
 
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
 
-    a = db.comments.get(1)
+        self.assertEqual(db.threads["/"]["title"], "Hello, World!")
+        self.assertEqual(db.threads["/"]["id"], 1)
 
-    assert a["author"] == "peter"
-    assert a["email"] == "foo@bar.com"
+        a = db.comments.get(1)
 
-    b = db.comments.get(2)
-    assert b["parent"] == a["id"]
+        self.assertEqual(a["author"], "peter")
+        self.assertEqual(a["email"], "foo@bar.com")
+        self.assertEqual(a["remote_addr"], "127.0.0.0")
+
+        b = db.comments.get(2)
+        self.assertEqual(b["parent"], a["id"])
+
+    def test_wordpress(self):
+
+        xml = join(dirname(__file__), "wordpress.xml")
+        xxx = tempfile.NamedTemporaryFile()
+
+        db = SQLite3(xxx.name, Config.load(None))
+        WordPress(db, xml).migrate()
+
+        self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World!")
+        self.assertEqual(db.threads["/2014/test/"]["id"], 1)
+
+        self.assertEqual(db.threads["/?p=4"]["title"], "...")
+        self.assertEqual(db.threads["/?p=4"]["id"], 2)
+
+        self.assertEqual(len(db.execute("SELECT id FROM threads").fetchall()), 2)
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 7)
+
+        first = db.comments.get(1)
+        self.assertEqual(first["author"], "Ohai")
+        self.assertEqual(first["text"], "Erster!1")
+        self.assertEqual(first["remote_addr"], "82.119.20.0")
+
+        second = db.comments.get(2)
+        self.assertEqual(second["author"], "Tester")
+        self.assertEqual(second["text"], "Zweiter.")
+
+        for i in (3, 4, 5):
+            self.assertEqual(db.comments.get(i)["parent"], second["id"])
+
+        last = db.comments.get(6)
+        self.assertEqual(last["author"], "Letzter :/")
+        self.assertEqual(last["parent"], None)
+
+    def test_detection(self):
+
+        wp = """\
+                <?xml version="1.0" encoding="UTF-8"?>
+                <rss version="2.0"
+                    xmlns:content="http://purl.org/rss/1.0/modules/content/"
+                    xmlns:dc="http://purl.org/dc/elements/1.1/"
+                    xmlns:wp="http://wordpress.org/export/%s/">"""
+
+        self.assertEqual(WordPress.detect(wp % "invalid"), None)
+
+        for version in ("1.0", "1.1", "1.2", "1.3"):
+            self.assertEqual(WordPress.detect(wp % version),
+                             "http://wordpress.org/export/%s/" % version)
+
+        dq = '''\
+        <?xml version="1.0"?>
+        <disqus xmlns="http://disqus.com"
+                xmlns:dsq="http://disqus.com/disqus-internals"'''
+        self.assertIsNotNone(Disqus.detect(dq))

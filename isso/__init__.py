@@ -207,6 +207,8 @@ def main():
     imprt.add_argument("dump", metavar="FILE")
     imprt.add_argument("-n", "--dry-run", dest="dryrun", action="store_true",
                        help="perform a trial run with no changes made")
+    imprt.add_argument("-t", "--type", dest="type", default=None,
+                       choices=["disqus", "wordpress"], help="export type")
 
     serve = subparser.add_parser("run", help="run server")
 
@@ -214,11 +216,17 @@ def main():
     conf = Config.load(args.conf)
 
     if args.command == "import":
-        xxx = tempfile.NamedTemporaryFile()
-        dbpath = conf.get("general", "dbpath") if not args.dryrun else xxx.name
-
         conf.set("guard", "enabled", "off")
-        migrate.disqus(db.SQLite3(dbpath, conf), args.dump)
+
+        if args.dryrun:
+            xxx = tempfile.NamedTemporaryFile()
+            dbpath = xxx.name
+        else:
+            dbpath = conf.get("general", "dbpath")
+
+        mydb = db.SQLite3(dbpath, conf)
+        migrate.dispatch(args.type, mydb, args.dump)
+
         sys.exit(0)
 
     if not any(conf.getiter("general", "host")):
