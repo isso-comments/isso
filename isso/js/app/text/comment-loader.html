@@ -1,3 +1,3 @@
 <div class="isso-comment-loader" id="isso-loader-{{ name | blank }}">
-    <a class="load_hidden" href="#">{{ hidden_replies }} {{ i18n-comment-hidden }}</a>
+    <a class="load_hidden" href="#">{{ i18n-comment-hidden | pluralize : `hidden_replies` }}</a>
 </div>
