@@ -320,62 +320,54 @@ class API(object):
     @requires(str, 'uri')
     def fetch(self, environ, request, uri):
 
-        fetch_args={'uri': uri}
-        if request.args.get('after'):
-            fetch_args['after'] = request.args.get('after')
-            after = request.args.get('after')
-        else:
-            after = 0
-        if request.args.get('limit'):
-            try:
-                fetch_args['limit'] = int(request.args.get('limit'))
-            except ValueError:
-                return BadRequest("limit should be integer")
+        args = {
+            'uri': uri,
+            'after': request.args.get('after', 0)
+        }
 
-        if request.args.get('parent'):
-            parent_arg = request.args.get('parent')
-            if parent_arg == 'NULL':
-                fetch_args['parent'] = parent_arg
-                root_id = None
-            else:
-                try:
-                    fetch_args['parent'] = int(parent_arg)
-                    root_id = int(parent_arg)
-                except ValueError:
-                    return BadRequest("parent should be integer or NULL")
+        try:
+            args['limit'] = int(request.args.get('limit'))
+        except TypeError:
+            args['limit'] = None
+        except ValueError:
+            return BadRequest("limit should be integer")
+
+        if request.args.get('parent') is not None:
+            try:
+                args['parent'] = int(request.args.get('parent'))
+                root_id = args['parent']
+            except ValueError:
+                return BadRequest("parent should be integer")
         else:
-            fetch_args['parent'] = 'NULL'
+            args['parent'] = None
             root_id = None
 
-        if request.args.get('plain', '0') == '0':
-            plain = True
-        else:
-            plain = False
+        plain = request.args.get('plain', '0') == '0'
 
-        reply_counts = self.comments.reply_count(uri, after)
+        reply_counts = self.comments.reply_count(uri, args['after'])
 
-        if 'limit' in fetch_args and fetch_args['limit'] == 0:
+        if args['limit'] == 0:
             root_list = []
         else:
-            root_list = list(self.comments.fetch(**fetch_args))
+            root_list = list(self.comments.fetch(**args))
             if not root_list:
                 raise NotFound
+
         if root_id not in reply_counts:
             reply_counts[root_id] = 0
 
-        if request.args.get('nested_limit'):
-            try:
-                nested_limit = int(request.args.get('nested_limit'))
-            except ValueError:
-                return BadRequest("nested_limit should be integer")
-        else:
+        try:
+            nested_limit = int(request.args.get('nested_limit'))
+        except TypeError:
             nested_limit = None
+        except ValueError:
+            return BadRequest("nested_limit should be integer")
 
         rv = {
             'id'             : root_id,
             'total_replies'  : reply_counts[root_id],
             'hidden_replies' : reply_counts[root_id] - len(root_list),
-            'replies'        : self.process_fetched_list(root_list, plain)
+            'replies'        : self._process_fetched_list(root_list, plain)
         }
         # We are only checking for one level deep comments
         if root_id is None:
@@ -384,23 +376,24 @@ class API(object):
                     comment['total_replies'] = reply_counts[comment['id']]
                     if nested_limit is not None:
                         if nested_limit > 0:
-                            fetch_args['parent'] = comment['id']
-                            fetch_args['limit'] = nested_limit
-                            replies = list(self.comments.fetch(**fetch_args))
+                            args['parent'] = comment['id']
+                            args['limit'] = nested_limit
+                            replies = list(self.comments.fetch(**args))
                         else:
                             replies = []
                     else:
-                        fetch_args['parent'] = comment['id']
-                        replies = list(self.comments.fetch(**fetch_args))
+                        args['parent'] = comment['id']
+                        replies = list(self.comments.fetch(**args))
                 else:
                     comment['total_replies'] = 0
                     replies = []
+
                 comment['hidden_replies'] = comment['total_replies'] - len(replies)
-                comment['replies'] = self.process_fetched_list(replies, plain)
+                comment['replies'] = self._process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
 
-    def process_fetched_list(self, fetched_list, plain=False):
+    def _process_fetched_list(self, fetched_list, plain=False):
         for item in fetched_list:
 
             key = item['email'] or item['remote_addr']

@@ -108,7 +108,7 @@ class Comments:
         sql_args = [uri, mode, mode, after]
 
         if parent != 'any':
-            if parent is None or parent == 'NULL':
+            if parent is None:
                 sql.append('AND comments.parent IS NULL')
             else:
                 sql.append('AND comments.parent=?')
@@ -117,7 +117,7 @@ class Comments:
         sql.append('ORDER BY ? ASC')
         sql_args.append(order_by)
 
-        if limit != None and limit != 0:
+        if limit:
             sql.append('LIMIT ?')
             sql_args.append(limit)
 
