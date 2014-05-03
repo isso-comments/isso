@@ -101,11 +101,11 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             function() {
                 el.remove();
                 api.fetch($("#isso-thread").getAttribute("data-isso-id"),
-                    limit = config["reveal-on-click"], nested_limit="0",
-                    parent=commentWrapper.id,
-                    lastcreated=lastcreated).then(
+                    config["reveal-on-click"], "0",
+                    commentWrapper.id,
+                    lastcreated).then(
                     function(rv) {
-                        if (rv.total_replies == 0) {
+                        if (rv.total_replies === 0) {
                             return;
                         }
 
@@ -172,7 +172,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 $("a.reply", footer).textContent = msgs["comment-close"];
             },
             function() {
-                form.remove()
+                form.remove();
                 $("a.reply", footer).textContent = msgs["comment-reply"];
             }
         );

@@ -78,7 +78,8 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
     var qs = function(params) {
         var rv = "";
         for (var key in params) {
-            if (params.hasOwnProperty(key) && params[key]) {
+            if (params.hasOwnProperty(key) &&
+                params[key] !== null && typeof(params[key]) !== "undefined") {
                 rv += key + "=" + encodeURIComponent(params[key]) + "&";
             }
         }
@@ -129,16 +130,19 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
     };
 
     var fetch = function(tid, limit, nested_limit, parent, lastcreated) {
-        if(typeof(limit) == 'undefined') limit = "inf";
-        if(typeof(nested_limit) == 'undefined') nested_limit = "inf";
-        if(typeof(parent) == 'undefined') parent = null;
+        if (typeof(limit) === 'undefined') { limit = "inf"; }
+        if (typeof(nested_limit) === 'undefined') { nested_limit = "inf"; }
+        if (typeof(parent) === 'undefined') { parent = null; }
+
         var query_dict = {uri: tid || location, after: lastcreated, parent: parent};
-        if(limit != "inf") {
+
+        if(limit !== "inf") {
             query_dict['limit'] = limit;
         }
-        if(nested_limit != "inf"){
+        if(nested_limit !== "inf"){
             query_dict['nested_limit'] = nested_limit;
         }
+
         var deferred = Q.defer();
         curl("GET", endpoint + "/?" +
             qs(query_dict), null, function(rv) {
