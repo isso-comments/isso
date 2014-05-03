@@ -101,7 +101,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             function() {
                 el.remove();
                 api.fetch($("#isso-thread").getAttribute("data-isso-id"),
-                    config["reveal-on-click"], "0",
+                    config["reveal-on-click"], config["max-comments-nested"],
                     commentWrapper.id,
                     lastcreated).then(
                     function(rv) {
