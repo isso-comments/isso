@@ -8,6 +8,7 @@ import logging
 import threading
 import multiprocessing
 
+from email.utils import parseaddr, formataddr
 from configparser import ConfigParser
 
 try:
@@ -144,6 +145,9 @@ class Config:
                 if item == ("general", "session-key"):
                     logger.info("Your `session-key` has been stored in the "
                                 "database itself, this option is now unused")
+
+        if not parseaddr(rv.get("smtp", "from"))[0]:
+            rv.set("smtp", "from", formataddr((u"Ich schrei sonst!", rv.get("smtp", "from"))))
 
         return rv
 

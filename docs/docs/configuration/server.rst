@@ -184,7 +184,7 @@ to
     recipient address, e.g. your email address
 
 from
-    sender address, e.g. isso@example.tld
+    sender address, e.g. `"Foo Bar" <isso@example.tld>`
 
 timeout
     specify a timeout in seconds for blocking operations like the

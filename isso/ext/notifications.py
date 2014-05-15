@@ -125,7 +125,7 @@ class SMTP(object):
         to_addr = self.conf.get("to")
 
         msg = MIMEText(body, 'plain', 'utf-8')
-        msg['From'] = "Ich schrei sonst! <%s>" % from_addr
+        msg['From'] = from_addr
         msg['To'] = to_addr
         msg['Date'] = formatdate(localtime=True)
         msg['Subject'] = Header(subject, 'utf-8')
