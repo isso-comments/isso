@@ -47,7 +47,7 @@ class SMTP(object):
         if uwsgi:
             def spooler(args):
                 try:
-                    self._sendmail(args["subject"].decode("utf-8"),
+                    self._sendmail(args[b"subject"].decode("utf-8"),
                                    args["body"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
