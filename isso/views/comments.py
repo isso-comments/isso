@@ -320,11 +320,81 @@ class API(object):
     @requires(str, 'uri')
     def fetch(self, environ, request, uri):
 
-        rv = list(self.comments.fetch(uri))
-        if not rv:
-            raise NotFound
+        args = {
+            'uri': uri,
+            'after': request.args.get('after', 0)
+        }
 
-        for item in rv:
+        try:
+            args['limit'] = int(request.args.get('limit'))
+        except TypeError:
+            args['limit'] = None
+        except ValueError:
+            return BadRequest("limit should be integer")
+
+        if request.args.get('parent') is not None:
+            try:
+                args['parent'] = int(request.args.get('parent'))
+                root_id = args['parent']
+            except ValueError:
+                return BadRequest("parent should be integer")
+        else:
+            args['parent'] = None
+            root_id = None
+
+        plain = request.args.get('plain', '0') == '0'
+
+        reply_counts = self.comments.reply_count(uri, args['after'])
+
+        if args['limit'] == 0:
+            root_list = []
+        else:
+            root_list = list(self.comments.fetch(**args))
+            if not root_list:
+                raise NotFound
+
+        if root_id not in reply_counts:
+            reply_counts[root_id] = 0
+
+        try:
+            nested_limit = int(request.args.get('nested_limit'))
+        except TypeError:
+            nested_limit = None
+        except ValueError:
+            return BadRequest("nested_limit should be integer")
+
+        rv = {
+            'id'             : root_id,
+            'total_replies'  : reply_counts[root_id],
+            'hidden_replies' : reply_counts[root_id] - len(root_list),
+            'replies'        : self._process_fetched_list(root_list, plain)
+        }
+        # We are only checking for one level deep comments
+        if root_id is None:
+            for comment in rv['replies']:
+                if comment['id'] in reply_counts:
+                    comment['total_replies'] = reply_counts[comment['id']]
+                    if nested_limit is not None:
+                        if nested_limit > 0:
+                            args['parent'] = comment['id']
+                            args['limit'] = nested_limit
+                            replies = list(self.comments.fetch(**args))
+                        else:
+                            replies = []
+                    else:
+                        args['parent'] = comment['id']
+                        replies = list(self.comments.fetch(**args))
+                else:
+                    comment['total_replies'] = 0
+                    replies = []
+
+                comment['hidden_replies'] = comment['total_replies'] - len(replies)
+                comment['replies'] = self._process_fetched_list(replies, plain)
+
+        return JSON(rv, 200)
+
+    def _process_fetched_list(self, fetched_list, plain=False):
+        for item in fetched_list:
 
             key = item['email'] or item['remote_addr']
             val = self.cache.get('hash', key.encode('utf-8'))
@@ -338,11 +408,11 @@ class API(object):
             for key in set(item.keys()) - API.FIELDS:
                 item.pop(key)
 
-        if request.args.get('plain', '0') == '0':
-            for item in rv:
+        if plain:
+            for item in fetched_list:
                 item['text'] = self.isso.render(item['text'])
 
-        return JSON(rv, 200)
+        return fetched_list
 
     @xhr
     def like(self, environ, request, id):
