@@ -128,17 +128,28 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    var fetch = function(tid) {
+    var fetch = function(tid, limit, nested_limit, parent, lastcreated) {
+        if(typeof(limit) == 'undefined') limit = "inf";
+        if(typeof(nested_limit) == 'undefined') nested_limit = "inf";
+        if(typeof(parent) == 'undefined') parent = null;
+        var query_dict = {uri: tid || location, after: lastcreated, parent: parent};
+        if(limit != "inf") {
+            query_dict['limit'] = limit;
+        }
+        if(nested_limit != "inf"){
+            query_dict['nested_limit'] = nested_limit;
+        }
         var deferred = Q.defer();
-        curl("GET", endpoint + "/?" + qs({uri: tid || location}), null, function(rv) {
-            if (rv.status === 200) {
-                deferred.resolve(JSON.parse(rv.body));
-            } else if (rv.status === 404) {
-                deferred.resolve([]);
-            } else {
-                deferred.reject(rv.body);
-            }
-        });
+        curl("GET", endpoint + "/?" +
+            qs(query_dict), null, function(rv) {
+                if (rv.status === 200) {
+                    deferred.resolve(JSON.parse(rv.body));
+                } else if (rv.status === 404) {
+                    deferred.resolve({total_replies: 0});
+                } else {
+                    deferred.reject(rv.body);
+                }
+            });
         return deferred.promise;
     };
 
