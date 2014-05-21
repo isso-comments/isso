@@ -1,0 +1,216 @@
+a {
+    text-decoration: none;
+}
+
+#isso-thread {
+    padding: 0;
+    margin: 0;
+}
+#isso-thread > h4 {
+    color: #555;
+    font-weight: bold;
+}
+#isso-thread .textarea {
+    min-height: 48px;
+    outline: 0;
+}
+#isso-thread .textarea.placeholder {
+    color: #AAA;
+}
+
+.parent-highlight {
+    background-color: #EFEFEF;
+}
+
+.isso-comment {
+    max-width: 68em;
+    margin: 0.95em auto;
+}
+.isso-comment > div.avatar,
+.postbox > .avatar {
+    display: block;
+    float: left;
+    width: 7%;
+    margin: 5px 0 0;
+}
+.isso-comment > div.avatar > svg,
+.postbox > .avatar {
+    max-width: 48px;
+    max-height: 48px
+}
+.isso-comment > div.text-wrapper {
+    display: block;
+    padding-left: calc(7% + 20px);
+}
+.isso-comment > div.text-wrapper:last-child {
+    margin-right: 0;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header, .isso-comment > div.text-wrapper > .isso-comment-footer {
+    font-size: 0.95em;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header {
+    font-size: 0.85em;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header .spacer {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header .spacer,
+.isso-comment > div.text-wrapper > .isso-comment-header a.permalink,
+.isso-comment > div.text-wrapper > .isso-comment-header .note,
+.isso-comment > div.text-wrapper > .isso-comment-header a.parent {
+    color: gray !important;
+    font-weight: normal;
+    text-shadow: none !important;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header .spacer:hover,
+.isso-comment > div.text-wrapper > .isso-comment-header a.permalink:hover,
+.isso-comment > div.text-wrapper > .isso-comment-header .note:hover,
+.isso-comment > div.text-wrapper > .isso-comment-header a.parent:hover {
+    color: #606060 !important;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header .note {
+    float: right;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header .author {
+    font-weight: bold;
+    color: #555;
+}
+.isso-comment > div.text-wrapper > .textarea-wrapper .textarea {
+    margin-top: 0.2em;
+}
+.isso-comment > div.text-wrapper > div.text p {
+    margin-top: 0.2em;
+}
+.isso-comment > div.text-wrapper > div.text p:last-child {
+    margin-bottom: 0.2em;
+}
+.isso-comment > div.text-wrapper > div.text h1,
+.isso-comment > div.text-wrapper > div.text h2,
+.isso-comment > div.text-wrapper > div.text h3,
+.isso-comment > div.text-wrapper > div.text h4,
+.isso-comment > div.text-wrapper > div.text h5,
+.isso-comment > div.text-wrapper > div.text h6 {
+    font-size: 100%;
+}
+.isso-comment > div.text-wrapper > div.textarea-wrapper .textarea {
+    width: 100%;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    box-shadow: 0px 0px 2px #888;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer {
+    font-size: 0.80em;
+    color: gray !important;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer a {
+    font-weight: bold;
+    text-decoration: none;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer a:hover {
+    color: #111111 !important;
+    text-shadow: #aaaaaa 0px 0px 1px !important;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer a.reply,
+.isso-comment > div.text-wrapper > .isso-comment-footer a.edit,
+.isso-comment > div.text-wrapper > .isso-comment-footer a.cancel,
+.isso-comment > div.text-wrapper > .isso-comment-footer a.delete {
+    padding-left: 1em;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer .votes {
+    color: gray;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer .upvote svg,
+.isso-comment > div.text-wrapper > .isso-comment-footer .downvote svg {
+    position: relative;
+    top: 0.2em;
+}
+.isso-comment .postbox {
+    margin-top: 0.8em;
+}
+
+.postbox {
+    *zoom: 1;
+    max-width: 68em;
+    margin: 0 auto;
+}
+.postbox > .form-wrapper {
+    display: block;
+    padding: 5px 0 0 calc(7% + 20px);
+}
+.postbox > .form-wrapper .textarea {
+    width: 100%;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    box-shadow: 0px 0px 2px #888;
+}
+.postbox > .form-wrapper > .textarea-wrapper {
+    margin-bottom: 0.2em;
+}
+.postbox > .form-wrapper > .auth-section {
+    *zoom: 1;
+    max-width: 68em;
+    margin-left: auto;
+    margin-right: auto;
+}
+.postbox > .form-wrapper > .auth-section:before, .postbox > .form-wrapper > .auth-section:after {
+    content: " ";
+    display: table;
+}
+.postbox > .form-wrapper > .auth-section:after {
+    clear: both;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper {
+    display: block;
+    float: left;
+    margin-right: 5.85151%;
+    width: 36.4891%;
+    margin-top: 0.1em;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper:last-child {
+    margin-right: 0;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper input {
+    width: 100%;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    box-shadow: 0px 0px 2px #888;
+    padding: 0.2em;
+    font: inherit;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper input::-webkit-input-placeholder {
+    color: #AAA;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper input:-moz-placeholder {
+    color: #AAA;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper input::-moz-placeholder {
+    color: #AAA;
+}
+.postbox > .form-wrapper > .auth-section .input-wrapper input:-ms-input-placeholder {
+    color: #AAA;
+}
+.postbox > .form-wrapper > .auth-section .post-action {
+    display: block;
+    float: left;
+    margin-right: 5.85151%;
+    width: 15.3188%;
+    margin-top: 0.1em;
+}
+.postbox > .form-wrapper > .auth-section .post-action:last-child {
+    margin-right: 0;
+}
+.postbox > .form-wrapper > .auth-section .post-action > input {
+    width: 100%;
+    padding: 0.4em 1em;
+    border-radius: 2px;
+    border: #CCC solid 1px;
+    background-color: #DDD;
+    cursor: pointer;
+}
+.postbox > .form-wrapper > .auth-section .post-action > input:hover {
+    background-color: #CCC;
+}
+.postbox > .form-wrapper > .auth-section .post-action > input:active {
+    background-color: #BBB;
+}
