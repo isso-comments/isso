@@ -156,13 +156,21 @@
 }
 .postbox > .form-wrapper > .auth-section .input-wrapper {
     display: inline-block;
+<<<<<<< HEAD
     position: relative;
+=======
+>>>>>>> 9e5c076bf73c8051c1dfb469427b0923c7006740
     max-width: 30%;
     margin: 0;
 }
 .postbox > .form-wrapper > .auth-section .input-wrapper input {
+<<<<<<< HEAD
     padding: .3em 10px;
     max-width: 100%;
+=======
+    padding: .3em 15px;
+    max-width: calc(100% - 30px);
+>>>>>>> 9e5c076bf73c8051c1dfb469427b0923c7006740
     border-radius: 3px;
     background-color: #fff;
     line-height: 1.4em;
@@ -197,7 +205,11 @@
         margin: 0 0 .3em;
     }
     .postbox > .form-wrapper > .auth-section .input-wrapper input {
+<<<<<<< HEAD
         width: 100%;
+=======
+        width: calc(100% - 32px);
+>>>>>>> 9e5c076bf73c8051c1dfb469427b0923c7006740
     }
     .postbox > .form-wrapper > .auth-section .post-action {
         display: block;
