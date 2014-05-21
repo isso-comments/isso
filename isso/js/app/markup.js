@@ -1,4 +1,4 @@
-define(["vendor/markup", "app/i18n", "app/text/svg"], function(Mark, i18n, svg) {
+define(["vendor/markup", "app/config", "app/i18n", "app/text/svg"], function(Mark, config, i18n, svg) {
 
     "use strict";
 
@@ -21,6 +21,7 @@ define(["vendor/markup", "app/i18n", "app/text/svg"], function(Mark, i18n, svg) 
 
     Mark.delimiter = ":";
     Mark.includes = merge({
+        conf: config,
         i18n: i18n[i18n.lang],
         svg: svg
     });

@@ -1,10 +1,12 @@
 <div class="isso-comment" id="isso-{{ id | blank }}">
+    {{ if conf-avatar | bool }}
     <div class="avatar">
         <svg data-hash="{{ hash }}"></svg>
     </div>
+    {{ /if }}
     <div class="text-wrapper">
         <div class="isso-comment-header" role="meta">
-            {{ if bool(website) }}
+            {{ if website | bool }}
             <a class="author" href="{{ website }}" rel="nofollow">
                 {{ author | blank : `i18n-comment-anonymous` }}
             </a>

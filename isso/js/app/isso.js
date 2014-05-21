@@ -11,35 +11,37 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
 
         var el = $.htmlify(Mark.up(templates["postbox"]));
 
-        // add a default identicon to not waste CPU cycles
-        $(".avatar > svg", el).replace(lib.identicons.blank(4, 48));
+        if (config["avatar"]) {
+            // add a default identicon to not waste CPU cycles
+            $(".avatar > svg", el).replace(lib.identicons.blank(4, 48));
 
-        // on text area focus, generate identicon from IP address
-        $(".textarea-wrapper > .textarea", el).on("focus", function() {
-            if ($(".avatar svg", el).getAttribute("className") === "blank") {
-                $(".avatar svg", el).replace(
-                    lib.identicons.generate(lib.pbkdf2(api.remote_addr(), api.salt, 1000, 6), 4, 48));
-            }
-        });
+            // on text area focus, generate identicon from IP address
+            $(".textarea-wrapper > .textarea", el).on("focus", function() {
+                if ($(".avatar svg", el).getAttribute("className") === "blank") {
+                    $(".avatar svg", el).replace(
+                        lib.identicons.generate(lib.pbkdf2(api.remote_addr(), api.salt, 1000, 6), 4, 48));
+                }
+            });
 
-        // update identicon on email input. Listens on keyup, after 200ms the
-        // new identicon is generated.
-        var active;
-        $(".input-wrapper > [type=email]", el).on("keyup", function() {
-            if (active) {
+            // update identicon on email input. Listens on keyup, after 200ms the
+            // new identicon is generated.
+            var active;
+            $(".input-wrapper > [type=email]", el).on("keyup", function() {
+                if (active) {
+                    clearTimeout(active);
+                }
+                active = setTimeout(function() {
+                    lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr(), api.salt, 1000, 6)
+                    .then(function(rv) {
+                        $(".avatar svg", el).replace(lib.identicons.generate(rv, 4, 48));
+                    });
+                }, 200);
+            }, false);
+
+            $(".input-wrapper > [type=email]", el).on("keydown", function() {
                 clearTimeout(active);
-            }
-            active = setTimeout(function() {
-                lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr(), api.salt, 1000, 6)
-                .then(function(rv) {
-                    $(".avatar svg", el).replace(lib.identicons.generate(rv, 4, 48));
-                });
-            }, 200);
-        }, false);
-
-        $(".input-wrapper > [type=email]", el).on("keydown", function() {
-            clearTimeout(active);
-        }, false);
+            }, false);
+        }
 
         // callback on success (e.g. to toggle the reply button)
         el.onsuccess = function() {};
@@ -144,7 +146,9 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
         // run once to activate
         refresh();
 
-        $("div.avatar > svg", el).replace(lib.identicons.generate(comment.hash, 4, 48));
+        if (config["avatar"]) {
+            $("div.avatar > svg", el).replace(lib.identicons.generate(comment.hash, 4, 48));
+        }
 
         var entrypoint;
         if (comment.parent === null) {
