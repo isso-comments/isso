@@ -1,9 +1,7 @@
 ISSO_JS_SRC := $(shell find isso/js/app -type f) $(shell ls isso/js/*.js | grep -vE "(min|dev)")
 ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js isso/js/count.min.js isso/js/count.dev.js
 
-ISSO_CSS_DST := isso/css/isso.css
-ISSO_CSS_SRC := isso/css/isso.scss
-ISSO_CSS_SRC_DEPS := $(shell find isso/css -type f | grep .scss)
+ISSO_CSS := isso/css/isso.css
 
 ISSO_PY_SRC := $(shell git ls-files | grep .py)
 
@@ -18,17 +16,13 @@ all: man js site
 init:
 	(cd isso/js; bower install almond requirejs requirejs-text)
 
-${ISSO_CSS_DST}: $(ISSO_CSS_SRC_DEPS)
-	scss --no-cache $(ISSO_CSS_SRC) $@
-
-isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS_DST)
+isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	r.js -o isso/js/build.$*.js out=$@
 
-isso/js/%.dev.js: $(ISSO_JS_SRC) $(ISSO_CSS_DST)
+isso/js/%.dev.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	r.js -o isso/js/build.$*.js optimize="none" out=$@
 
 js: $(ISSO_JS_DST)
-css: $(ISSO_CSS_DST)
 
 man: $(RST)
 	sphinx-build -b man docs/ man/
@@ -48,7 +42,7 @@ test: $($ISSO_PY_SRC)
 	python setup.py nosetests
 
 clean:
-	rm -f $(MAN) $(CSS) $(ISSO_JS_DST) $(ISSO_CSS_DST)
+	rm -f $(MAN) $(CSS) $(ISSO_JS_DST)
 
-.PHONY: clean site man init js css coverage test
+.PHONY: clean site man init js coverage test
 
