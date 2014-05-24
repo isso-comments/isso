@@ -11,7 +11,7 @@
     -->
     <channel>
         <item>
-            <title>Hello, World!</title>
+            <title>Hello, World…</title>
             <link>http://example.tld/2014/test/</link>
             <pubDate>Tue, 14 Jan 2014 17:31:03 +0000</pubDate>
             <dc:creator><![CDATA[Tester]]></dc:creator>

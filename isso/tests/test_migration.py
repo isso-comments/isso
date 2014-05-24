@@ -48,7 +48,7 @@ class TestMigration(unittest.TestCase):
         db = SQLite3(xxx.name, Config.load(None))
         WordPress(db, xml).migrate()
 
-        self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World!")
+        self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World…")
         self.assertEqual(db.threads["/2014/test/"]["id"], 1)
 
         self.assertEqual(db.threads["/?p=4"]["title"], "...")
