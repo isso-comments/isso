@@ -2,11 +2,6 @@ define(["vendor/markup", "app/config", "app/i18n", "app/text/svg"], function(Mar
 
     "use strict";
 
-    var pad = function(n, width, z) {
-        z = z || '0';
-        n = n + '';
-        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-    };
 
     // circumvent https://github.com/adammark/Markup.js/issues/22
     function merge(obj) {
@@ -36,10 +31,6 @@ define(["vendor/markup", "app/config", "app/i18n", "app/text/svg"], function(Mar
 
     Mark.pipes.substract = function(a, b) {
         return parseInt(a, 10) - parseInt(b, 10);
-    };
-
-    Mark.pipes.pluralize = function(str, n) {
-        return i18n.plurals[i18n.lang](str.split("\n"), +n).trim();
     };
 
     var strip = function(string) {

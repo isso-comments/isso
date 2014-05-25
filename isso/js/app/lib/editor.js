@@ -1,4 +1,5 @@
-define(["app/dom", "app/markup"], function($, Mark) {
+define(["app/dom", "app/i18n"], function($, i18n) {
+
     "use strict";
 
     return function(el) {
@@ -13,7 +14,7 @@ define(["app/dom", "app/markup"], function($, Mark) {
 
         el.on("blur", function() {
             if (el.textContent.length === 0) {
-                el.textContent = Mark.up("{{ i18n-postbox-text }}");
+                el.textContent = i18n.translate("postbox-text");
                 el.classList.add("placeholder");
             }
         });

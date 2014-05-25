@@ -1,0 +1,37 @@
+div(class='isso-comment' id='isso-#{comment.id}')
+    if conf.avatar
+        div(class='avatar')
+            svg(data-hash='#{comment.hash}')
+    div(class='text-wrapper')
+        div(class='isso-comment-header' role='meta')
+            if bool(comment.website)
+                a(class='author' href='#{comment.website}' rel='nofollow')
+                    = bool(comment.author) ? comment.author : i18n('comment-anonymous')
+            else
+                span(class='author')
+                    = bool(comment.author) ? comment.author : i18n('comment-anonymous')
+            span(class="spacer") •
+            a(class='permalink' href='#isso-#{comment.id}')
+                date(datetime='#{datetime(comment.created)}')
+            span(class='note')
+                = comment.mode == 2 ? i18n('comment-queued') : comment.mode == 4 ? i18n('comment-deleted') : ''
+
+        div(class='text')
+            if comment.mode == 4
+                p &nbsp;
+            else
+                != comment.text
+
+        div(class='isso-comment-footer')
+            if comment.likes - comment.dislikes != 0
+                span(class='votes') #{comment.likes - comment.dislikes}
+            a(class='upvote' href='#')
+                i!= svg['arrow-up']
+            span(class='spacer') |
+            a(class='downvote' href='#')
+                i!= svg['arrow-down']
+            a(class='reply' href='#') #{i18n('comment-reply')}
+            a(class='edit' href='#') #{i18n('comment-edit')}
+            a(class='delete' href='#') #{i18n('comment-delete')}
+
+        div(class='isso-follow-up')
