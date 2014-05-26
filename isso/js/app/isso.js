@@ -64,11 +64,13 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
                 author: $("[name=author]", el).value || null,
                 email: $("[name=email]", el).value || null,
+                website: $("[name=website]", el).value || null,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
             }).then(function(comment) {
                 $("[name=author]", el).value = "";
                 $("[name=email]", el).value = "";
+                $("[name=website]", el).value = "";
                 $(".textarea", el).innerHTML = "";
                 $(".textarea", el).blur();
                 insert(comment, true);
