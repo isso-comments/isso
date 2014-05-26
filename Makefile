@@ -18,7 +18,7 @@ CSS := docs/_static/css/site.css
 all: man js site
 
 init:
-	(cd isso/js; bower install almond requirejs requirejs-text)
+	(cd isso/js; bower install almond requirejs requirejs-text jade)
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	r.js -o isso/js/build.$*.js out=$@
