@@ -1,7 +1,7 @@
 ({
     baseUrl: ".",
     mainConfigFile: 'config.js',
-    stubModules: ['text'],
+    stubModules: ['text', 'jade'],
 
     name: "components/almond/almond",
     include: ['embed'],

@@ -1,9 +1,9 @@
 var requirejs = {
     paths: {
         "text": "components/requirejs-text/text",
+        "jade": "lib/requirejs-jade/jade",
         "libjs-jade": "components/jade/jade",
-        "libjs-jade-runtime": "components/jade/runtime",
-        "jade": "lib/requirejs-jade/jade"
+        "libjs-jade-runtime": "components/jade/runtime"
     },
 
     config: {

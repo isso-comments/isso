@@ -13,7 +13,7 @@ define(["libjs-jade-runtime", "app/utils", "jade!app/text/postbox", "jade!app/te
     };
 
     var set = function(name, value) {
-            globals[name] = value;
+        globals[name] = value;
     };
 
     load("postbox", tt_postbox);
@@ -37,7 +37,7 @@ define(["libjs-jade-runtime", "app/utils", "jade!app/text/postbox", "jade!app/te
         "render": function(name, locals) {
             var rv, t = templates[name];
             if (! t) {
-                throw "Template not found: '" + name + "'";
+                throw new Error("Template not found: '" + name + "'");
             }
 
             locals = locals || {};
