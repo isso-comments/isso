@@ -1,15 +1,13 @@
 /* Isso – Ich schrei sonst!
  */
-define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/markup", "app/i18n", "app/lib", "app/globals"],
-    function(templates, $, utils, config, api, Mark, i18n, lib, globals) {
+define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals"],
+    function($, utils, config, api, jade, i18n, lib, globals) {
 
     "use strict";
 
-    var msgs = i18n[i18n.lang];
-
     var Postbox = function(parent) {
 
-        var el = $.htmlify(Mark.up(templates["postbox"]));
+        var el = $.htmlify(jade.render("postbox"));
 
         if (config["avatar"]) {
             // add a default identicon to not waste CPU cycles
@@ -95,7 +93,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             entrypoint = $("#isso-" + commentWrapper.id + " > .text-wrapper > .isso-follow-up");
             commentWrapper.name = commentWrapper.id;
         }
-        var el = $.htmlify(Mark.up(templates["comment_loader"], commentWrapper));
+        var el = $.htmlify(jade.render("comment_loader", {"comment": commentWrapper}));
 
         entrypoint.append(el);
 
@@ -134,7 +132,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
     };
 
     var insert = function(comment, scrollIntoView) {
-        var el = $.htmlify(Mark.up(templates["comment"], comment));
+        var el = $.htmlify(jade.render("comment", {"comment": comment}));
 
         // update datetime every 60 seconds
         var refresh = function() {
@@ -173,11 +171,11 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
                 form.onsuccess = function() { toggler.next(); };
                 $(".textarea", form).focus();
-                $("a.reply", footer).textContent = msgs["comment-close"];
+                $("a.reply", footer).textContent = i18n.translate("comment-close");
             },
             function() {
                 form.remove();
-                $("a.reply", footer).textContent = msgs["comment-reply"];
+                $("a.reply", footer).textContent = i18n.translate("comment-reply");
             }
         );
 
@@ -211,8 +209,8 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
             function(toggler) {
                 var edit = $("a.edit", footer);
 
-                edit.textContent = msgs["comment-save"];
-                edit.insertAfter($.new("a.cancel", msgs["comment-cancel"])).on("click", function() {
+                edit.textContent = i18n.translate("comment-save");
+                edit.insertAfter($.new("a.cancel", i18n.translate("comment-cancel"))).on("click", function() {
                     toggler.canceled = true;
                     toggler.next();
                 });
@@ -253,7 +251,7 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 text.classList.add("text");
 
                 $("a.cancel", footer).remove();
-                $("a.edit", footer).textContent = msgs["comment-edit"];
+                $("a.edit", footer).textContent = i18n.translate("comment-edit");
             }
         );
 
@@ -262,9 +260,9 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                 var del = $("a.delete", footer);
                 var state = ! toggler.state;
 
-                del.textContent = msgs["comment-confirm"];
+                del.textContent = i18n.translate("comment-confirm");
                 del.on("mouseout", function() {
-                    del.textContent = msgs["comment-delete"];
+                    del.textContent = i18n.translate("comment-delete");
                     toggler.state = state;
                     del.onmouseout = null;
                 });
@@ -275,12 +273,12 @@ define(["app/text/html", "app/dom", "app/utils", "app/config", "app/api", "app/m
                     if (rv) {
                         el.remove();
                     } else {
-                        $("span.note", header).textContent = msgs["comment-deleted"];
+                        $("span.note", header).textContent = i18n.translate("comment-deleted");
                         text.innerHTML = "<p>&nbsp;</p>";
                         $("a.edit", footer).remove();
                         $("a.delete", footer).remove();
                     }
-                    del.textContent = msgs["comment-delete"];
+                    del.textContent = i18n.translate("comment-delete");
                 });
             }
         );

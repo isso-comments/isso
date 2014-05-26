@@ -1,9 +1,15 @@
-define(["app/markup"], function(Mark) {
+define(["app/i18n"], function(i18n) {
     "use strict";
 
     // return `cookie` string if set
     var cookie = function(cookie) {
         return (document.cookie.match('(^|; )' + cookie + '=([^;]*)') || 0)[2];
+    };
+
+    var pad = function(n, width, z) {
+        z = z || '0';
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     };
 
     var ago = function(localTime, date) {
@@ -17,27 +23,19 @@ define(["app/markup"], function(Mark) {
         var mins = Math.ceil(secs / 60), hours = Math.ceil(mins / 60),
             days = Math.ceil(hours / 24);
 
-        var i18n = function(msgid, n) {
-            if (! n) {
-                return Mark.up("{{ i18n-" + msgid + " }}");
-            } else {
-                return Mark.up("{{ i18n-" + msgid + " | pluralize : `n` }}", {n: n});
-            }
-        };
-
-        return secs  <=  45 && i18n("date-now")  ||
-               secs  <=  90 && i18n("date-minute", 1) ||
-               mins  <=  45 && i18n("date-minute", mins) ||
-               mins  <=  90 && i18n("date-hour", 1) ||
-               hours <=  22 && i18n("date-hour", hours) ||
-               hours <=  36 && i18n("date-day", 1) ||
-               days  <=   5 && i18n("date-day", days) ||
-               days  <=   8 && i18n("date-week", 1) ||
-               days  <=  21 && i18n("date-week", Math.ceil(days / 7)) ||
-               days  <=  45 && i18n("date-month", 1) ||
-               days  <= 345 && i18n("date-month", Math.ceil(days / 30)) ||
-               days  <= 547 && i18n("date-year", 1) ||
-                               i18n("date-year", Math.ceil(days / 365.25));
+        return secs  <=  45 && i18n.translate("date-now")  ||
+               secs  <=  90 && i18n.pluralize("date-minute", 1) ||
+               mins  <=  45 && i18n.pluralize("date-minute", mins) ||
+               mins  <=  90 && i18n.pluralize("date-hour", 1) ||
+               hours <=  22 && i18n.pluralize("date-hour", hours) ||
+               hours <=  36 && i18n.pluralize("date-day", 1) ||
+               days  <=   5 && i18n.pluralize("date-day", days) ||
+               days  <=   8 && i18n.pluralize("date-week", 1) ||
+               days  <=  21 && i18n.pluralize("date-week", Math.ceil(days / 7)) ||
+               days  <=  45 && i18n.pluralize("date-month", 1) ||
+               days  <= 345 && i18n.pluralize("date-month", Math.ceil(days / 30)) ||
+               days  <= 547 && i18n.pluralize("date-year", 1) ||
+                               i18n.pluralize("date-year", Math.ceil(days / 365.25));
     };
 
     var text = function(html) {
@@ -55,6 +53,7 @@ define(["app/markup"], function(Mark) {
 
     return {
         cookie: cookie,
+        pad: pad,
         ago: ago,
         text: text,
         detext: detext

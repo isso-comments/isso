@@ -1,4 +1,4 @@
-define(["app/api", "app/dom", "app/markup"], function(api, $, Mark) {
+define(["app/api", "app/dom", "app/i18n"], function(api, $, i18n) {
     return function() {
 
         var objs = {};
@@ -28,9 +28,7 @@ define(["app/api", "app/dom", "app/markup"], function(api, $, Mark) {
                     var index = urls.indexOf(key);
 
                     for (var i = 0; i < objs[key].length; i++) {
-                        objs[key][i].textContent = Mark.up(
-                            "{{ i18n-num-comments | pluralize : `n` }}",
-                            {n: rv[index]});
+                        objs[key][i].textContent = i18n.pluralize("num-comments", rv[index]);
                     }
                 }
             }

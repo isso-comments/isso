@@ -1,5 +1,9 @@
-ISSO_JS_SRC := $(shell find isso/js/app -type f) $(shell ls isso/js/*.js | grep -vE "(min|dev)")
-ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js isso/js/count.min.js isso/js/count.dev.js
+ISSO_JS_SRC := $(shell find isso/js/app -type f) \
+	       $(shell ls isso/js/*.js | grep -vE "(min|dev)") \
+	       isso/js/lib/requirejs-jade/jade.js
+
+ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js \
+	       isso/js/count.min.js isso/js/count.dev.js
 
 ISSO_CSS := isso/css/isso.css
 
@@ -14,7 +18,7 @@ CSS := docs/_static/css/site.css
 all: man js site
 
 init:
-	(cd isso/js; bower install almond requirejs requirejs-text)
+	(cd isso/js; bower install almond requirejs requirejs-text jade)
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	r.js -o isso/js/build.$*.js out=$@

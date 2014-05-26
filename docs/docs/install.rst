@@ -127,8 +127,6 @@ way to set up Isso. It requires a lot more dependencies and effort:
 - Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
-- Ruby 1.8 or higher
-- a `SCSS <http://sass-lang.com/>`_ compiler
 - Node.js, `NPM <https://npmjs.org/>`__ and `Bower <http://bower.io/>`__
 
 Get a fresh copy of Isso:
@@ -152,12 +150,6 @@ Install Isso and its dependencies:
     ~> python setup.py develop  # or `install`
     ~> isso run
 
-Compilation from SCSS to CSS:
-
-.. code-block:: sh
-
-    ~> make css
-
 Install JavaScript modules:
 
 .. code-block:: sh
@@ -175,7 +167,7 @@ Optimization:
 
 .. code-block:: sh
 
-    ~> npm install -g requirejs uglifyjs
+    ~> npm install -g requirejs uglifyjs jade
     ~> make js
 
 Init scripts

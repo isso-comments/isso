@@ -3,9 +3,14 @@
  * Distributed under the MIT license
  */
 
-require(["app/lib/ready", "app/config", "app/api", "app/isso", "app/count", "app/dom", "app/markup", "app/text/css"], function(domready, config, api, isso, count, $, Mark, css) {
+require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade"], function(domready, config, i18n, api, isso, count, $, css, svg, jade) {
 
     "use strict";
+
+    jade.set("conf", config);
+    jade.set("i18n", i18n.translate);
+    jade.set("pluralize", i18n.pluralize);
+    jade.set("svg", svg);
 
     domready(function() {
 
@@ -31,7 +36,7 @@ require(["app/lib/ready", "app/config", "app/api", "app/isso", "app/count", "app
             config["max-comments-nested"]).then(
             function(rv) {
                 if (rv.total_replies === 0) {
-                    $("#isso-thread > h4").textContent = Mark.up("{{ i18n-no-comments }}");
+                    $("#isso-thread > h4").textContent = i18n.translate("no-comments");
                     return;
                 }
 
@@ -44,7 +49,7 @@ require(["app/lib/ready", "app/config", "app/api", "app/isso", "app/count", "app
                     }
                     total_count = total_count + commentObject.total_replies;
                 });
-                $("#isso-thread > h4").textContent = Mark.up("{{ i18n-num-comments | pluralize : `n` }}", {n: total_count});
+                $("#isso-thread > h4").textContent = i18n.pluralize("num-comments", total_count);
 
                 if(rv.hidden_replies > 0) {
                     isso.insert_loader(rv, lastcreated);
