@@ -18,10 +18,10 @@ define({
     "comment-anonymous": "Anonyme",
     "comment-hidden": "1 caché\n{{ n }} cachés",
     "date-now": "À l'instant'",
-    "date-minute": "Il y a une minute \n{{ n }} minutes",
-    "date-hour": "Il y a une heure\n{{ n }} heures ",
-    "date-day": "Hier\n{{ n }} jours auparavant",
-    "date-week": "Il y a une semaine\n{{ n }} semaines",
-    "date-month": "Il y a un mois\n{{ n }} mois",
-    "date-year": "Il y a un an\n{{ n }} ans"
+    "date-minute": "Il y a une minute\nIl y a {{ n }} minutes",
+    "date-hour": "Il y a une heure\nIl y a {{ n }} heures ",
+    "date-day": "Hier\nIl y a {{ n }} jours",
+    "date-week": "Il y a une semaine\nIl y a {{ n }} semaines",
+    "date-month": "Il y a un mois\nIl y a {{ n }} mois",
+    "date-year": "Il y a un an\nIl y a {{ n }} ans"
 });
