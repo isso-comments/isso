@@ -95,7 +95,7 @@ class Config:
         "dbpath = /tmp/isso.db",
         "host = ",
         "max-age = 15m",
-        "notify = ",
+        "notify = stdout",
         "[moderation]",
         "enabled = false",
         "purge-after = 30d",

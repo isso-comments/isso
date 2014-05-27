@@ -43,7 +43,7 @@ session key and hostname. Here are the default values for this section:
     name =
     host =
     max-age = 15m
-    notify =
+    notify = stdout
 
 dbpath
     file location to the SQLite3 database, highly recommended to change this
@@ -76,8 +76,15 @@ max-age
     :ref:`Appendum: Timedelta <appendum-timedelta>` for valid values.
 
 notify
-    Select notification backend for new comments. Currently, only SMTP
-    is available.
+    Select notification backend(s) for new comments, separated by comma.
+    Available backends:
+
+    stdout :
+        Log to standard output. Default, if none selected.
+
+    smtp :
+        Send notifications via SMTP on new comments with activation (if
+        moderated) and deletion links.
 
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS

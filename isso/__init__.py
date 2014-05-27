@@ -92,10 +92,13 @@ class Isso(object):
         super(Isso, self).__init__(conf)
 
         subscribers = []
-        subscribers.append(Stdout(None))
-
-        if conf.get("general", "notify") == "smtp":
-            subscribers.append(SMTP(self))
+        for backend in conf.getlist("general", "notify"):
+            if backend == "stdout":
+                subscribers.append(Stdout(None))
+            elif backend in ("smtp", "SMTP"):
+                subscribers.append(SMTP(self))
+            else:
+                logger.warn("unknown notification backend '%s'", backend)
 
         self.signal = ext.Signal(*subscribers)
 
