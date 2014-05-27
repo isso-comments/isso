@@ -23,7 +23,7 @@
     color: #AAA;
 }
 
-.parent-highlight {
+#isso-thread .parent-highlight {
     background-color: #EFEFEF;
 }
 
@@ -37,13 +37,13 @@
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 .isso-comment > div.avatar,
-.postbox > .avatar {
+.isso-postbox > .avatar {
     display: block;
     float: left;
     width: 7%;
     margin: 3px 15px 0 0;
 }
-.postbox > .avatar {
+.isso-postbox > .avatar {
     float: left;
     margin: 5px 10px 0 5px;
     width: 48px;
@@ -51,7 +51,7 @@
     overflow: hidden;
 }
 .isso-comment > div.avatar > svg,
-.postbox > .avatar > svg {
+.isso-postbox > .avatar > svg {
     max-width: 48px;
     max-height: 48px;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -145,23 +145,23 @@
     position: relative;
     top: .2em;
 }
-.isso-comment .postbox {
+.isso-comment .isso-postbox {
     margin-top: 0.8em;
 }
 
-.postbox {
+.isso-postbox {
     max-width: 68em;
     margin: 0 auto 2em;
 }
-.postbox > .form-wrapper {
+.isso-postbox > .form-wrapper {
     display: block;
     padding: 0;
 }
-.postbox > .form-wrapper > .auth-section,
-.postbox > .form-wrapper > .auth-section .post-action {
+.isso-postbox > .form-wrapper > .auth-section,
+.isso-postbox > .form-wrapper > .auth-section .post-action {
     display: block;
 }
-.postbox > .form-wrapper .textarea {
+.isso-postbox > .form-wrapper .textarea {
     margin: 0 0 .3em;
     padding: .4em .8em;
     border-radius: 3px;
@@ -173,13 +173,13 @@
 #isso-thread input:focus {
     border-color: rgba(0, 0, 0, 0.8);
 }
-.postbox > .form-wrapper > .auth-section .input-wrapper {
+.isso-postbox > .form-wrapper > .auth-section .input-wrapper {
     display: inline-block;
     position: relative;
     max-width: 30%;
     margin: 0;
 }
-.postbox > .form-wrapper > .auth-section .input-wrapper input {
+.isso-postbox > .form-wrapper > .auth-section .input-wrapper input {
     padding: .3em 10px;
     max-width: 100%;
     background-color: #fff;
@@ -187,18 +187,18 @@
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-.postbox > .form-wrapper > .auth-section .input-wrapper:first-child input {
+.isso-postbox > .form-wrapper > .auth-section .input-wrapper:first-child input {
     border-radius: 3px 0 0 3px;
 }
-.postbox > .form-wrapper > .auth-section .input-wrapper:nth-last-child(2) input {
+.isso-postbox > .form-wrapper > .auth-section .input-wrapper:nth-last-child(2) input {
     border-radius: 0 3px 3px 0;
 }
-.postbox > .form-wrapper > .auth-section .post-action {
+.isso-postbox > .form-wrapper > .auth-section .post-action {
     display: inline-block;
     float: right;
     margin: 0;
 }
-.postbox > .form-wrapper > .auth-section .post-action > input {
+.isso-postbox > .form-wrapper > .auth-section .post-action > input {
     padding: calc(.3em - 1px);
     border-radius: 2px;
     border: 1px solid #CCC;
@@ -208,23 +208,23 @@
     line-height: 1.4em;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-.postbox > .form-wrapper > .auth-section .post-action > input:hover {
+.isso-postbox > .form-wrapper > .auth-section .post-action > input:hover {
     background-color: #CCC;
 }
-.postbox > .form-wrapper > .auth-section .post-action > input:active {
+.isso-postbox > .form-wrapper > .auth-section .post-action > input:active {
     background-color: #BBB;
 }
 @media screen and (max-width:600px) {
-    .postbox > .form-wrapper > .auth-section .input-wrapper {
+    .isso-postbox > .form-wrapper > .auth-section .input-wrapper {
         display: block;
         max-width: 100%;
         margin: 0 0 .3em;
     }
-    .postbox > .form-wrapper > .auth-section .input-wrapper input {
+    .isso-postbox > .form-wrapper > .auth-section .input-wrapper input {
         width: 100%;
         border-radius: 3px;
     }
-    .postbox > .form-wrapper > .auth-section .post-action {
+    .isso-postbox > .form-wrapper > .auth-section .post-action {
         display: block;
         float: none;
         text-align: right;
