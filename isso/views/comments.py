@@ -374,7 +374,7 @@ class API(object):
 
         plain = request.args.get('plain', '0') == '0'
 
-        reply_counts = self.comments.reply_count(uri, args['after'])
+        reply_counts = self.comments.reply_count(uri, after=args['after'])
 
         if args['limit'] == 0:
             root_list = []

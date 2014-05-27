@@ -197,16 +197,19 @@ class Comments:
             return {'likes': likes + 1, 'dislikes': dislikes}
         return {'likes': likes, 'dislikes': dislikes + 1}
 
-    def reply_count(self, url, after=0):
+    def reply_count(self, url, mode=5, after=0):
         """
         Return comment count for main thread and all reply threads for one url.
         """
 
-        sql = [ 'SELECT comments.parent,count(*) FROM comments INNER JOIN threads ON', 
-                '   threads.uri=? AND comments.tid=threads.id', 
-                '   AND comments.mode = 1 AND comments.created>? GROUP BY comments.parent;']
+        sql = ['SELECT comments.parent,count(*)',
+               'FROM comments INNER JOIN threads ON',
+               '   threads.uri=? AND comments.tid=threads.id AND',
+               '   (? | comments.mode = ?) AND',
+               '   comments.created > ?',
+               'GROUP BY comments.parent']
 
-        return dict(self.db.execute(sql, [url, after]).fetchall())
+        return dict(self.db.execute(sql, [url, mode, mode, after]).fetchall())
 
     def count(self, *urls):
         """
