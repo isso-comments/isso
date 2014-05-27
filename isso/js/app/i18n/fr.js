@@ -1,7 +1,8 @@
 define({
     "postbox-text": "Insérez votre commentaire ici (au moins 3 lettres)",
-    "postbox-author": "Nom (optionel)",
-    "postbox-email": "Courriel (optionel)",
+    "postbox-author": "Nom (optionnel)",
+    "postbox-email": "Courriel (optionnel)",
+    "postbox-website": "Site web (optionnel)",
     "postbox-submit": "Soumettre",
     "num-comments": "{{ n }} commentaire\n{{ n }} commentaires",
     "no-comments": "Aucun commentaire pour l'instant",
