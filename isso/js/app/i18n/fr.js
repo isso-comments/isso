@@ -15,7 +15,7 @@ define({
     "comment-deleted": "Commentaire supprimé.",
     "comment-queued": "Commentaire en attente de modération.",
     "comment-anonymous": "Anonyme",
-    "comment-hidden": "1 caché\n{{ hidden_replies }} cachés",
+    "comment-hidden": "1 caché\n{{ n }} cachés",
     "date-now": "À l'instant'",
     "date-minute": "Il y a une minute \n{{ n }} minutes",
     "date-hour": "Il y a une heure\n{{ n }} heures ",

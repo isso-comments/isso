@@ -15,7 +15,7 @@ define({
     "comment-deleted": "Kommentar gelöscht.",
     "comment-queued": "Kommentar muss noch freigeschaltet werden.",
     "comment-anonymous": "Anonym",
-    "comment-hidden": "{{ hidden_replies }} versteckt",
+    "comment-hidden": "{{ n }} versteckt",
     "date-now": "eben jetzt",
     "date-minute": "vor einer Minute\nvor {{ n }} Minuten",
     "date-hour": "vor einer Stunde\nvor {{ n }} Stunden",

@@ -55,7 +55,9 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"
         var msg;
 
         msg = translate(msgid);
-        msg = plural(msg.split("\n"), (+ n));
+        if (msg.indexOf("\n") > -1) {
+            msg = plural(msg.split("\n"), (+ n));
+        }
 
         return msg ? msg.replace("{{ n }}", (+ n)) : msg;
     };

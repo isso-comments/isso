@@ -54,16 +54,16 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         return el;
     };
 
-    var insert_loader = function(commentWrapper, lastcreated) {
+    var insert_loader = function(comment, lastcreated) {
         var entrypoint;
-        if (commentWrapper.id === null) {
+        if (comment.id === null) {
             entrypoint = $("#isso-root");
-            commentWrapper.name = 'null';
+            comment.name = 'null';
         } else {
-            entrypoint = $("#isso-" + commentWrapper.id + " > .text-wrapper > .isso-follow-up");
-            commentWrapper.name = commentWrapper.id;
+            entrypoint = $("#isso-" + comment.id + " > .text-wrapper > .isso-follow-up");
+            comment.name = comment.id;
         }
-        var el = $.htmlify(jade.render("comment_loader", {"comment": commentWrapper}));
+        var el = $.htmlify(jade.render("comment-loader", {"comment": comment}));
 
         entrypoint.append(el);
 
@@ -72,7 +72,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 el.remove();
                 api.fetch($("#isso-thread").getAttribute("data-isso-id"),
                     config["reveal-on-click"], config["max-comments-nested"],
-                    commentWrapper.id,
+                    comment.id,
                     lastcreated).then(
                     function(rv) {
                         if (rv.total_replies === 0) {
