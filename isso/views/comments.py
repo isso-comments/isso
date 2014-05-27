@@ -92,7 +92,6 @@ class API(object):
         ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('checkip', ('GET', '/check-ip')),
         ('demo',    ('GET', '/demo'))
     ]
 
@@ -475,9 +474,6 @@ class API(object):
             raise BadRequest("JSON must be a list of URLs")
 
         return JSON(self.comments.count(*data), 200)
-
-    def checkip(self, env, req):
-        return Response(utils.anonymize(str(req.remote_addr)), 200)
 
     def demo(self, env, req):
         return redirect(get_current_url(env) + '/index.html')

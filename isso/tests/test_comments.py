@@ -375,9 +375,6 @@ class TestComments(unittest.TestCase):
         # just for the record
         self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
 
-    def testCheckIP(self):
-        self.assertEqual(self.get('/check-ip').data.decode("utf-8"), '192.168.1.0')
-
 
 class TestModeratedComments(unittest.TestCase):
 
