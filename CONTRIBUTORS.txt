@@ -31,6 +31,12 @@ In chronological order:
 
 * Srijan Choudhary <srijan4@gmail.com>
   * Correct nginx examples in documentation
+  * Added comment pagination feature
+  * Provide a demo site
+
+* William Dorffer <schoewilliam@gmail.com>
+  * Convert SCSS to plain CSS
+  * Refresh style, make it responsive
 
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
