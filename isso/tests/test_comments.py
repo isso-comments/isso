@@ -129,8 +129,25 @@ class TestComments(unittest.TestCase):
         for text in ("", "\n\n\n"):
             self.assertFalse(verify({"text": text}))
 
-        # email length
+        # email/website length
+        self.assertTrue(verify({"text": "...", "email": "*"*254}))
+        self.assertTrue(verify({"text": "...", "website": "google.de/" + "a"*128}))
+
         self.assertFalse(verify({"text": "...", "email": "*"*1024}))
+        self.assertFalse(verify({"text": "...", "website": "google.de/" + "*"*1024}))
+
+        # valid website url
+        self.assertTrue(comments.isurl("example.tld"))
+        self.assertTrue(comments.isurl("http://example.tld"))
+        self.assertTrue(comments.isurl("https://example.tld"))
+        self.assertTrue(comments.isurl("https://example.tld:1337/"))
+        self.assertTrue(comments.isurl("https://example.tld:1337/foobar"))
+        self.assertTrue(comments.isurl("https://example.tld:1337/foobar?p=1#isso-thread"))
+
+        self.assertFalse(comments.isurl("ftp://example.tld/"))
+        self.assertFalse(comments.isurl("tel:+1234567890"))
+        self.assertFalse(comments.isurl("+1234567890"))
+        self.assertFalse(comments.isurl("spam"))
 
     def testGetInvalid(self):
 
