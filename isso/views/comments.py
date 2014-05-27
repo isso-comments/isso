@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+import re
 import cgi
-import json
 import time
 import hashlib
 import functools
@@ -21,6 +21,27 @@ from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
 from isso.utils.crypto import pbkdf2
 from isso.views import requires
+
+# from Django appearently, looks good to me *duck*
+__url_re = re.compile(
+    r'^'
+    r'(https?://)?'
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+    r'localhost|'  # localhost...
+    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+    r'(?::\d+)?'  # optional port
+    r'(?:/?|[/?]\S+)'
+    r'$', re.IGNORECASE)
+
+
+def isurl(text):
+    return __url_re.match(text) is not None
+
+
+def normalize(url):
+    if not url.startswith(("http://", "https://")):
+        return "http://" + url
+    return url
 
 
 def sha1(text):
@@ -111,6 +132,12 @@ class API(object):
         if len(comment.get("email") or "") > 254:
             return False, "http://tools.ietf.org/html/rfc5321#section-4.5.3"
 
+        if comment.get("website"):
+            if len(comment["website"]) > 254:
+                return False, "arbitrary length limit"
+            if not isurl(comment["website"]):
+                return False, "Website not Django-conform"
+
         return True, ""
 
     @xhr
@@ -129,9 +156,12 @@ class API(object):
         if not valid:
             return BadRequest(reason)
 
-        for field in ("author", "email"):
+        for field in ("author", "email", "website"):
             if data.get(field) is not None:
                 data[field] = cgi.escape(data[field])
+
+        if data.get("website"):
+            data["website"] = normalize(data["website"])
 
         data['mode'] = 2 if self.moderated else 1
         data['remote_addr'] = utils.anonymize(str(request.remote_addr))
