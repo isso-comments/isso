@@ -176,6 +176,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         $("a.edit", footer).toggle("click",
             function(toggler) {
                 var edit = $("a.edit", footer);
+                var avatar = $(".avatar", el, false)[0];
 
                 edit.textContent = i18n.translate("comment-save");
                 edit.insertAfter($.new("a.cancel", i18n.translate("comment-cancel"))).on("click", function() {
@@ -196,9 +197,14 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     text.textContent = "";
                     text.append(textarea);
                 });
+
+                if (avatar !== null) {
+                    avatar.hide();
+                }
             },
             function(toggler) {
                 var textarea = $(".textarea", text);
+                var avatar = $(".avatar", el, false)[0];
 
                 if (! toggler.canceled && textarea !== null) {
                     if (utils.text(textarea.innerHTML).length < 3) {
@@ -217,6 +223,10 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
                 text.classList.remove("textarea-wrapper");
                 text.classList.add("text");
+
+                if (avatar !== null) {
+                    avatar.show();
+                }
 
                 $("a.cancel", footer).remove();
                 $("a.edit", footer).textContent = i18n.translate("comment-edit");
