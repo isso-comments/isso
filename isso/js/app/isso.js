@@ -67,38 +67,37 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         entrypoint.append(el);
 
-        $("a.load_hidden", el).toggle("click",
-            function() {
-                el.remove();
-                api.fetch($("#isso-thread").getAttribute("data-isso-id"),
-                    config["reveal-on-click"], config["max-comments-nested"],
-                    comment.id,
-                    lastcreated).then(
-                    function(rv) {
-                        if (rv.total_replies === 0) {
-                            return;
-                        }
+        $("a.load_hidden", el).on("click", function() {
+            el.remove();
+            api.fetch($("#isso-thread").getAttribute("data-isso-id"),
+                config["reveal-on-click"], config["max-comments-nested"],
+                comment.id,
+                lastcreated).then(
+                function(rv) {
+                    if (rv.total_replies === 0) {
+                        return;
+                    }
 
-                        var lastcreated = 0;
-                        rv.replies.forEach(function(commentObject) {
-                            insert(commentObject, false);
-                            if(commentObject.created > lastcreated) {
-                                lastcreated = commentObject.created;
-                            }
-                        });
-
-                        if(rv.hidden_replies > 0) {
-                            insert_loader(rv, lastcreated);
+                    var lastcreated = 0;
+                    rv.replies.forEach(function(commentObject) {
+                        insert(commentObject, false);
+                        if(commentObject.created > lastcreated) {
+                            lastcreated = commentObject.created;
                         }
-
-                        if (window.location.hash.length > 0) {
-                            $(window.location.hash).scrollIntoView();
-                        }
-                    },
-                    function(err) {
-                        console.log(err);
                     });
-            });
+
+                    if(rv.hidden_replies > 0) {
+                        insert_loader(rv, lastcreated);
+                    }
+
+                    if (window.location.hash.length > 0) {
+                        $(window.location.hash).scrollIntoView();
+                    }
+                },
+                function(err) {
+                    console.log(err);
+                });
+        });
     };
 
     var insert = function(comment, scrollIntoView) {
