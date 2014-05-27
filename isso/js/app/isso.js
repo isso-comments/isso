@@ -9,38 +9,6 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         var el = $.htmlify(jade.render("postbox"));
 
-        if (config["avatar"]) {
-            // add a default identicon to not waste CPU cycles
-            $(".avatar > svg", el).replace(lib.identicons.blank(4, 48));
-
-            // on text area focus, generate identicon from IP address
-            $(".textarea-wrapper > .textarea", el).on("focus", function() {
-                if ($(".avatar svg", el).getAttribute("className") === "blank") {
-                    $(".avatar svg", el).replace(
-                        lib.identicons.generate(lib.pbkdf2(api.remote_addr(), api.salt, 1000, 6), 4, 48));
-                }
-            });
-
-            // update identicon on email input. Listens on keyup, after 200ms the
-            // new identicon is generated.
-            var active;
-            $(".input-wrapper > [type=email]", el).on("keyup", function() {
-                if (active) {
-                    clearTimeout(active);
-                }
-                active = setTimeout(function() {
-                    lib.pbkdf2($(".input-wrapper > [type=email]", el).value || api.remote_addr(), api.salt, 1000, 6)
-                    .then(function(rv) {
-                        $(".avatar svg", el).replace(lib.identicons.generate(rv, 4, 48));
-                    });
-                }, 200);
-            }, false);
-
-            $(".input-wrapper > [type=email]", el).on("keydown", function() {
-                clearTimeout(active);
-            }, false);
-        }
-
         // callback on success (e.g. to toggle the reply button)
         el.onsuccess = function() {};
 
@@ -210,6 +178,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         $("a.edit", footer).toggle("click",
             function(toggler) {
                 var edit = $("a.edit", footer);
+                var avatar = $(".avatar", el, false)[0];
 
                 edit.textContent = i18n.translate("comment-save");
                 edit.insertAfter($.new("a.cancel", i18n.translate("comment-cancel"))).on("click", function() {
@@ -230,9 +199,14 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     text.textContent = "";
                     text.append(textarea);
                 });
+
+                if (avatar !== null) {
+                    avatar.hide();
+                }
             },
             function(toggler) {
                 var textarea = $(".textarea", text);
+                var avatar = $(".avatar", el, false)[0];
 
                 if (! toggler.canceled && textarea !== null) {
                     if (utils.text(textarea.innerHTML).length < 3) {
@@ -251,6 +225,10 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
                 text.classList.remove("textarea-wrapper");
                 text.classList.add("text");
+
+                if (avatar !== null) {
+                    avatar.show();
+                }
 
                 $("a.cancel", footer).remove();
                 $("a.edit", footer).textContent = i18n.translate("comment-edit");

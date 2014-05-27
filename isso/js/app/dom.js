@@ -91,13 +91,25 @@ define(function() {
         this.parentNode.removeChild(this);
     };
 
-    var DOM = function(query, root) {
+    window.Element.prototype.show = function() {
+        this.style.display = "block";
+    };
+
+    window.Element.prototype.hide = function() {
+        this.style.display = "none";
+    };
+
+    var DOM = function(query, root, single) {
         /*
         jQuery-like CSS selector which returns on :param query: either a
-        single node, a node list or null.
+        single node (unless single=false), a node list or null.
 
         :param root: only queries within the given element.
          */
+
+        if (typeof single === "undefined") {
+            single = true;
+        }
 
         if (! root) {
             root = window.document;
@@ -109,7 +121,7 @@ define(function() {
             return null;
         }
 
-        if (elements.length === 1) {
+        if (elements.length === 1 && single) {
             return elements[0];
         }
 

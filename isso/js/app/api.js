@@ -183,22 +183,9 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    var remote_addr = function() {
-        var deferred = Q.defer();
-        curl("GET", endpoint + "/check-ip", null, function(rv) {
-            if (rv.status === 200) {
-                deferred.resolve(rv.body);
-            } else {
-                deferred.reject(rv.body);
-            }
-        });
-        return deferred.promise;
-    };
-
     return {
         endpoint: endpoint,
         salt: salt,
-        remote_addr: remote_addr,
 
         create: create,
         modify: modify,
