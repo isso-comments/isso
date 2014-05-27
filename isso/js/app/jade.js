@@ -26,10 +26,11 @@ define(["libjs-jade-runtime", "app/utils", "jade!app/text/postbox", "jade!app/te
             date = new Date(parseInt(date, 10) * 1000);
         }
 
-        return Array.join([
+        return [
             date.getUTCFullYear(),
             utils.pad(date.getUTCMonth(), 2),
-            utils.pad(date.getUTCDay(), 2)], "-");
+            utils.pad(date.getUTCDay(), 2)
+        ].join("-");
     });
 
     return {

@@ -9,7 +9,7 @@ define(["app/api", "app/dom", "app/i18n"], function(api, $, i18n) {
             }
 
             var tid = el.getAttribute("data-isso-id") ||
-                      el.href.match("^(.+)#isso-thread$")[1]
+                      el.href.match(/^(.+)#isso-thread$/)[1]
                              .replace(/^.*\/\/[^\/]+/, '');
 
             if (tid in objs) {
