@@ -79,10 +79,10 @@ notify
     Select notification backend(s) for new comments, separated by comma.
     Available backends:
 
-    stdout :
+    stdout
         Log to standard output. Default, if none selected.
 
-    smtp :
+    smtp
         Send notifications via SMTP on new comments with activation (if
         moderated) and deletion links.
 
@@ -130,7 +130,7 @@ listen
         ; UNIX domain socket
         listen = unix:///tmp/isso.sock
         ; TCP/IP
-        listen = http:///localhost:1234/
+        listen = http://localhost:1234/
 
     When ``gevent`` is available, it is automatically used for `http://`
     Currently, gevent can not handle http requests on unix domain socket
