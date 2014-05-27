@@ -223,6 +223,9 @@ class TestComments(unittest.TestCase):
         self.assertEqual(loads(r.data)['mode'], 4)
         self.assertIn('/path/', self.app.db.threads)
 
+        data = loads(client.get("/?uri=%2Fpath%2F").data)
+        self.assertEqual(data["total_replies"], 1)
+
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=1').status_code, 200)
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=2').status_code, 200)
 
