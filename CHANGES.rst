@@ -4,7 +4,77 @@ Changelog for Isso
 0.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- comment pagination by Srijan Choudhary, #15
+
+  Isso can now limit the amount of comments shown by default and add link to
+  show more. By default, all top-level comments are shown but only 5 nested
+  comments (per reply). You can override the settings:
+
+    isso-data-max-comments-top="N"
+    isso-data-max-comments-nested="N"
+
+  Where N is a number from 0 to infinity ("inf"). If you limit the amount of
+  shown top level comments, the overall comment count may be incorrect and a
+  known issue.
+
+  You can also configure the amount of comments shown per click (5 by default):
+
+    isso-data-reveal-on-click="N"
+
+  This feature also required a change in the comment structure. Previously, all
+  comments are stored tree-like but shown linearly. To ease the implementation
+  of pagination, the comment tree is now limited to a maximum depth of one.
+  Jeff Atwood explains, why `discussions are flat by design`__.
+
+  .. __: http://blog.codinghorror.com/web-discussions-flat-by-design/
+
+  When you upgrade, Isso will automatically normalize the tree and some
+  information gets lost. All new replies to a comment are now automatically a
+  direct child of the top-level comment.
+
+- style improvements by William Dorffer, #39, #84 #90 and #91
+
+  Isso now longer uses a fat SCSS library, but plain CSS instead. The design is
+  now responsive and no longer sets global CSS rules.
+
+- experimental WordPress import, #75
+
+  Isso should be able to import WXR 1.0-1.2 exports. The import code is based
+  on two WXR dumps I found (and created) and may not work for you. Please
+  report any failure.
+
+- avatar changes, #49
+
+  You can now configure the client to not show avatars:
+
+    data-isso-avatar="false"
+
+  Also there is no longer an avatar shown next to the comment box. This is due
+  to the new CSS and removes two runtime dependencies.
+
+- You may now set a full From header, #87
+
+    [smtp]
+    from = Foo Bar <spam@local>
+
+- SMTP (all caps) is now recognized for notifications, #95
+
+- Isso now ships a small demo site at /demo, #44
+
+- a few bugfixes: Disqus import now anonymizes IP addresses, uWSGI spooling for
+  Python 3, HTTP-Referer fallback for HTTP-Origin
+
+
+This release also features a new templating engine Jade__ which replaces
+Markup.js_.  Jade can compile directly to JavaScript with a tiny runtime module
+on the client. Along with the removal of sha1.js and pbkdf2.js and a few build
+optimizations, the JS client now weighs only 40kb (12kb gzipped), 52kb
+resp. 17kb before.
+
+In overall, the codebase lost around 2500 LoC :-)
+
+.. __: http://jade-lang.com/
+.. __: https://github.com/adammark/Markup.js
 
 
 0.8 (2014-03-28)
