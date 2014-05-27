@@ -42,7 +42,6 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
 
                 var lastcreated = 0;
                 var count = rv.total_replies;
-                console.log(rv.replies);
                 rv.replies.forEach(function(comment) {
                     isso.insert(comment, false);
                     if(comment.created > lastcreated) {
