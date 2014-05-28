@@ -10,7 +10,7 @@ define(function() {
 
     if (typeof process !== "undefined") {
         var fs = require.nodeRequire("fs");
-        var jade = require.nodeRequire("jade");
+        jade = require.nodeRequire("jade");
         fetchText = function(path, callback) {
             callback(fs.readFileSync(path, "utf-8"));
         };

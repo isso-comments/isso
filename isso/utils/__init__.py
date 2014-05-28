@@ -8,11 +8,6 @@ werkzeug = pkg_resources.get_distribution("werkzeug")
 import json
 import hashlib
 
-try:
-    from html.parser import HTMLParser, HTMLParseError
-except ImportError:
-    from HTMLParser import HTMLParser, HTMLParseError
-
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import BadRequest
 

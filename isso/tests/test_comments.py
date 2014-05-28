@@ -353,7 +353,7 @@ class TestComments(unittest.TestCase):
 
     def testDeleteCommentRemovesThread(self):
 
-        rv = self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+        self.client.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
         self.assertIn('/', self.app.db.threads)
         self.client.delete('/id/1')
         self.assertNotIn('/', self.app.db.threads)

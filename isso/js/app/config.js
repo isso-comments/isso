@@ -17,7 +17,8 @@ define(function() {
     var js = document.getElementsByTagName("script");
 
     for (var i = 0; i < js.length; i++) {
-        [].forEach.call(js[i].attributes, function(attr) {
+        for (var j = 0; j < js[i].attributes.length; j++) {
+            var attr = js[i].attributes[j];
             if (/^data-isso-/.test(attr.name)) {
                 try {
                     config[attr.name.substring(10)] = JSON.parse(attr.value);
@@ -25,7 +26,7 @@ define(function() {
                     config[attr.name.substring(10)] = attr.value;
                 }
             }
-        });
+        }
     }
 
     // split avatar-fg on whitespace

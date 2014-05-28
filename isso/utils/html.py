@@ -10,7 +10,6 @@ html5lib_version = pkg_resources.get_distribution("html5lib").version
 
 from html5lib.sanitizer import HTMLSanitizer
 from html5lib.serializer import HTMLSerializer
-from html5lib.treewalkers import getTreeWalker
 
 import misaka
 

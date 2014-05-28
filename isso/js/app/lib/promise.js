@@ -18,11 +18,11 @@ define(function() {
         }
     };
 
-    var defer = function() {
+    var Defer = function() {
         this.promise = new Promise();
     };
 
-    defer.prototype = {
+    Defer.prototype = {
         promise: Promise,
         resolve: function(rv) {
             this.promise.success.forEach(function(callback) {
@@ -50,7 +50,7 @@ define(function() {
     };
 
     return {
-        defer: function() { return new defer(); },
+        defer: function() { return new Defer(); },
         when: when
     };
 

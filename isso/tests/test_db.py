@@ -89,7 +89,7 @@ class TestDBMigration(unittest.TestCase):
                             "VALUEs (?, ?, ?)", (id, parent, id))
 
         conf = Config.load(None)
-        db = SQLite3(self.path, conf)
+        SQLite3(self.path, conf)
 
         flattened = [
             (1, None),

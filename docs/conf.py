@@ -16,7 +16,6 @@ import pkg_resources
 dist = pkg_resources.get_distribution("isso")
 
 import sys
-import os
 
 from os.path import join, dirname
 sys.path.insert(0, join(dirname(__file__), "_isso/"))
