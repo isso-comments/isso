@@ -144,11 +144,9 @@ quickstart, check out :doc:`configuration/server` and
 :doc:`configuration/client` for more information. For further website
 integration, see :doc:`extras/advanced-integration`.
 
-If you wondered how to automatically start Isso you may find a short script
-for various popular init/supervisor daemons here: :doc:`install`. Another
-important topic is the actual :doc:`deployment of Isso <extras/deployment>`
-(and every Python web application in general).
-
+To launch Isso automatically, check the :ref:`init-scripts` section from the
+installation guide. A different approach to deploy a web application is
+written here: :doc:`Deployment of Isso <extras/deployment>`.
 
 .. _Nginx: http://nginx.org/
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS

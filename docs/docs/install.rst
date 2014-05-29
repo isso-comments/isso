@@ -170,11 +170,14 @@ Optimization:
     ~> npm install -g requirejs uglifyjs jade
     ~> make js
 
+.. _init-scripts:
+
 Init scripts
 ------------
 
 Init scripts to run Isso as a service (check your distribution's documentation
-for your init-system; e.g. Debian uses SysVinit, Fedora uses SystemD):
+for your init-system; e.g. Debian uses SysVinit, Fedora uses SystemD) if you
+don't use FastCGi or uWSGI:
 
 -  SystemD: https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
 -  SysVinit: https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
