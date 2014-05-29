@@ -1,5 +1,5 @@
 /*
- * Copyright 2013, Martin Zimmermann <info@posativ.org>. All rights reserved.
+ * Copyright 2014, Martin Zimmermann <info@posativ.org>. All rights reserved.
  * Distributed under the MIT license
  */
 
