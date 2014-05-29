@@ -9,17 +9,17 @@ import functools
 from itsdangerous import SignatureExpired, BadSignature
 
 from werkzeug.http import dump_cookie
-from werkzeug.routing import Rule
-from werkzeug.wrappers import Response
-from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.wsgi import get_current_url
 from werkzeug.utils import redirect
+from werkzeug.routing import Rule
+from werkzeug.security import pbkdf2_hex
+from werkzeug.wrappers import Response
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from isso.compat import text_type as str
 
 from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
-from isso.utils.crypto import pbkdf2
 from isso.views import requires
 
 # from Django appearently, looks good to me *duck*
@@ -139,6 +139,11 @@ class API(object):
 
         return True, ""
 
+    @classmethod
+    def pbkdf2(cls, text, salt, iterations, dklen):
+        # werkzeug.security.pbkdf2_hex returns always the native string type
+        return pbkdf2_hex(text.encode("utf-8"), salt, iterations, dklen)
+
     @xhr
     @requires(str, 'uri')
     def new(self, environ, request, uri):
@@ -197,7 +202,7 @@ class API(object):
             max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
-        rv["hash"] = pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6).decode("utf-8")
+        rv["hash"] = API.pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6)
 
         self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
 
@@ -429,7 +434,7 @@ class API(object):
             val = self.cache.get('hash', key.encode('utf-8'))
 
             if val is None:
-                val = pbkdf2(key, self.isso.salt, 1000, 6).decode("utf-8")
+                val = API.pbkdf2(key, self.isso.salt, 1000, 6)
                 self.cache.set('hash', key.encode('utf-8'), val)
 
             item['hash'] = val

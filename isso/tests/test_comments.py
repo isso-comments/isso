@@ -375,6 +375,9 @@ class TestComments(unittest.TestCase):
         # just for the record
         self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
 
+    def testPBKDF2(self):
+        self.assertEqual(comments.API.pbkdf2(u"", Isso.salt, 1000, 6), u"42476aafe2e4")
+
 
 class TestModeratedComments(unittest.TestCase):
 
