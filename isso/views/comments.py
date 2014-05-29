@@ -12,7 +12,6 @@ from werkzeug.http import dump_cookie
 from werkzeug.wsgi import get_current_url
 from werkzeug.utils import redirect
 from werkzeug.routing import Rule
-from werkzeug.security import pbkdf2_hex
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
@@ -21,6 +20,19 @@ from isso.compat import text_type as str
 from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
 from isso.views import requires
+
+try:
+    from werkzeug.security import pbkdf2_hex
+except ImportError:
+    try:
+        from passlib.utils.pbkdf2 import pbkdf2
+    except ImportError as ex:
+        raise ImportError("No PBKDF2 implementation found. Either upgrade " +
+                          "to `werkzeug` 0.9 or install `passlib`.")
+    else:
+        import base64
+        pbkdf2_hex = lambda text, salt, iterations, dklen: base64.b16encode(
+            pbkdf2(text.encode("utf-8"), salt, iterations, dklen)).lower().decode("utf-8")
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(

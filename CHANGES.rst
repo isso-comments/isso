@@ -52,7 +52,7 @@ Changelog for Isso
   Also there is no longer an avatar shown next to the comment box. This is due
   to the new CSS and removes two runtime dependencies.
 
-- You may now set a full From header, #87
+- you may now set a full From header, #87
 
     [smtp]
     from = Foo Bar <spam@local>
@@ -64,15 +64,18 @@ Changelog for Isso
 - a few bugfixes: Disqus import now anonymizes IP addresses, uWSGI spooling for
   Python 3, HTTP-Referer fallback for HTTP-Origin
 
+- remove Django's PBKDF2 implementation in favour of the PBKDF2 function
+  available in werkzeug 0.9 or higher. If you're still using werkzeug 0.8, Isso
+  imports passlib__ as fallback (if available).
+
 
 This release also features a new templating engine Jade__ which replaces
-Markup.js_.  Jade can compile directly to JavaScript with a tiny runtime module
+Markup.js__. Jade can compile directly to JavaScript with a tiny runtime module
 on the client. Along with the removal of sha1.js and pbkdf2.js and a few build
-optimizations, the JS client now weighs only 40kb (12kb gzipped), 52kb
-resp. 17kb before.
+optimizations, the JS client now weighs only 40kb (12kb gzipped) – 52kb resp.
+17kb before.
 
-In overall, the codebase lost around 2500 LoC :-)
-
+.. __: https://pypi.python.org/pypi/passlib
 .. __: http://jade-lang.com/
 .. __: https://github.com/adammark/Markup.js
 
