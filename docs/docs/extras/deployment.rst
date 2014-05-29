@@ -16,7 +16,7 @@ and web-scale than the built-in web server.
 
 
 `gevent <http://gunicorn.org/>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Probably the easiest deployment method. Install with PIP (requires libevent):
 
@@ -153,6 +153,9 @@ Next, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
 .. code-block:: python
 
     #!/usr/bin/env python
+    #: uncomment if you're using a virtualenv
+    # import sys
+    # sys.insert(0, '<your_local_path>/lib/python2.7/site-packages')
 
     from isso import make_app
     from isso.core import Config
