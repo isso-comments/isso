@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9 (unreleased)
+0.9 (2014-05-29)
 ----------------
 
 - comment pagination by Srijan Choudhary, #15
