@@ -61,12 +61,3 @@ definitely need help:
   - close threads and remove threads completely
 
   - edit comments
-
-* `Pagination <https://github.com/posativ/isso/issues/14>`_ – while Isso is
-  generally a lot faster than Disqus, after approx. 50 comments you will
-  notice roughly 1 second rendering time. It would be nice if the client
-  fetches only N comments and continues when the user scrolls down (or click
-  on a button to fetch more).
-
-* CSS improvements. For some websites, the Isso integration just looks ugly.
-  If you can improve it, please do it :)
