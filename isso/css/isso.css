@@ -172,7 +172,7 @@
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper {
     display: inline-block;
     position: relative;
-    max-width: 30%;
+    max-width: 25%;
     margin: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper input {
@@ -185,9 +185,11 @@
 }
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper:first-child input {
     border-radius: 3px 0 0 3px;
+    border-right: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper:nth-last-child(2) input {
     border-radius: 0 3px 3px 0;
+    border-left: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .post-action {
     display: inline-block;
