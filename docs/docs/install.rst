@@ -117,6 +117,8 @@ Prebuilt Packages
 * Gentoo: http://eroen.eu/cgit/cgit.cgi/eroen-overlay/tree/www-apps/isso?h=isso
   – not yet available in Portage, but you can use the ebuild to build Isso.
 
+* Arch Linux: https://aur.archlinux.org/packages/isso/ – built from PyPi.
+
 Install from Source
 -------------------
 
