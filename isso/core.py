@@ -115,7 +115,10 @@ class Config:
         "[markup]",
         "options = strikethrough, autolink",
         "allowed-elements = ",
-        "allowed-attributes = "
+        "allowed-attributes = ",
+        "[hash]",
+        "algorithm = pbkdf2",
+        "salt = Eech7co8Ohloopo9Ol6baimi"
     ]
 
     @classmethod

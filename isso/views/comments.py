@@ -3,7 +3,6 @@
 import re
 import cgi
 import time
-import hashlib
 import functools
 
 from itsdangerous import SignatureExpired, BadSignature
@@ -20,19 +19,7 @@ from isso.compat import text_type as str
 from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
 from isso.views import requires
-
-try:
-    from werkzeug.security import pbkdf2_hex
-except ImportError:
-    try:
-        from passlib.utils.pbkdf2 import pbkdf2
-    except ImportError as ex:
-        raise ImportError("No PBKDF2 implementation found. Either upgrade " +
-                          "to `werkzeug` 0.9 or install `passlib`.")
-    else:
-        import base64
-        pbkdf2_hex = lambda text, salt, iterations, dklen: base64.b16encode(
-            pbkdf2(text.encode("utf-8"), salt, iterations, dklen)).lower().decode("utf-8")
+from isso.utils.hash import sha1
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
@@ -54,10 +41,6 @@ def normalize(url):
     if not url.startswith(("http://", "https://")):
         return "http://" + url
     return url
-
-
-def sha1(text):
-    return hashlib.sha1(text.encode('utf-8')).hexdigest()
 
 
 def xhr(func):
@@ -107,9 +90,10 @@ class API(object):
         ('demo',    ('GET', '/demo'))
     ]
 
-    def __init__(self, isso):
+    def __init__(self, isso, hasher):
 
         self.isso = isso
+        self.hash = hasher.uhash
         self.cache = isso.cache
         self.signal = isso.signal
 
@@ -150,11 +134,6 @@ class API(object):
                 return False, "Website not Django-conform"
 
         return True, ""
-
-    @classmethod
-    def pbkdf2(cls, text, salt, iterations, dklen):
-        # werkzeug.security.pbkdf2_hex returns always the native string type
-        return pbkdf2_hex(text.encode("utf-8"), salt, iterations, dklen)
 
     @xhr
     @requires(str, 'uri')
@@ -214,7 +193,7 @@ class API(object):
             max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
-        rv["hash"] = API.pbkdf2(rv['email'] or rv['remote_addr'], self.isso.salt, 1000, 6)
+        rv["hash"] = self.hash(rv['email'] or rv['remote_addr'])
 
         self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
 
@@ -446,7 +425,7 @@ class API(object):
             val = self.cache.get('hash', key.encode('utf-8'))
 
             if val is None:
-                val = API.pbkdf2(key, self.isso.salt, 1000, 6)
+                val = self.hash(key)
                 self.cache.set('hash', key.encode('utf-8'), val)
 
             item['hash'] = val

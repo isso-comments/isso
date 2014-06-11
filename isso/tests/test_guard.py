@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 try:
     import unittest2 as unittest
 except ImportError:
@@ -36,6 +38,7 @@ class TestGuard(unittest.TestCase):
 
         conf = core.Config.load(None)
         conf.set("general", "dbpath", self.path)
+        conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")
         conf.set("guard", "ratelimit", str(ratelimit))
         conf.set("guard", "direct-reply", str(direct_reply))

@@ -28,6 +28,7 @@ class TestVote(unittest.TestCase):
         conf = core.Config.load(None)
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
 
         class App(Isso, core.Mixin):
             pass

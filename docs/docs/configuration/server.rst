@@ -261,6 +261,32 @@ allowed-attributes
 To allow images in comments, you just need to add ``allowed-elements = img`` and
 ``allowed-attributes = src``.
 
+Hash
+----
+
+Customize used hash functions to hide the actual email addresses from
+commenters but still be able to generate an identicon.
+
+.. code-block:: ini
+
+    [hash]
+    salt = Eech7co8Ohloopo9Ol6baimi
+    algorithm = pbkdf2
+
+salt
+    A salt is used to protect against rainbow tables. Isso does not make use of
+    pepper (yet). The default value has been in use since the release of Isso
+    and generates the same identicons for same addresses across installations.
+
+algorithm
+    Hash algorithm to use -- either from Python's `hashlib` or PBKDF2 (a
+    computational expensive hash function).
+
+    The actual identifier for PBKDF2 is `pbkdf2:1000:6:sha1`, which means 1000
+    iterations, 6 bytes to generate and SHA1 as pseudo-random family used for
+    key strengthening.
+    Arguments have to be in that order, but can be reduced to `pbkdf2:4096`
+    for example to override the iterations only.
 
 Appendum
 --------
