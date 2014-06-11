@@ -13,7 +13,7 @@ from os.path import join, dirname
 from isso.core import Config
 
 from isso.db import SQLite3
-from isso.migrate import Disqus, WordPress
+from isso.migrate import Disqus, WordPress, autodetect
 
 
 class TestMigration(unittest.TestCase):
@@ -82,14 +82,13 @@ class TestMigration(unittest.TestCase):
                     xmlns:dc="http://purl.org/dc/elements/1.1/"
                     xmlns:wp="http://wordpress.org/export/%s/">"""
 
-        self.assertEqual(WordPress.detect(wp % "invalid"), None)
+        self.assertEqual(autodetect(wp % "foo"), None)
 
         for version in ("1.0", "1.1", "1.2", "1.3"):
-            self.assertEqual(WordPress.detect(wp % version),
-                             "http://wordpress.org/export/%s/" % version)
+            self.assertEqual(autodetect(wp % version), WordPress)
 
         dq = '''\
         <?xml version="1.0"?>
         <disqus xmlns="http://disqus.com"
                 xmlns:dsq="http://disqus.com/disqus-internals"'''
-        self.assertIsNotNone(Disqus.detect(dq))
+        self.assertEqual(autodetect(dq), Disqus)
