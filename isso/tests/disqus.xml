@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<disqus xmlns="http://disqus.com"
+        xmlns:dsq="http://disqus.com/disqus-internals"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://disqus.com/api/schemas/1.0/disqus.xsd
+                            http://disqus.com/api/schemas/1.0/internals.xsd"
+>
+    <category dsq:id="1">
+      <forum>disqusdev</forum>
+      <title>Technology</title>
+    </category>
+
+    <thread dsq:id="2">
+      <id>some-id</id>
+      <forum>disqusdev</forum>
+      <category dsq:id="1"/>
+      <link>http://example.org/</link>
+      <title>Hello, World!</title>
+      <message/>
+      <createdAt>2012-12-12T12:12:12Z</createdAt>
+      <author>
+        <name>Baz</name>
+        <email>foo@bar.com</email>
+      </author>
+    </thread>
+
+    <!-- Yeah... occurs. No idea, why. -->
+    <thread dsq:id="3">
+        <id/>
+    </thread>
+
+    <!-- regular post -->
+    <post dsq:id="4">
+        <id />
+        <message>...</message>
+        <createdAt>2013-10-10T19:20:29Z</createdAt>
+        <isDeleted>false</isDeleted>
+        <isSpam>false</isSpam>
+        <author>
+            <email>foo@bar.com</email>
+            <name>peter</name>
+            <isAnonymous>true</isAnonymous>
+        </author>
+        <ipAddress>127.0.0.1</ipAddress>
+        <thread dsq:id="2" />
+    </post>
+
+    <!-- reference to previous post -->
+    <post dsq:id="5">
+        <message><![CDATA[<p>Hello, World.</p>]]></message>
+        <createdAt>2013-10-11T06:51:33Z</createdAt>
+        <isDeleted>false</isDeleted>
+        <isSpam>false</isSpam>
+        <author>
+            <email>foo@bar.com</email>
+            <name>user</name>
+            <isAnonymous>false</isAnonymous>
+            <username>user</username>
+        </author>
+        <ipAddress>127.0.0.1</ipAddress>
+        <thread dsq:id="2" />
+        <parent dsq:id="4" />
+    </post>
+
+    <!-- orphan comment (= thread id no longer exists) -->
+    <post dsq:id="6">
+        <id />
+        <message>...</message>
+        <createdAt>2013-10-10T19:20:29Z</createdAt>
+        <isDeleted>false</isDeleted>
+        <isSpam>false</isSpam>
+        <author>
+            <email>foo@bar.com</email>
+            <name>where am I?</name>
+            <isAnonymous>true</isAnonymous>
+        </author>
+        <ipAddress>127.0.0.1</ipAddress>
+        <thread dsq:id="1337" />
+    </post>
+
+  </disqus>

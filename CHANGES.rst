@@ -1,0 +1,290 @@
+Changelog for Isso
+==================
+
+0.9.1 (2014-05-29)
+------------------
+
+- comment pagination by Srijan Choudhary, #15
+
+  Isso can now limit the amount of comments shown by default and add link to
+  show more. By default, all top-level comments are shown but only 5 nested
+  comments (per reply). You can override the settings:
+
+    isso-data-max-comments-top="N"
+    isso-data-max-comments-nested="N"
+
+  Where N is a number from 0 to infinity ("inf"). If you limit the amount of
+  shown top level comments, the overall comment count may be incorrect and a
+  known issue.
+
+  You can also configure the amount of comments shown per click (5 by default):
+
+    isso-data-reveal-on-click="N"
+
+  This feature also required a change in the comment structure. Previously, all
+  comments are stored tree-like but shown linearly. To ease the implementation
+  of pagination, the comment tree is now limited to a maximum depth of one.
+  Jeff Atwood explains, why `discussions are flat by design`__.
+
+  .. __: http://blog.codinghorror.com/web-discussions-flat-by-design/
+
+  When you upgrade, Isso will automatically normalize the tree and some
+  information gets lost. All new replies to a comment are now automatically a
+  direct child of the top-level comment.
+
+- style improvements by William Dorffer, #39, #84 #90 and #91
+
+  Isso now longer uses a fat SCSS library, but plain CSS instead. The design is
+  now responsive and no longer sets global CSS rules.
+
+- experimental WordPress import, #75
+
+  Isso should be able to import WXR 1.0-1.2 exports. The import code is based
+  on two WXR dumps I found (and created) and may not work for you. Please
+  report any failure.
+
+- avatar changes, #49
+
+  You can now configure the client to not show avatars:
+
+    data-isso-avatar="false"
+
+  Also there is no longer an avatar shown next to the comment box. This is due
+  to the new CSS and removes two runtime dependencies.
+
+- you may now set a full From header, #87
+
+    [smtp]
+    from = Foo Bar <spam@local>
+
+- SMTP (all caps) is now recognized for notifications, #95
+
+- Isso now ships a small demo site at /demo, #44
+
+- a few bugfixes: Disqus import now anonymizes IP addresses, uWSGI spooling for
+  Python 3, HTTP-Referer fallback for HTTP-Origin
+
+- remove Django's PBKDF2 implementation in favour of the PBKDF2 function
+  available in werkzeug 0.9 or higher. If you're still using werkzeug 0.8, Isso
+  imports passlib__ as fallback (if available).
+
+
+This release also features a new templating engine Jade__ which replaces
+Markup.js__. Jade can compile directly to JavaScript with a tiny runtime module
+on the client. Along with the removal of sha1.js and pbkdf2.js and a few build
+optimizations, the JS client now weighs only 40kb (12kb gzipped) – 52kb resp.
+17kb before.
+
+.. __: https://pypi.python.org/pypi/passlib
+.. __: http://jade-lang.com/
+.. __: https://github.com/adammark/Markup.js
+
+
+0.8 (2014-03-28)
+----------------
+
+- replace ``<textarea>`` with ``<div contentedtiable="true">`` to remove the
+  sluggish auto-resize on input feature. If you use a custom CSS, replace
+  ``textarea`` with ``.textarea`` and also set ``white-space: pre``.
+
+- remove superscript extension from Markdown defaults as it may lead to
+  unexpected behavior for certain smileys such as "^^". To enable the extension,
+  add
+
+    [markup]
+    options = superscript
+    allowed-elements = sup
+
+  to your configuration.
+
+- comment count requests are now bundled into a single POST request, but the old
+  API is still there (deprecated though).
+
+- store *session-key* in database (once generated on database creation). That
+  means links to activate, edit or delete comments are now always valid even
+  when you restart Isso.
+
+  Currently statically set session keys in ``[general]`` are automatically
+  migrated into the database on startup and you will get a notice that you can
+  remove this option.
+
+- fix undefined timestamp when client time differs for more than 1 second.
+  The human-readable "time ago" deltas have been refined to match `Moment.js`_
+  behavior.
+
+- avatar colors and background can now be customized:
+
+  * ``data-isso-avatar-bg="#f0f0f0"`` sets the background color
+  * ``data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."`` sets possible
+    avatar colors (up to 8 colors are possible).
+
+- new [markup] section to customize Misaka's Markdown generation (strikethrough,
+  superscript and autolink enabled by default). Furthermore, you can now allow
+  certain HTML elemenets and attributes in the generated output, e.g. to enable
+  images, set
+
+      [markup]
+      allowed-elements = img
+      allowed-attributes = src
+
+  Check docs/configuration/server.rst for more details.
+
+- replace requirejs-domready with a (self-made) HTML5 idiom, #51
+
+.. _Moment.js: http://momentjs.com/docs/#/displaying/fromnow/
+
+
+0.7 (2014-01-29)
+----------------
+
+- fix malicious HTML injection (due to wrong API usage). All unknown/unsafe
+  HTML tags are now removed from the output (`html5lib` 0.99(9) or later) or
+  properly escaped (older `html5lib` versions).
+
+  See 36d702c and 3a1f92b for more details.
+
+- remove kriskowal/q JS library (promises implementation) in favour of a
+  self-made 50 LoC implementation to ease packaging (for Debian), #51
+
+- add documentation to display a comment counter, #56 and #57
+
+- SMTP notifications now support STARTTLS and use this transport security
+  by default, #48 and #58. This also changes the configuration option from
+  `ssl = [yes|no]` to `security = [none|starttls|ssl]`.
+
+- translation can now be made (and updated) with Transifex_. If you want to
+  take ownership for a language, contact me on IRC.
+
+- fix french pluralform
+
+- the (by default random) session-key is now shown on application startup
+  to make different keys per startup more visible
+
+- use `threading.lock` by default for systems without semaphore support
+
+.. _Transifex: https://www.transifex.com/projects/p/isso/
+
+
+0.6 (2013-12-16)
+----------------
+
+Major improvements:
+
+- override thread discovery with data-isso-id="...", #27
+
+  To use the same thread for different URLs, you can now add a custom
+  ``data-isso-id="my-id"`` attribute which is used to identify and retrieve
+  comments (defaults to current URL aka `window.location.pathname`).
+
+- `isso.dispatch` now dispatches multiple websites (= configurations) based on
+  URL prefixes
+
+- fix a cross-site request forgery vulnerability for comment creation, voting,
+  editing and deletion, #40
+
+- show modal dialog to confirm comment deletion and activation, #36
+
+- new, comprehensive documentation based on reST + Sphinx:
+  http://posativ.org/docs (or docs/ in the repository). Also includes an
+  annotated `example.conf`, #43
+
+- new italian and russian translations
+
+Minor improvements:
+
+- move `isso:application` to `isso.run:application` to avoid uneccessary
+  initialization in some cases (change module if you use uWSGI or Gunicorn)
+- add Date header to email notifications, #42
+- check for blank text in new comment, #41
+- work around IE10's HTML5 abilities for custom data-attributes
+- add support for Gunicorn (and other pre-forking WSGI servers)
+
+
+0.5 (2013-11-17)
+----------------
+
+Major improvements:
+
+- `listen` option replaces `host` and `port` to support UNIX domain sockets, #25
+
+  Instead of `host = localhost` and `port = 8080`, use
+  `listen = http://localhost:8080`. To listen on a UNIX domain socket, replace
+  `http://` with `unix://`, e.g. `unix:///tmp/isso.sock`.
+
+- new option `notify` (in the general section) is used to choose (one or more)
+  notification backends (currently only SMTP is available, though). Isso will
+  no longer automatically use SMTP for notifications if the initial connection
+  succeeds.
+
+- new options to control the client integration
+
+  * ``data-isso-css="false"`` prevents the client from appending the CSS to the
+    document. Enabled by default.
+
+  * ``data-isso-lang="de"`` overrides the useragent's preferred language (de, en
+    and fr are currently supported).
+
+  * ``data-isso-reply-to-self="true"`` should be set, when you allow reply to
+    own comments (see server configuration for details).
+
+- add support for `gevent <http://www.gevent.org/>`_, a coroutine-based Python
+  networking library that uses greenlets (lightweight threads). Recommended
+  WSGI server when not running with uWSGI (unfortunately stable gevent is not
+  yet able to listen on a UNIX domain socket).
+
+- fix a serious issue with the voters bloomfilter. During an Isso run, the
+  ip addresses from all commenters accumulated into the voters bloomfilter
+  for new comments. Thus, previous commenters could no longer vote other
+  comments. This fixes the rare occurences of #5.
+
+  In addition to this fix, the current voters bloomfilter will be re-initialized
+  if you are using Isso 0.4 or below (this is not necessary, but on the
+  other hand, the current bloomfilter for each comment is sort-of useless).
+
+- french translation (thanks to @sploinga), #38
+
+- support for multiple sites, part of #34
+
+Minor improvements:
+
+- `ipaddr` is now used as `ipaddress` fallback for Python 2.6 and 2.7, #32
+- changed URL to activate and delete comments to `/id/<N:int>/activate` etc.
+- import command uses `<link>` tag instead of `<id>` to extract the relative
+  URL path, #37
+- import command now uses `isDeleted` to mark comments as deleted (and
+  eventually remove stale comments). This seems to affect only a few comments
+  from a previous WordPress import into Disqus.
+- import command lists orphaned comments after import.
+- import command now has a ``--dry-run`` option to do no actual operation on
+  the database.
+
+
+0.4 (2013-11-05)
+----------------
+
+- Isso now handles cross-domain requests and cookies, fixes #24
+- Isso for Python 2.x now supports werkzeug>=0.8
+- limit email length to 254 to avoid Hash-DDoS
+- override Isso API location with ``data-isso="..."`` in the script tag
+- override HTML title parsing with a custom ``data-title="..."`` attribute
+  in ``<div id="isso-thread"></div>``
+
+
+0.3 (2013-11-01)
+----------------
+
+- improve initial comment loading performance in the client
+- cache slow REST requests, see #18
+- add a SQLite trigger that detects and removes stale threads (= threads,
+  with all comments being removed) from the database when a comment is
+  removed.
+- PyPi releases now include an uncompressed version of the JavaScript
+  files -- `embed.dev.js` and `count.dev.js` -- to track down errors.
+- use uWSGI's internal locking instead of a self-made shared memory lock
+
+
+0.2 (2013-10-29)
+----------------
+
+- initial PyPi release
+

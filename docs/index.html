@@ -1,0 +1,72 @@
+{%- extends "layout.html" %}
+{% set title = "Isso – a commenting server similar to Disqus" %}
+{% block extrahead %}
+    <script data-isso="//posativ.org/isso/api/"
+            src="//posativ.org/isso/api/js/embed.min.js"></script>
+{% endblock %}
+{% block header %}
+<div class="index">
+    <figure class="duty-call">
+        <a href="http://xkcd.com/386/">
+            <img src="{{ pathto('_static/duty_calls.png', 1) }}" alt="XKCD Duty Calls"/>
+        </a>
+        <figcaption>by Randall Munroe, CC BY-NC 2.5</figcaption>
+    </figure>
+    <ul>
+        <li>
+            <p><strong>Comments written in Markdown</strong></p>
+            <p>Users can edit or delete own comments (within 15 minutes by
+               default).</p>
+            <p>Comments in moderation queue are not publicly visible before
+               activation.</p>
+        </li>
+        <li>
+            <p><strong>SQLite backend</strong></p>
+            <p>Because comments are not Big Data.</p>
+        </li>
+        <li>
+            <p><strong>Disqus &amp; WordPress Import</strong></p>
+            <p>You can migrate your Disqus/WordPress comments without any hassle.</p>
+        </li>
+        <li>
+            <p><strong>Configurable JS client</strong></p>
+            <p>Embed a single JS file, 40kb (12kb gzipped) and you are
+               done.</p>
+            <p>Supports Firefox, Safari, Chrome and IE10.</p>
+        </li>
+    </ul>
+ </div>
+{% endblock %}
+{% block body %}
+    <div class="links">
+    <h2>Links</h2>
+    <ul>
+        <li><a href="https://pypi.python.org/pypi/isso/">Isso @ PyPi</a></li>
+        <li><a href="https://github.com/posativ/isso/">Isso @ GitHub</a></li>
+    </ul>
+    <h2>Help</h2>
+    <p>
+        Join <a href="http://webchat.freenode.net/?channels=isso">
+        <code>#isso</code></a> on <a href="http://freenode.net/">Freenode</a>
+        or open an issue on <a href="https://github.com/posativ/isso/issues">GitHub</a>.
+    </p>
+    <p>
+        Or join the <a href="http://librelist.com/browser/isso/">mailing list</a>,
+        just send an email to <a href="mailto:isso@librelist.com">isso@librelist.com</a>.
+    </p>
+    <h2>Contribute</h2>
+    <p>
+        <a href="{{ pathto('contribute') }}">Write Code</a>,
+        <a href="https://www.transifex.com/projects/p/isso/">Translate</a> or
+        <a href="https://flattr.com/thing/2059355/posativisso-on-GitHub">Flattr
+        <img src="{{ pathto('_static/flattr.png', 1) }}" alt="Flattr icon"/></a>.
+    </p>
+
+    {% include "searchbox.html" %}
+    </div>
+
+    <div class="demo">
+        <h2>Demo</h2>
+        <section id="isso-thread"></section>
+    </div>
+{% endblock %}

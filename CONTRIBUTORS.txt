@@ -1,0 +1,43 @@
+# Contributions to Isso
+
+## Creator & Maintainer
+
+* Martin Zimmermann <info@posativ.org>
+
+
+## Contributors
+
+In chronological order:
+
+* Florian Baumann <flo@noqqe.de>
+  * Documentation fixes in the early days
+
+* Federico Ceratto <federico.ceratto@gmail.com>
+  * Support for ipaddr
+  * Added a sample configuration file
+
+* Sploinga <xavier@sploing.be>
+  * French translation
+
+* Laurent Arnoud <laurent@spkdev.net>
+  * Make Isso not accept blank comments
+
+* Chimo <chimo@chromic.org>
+  * STARTTLS for SMTP notifications
+
+* Jocelyn Delande <jocelyn at delalande dot fr>
+  * Documentation for comment counter and API
+  * Default SMTP security to STARTTLS
+
+* Srijan Choudhary <srijan4@gmail.com>
+  * Correct nginx examples in documentation
+  * Added comment pagination feature
+  * Provide a demo site
+
+* William Dorffer <schoewilliam@gmail.com>
+  * Convert SCSS to plain CSS
+  * Refresh style, make it responsive
+
+* [Your name or handle] <[email or website]>
+  * [Brief summary of your changes]
+
