@@ -13,8 +13,7 @@ Build-Depends:
  nodejs,
  python-all,
  python-setuptools,
- python-sphinx,
- # node-requirejs-text, blocked by #751604
+ python-sphinx
 Standards-Version: 3.9.5
 X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/
