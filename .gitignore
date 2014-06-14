@@ -25,3 +25,10 @@
 
 /docs/_build
 /docs/_static/css/site.css
+
+# Debian-specific ignores
+*.debhelper.log
+*.substvars
+/debian/files
+/debian/isso/
+.pybuild
