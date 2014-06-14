@@ -1,0 +1,27 @@
+#!/bin/sh
+# postinst script for isso
+
+set -e
+
+case $1 in
+    configure)
+
+        # Add isso user
+        if ! id isso > /dev/null 2>&1 ; then
+            adduser --system --group --home /var/lib/isso \
+                --disabled-password --quiet --gecos 'isso' \
+                isso || true
+        fi
+
+        ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        ;;
+
+esac
+
+#DEBHELPER#

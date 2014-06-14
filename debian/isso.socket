@@ -1,0 +1,8 @@
+[Unit]
+Description=isso socket
+
+[Socket]
+ListenStream=/run/isso.sock
+
+[Install]
+WantedBy=sockets.target

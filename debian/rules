@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+export DH_VERBOSE=1
+export PYBUILD_NAME=isso
+
+%:
+	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --test-args specs
+
+override_dh_auto_build:
+	scss --no-cache isso/css/isso.scss isso/css/isso.css
+	mkdir -p isso/js/components/requirejs-domready isso/js/components/almond
+	ln -s /usr/lib/nodejs/almond.js isso/js/components/almond/
+	ln -s /usr/share/javascript/dojo/domReady.js isso/js/components/requirejs-domready/
+	/usr/bin/nodejs /usr/lib/nodejs/r.js -o isso/js/build.embed.js optimize="none" out="isso/js/embed.dev.js"
+	dh_auto_build
+	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml
+
+override_dh_sphinxdoc:
+ifeq (,$(findstring nodoc,$(DEB_BUILD_OPTIONS)))
+	dh_sphinxdoc -p isso
+endif
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGES.rst

@@ -1,0 +1,3 @@
+# Use "yes" (without quotes) to make /etc/init.d/isso start the Isso service.
+# The Gunicon WSGI server is required.
+START_DAEMON=no

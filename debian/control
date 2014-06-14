@@ -1,0 +1,41 @@
+Source: isso
+Section: python
+Priority: optional
+Maintainer:Jelmer Vernooij <jelmer@samba.org>
+Uploaders: Jan Graichen <jg@altimos.de>, Federico Ceratto <federico.ceratto@gmail.com>
+Build-Depends:
+ debhelper (>= 9~),
+ dh-python,
+ libjs-dojo-core,
+ node-almond,
+ node-requirejs,
+ # node-requirejs-text, blocked by #751604
+ nodejs,
+ python-all,
+ python-setuptools,
+ python-sphinx,
+ ruby-sass,
+Standards-Version: 3.9.5
+X-Python-Version: >= 2.7
+Homepage: http://posativ.org/isso/
+Vcs-Git: git://anonscm.debian.org/collab-maint/isso.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/isso.git;a=summary
+
+Package: isso
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python:Depends},
+ ${sphinxdoc:Depends},
+ python-html5lib,
+ python-ipaddr,
+ python-itsdangerous,
+ python-misaka,
+ python-werkzeug (>= 0.9~)
+Recommends:
+ gunicorn
+Provides: ${python:Provides}
+Description: web-based commenting system
+ A commenting system written in Python. It supports CRUD comments written in
+ Markdown, Disqus import, I18N, website integration via JavaScript.
+ Comments are stored in SQLite

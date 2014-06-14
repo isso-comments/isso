@@ -1,0 +1,10 @@
+[Unit]
+Description=lightweight Disqus alternative
+
+[Service]
+User=isso
+Environment="ISSO_SETTINGS=/etc/isso.conf"
+ExecStart=/usr/bin/gunicorn --log-file /var/log/isso.conf --preload isso.run
+
+[Install]
+WantedBy=multi-user.target
