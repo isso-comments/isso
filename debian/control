@@ -1,7 +1,7 @@
 Source: isso
 Section: python
 Priority: optional
-Maintainer:Jelmer Vernooij <jelmer@samba.org>
+Maintainer:Jelmer Vernooij <jelmer@debian.org>
 Uploaders: Jan Graichen <jg@altimos.de>, Federico Ceratto <federico.ceratto@gmail.com>
 Build-Depends:
  debhelper (>= 9~),
@@ -9,6 +9,7 @@ Build-Depends:
  libjs-dojo-core,
  node-almond,
  node-requirejs,
+ node-requirejs-text,
  nodejs,
  python-all,
  python-setuptools,
@@ -34,7 +35,7 @@ Depends:
 Recommends:
  gunicorn
 Provides: ${python:Provides}
-Description: web-based commenting system
- A commenting system written in Python. It supports CRUD comments written in
- Markdown, Disqus import, I18N, website integration via JavaScript.
- Comments are stored in SQLite
+Description: lightweight web-based commenting system
+ A lightweight commenting system written in Python. It supports CRUD comments
+ written in Markdown, Disqus import, I18N, website integration via JavaScript.
+ Comments are stored in SQLite.
