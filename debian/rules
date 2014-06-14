@@ -7,7 +7,6 @@ export PYBUILD_NAME=isso
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --test-args specs
 
 override_dh_auto_build:
-	scss --no-cache isso/css/isso.scss isso/css/isso.css
 	mkdir -p isso/js/components/requirejs-domready isso/js/components/almond
 	ln -s /usr/lib/nodejs/almond.js isso/js/components/almond/
 	ln -s /usr/share/javascript/dojo/domReady.js isso/js/components/requirejs-domready/

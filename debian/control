@@ -9,12 +9,11 @@ Build-Depends:
  libjs-dojo-core,
  node-almond,
  node-requirejs,
- # node-requirejs-text, blocked by #751604
  nodejs,
  python-all,
  python-setuptools,
  python-sphinx,
- ruby-sass,
+ # node-requirejs-text, blocked by #751604
 Standards-Version: 3.9.5
 X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/
