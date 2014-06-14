@@ -8,6 +8,7 @@
 *.pyc
 .Python
 .sass-cache
+*~
 
 /bin
 /include
