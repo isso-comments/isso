@@ -44,15 +44,24 @@ ISSO_CONF_FILES_DIR="/etc/isso.d/enabled"
 do_start()
 {
     # Exit if the configuration directory is missing
-    [ ! -d "$ISSO_CONF_FILES_DIR" ] && echo "The directory $ISSO_CONF_FILES_DIR is missing - exiting." && exit 0
+    if [ ! -d "$ISSO_CONF_FILES_DIR" ]; then
+         echo "The directory $ISSO_CONF_FILES_DIR is missing - exiting."
+         exit 0
+    fi
 
     export ISSO_SETTINGS=$(find $ISSO_CONF_FILES_DIR -name '*.cfg' | sort | tr '\n' ';')
 
     # Exit if there are no configuation files
-    [ -z "$ISSO_SETTINGS" ] && echo "No configuration files found in $ISSO_CONF_FILES_DIR - exiting." && exit 0
+    if [ -z "$ISSO_SETTINGS" ]; then
+        echo "No configuration files found in $ISSO_CONF_FILES_DIR - exiting."
+        exit 0
+    fi
 
     # Exit if gunicorn is missing
-    [[ ! -x "$DAEMON" ]] && echo "Please install the gunicorn server: sudo apt-get install gunicorn" && exit 1
+    if [ ! -x "$DAEMON" ]; then
+        echo "Please install the gunicorn server: sudo apt-get install gunicorn"
+        exit 1
+    fi
 
     # Return
     #   0 if daemon has been started
