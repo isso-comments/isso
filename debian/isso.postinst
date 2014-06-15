@@ -12,7 +12,8 @@ case $1 in
                 --disabled-password --quiet --gecos 'isso' \
                 isso || true
         fi
-
+        chown isso /var/lib/isso
+        chown isso /var/log/isso
         ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
