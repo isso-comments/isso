@@ -21,7 +21,7 @@ ConditionPathExistsGlob=/etc/isso.d/enabled/*.cfg
 
 [Service]
 
-Environment=ISSO_SETTINGS=/etc/isso.d/enabled/a.cfg
+Environment=ISSO_SETTINGS=/etc/isso.d/enabled
 ExecStart=/usr/bin/gunicorn -n gunicorn-isso --log-file /var/log/isso/isso.log isso.dispatch
 
 #UMask=0007
