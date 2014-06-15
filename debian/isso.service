@@ -1,10 +1,41 @@
 [Unit]
-Description=lightweight Disqus alternative
+Description=isso commenting system
+Documentation=man:isso(8)
+
+# Require the filesystems containing the following directories to be mounted
+RequiresMountsFor=/etc/isso.d /var/log/isso /var/lib/isso
+
+ConditionPathIsDirectory=/var/lib/isso
+ConditionPathIsReadWrite=/var/lib/isso
+
+ConditionPathIsDirectory=/var/log/isso
+ConditionPathIsReadWrite=/var/log/isso
+
+ConditionPathIsDirectory=/etc/isso.d/enabled
+
+ConditionFileIsExecutable=/usr/bin/gunicorn
+
+# Start only if there are conf files in /etc/isso.d/enabled - otherwise
+# skip this unit quietly.
+ConditionPathExistsGlob=/etc/isso.d/enabled/*.cfg
 
 [Service]
+
+Environment=ISSO_SETTINGS=/etc/isso.d/enabled/a.cfg
+ExecStart=/usr/bin/gunicorn -n gunicorn-isso --log-file /var/log/isso/isso.log isso.dispatch
+
+#UMask=0007
+Restart=on-failure
+TimeoutSec=1
 User=isso
-Environment="ISSO_SETTINGS=/etc/isso.conf"
-ExecStart=/usr/bin/gunicorn --log-file /var/log/isso.conf --preload isso.run
+
+LimitNOFILE=16384
+LimitNPROC=16384
+LimitLOCKS=16384
+
+# ensures that the service process and all its children can never gain new
+# privileges.
+NoNewPrivileges=true
 
 [Install]
 WantedBy=multi-user.target
