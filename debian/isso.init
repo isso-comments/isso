@@ -43,7 +43,7 @@ ISSO_CONF_FILES_DIR="/etc/isso.d/enabled"
 #
 do_start()
 {
-    # Exit if the configuration directory is missing
+    # Exit if the configuration directory is missing.
     if [ ! -d "$ISSO_CONF_FILES_DIR" ]; then
          echo "The directory $ISSO_CONF_FILES_DIR is missing - exiting."
          exit 0
@@ -51,7 +51,7 @@ do_start()
 
     export ISSO_SETTINGS=$(find $ISSO_CONF_FILES_DIR -name '*.cfg' | sort | tr '\n' ';')
 
-    # Exit if there are no configuation files
+    # Exit if there are no configuration files.
     if [ -z "$ISSO_SETTINGS" ]; then
         echo "No configuration files found in $ISSO_CONF_FILES_DIR - exiting."
         exit 0
