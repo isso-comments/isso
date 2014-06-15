@@ -1,3 +1,4 @@
-var/lib/isso
-etc/isso.d/enabled
 etc/isso.d/available
+etc/isso.d/enabled
+var/lib/isso
+var/log/isso
