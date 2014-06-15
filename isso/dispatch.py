@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+from glob import glob
 import os
 import logging
 
@@ -44,9 +45,7 @@ class Dispatcher(DispatcherMiddleware):
         return resp(environ, start_response)
 
 
-if "ISSO_SETTINGS" not in os.environ:
-    logger.fatal('no such environment variable: ISSO_SETTINGS')
-else:
+if "ISSO_SETTINGS" in os.environ:
     confs = os.environ["ISSO_SETTINGS"].split(";")
     for path in confs:
         if not os.path.isfile(path):
@@ -54,3 +53,11 @@ else:
             break
     else:
         application = wsgi.SubURI(Dispatcher(*confs))
+
+elif "ISSO_SETTINGS_DIR" in os.environ:
+    conf_glob = os.path.join(os.environ["ISSO_SETTINGS_DIR"], '*.cfg')
+    confs = glob(conf_glob)
+    application = wsgi.SubURI(Dispatcher(*confs))
+
+else:
+    logger.fatal('environment variable ISSO_SETTINGS or ISSO_SETTINGS_DIR must be set')
