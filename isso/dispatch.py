@@ -1,7 +1,11 @@
 # -*- encoding: utf-8 -*-
 
+import sys
 import os
+import os.path
 import logging
+
+from glob import glob
 
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.wrappers import Response
@@ -43,14 +47,19 @@ class Dispatcher(DispatcherMiddleware):
         resp = Response("\n".join(self.isso.keys()), 404, content_type="text/plain")
         return resp(environ, start_response)
 
+settings = os.environ.get("ISSO_SETTINGS")
 
-if "ISSO_SETTINGS" not in os.environ:
-    logger.fatal('no such environment variable: ISSO_SETTINGS')
-else:
-    confs = os.environ["ISSO_SETTINGS"].split(";")
-    for path in confs:
-        if not os.path.isfile(path):
-            logger.fatal("%s: no such file", path)
-            break
-    else:
+if settings:
+    if os.path.isdir(settings):
+        conf_glob = os.path.join(os.environ["ISSO_SETTINGS"], '*.cfg')
+        confs = glob(conf_glob)
         application = wsgi.SubURI(Dispatcher(*confs))
+    else:
+        confs = os.environ["ISSO_SETTINGS"].split(";")
+        for path in confs:
+            if not os.path.isfile(path):
+                logger.fatal("%s: no such file", path)
+                sys.exit(1)
+    application = wsgi.SubURI(Dispatcher(*confs))
+else:
+    logger.fatal('environment variable ISSO_SETTINGS or ISSO_SETTINGS_DIR must be set')
