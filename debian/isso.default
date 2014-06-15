@@ -1,3 +1,6 @@
 # Use "yes" (without quotes) to make /etc/init.d/isso start the Isso service.
 # The Gunicon WSGI server is required.
 START_DAEMON=no
+
+# Path to load isso configuration files from.
+ISSO_CONF_FILES_DIR="/etc/isso.d/enabled"
