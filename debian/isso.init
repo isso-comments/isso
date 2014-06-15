@@ -26,8 +26,6 @@ SCRIPTNAME=/etc/init.d/$NAME
 DAEMON=/usr/bin/gunicorn       # Introduce the server's location here
 DAEMON_ARGS="--log-file /var/log/isso.log --user $USER --group $GROUP --preload isso.run"
 
-ISSO_CONF_FILES_DIR="/etc/isso.d/enabled"
-
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
@@ -43,6 +41,9 @@ ISSO_CONF_FILES_DIR="/etc/isso.d/enabled"
 #
 do_start()
 {
+    # Exit if the START_DAEMON is not set to "yes" in /etc/default/isso
+    [ "$START_DAEMON" = "yes" ] || exit 0
+
     # Exit if the configuration directory is missing.
     if [ ! -d "$ISSO_CONF_FILES_DIR" ]; then
          echo "The directory $ISSO_CONF_FILES_DIR is missing - exiting."
