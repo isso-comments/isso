@@ -46,10 +46,11 @@ do_start()
     # Exit if the configuration directory is missing
     [ ! -d "$ISSO_CONF_FILES_DIR" ] && echo "The directory $ISSO_CONF_FILES_DIR is missing - exiting." && exit 0
 
-    export ISSO_SETTINGS=$(find $ISSO_CONF_FILES_DIR -name '*.cfg' | sort | tr '\n' ';')
-
     # Exit if there are no configuation files
-    [ -z "$ISSO_SETTINGS" ] && echo "No configuration files found in $ISSO_CONF_FILES_DIR - exiting." && exit 0
+    [ -z "$(find "$ISSO_CONF_FILES_DIR" -maxdepth 1 -name '*.cfg')" ] && \
+        echo "No configuration files found in $ISSO_CONF_FILES_DIR - exiting." && exit 0
+
+    export ISSO_SETTINGS="$ISSO_CONF_FILES_DIR"
 
     # Exit if gunicorn is missing
     [[ ! -x "$DAEMON" ]] && echo "Please install the gunicorn server: sudo apt-get install gunicorn" && exit 1
