@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+import sys
 import io
 import time
 import json
@@ -63,7 +64,11 @@ class SMTP(object):
                             timeout=self.conf.getint('timeout'))
 
         if self.conf.get('security') == 'starttls':
-            self.client.starttls();
+            if sys.version_info >= (3, 4):
+                import ssl
+                self.client.starttls(context=ssl.create_default_context())
+            else:
+                self.client.starttls()
 
         if self.conf.get('username') and self.conf.get('password'):
             self.client.login(self.conf.get('username'),
