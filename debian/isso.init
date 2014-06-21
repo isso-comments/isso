@@ -42,7 +42,10 @@ DAEMON_ARGS="--log-file /var/log/isso.log --user $USER --group $GROUP --preload 
 do_start()
 {
     # Exit if the START_DAEMON is not set to "yes" in /etc/default/isso
-    [ "$START_DAEMON" = "yes" ] || exit 0
+    if [ "$START_DAEMON" != "yes" ]; then
+        echo "Not starting Isso, see /etc/default/isso"
+        exit 0
+    fi
 
     # Exit if the configuration directory is missing.
     if [ ! -d "$ISSO_CONF_FILES_DIR" ]; then
