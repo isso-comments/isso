@@ -62,6 +62,11 @@ do_start()
         exit 1
     fi
 
+    # Add IP address / TCP port for Gunicorn to listen on
+    if [ -n "$ISSO_ADDRESS_PORT" ]; then
+        DAEMON_ARGS="$DAEMON_ARGS --bind $ISSO_ADDRESS_PORT"
+    fi
+
     # Return
     #   0 if daemon has been started
     #   1 if daemon was already running

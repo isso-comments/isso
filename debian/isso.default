@@ -2,5 +2,8 @@
 # The Gunicon WSGI server is required.
 START_DAEMON=no
 
+# IP address and TCP port used by Gunicorn
+ISSO_ADDRESS_PORT=127.0.0.1:8000
+
 # Path to load isso configuration files from.
 ISSO_CONF_FILES_DIR="/etc/isso.d/enabled"
