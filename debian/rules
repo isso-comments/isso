@@ -6,6 +6,10 @@ export PYBUILD_NAME=isso
 %:
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --test-args specs
 
+override_dh_auto_clean:
+	dh_auto_clean
+	rm isso/js/components/almond/almond.js isso/js/components/requirejs-domready/domReady.js -rf
+
 override_dh_auto_build:
 	mkdir -p isso/js/components/requirejs-domready isso/js/components/almond
 	ln -s /usr/lib/nodejs/almond.js isso/js/components/almond/
