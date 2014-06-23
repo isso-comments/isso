@@ -4,6 +4,7 @@ import json
 
 from werkzeug.test import Client
 
+
 class FakeIP(object):
 
     def __init__(self, app, ip):
@@ -34,6 +35,7 @@ class Dummy:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
+
 
 curl = lambda method, host, path: Dummy()
 loads = lambda data: json.loads(data.decode('utf-8'))

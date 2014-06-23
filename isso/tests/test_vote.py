@@ -1,6 +1,7 @@
 
 from __future__ import unicode_literals
 
+import os
 import json
 import tempfile
 
@@ -11,7 +12,7 @@ except ImportError:
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, core
+from isso import Isso, core, config, dist
 from isso.utils import http
 
 from fixtures import curl, loads, FakeIP, JSONClient
@@ -25,7 +26,7 @@ class TestVote(unittest.TestCase):
 
     def makeClient(self, ip):
 
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")

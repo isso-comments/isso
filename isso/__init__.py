@@ -62,8 +62,8 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 local = Local()
 local_manager = LocalManager([local])
 
-from isso import db, migrate, wsgi, ext, views
-from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
+from isso import config, db, migrate, wsgi, ext, views
+from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin
 from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, html, hash
 from isso.views import comments
@@ -215,7 +215,7 @@ def main():
     serve = subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = Config.load(args.conf)
+    conf = config.load(join(dist.location, "share", "isso.conf"), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

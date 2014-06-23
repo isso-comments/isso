@@ -7,6 +7,7 @@ try:
 except ImportError:
     import unittest
 
+import os
 import json
 import tempfile
 
@@ -14,7 +15,7 @@ from werkzeug import __version__
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, core
+from isso import Isso, config, core, dist
 from isso.utils import http
 
 from fixtures import curl, FakeIP
@@ -36,7 +37,7 @@ class TestGuard(unittest.TestCase):
 
     def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False):
 
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")

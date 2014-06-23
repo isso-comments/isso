@@ -3,7 +3,10 @@
 import os
 
 from isso import make_app
-from isso.core import Config
+from isso import dist, config
 
-application = make_app(Config.load(os.environ.get('ISSO_SETTINGS')),
-                       multiprocessing=True)
+application = make_app(
+    config.load(
+        os.path.join(dist.location, "share", "isso.conf"),
+        os.environ.get('ISSO_SETTINGS')),
+    multiprocessing=True)

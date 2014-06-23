@@ -10,10 +10,17 @@ except ImportError:
 import tempfile
 from os.path import join, dirname
 
-from isso.core import Config
+from isso import config
 
 from isso.db import SQLite3
 from isso.migrate import Disqus, WordPress, autodetect
+
+conf = config.new({
+    "general": {
+        "dbpath": "/dev/null",
+        "max-age": "1h"
+    }
+})
 
 
 class TestMigration(unittest.TestCase):
@@ -23,7 +30,7 @@ class TestMigration(unittest.TestCase):
         xml = join(dirname(__file__), "disqus.xml")
         xxx = tempfile.NamedTemporaryFile()
 
-        db = SQLite3(xxx.name, Config.load(None))
+        db = SQLite3(xxx.name, conf)
         Disqus(db, xml).migrate()
 
         self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
@@ -45,7 +52,7 @@ class TestMigration(unittest.TestCase):
         xml = join(dirname(__file__), "wordpress.xml")
         xxx = tempfile.NamedTemporaryFile()
 
-        db = SQLite3(xxx.name, Config.load(None))
+        db = SQLite3(xxx.name, conf)
         WordPress(db, xml).migrate()
 
         self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World…")

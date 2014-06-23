@@ -7,8 +7,9 @@ try:
 except ImportError:
     import unittest
 
+from isso import config
+
 from isso.compat import PY2K, string_types
-from isso.core import Config
 from isso.utils.hash import Hash, PBKDF2, new
 
 
@@ -46,15 +47,15 @@ class TestPBKDF2(unittest.TestCase):
 
 class TestCreate(unittest.TestCase):
 
-    def test_default(self):
-        conf = Config.load(None)
-        self.assertIsInstance(new(conf.section("hash")), PBKDF2)
-
     def test_custom(self):
 
         def _new(val):
-            conf = Config.load(None)
-            conf.set("hash", "algorithm", val)
+            conf = config.new({
+                "hash": {
+                    "algorithm": val,
+                    "salt": ""
+                }
+            })
             return new(conf.section("hash"))
 
         sha1 = _new("sha1")

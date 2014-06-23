@@ -9,8 +9,7 @@ from glob import glob
 from werkzeug.wsgi import DispatcherMiddleware
 from werkzeug.wrappers import Response
 
-from isso import make_app, wsgi
-from isso.core import Config
+from isso import dist, make_app, wsgi, config
 
 logger = logging.getLogger("isso")
 
@@ -21,11 +20,13 @@ class Dispatcher(DispatcherMiddleware):
     a relative URI, e.g. /foo.example and /other.bar.
     """
 
+    default = os.path.join(dist.location, "share", "isso.conf")
+
     def __init__(self, *confs):
 
         self.isso = {}
 
-        for i, conf in enumerate(map(Config.load, confs)):
+        for i, conf in enumerate(map(config.load(Dispatcher.default, conf))):
 
             if not conf.get("general", "name"):
                 logger.warn("unable to dispatch %r, no 'name' set", confs[i])

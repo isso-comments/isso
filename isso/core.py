@@ -2,14 +2,10 @@
 
 from __future__ import print_function
 
-import io
 import time
 import logging
 import threading
 import multiprocessing
-
-from email.utils import parseaddr, formataddr
-from configparser import ConfigParser
 
 try:
     import uwsgi
@@ -23,136 +19,9 @@ if PY2K:
 else:
     import _thread as thread
 
-from isso.utils import parse
-from isso.compat import text_type as str
-
 from werkzeug.contrib.cache import NullCache, SimpleCache
 
 logger = logging.getLogger("isso")
-
-
-class Section:
-
-    def __init__(self, conf, section):
-        self.conf = conf
-        self.section = section
-
-    def get(self, key):
-        return self.conf.get(self.section, key)
-
-    def getint(self, key):
-        return self.conf.getint(self.section, key)
-
-    def getlist(self, key):
-        return self.conf.getlist(self.section, key)
-
-    def getiter(self, key):
-        return self.conf.getiter(self.section, key)
-
-    def getboolean(self, key):
-        return self.conf.getboolean(self.section, key)
-
-
-class IssoParser(ConfigParser):
-    """
-    Extended :class:`ConfigParser` to parse human-readable timedeltas
-    into seconds and handles multiple values per key.
-
-    """
-
-    @classmethod
-    def _total_seconds(cls, td):
-        return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-
-    def getint(self, section, key):
-        try:
-            delta = parse.timedelta(self.get(section, key))
-        except ValueError:
-            return super(IssoParser, self).getint(section, key)
-        else:
-            try:
-                return int(delta.total_seconds())
-            except AttributeError:
-                return int(IssoParser._total_seconds(delta))
-
-    def getlist(self, section, key):
-        return list(map(str.strip, self.get(section, key).split(',')))
-
-    def getiter(self, section, key):
-        for item in map(str.strip, self.get(section, key).split('\n')):
-            if item:
-                yield item
-
-    def section(self, section):
-        return Section(self, section)
-
-
-class Config:
-
-    default = [
-        "[general]",
-        "name = ",
-        "dbpath = /tmp/isso.db",
-        "host = ",
-        "max-age = 15m",
-        "notify = stdout",
-        "[moderation]",
-        "enabled = false",
-        "purge-after = 30d",
-        "[server]",
-        "listen = http://localhost:8080/",
-        "reload = off", "profile = off",
-        "[smtp]",
-        "username = ", "password = ",
-        "host = localhost", "port = 587", "security = starttls",
-        "to = ", "from = ",
-        "timeout = 10",
-        "[guard]",
-        "enabled = true",
-        "ratelimit = 2",
-        "direct-reply = 3",
-        "reply-to-self = false",
-        "[markup]",
-        "options = strikethrough, autolink",
-        "allowed-elements = ",
-        "allowed-attributes = ",
-        "[hash]",
-        "algorithm = pbkdf2",
-        "salt = Eech7co8Ohloopo9Ol6baimi"
-    ]
-
-    @classmethod
-    def load(cls, configfile):
-
-        # return set of (section, option)
-        setify = lambda cp: set((section, option) for section in cp.sections()
-                                for option in cp.options(section))
-
-        rv = IssoParser(allow_no_value=True)
-        rv.read_file(io.StringIO(u'\n'.join(Config.default)))
-
-        a = setify(rv)
-
-        if configfile:
-            rv.read(configfile)
-
-        diff = setify(rv).difference(a)
-
-        if diff:
-            for item in diff:
-                logger.warn("no such option: [%s] %s", *item)
-                if item in (("server", "host"), ("server", "port")):
-                    logger.warn("use `listen = http://$host:$port` instead")
-                if item == ("smtp", "ssl"):
-                    logger.warn("use `security = none | starttls | ssl` instead")
-                if item == ("general", "session-key"):
-                    logger.info("Your `session-key` has been stored in the "
-                                "database itself, this option is now unused")
-
-        if not parseaddr(rv.get("smtp", "from"))[0]:
-            rv.set("smtp", "from", formataddr((u"Ich schrei sonst!", rv.get("smtp", "from"))))
-
-        return rv
 
 
 class Cache:

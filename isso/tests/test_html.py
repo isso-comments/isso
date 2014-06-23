@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 
 try:
     import unittest2 as unittest
@@ -5,7 +6,7 @@ except ImportError:
     import unittest
 
 
-from isso.core import Config
+from isso import config
 from isso.utils import html
 
 
@@ -54,7 +55,13 @@ class TestHTML(unittest.TestCase):
             self.assertEqual(html.sanitize(sanitizer, input), expected)
 
     def test_render(self):
-        conf = Config.load(None).section("markup")
-        renderer = html.Markup(conf).render
+        conf = config.new({
+            "markup": {
+                "options": "autolink",
+                "allowed-elements": "",
+                "allowed-attributes": ""
+            }
+        })
+        renderer = html.Markup(conf.section("markup")).render
         self.assertEqual(renderer("http://example.org/ and sms:+1234567890"),
                          '<p><a href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>')

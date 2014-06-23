@@ -18,7 +18,7 @@ except ImportError:
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, core
+from isso import Isso, core, config, dist
 from isso.utils import http
 from isso.views import comments
 
@@ -32,7 +32,7 @@ class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
@@ -380,7 +380,7 @@ class TestModeratedComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
@@ -412,7 +412,7 @@ class TestPurgeComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
