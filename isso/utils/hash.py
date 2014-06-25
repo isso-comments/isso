@@ -85,13 +85,14 @@ class PBKDF2(Hash):
         return pbkdf2(val, self.salt, self.iterations, self.dklen, self.func)
 
 
-def new(conf):
+def new(algorithm, salt=None):
     """Factory to create hash functions from configuration section. If an
     algorithm takes custom parameters, you can separate them by a colon like
     this: pbkdf2:arg1:arg2:arg3."""
 
-    algorithm = conf.get("algorithm")
-    salt = conf.get("salt").encode("utf-8")
+    if salt is None:
+        salt = ''
+    salt = salt.encode("utf-8")
 
     if algorithm == "none":
         return Hash(salt, None)
