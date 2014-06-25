@@ -26,10 +26,15 @@ def Sanitizer(elements, attributes):
                             "pre", "code", "blockquote",
                             "del", "ins", "strong", "em",
                             "h1", "h2", "h3", "h4", "h5", "h6",
-                            "table", "thead", "tbody", "th", "td"] + elements
+                            "table", "thead", "tbody", "th", "td"]
 
         # href for <a> and align for <table>
-        allowed_attributes = ["align", "href"] + attributes
+        allowed_attributes = ["align", "href"]
+
+        def __init__(self, *args, **kwargs):
+            super(Inner, self).__init__(*args, **kwargs)
+            self.allowed_elements = Inner.allowed_elements + elements
+            self.allowed_attributes = Inner.allowed_attributes + attributes
 
         # remove disallowed tokens from the output
         def disallowed_token(self, token, token_type):
@@ -65,13 +70,23 @@ def Markdown(extensions=("strikethrough", "superscript", "autolink")):
 
 
 class Markup(object):
+    """Text to HTML conversion using Markdown (+ configurable extensions) and
+    an HTML sanitizer to remove malicious elements.
 
-    def __init__(self, conf):
+    :param options: a list of parameters for the used renderer
+    :param elements: allowed HTML elements in the output
+    :param attributes: allowed HTML attributes in the output
+    """
 
-        parser = Markdown(conf.getlist("options"))
-        sanitizer = Sanitizer(
-            conf.getlist("allowed-elements"),
-            conf.getlist("allowed-attributes"))
+    def __init__(self, options, elements=None, attributes=None):
+        if elements is None:
+            elements = []
+
+        if attributes is None:
+            attributes = []
+
+        parser = Markdown(options)
+        sanitizer = Sanitizer(elements, attributes)
 
         self._render = lambda text: sanitize(sanitizer, parser(text))
 

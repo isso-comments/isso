@@ -85,7 +85,10 @@ class Isso(object):
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
-        self.markup = html.Markup(conf.section('markup'))
+        self.markup = html.Markup(
+            conf.getlist("markup", "options"),
+            conf.getlist("markup", "allowed-elements"),
+            conf.getlist("markup", "allowed-attributes"))
         self.hasher = hash.new(
             conf.get("hash", "algorithm"),
             conf.get("hash", "salt"))
