@@ -220,7 +220,7 @@ def main():
     serve = subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = config.load(join(dist.location, "share", "isso.conf"), args.conf)
+    conf = config.load(join(dist.location, "isso", "defaults.ini"), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

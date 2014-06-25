@@ -26,7 +26,7 @@ class TestVote(unittest.TestCase):
 
     def makeClient(self, ip):
 
-        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
+        conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")

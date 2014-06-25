@@ -37,7 +37,7 @@ class TestGuard(unittest.TestCase):
 
     def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False):
 
-        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
+        conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
         conf.set("general", "dbpath", self.path)
         conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")
