@@ -68,6 +68,8 @@ Changelog for Isso
   available in werkzeug 0.9 or higher. If you're still using werkzeug 0.8, Isso
   imports passlib__ as fallback (if available).
 
+- esperanto translation by Baptiste Darthenay
+
 
 This release also features a new templating engine Jade__ which replaces
 Markup.js__. Jade can compile directly to JavaScript with a tiny runtime module
