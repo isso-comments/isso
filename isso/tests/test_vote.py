@@ -75,18 +75,6 @@ class TestVote(unittest.TestCase):
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(loads(rv.data), None)
 
-    def testTooManyLikes(self):
-
-        self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
-        for num in range(256):
-            rv = self.makeClient("1.2.%i.0" % num).post('/id/1/like')
-            self.assertEqual(rv.status_code, 200)
-
-            if num >= 142:
-                self.assertEqual(loads(rv.data)["likes"], 142)
-            else:
-                self.assertEqual(loads(rv.data)["likes"], num + 1)
-
     def testDislike(self):
         self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
         rv = self.makeClient("1.2.3.4").post('/id/1/dislike')

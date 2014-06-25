@@ -33,7 +33,7 @@ def anonymize(remote_addr):
         return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*5)
 
 
-class Bloomfilter:
+class Bloomfilter(object):
     """A space-efficient probabilistic data structure. False-positive rate:
 
         * 1e-05 for  <80 elements
@@ -46,7 +46,7 @@ class Bloomfilter:
 
     >>> bf = Bloomfilter()
     >>> bf.add("127.0.0.1")
-    >>> not any(map(bf.__contains__, ("1.2.%i.4" for i in range(256))))
+    >>> not any(addr in bf for addr in ("1.2.%i.4" for i in range(256)))
     True
 
     >>> bf = Bloomfilter()
