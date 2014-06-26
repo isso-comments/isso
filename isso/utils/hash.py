@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import codecs
 import hashlib
 
+from isso.utils import types
 from isso.compat import string_types, text_type as str
 
 try:
@@ -20,11 +21,6 @@ except ImportError:
                           "to `werkzeug` 0.9 or install `passlib`.")
 
 
-def _TypeError(name, expected, val):
-    return TypeError("'{0}' must be {1}, not {2}".format(
-        name, expected, val.__class__.__name__))
-
-
 class Hash(object):
 
     func = None
@@ -37,29 +33,25 @@ class Hash(object):
             self.func = func
 
         if salt is not None:
-            if not isinstance(salt, bytes):
-                raise _TypeError("salt", "bytes", salt)
+            types.require(salt, bytes)
             self.salt = salt
 
     def hash(self, val):
-        """Calculate hash from value (must be bytes)."""
+        """Calculate hash from value (must be bytes).
+        """
 
-        if not isinstance(val, bytes):
-            raise _TypeError("val", "bytes", val)
+        types.require(val, bytes)
 
         rv = self.compute(val)
 
-        if not isinstance(val, bytes):
-            raise _TypeError("val", "bytes", rv)
+        types.require(rv, bytes)
 
         return rv
 
     def uhash(self, val):
-        """Calculate hash from unicode value and return hex value as unicode"""
-
-        if not isinstance(val, string_types):
-            raise _TypeError("val", "str", val)
-
+        """Calculate hash from unicode value and return hex value as unicode
+        """
+        types.require(val, string_types)
         return codecs.encode(self.hash(val.encode("utf-8")), "hex_codec").decode("utf-8")
 
     def compute(self, val):
