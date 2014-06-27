@@ -262,6 +262,7 @@ class API(object):
                 max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
+        self.cache.set("text", str(id), rv["text"])
 
         resp = JSON(rv, 200)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
@@ -289,6 +290,7 @@ class API(object):
             raise NotFound
 
         self.cache.delete('hash', (item['email'] or item['remote_addr']))
+        self.cache.delete('text', str(item['id']))
 
         with self.isso.lock:
             rv = self.comments.delete(id)
@@ -369,6 +371,7 @@ class API(object):
             args['parent'] = None
             root_id = None
 
+        # FIXME inverse logic
         plain = request.args.get('plain', '0') == '0'
 
         reply_counts = self.comments.reply_count(uri, after=args['after'])
@@ -437,7 +440,13 @@ class API(object):
 
         if plain:
             for item in fetched_list:
-                item['text'] = self.isso.render(item['text'])
+                key = str(item['id'])
+                val = self.cache.get('text', key)
+                if val is None:
+                    val = self.isso.render(item['text'])
+                    self.cache.set('text', key, val)
+
+                item['text'] = val
 
         return fetched_list
 
