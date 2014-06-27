@@ -15,7 +15,7 @@ from werkzeug import __version__
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, config, core, dist
+from isso import Isso, config, core, db, dist
 from isso.utils import http
 
 from fixtures import curl, FakeIP
@@ -33,12 +33,11 @@ class TestGuard(unittest.TestCase):
     data = json.dumps({"text": "Lorem ipsum."})
 
     def setUp(self):
-        self.path = tempfile.NamedTemporaryFile().name
+        self.connection = db.SQLite3(":memory:")
 
     def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False):
 
         conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
-        conf.set("general", "dbpath", self.path)
         conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")
         conf.set("guard", "ratelimit", str(ratelimit))
@@ -48,7 +47,7 @@ class TestGuard(unittest.TestCase):
         class App(Isso, core.Mixin):
             pass
 
-        app = App(conf)
+        app = App(conf, connection=self.connection)
         app.wsgi_app = FakeIP(app.wsgi_app, ip)
 
         return Client(app, Response)

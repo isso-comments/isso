@@ -1,8 +1,12 @@
 # -*- encoding: utf-8 -*-
 
-import sqlite3
+from __future__ import unicode_literals
+
 import logging
+import sqlite3
 import operator
+import threading
+
 import os.path
 
 from collections import defaultdict
@@ -15,7 +19,75 @@ from isso.db.spam import Guard
 from isso.db.preferences import Preferences
 
 
-class SQLite3:
+class Transaction(object):
+    """A context manager to lock the database across processes and automatic
+    rollback on failure. On success, reset the isolation level back to normal.
+
+    SQLite3's DEFERRED (default) transaction mode causes database corruption
+    for concurrent writes to the database from multiple processes. IMMEDIATE
+    ensures a global write lock, but reading is still possible.
+    """
+
+    def __init__(self, con):
+        self.con = con
+
+    def __enter__(self):
+        self._orig = self.con.isolation_level
+        self.con.isolation_level = "IMMEDIATE"
+        self.con.execute("BEGIN IMMEDIATE")
+        return self.con
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        try:
+            if exc_type:
+                self.con.rollback()
+            else:
+                self.con.commit()
+        finally:
+            self.con.isolation_level = self._orig
+
+
+class SQLite3(object):
+    """SQLite3 connection pool across multiple threads. Implementation idea
+    from `Peewee <https://github.com/coleifer/peewee>`_.
+    """
+
+    def __init__(self, db):
+        self.db = os.path.expanduser(db)
+        self.lock = threading.Lock()
+        self.local = threading.local()
+
+    def connect(self):
+        with self.lock:
+            self.local.conn = sqlite3.connect(self.db, isolation_level=None)
+
+    def close(self):
+        with self.lock:
+            self.local.conn.close()
+            self.local.conn = None
+
+    def execute(self, sql, args=()):
+        if isinstance(sql, (list, tuple)):
+            sql = ' '.join(sql)
+
+        return self.connection.execute(sql, args)
+
+    @property
+    def connection(self):
+        if not hasattr(self.local, 'conn') or self.local.conn is None:
+            self.connect()
+        return self.local.conn
+
+    @property
+    def transaction(self):
+        return Transaction(self.connection)
+
+    @property
+    def total_changes(self):
+        return self.connection.total_changes
+
+
+class Adapter(object):
     """DB-dependend wrapper around SQLite3.
 
     Runs migration if `user_version` is older than `MAX_VERSION` and register
@@ -24,9 +96,8 @@ class SQLite3:
 
     MAX_VERSION = 3
 
-    def __init__(self, path, conf):
-
-        self.path = os.path.expanduser(path)
+    def __init__(self, conn, conf):
+        self.connection = conn
         self.conf = conf
 
         rv = self.execute([
@@ -40,9 +111,9 @@ class SQLite3:
         self.guard = Guard(self)
 
         if rv is None:
-            self.execute("PRAGMA user_version = %i" % SQLite3.MAX_VERSION)
+            self.execute("PRAGMA user_version = %i" % Adapter.MAX_VERSION)
         else:
-            self.migrate(to=SQLite3.MAX_VERSION)
+            self.migrate(to=Adapter.MAX_VERSION)
 
         self.execute([
             'CREATE TRIGGER IF NOT EXISTS remove_stale_threads',
@@ -50,14 +121,6 @@ class SQLite3:
             'BEGIN',
             '    DELETE FROM threads WHERE id NOT IN (SELECT tid FROM comments);',
             'END'])
-
-    def execute(self, sql, args=()):
-
-        if isinstance(sql, (list, tuple)):
-            sql = ' '.join(sql)
-
-        with sqlite3.connect(self.path) as con:
-            return con.execute(sql, args)
 
     @property
     def version(self):
@@ -77,7 +140,7 @@ class SQLite3:
             from isso.utils import Bloomfilter
             bf = buffer(Bloomfilter(iterable=["127.0.0.0"]).array)
 
-            with sqlite3.connect(self.path) as con:
+            with self.connection.transaction as con:
                 con.execute('UPDATE comments SET voters=?', (bf, ))
                 con.execute('PRAGMA user_version = 1')
                 logger.info("%i rows changed", con.total_changes)
@@ -85,7 +148,7 @@ class SQLite3:
         # move [general] session-key to database
         if self.version == 1:
 
-            with sqlite3.connect(self.path) as con:
+            with self.connection.transaction as con:
                 if self.conf.has_option("general", "session-key"):
                     con.execute('UPDATE preferences SET value=? WHERE key=?', (
                         self.conf.get("general", "session-key"), "session-key"))
@@ -98,7 +161,7 @@ class SQLite3:
 
             first = lambda rv: list(map(operator.itemgetter(0), rv))
 
-            with sqlite3.connect(self.path) as con:
+            with self.connection.transaction as con:
                 top = first(con.execute("SELECT id FROM comments WHERE parent IS NULL").fetchall())
                 flattened = defaultdict(set)
 
@@ -117,3 +180,6 @@ class SQLite3:
 
                 con.execute('PRAGMA user_version = 3')
                 logger.info("%i rows changed", con.total_changes)
+
+    def execute(self, sql, args=()):
+        return self.connection.execute(sql, args)

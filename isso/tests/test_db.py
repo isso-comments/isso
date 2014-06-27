@@ -1,27 +1,50 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 try:
     import unittest2 as unittest
 except ImportError:
     import unittest
 
-import os
-import sqlite3
-import tempfile
-
 from isso import config
-from isso.db import SQLite3
+from isso.db import SQLite3, Adapter
 
 from isso.compat import iteritems
 
 
+class TestSQLite3(unittest.TestCase):
+
+    def test_connection(self):
+        con = SQLite3(":memory:")
+
+        con.connect()
+        self.assertTrue(hasattr(con.local, "conn"))
+
+        con.close()
+        self.assertIsNone(con.local.conn)
+
+    def test_autoconnect(self):
+        con = SQLite3(":memory:")
+        con.execute("")
+        self.assertTrue(hasattr(con.local, "conn"))
+
+    def test_rollback(self):
+        con = SQLite3(":memory:")
+        con.execute("CREATE TABLE foo (bar INTEGER)")
+        con.execute("INSERT INTO foo (bar) VALUES (42)")
+
+        try:
+            with con.transaction as con:
+                con.execute("INSERT INTO foo (bar) VALUES (23)")
+                raise ValueError("some error")
+        except ValueError:
+            pass
+
+        self.assertEqual(len(con.execute("SELECT bar FROM foo").fetchall()), 1)
+
+
 class TestDBMigration(unittest.TestCase):
-
-    def setUp(self):
-        fd, self.path = tempfile.mkstemp()
-
-    def tearDown(self):
-        os.unlink(self.path)
 
     def test_defaults(self):
 
@@ -31,9 +54,9 @@ class TestDBMigration(unittest.TestCase):
                 "max-age": "1h"
             }
         })
-        db = SQLite3(self.path, conf)
+        db = Adapter(SQLite3(":memory:"), conf)
 
-        self.assertEqual(db.version, SQLite3.MAX_VERSION)
+        self.assertEqual(db.version, Adapter.MAX_VERSION)
         self.assertTrue(db.preferences.get("session-key", "").isalnum())
 
     def test_session_key_migration(self):
@@ -46,21 +69,23 @@ class TestDBMigration(unittest.TestCase):
         })
         conf.set("general", "session-key", "supersecretkey")
 
-        with sqlite3.connect(self.path) as con:
+        connection = SQLite3(":memory:")
+
+        with connection.transaction as con:
             con.execute("PRAGMA user_version = 1")
             con.execute("CREATE TABLE threads (id INTEGER PRIMARY KEY)")
 
-        db = SQLite3(self.path, conf)
+        db = Adapter(connection, conf)
 
-        self.assertEqual(db.version, SQLite3.MAX_VERSION)
+        self.assertEqual(db.version, Adapter.MAX_VERSION)
         self.assertEqual(db.preferences.get("session-key"),
                          conf.get("general", "session-key"))
 
         # try again, now with the session-key removed from our conf
         conf.remove_option("general", "session-key")
-        db = SQLite3(self.path, conf)
+        db = Adapter(connection, conf)
 
-        self.assertEqual(db.version, SQLite3.MAX_VERSION)
+        self.assertEqual(db.version, Adapter.MAX_VERSION)
         self.assertEqual(db.preferences.get("session-key"),
                          "supersecretkey")
 
@@ -76,7 +101,9 @@ class TestDBMigration(unittest.TestCase):
             6: None
         }
 
-        with sqlite3.connect(self.path) as con:
+        connection = SQLite3(":memory:")
+
+        with connection.transaction as con:
             con.execute("PRAGMA user_version = 2")
             con.execute("CREATE TABLE threads ("
                         "    id INTEGER PRIMARY KEY,"
@@ -106,7 +133,7 @@ class TestDBMigration(unittest.TestCase):
                 "max-age": "1h"
             }
         })
-        SQLite3(self.path, conf)
+        Adapter(connection, conf)
 
         flattened = [
             (1, None),
@@ -118,6 +145,6 @@ class TestDBMigration(unittest.TestCase):
             (7, 2)
         ]
 
-        with sqlite3.connect(self.path) as con:
+        with connection.transaction as con:
             rv = con.execute("SELECT id, parent FROM comments ORDER BY created").fetchall()
             self.assertEqual(flattened, rv)

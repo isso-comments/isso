@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 import os
 import json
-import tempfile
 
 try:
     import unittest2 as unittest
@@ -31,9 +30,7 @@ http.curl = curl
 class TestComments(unittest.TestCase):
 
     def setUp(self):
-        fd, self.path = tempfile.mkstemp()
         conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
-        conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
@@ -48,9 +45,6 @@ class TestComments(unittest.TestCase):
         self.put = self.client.put
         self.post = self.client.post
         self.delete = self.client.delete
-
-    def tearDown(self):
-        os.unlink(self.path)
 
     def testGet(self):
 
@@ -379,9 +373,7 @@ class TestComments(unittest.TestCase):
 class TestModeratedComments(unittest.TestCase):
 
     def setUp(self):
-        fd, self.path = tempfile.mkstemp()
         conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
-        conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
@@ -392,9 +384,6 @@ class TestModeratedComments(unittest.TestCase):
         self.app = App(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
         self.client = JSONClient(self.app, Response)
-
-    def tearDown(self):
-        os.unlink(self.path)
 
     def testAddComment(self):
 
@@ -411,9 +400,7 @@ class TestModeratedComments(unittest.TestCase):
 class TestPurgeComments(unittest.TestCase):
 
     def setUp(self):
-        fd, self.path = tempfile.mkstemp()
         conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
-        conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")

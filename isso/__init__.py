@@ -25,7 +25,7 @@
 #
 # Isso – a lightweight Disqus alternative
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import pkg_resources
 dist = pkg_resources.get_distribution("isso")
@@ -42,7 +42,6 @@ if sys.argv[0].startswith("isso"):
 import os
 import errno
 import logging
-import tempfile
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -62,7 +61,12 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 local = Local()
 local_manager = LocalManager([local])
 
-from isso import config, db, migrate, wsgi, ext, views
+try:
+    import uwsgi
+except ImportError:
+    uwsgi = None
+
+from isso import cache, config, db, migrate, wsgi, ext, views
 from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin
 from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, html, hash
@@ -80,10 +84,18 @@ logger = logging.getLogger("isso")
 
 class Isso(object):
 
-    def __init__(self, conf):
+    def __init__(self, conf, cacheobj=None, connection=None,
+                             multiprocessing=False):
+        if cacheobj is None:
+            cacheobj = cache.Cache(threshold=1024)
+
+        if connection is None:
+            connection = db.SQLite3(":memory:")
 
         self.conf = conf
-        self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
+        self.cache = cacheobj
+        self.connection = connection
+        self.db = db.Adapter(connection, conf)
         self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
         self.markup = html.Markup(
             conf.getlist("markup", "options"),
@@ -92,6 +104,7 @@ class Isso(object):
         self.hasher = hash.new(
             conf.get("hash", "algorithm"),
             conf.get("hash", "salt"))
+        self.shared = True if multiprocessing else False
 
         super(Isso, self).__init__(conf)
 
@@ -142,6 +155,10 @@ class Isso(object):
                 return InternalServerError()
             else:
                 return response
+            finally:
+                # FIXME: always close connection but rather fix tests
+                if self.shared:
+                    self.connection.close()
 
     def wsgi_app(self, environ, start_response):
         response = self.dispatch(JSONRequest(environ))
@@ -151,22 +168,29 @@ class Isso(object):
         return self.wsgi_app(environ, start_response)
 
 
-def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
+def make_app(conf, multiprocessing=True):
 
-    if not any((threading, multiprocessing, uwsgi)):
-        raise RuntimeError("either set threading, multiprocessing or uwsgi")
+    connection = db.SQLite3(conf.get("general", "dbpath"))
+    cacheobj = cache.SQLite3Cache(connection, threshold=2048)
 
-    if threading:
+    if multiprocessing:
+        if uwsgi is not None:
+            class App(Isso, uWSGIMixin):
+                pass
+
+            cacheobj = cache.uWSGICache(timeout=3600)
+        else:
+            class App(Isso, ProcessMixin):
+                pass
+    else:
         class App(Isso, ThreadedMixin):
             pass
-    elif multiprocessing:
-        class App(Isso, ProcessMixin):
-            pass
-    else:
-        class App(Isso, uWSGIMixin):
-            pass
 
-    isso = App(conf)
+    isso = App(
+        conf,
+        cacheobj=cacheobj,
+        connection=connection,
+        multiprocessing=multiprocessing)
 
     # check HTTP server connection
     for host in conf.getiter("general", "host"):
@@ -226,12 +250,11 @@ def main():
         conf.set("guard", "enabled", "off")
 
         if args.dryrun:
-            xxx = tempfile.NamedTemporaryFile()
-            dbpath = xxx.name
+            dbpath = ":memory:"
         else:
             dbpath = conf.get("general", "dbpath")
 
-        mydb = db.SQLite3(dbpath, conf)
+        mydb = db.Adapter(db.SQLite3(dbpath), conf)
         migrate.dispatch(args.type, mydb, args.dump)
 
         sys.exit(0)
@@ -240,13 +263,15 @@ def main():
         logger.error("No website(s) configured, Isso won't work.")
         sys.exit(1)
 
+    app = make_app(conf, multiprocessing=False)
+
     if conf.get("server", "listen").startswith("http://"):
         host, port, _ = urlsplit(conf.get("server", "listen"))
         try:
             from gevent.pywsgi import WSGIServer
-            WSGIServer((host, port), make_app(conf)).serve_forever()
+            WSGIServer((host, port), app).serve_forever()
         except ImportError:
-            run_simple(host, port, make_app(conf), threaded=True,
+            run_simple(host, port, app, threaded=True,
                        use_reloader=conf.getboolean('server', 'reload'))
     else:
         sock = conf.get("server", "listen").partition("unix://")[2]
@@ -255,4 +280,4 @@ def main():
         except OSError as ex:
             if ex.errno != errno.ENOENT:
                 raise
-        wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
+        wsgi.SocketHTTPServer(sock, app).serve_forever()

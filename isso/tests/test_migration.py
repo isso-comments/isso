@@ -7,12 +7,11 @@ try:
 except ImportError:
     import unittest
 
-import tempfile
 from os.path import join, dirname
 
 from isso import config
 
-from isso.db import SQLite3
+from isso.db import SQLite3, Adapter
 from isso.migrate import Disqus, WordPress, autodetect
 
 conf = config.new({
@@ -28,9 +27,8 @@ class TestMigration(unittest.TestCase):
     def test_disqus(self):
 
         xml = join(dirname(__file__), "disqus.xml")
-        xxx = tempfile.NamedTemporaryFile()
 
-        db = SQLite3(xxx.name, conf)
+        db = Adapter(SQLite3(":memory:"), conf)
         Disqus(db, xml).migrate()
 
         self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
@@ -50,9 +48,8 @@ class TestMigration(unittest.TestCase):
     def test_wordpress(self):
 
         xml = join(dirname(__file__), "wordpress.xml")
-        xxx = tempfile.NamedTemporaryFile()
 
-        db = SQLite3(xxx.name, conf)
+        db = Adapter(SQLite3(":memory:"), conf)
         WordPress(db, xml).migrate()
 
         self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World…")

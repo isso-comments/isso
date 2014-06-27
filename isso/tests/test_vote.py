@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import os
 import json
-import tempfile
 
 try:
     import unittest2 as unittest
@@ -12,7 +11,7 @@ except ImportError:
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, core, config, dist
+from isso import Isso, cache, core, config, dist
 from isso.utils import http
 
 from fixtures import curl, loads, FakeIP, JSONClient
@@ -22,22 +21,17 @@ http.curl = curl
 class TestVote(unittest.TestCase):
 
     def setUp(self):
-        self.path = tempfile.NamedTemporaryFile().name
-
-    def makeClient(self, ip):
-
         conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
-        conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
         class App(Isso, core.Mixin):
             pass
 
-        app = App(conf)
-        app.wsgi_app = FakeIP(app.wsgi_app, ip)
+        self.app = App(conf)
 
-        return JSONClient(app, Response)
+    def makeClient(self, ip):
+        return JSONClient(FakeIP(self.app.wsgi_app, ip), Response)
 
     def testZeroLikes(self):
 

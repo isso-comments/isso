@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import re
 import cgi
 import time
@@ -195,7 +197,7 @@ class API(object):
         rv["text"] = self.isso.render(rv["text"])
         rv["hash"] = self.hash(rv['email'] or rv['remote_addr'])
 
-        self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
+        self.cache.set('hash', (rv['email'] or rv['remote_addr']), rv['hash'])
 
         for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
@@ -286,7 +288,7 @@ class API(object):
         if item is None:
             raise NotFound
 
-        self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+        self.cache.delete('hash', (item['email'] or item['remote_addr']))
 
         with self.isso.lock:
             rv = self.comments.delete(id)
@@ -337,7 +339,7 @@ class API(object):
         else:
             with self.isso.lock:
                 self.comments.delete(id)
-            self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+            self.cache.delete('hash', (item['email'] or item['remote_addr']))
             self.signal("comments.delete", id)
 
         return Response("Yo", 200)
@@ -422,11 +424,11 @@ class API(object):
         for item in fetched_list:
 
             key = item['email'] or item['remote_addr']
-            val = self.cache.get('hash', key.encode('utf-8'))
+            val = self.cache.get('hash', key)
 
             if val is None:
                 val = self.hash(key)
-                self.cache.set('hash', key.encode('utf-8'), val)
+                self.cache.set('hash', key, val)
 
             item['hash'] = val
 
