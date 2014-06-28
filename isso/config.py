@@ -9,14 +9,10 @@ import datetime
 from email.utils import parseaddr, formataddr
 from configparser import ConfigParser
 
+from isso.utils import total_seconds
 from isso.compat import text_type as str
 
 logger = logging.getLogger("isso")
-
-
-# Python 2.6 compatibility
-def total_seconds(td):
-    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
 
 
 def timedelta(string):
@@ -95,10 +91,7 @@ class IssoParser(ConfigParser):
         except ValueError:
             return super(IssoParser, self).getint(section, key)
         else:
-            try:
-                return int(delta.total_seconds())
-            except AttributeError:
-                return int(total_seconds(delta))
+            return int(total_seconds(delta))
 
     def getlist(self, section, key):
         return list(map(str.strip, self.get(section, key).split(',')))
