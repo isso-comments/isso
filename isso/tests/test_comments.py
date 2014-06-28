@@ -17,7 +17,7 @@ except ImportError:
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, core, config, dist
+from isso import Isso, config, dist
 from isso.utils import http
 from isso.views import comments
 
@@ -34,10 +34,7 @@ class TestComments(unittest.TestCase):
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
-        class App(Isso, core.Mixin):
-            pass
-
-        self.app = App(conf)
+        self.app = Isso(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
 
         self.client = JSONClient(self.app, Response)
@@ -378,10 +375,7 @@ class TestModeratedComments(unittest.TestCase):
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
-        class App(Isso, core.Mixin):
-            pass
-
-        self.app = App(conf)
+        self.app = Isso(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
         self.client = JSONClient(self.app, Response)
 
@@ -405,10 +399,7 @@ class TestPurgeComments(unittest.TestCase):
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
-        class App(Isso, core.Mixin):
-            pass
-
-        self.app = App(conf)
+        self.app = Isso(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
         self.client = JSONClient(self.app, Response)
 

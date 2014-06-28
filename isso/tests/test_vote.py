@@ -11,7 +11,7 @@ except ImportError:
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, cache, core, config, dist
+from isso import Isso, config, dist
 from isso.utils import http
 
 from fixtures import curl, loads, FakeIP, JSONClient
@@ -25,10 +25,7 @@ class TestVote(unittest.TestCase):
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
-        class App(Isso, core.Mixin):
-            pass
-
-        self.app = App(conf)
+        self.app = Isso(conf)
 
     def makeClient(self, ip):
         return JSONClient(FakeIP(self.app.wsgi_app, ip), Response)

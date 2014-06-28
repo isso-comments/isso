@@ -3,6 +3,7 @@
 from __future__ import unicode_literals, division
 
 import abc
+import json
 import logging
 import threading
 
@@ -11,6 +12,7 @@ import bisect
 import functools
 
 import time
+import datetime
 
 try:
     import queue
@@ -18,6 +20,7 @@ except ImportError:
     import Queue as queue
 
 from isso.utils import total_seconds
+from isso.compat import iteritems
 
 logger = logging.getLogger("isso")
 
@@ -59,10 +62,10 @@ class Queue(object):
 
     :param maxlen: upperbound limit
     :param timeout: maximum retry interval after which a :func:`retry` call
-                    raises :exception:`Timeout` (defaults to 15 min)
+                    raises :exception:`Timeout` (defaults to ~34 min)
     """
 
-    def __init__(self, maxlen=-1, timeout=900):
+    def __init__(self, maxlen=-1, timeout=2**10):
         self.queue = []
         self.maxlen = maxlen
         self.timeout = timeout
@@ -80,14 +83,16 @@ class Queue(object):
     def get(self):
         with self.mutex:
             try:
-                msg = self.queue[0]
+                msg = self.queue.pop(0)
             except IndexError:
                 raise queue.Empty
 
             if msg.timestamp + msg.wait <= time.time():
-                return self.queue.pop(0)
+                return msg
 
-            raise queue.Empty
+            self.queue.insert(0, msg)
+
+        raise queue.Empty
 
     def retry(self, msg):
         self.put(Queue.delay(msg, self.timeout))
@@ -109,6 +114,17 @@ class Queue(object):
 
 
 class Worker(threading.Thread):
+    """Thread that pulls data from the queue, does the actual work. If the queue
+    is empty, sleep for longer intervals (see :func:`wait` for details)
+
+    On startup, all recurring tasks are automatically queued with zero delay
+    to run at least once.
+
+    A task may throw :exception Retry: to indicate a expected failure (e.g.
+    network not reachable) and asking to retry later.
+
+    :param queue: a Queue
+    :param targets: a mapping of task names and the actual task objects"""
 
     interval = 0.05
 
@@ -119,6 +135,10 @@ class Worker(threading.Thread):
         self.queue = queue
         self.targets = targets
 
+        for name, target in iteritems(targets):
+            if isinstance(target, Cron):
+                queue.put(Message(name, None))
+
     def run(self):
         while self.alive:
             try:
@@ -126,8 +146,13 @@ class Worker(threading.Thread):
             except queue.Empty:
                 Worker.wait(0.5)
             else:
-                task = self.targets[payload.type]
+                task = self.targets.get(payload.type)
+                if task is None:
+                    logger.warn("No such task '%s'", payload.type)
+                    continue
                 try:
+                    logger.debug("Executing {0} with '{1}'".format(
+                        payload.type, json.dumps(payload.data)))
                     task.run(payload.data)
                 except Retry:
                     try:
@@ -163,10 +188,6 @@ class Task(object):
 
     __metaclass__ = abc.ABCMeta
 
-    @property
-    def id(self):
-        return threading.currentThread().ident
-
     @abc.abstractmethod
     def run(self, data):
         return
@@ -176,11 +197,45 @@ class Cron(Task):
 
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, timedelta):
-        self.timedelta = timedelta
+    def __init__(self, *args, **kwargs):
+        self.timedelta = datetime.timedelta(*args, **kwargs)
 
     def run(self, data):
         return
 
 
-__all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue", "Task", "Cron"]
+class PurgeDB(Cron):
+
+    def __init__(self, db, after):
+        super(PurgeDB, self).__init__(hours=1)
+        self.db = db
+        self.after = after
+
+    def run(self, data):
+        self.db.comments.purge(self.after)
+
+
+class Jobs(dict):
+    """Obviously a poor man's factory"""
+
+    available = {
+        "purge-db": PurgeDB
+    }
+
+    def __init__(self):
+        super(Jobs, self).__init__()
+
+    def register(self, name, *args, **kwargs):
+        if name in self:
+            return
+
+        try:
+            cls = Jobs.available[name]
+        except KeyError:
+            raise RuntimeError("No such task '%s'" % name)
+
+        self[name] = cls(*args, **kwargs)
+
+
+__all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue", "Targets",
+           "Task", "Cron"]

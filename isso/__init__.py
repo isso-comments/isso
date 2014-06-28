@@ -41,7 +41,11 @@ if sys.argv[0].startswith("isso"):
 
 import os
 import errno
+import atexit
 import logging
+
+import threading
+import multiprocessing
 
 from os.path import dirname, join
 from argparse import ArgumentParser
@@ -66,8 +70,7 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso import cache, config, db, migrate, wsgi, ext, views
-from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin
+from isso import cache, config, db, migrate, wsgi, ext, views, queue
 from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, html, hash
 from isso.views import comments
@@ -85,16 +88,21 @@ logger = logging.getLogger("isso")
 class Isso(object):
 
     def __init__(self, conf, cacheobj=None, connection=None,
-                             multiprocessing=False):
+                             queueobj=None, shared=False):
         if cacheobj is None:
-            cacheobj = cache.Cache(threshold=1024)
+            cacheobj = cache.Cache(1024)
 
         if connection is None:
             connection = db.SQLite3(":memory:")
 
+        if queueobj is None:
+            queueobj = queue.Queue(1024)
+
         self.conf = conf
         self.cache = cacheobj
         self.connection = connection
+        self.queue = queueobj
+
         self.db = db.Adapter(connection, conf)
         self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
         self.markup = html.Markup(
@@ -104,9 +112,13 @@ class Isso(object):
         self.hasher = hash.new(
             conf.get("hash", "algorithm"),
             conf.get("hash", "salt"))
-        self.shared = True if multiprocessing else False
 
-        super(Isso, self).__init__(conf)
+        if shared:
+            self.lock = multiprocessing.Lock()
+            self.shared = True
+        else:
+            self.lock = threading.Lock()
+            self.shared = False
 
         subscribers = []
         for backend in conf.getlist("general", "notify"):
@@ -168,29 +180,24 @@ class Isso(object):
         return self.wsgi_app(environ, start_response)
 
 
-def make_app(conf, multiprocessing=True):
+def make_app(conf, shared=False):
 
     connection = db.SQLite3(conf.get("general", "dbpath"))
-    cacheobj = cache.SQLite3Cache(connection, threshold=2048)
 
-    if multiprocessing:
-        if uwsgi is not None:
-            class App(Isso, uWSGIMixin):
-                pass
-
-            cacheobj = cache.uWSGICache(timeout=3600)
-        else:
-            class App(Isso, ProcessMixin):
-                pass
+    if uwsgi is not None:
+        cacheobj = cache.uWSGICache(timeout=3600)
     else:
-        class App(Isso, ThreadedMixin):
-            pass
+        cacheobj = cache.SQLite3Cache(connection, threshold=2048)
 
-    isso = App(
-        conf,
-        cacheobj=cacheobj,
-        connection=connection,
-        multiprocessing=multiprocessing)
+    jobs = queue.Jobs()
+    jobs.register("purge-db", db.Adapter(connection, conf), conf.getint("moderation", "purge-after"))
+
+    queueobj = queue.Queue(1024)
+    worker = queue.Worker(queueobj, jobs)
+    atexit.register(worker.join, 0.25)
+
+    isso = Isso(conf, cacheobj, connection, queueobj, shared)
+    worker.start()
 
     # check HTTP server connection
     for host in conf.getiter("general", "host"):
@@ -263,7 +270,7 @@ def main():
         logger.error("No website(s) configured, Isso won't work.")
         sys.exit(1)
 
-    app = make_app(conf, multiprocessing=False)
+    app = make_app(conf)
 
     if conf.get("server", "listen").startswith("http://"):
         host, port, _ = urlsplit(conf.get("server", "listen"))

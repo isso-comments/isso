@@ -226,7 +226,7 @@ class Comments:
 
     def purge(self, delta):
         """
-        Remove comments older than :param:`delta`.
+        Remove unmoderated comments older than :param:`delta`.
         """
         self.db.execute([
             'DELETE FROM comments WHERE mode = 2 AND ? - created > ?;'

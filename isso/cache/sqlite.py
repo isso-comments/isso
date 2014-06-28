@@ -5,7 +5,6 @@ from __future__ import absolute_import, unicode_literals
 import time
 
 from . import Base
-from isso.db import SQLite3
 
 
 class SQLite3Cache(Base):

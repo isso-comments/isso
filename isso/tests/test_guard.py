@@ -9,13 +9,12 @@ except ImportError:
 
 import os
 import json
-import tempfile
 
 from werkzeug import __version__
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, config, core, db, dist
+from isso import Isso, config, db, dist
 from isso.utils import http
 
 from fixtures import curl, FakeIP
@@ -44,10 +43,7 @@ class TestGuard(unittest.TestCase):
         conf.set("guard", "direct-reply", str(direct_reply))
         conf.set("guard", "reply-to-self", "1" if self_reply else "0")
 
-        class App(Isso, core.Mixin):
-            pass
-
-        app = App(conf, connection=self.connection)
+        app = Isso(conf, connection=self.connection)
         app.wsgi_app = FakeIP(app.wsgi_app, ip)
 
         return Client(app, Response)
