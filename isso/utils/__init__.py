@@ -17,11 +17,6 @@ except ImportError:
     import ipaddr as ipaddress
 
 
-# Python 2.6 compatibility
-def total_seconds(td):
-    return (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-
-
 def anonymize(remote_addr):
     """
     Anonymize IPv4 and IPv6 :param remote_addr: to /24 (zero'd)

@@ -2,10 +2,7 @@
 
 from __future__ import unicode_literals
 
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 from isso.compat import string_types
 from isso.utils import types

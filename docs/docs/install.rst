@@ -71,7 +71,7 @@ Install from PyPi
 
 Requirements:
 
--  Python 2.6, 2.7 or 3.3+ (+ devel headers)
+-  Python 2.7, 3.3 or 3.4 (+ devel headers)
 -  SQLite 3.3.8 or later
 -  a working C compiler
 

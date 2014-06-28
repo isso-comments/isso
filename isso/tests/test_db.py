@@ -2,10 +2,7 @@
 
 from __future__ import unicode_literals
 
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 from isso import config
 from isso.db import SQLite3, Adapter

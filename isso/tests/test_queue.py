@@ -2,11 +2,7 @@
 
 from __future__ import unicode_literals
 
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
-
+import unittest
 import datetime
 
 from isso.queue import Message, Queue, Full, Empty, Timeout

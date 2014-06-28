@@ -9,7 +9,6 @@ import datetime
 from email.utils import parseaddr, formataddr
 from configparser import ConfigParser
 
-from isso.utils import total_seconds
 from isso.compat import text_type as str
 
 logger = logging.getLogger("isso")
@@ -91,7 +90,7 @@ class IssoParser(ConfigParser):
         except ValueError:
             return super(IssoParser, self).getint(section, key)
         else:
-            return int(total_seconds(delta))
+            return int(delta.total_seconds())
 
     def getlist(self, section, key):
         return list(map(str.strip, self.get(section, key).split(',')))

@@ -5,10 +5,7 @@ from __future__ import unicode_literals
 import os
 import json
 
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 try:
     from urllib.parse import urlencode

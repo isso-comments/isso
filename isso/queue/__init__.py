@@ -19,7 +19,6 @@ try:
 except ImportError:
     import Queue as queue
 
-from isso.utils import total_seconds
 from isso.compat import iteritems
 
 logger = logging.getLogger("isso")
@@ -98,7 +97,7 @@ class Queue(object):
         self.put(Queue.delay(msg, self.timeout))
 
     def requeue(self, msg, timedelta):
-        self.put(Message(msg.type, msg.data, total_seconds(timedelta)))
+        self.put(Message(msg.type, msg.data, timedelta.total_seconds()))
 
     @property
     def size(self):

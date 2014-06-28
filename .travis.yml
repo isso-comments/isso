@@ -1,15 +1,10 @@
 language: python
 python: 2.7
 env:
-  - TOX_ENV=py26
   - TOX_ENV=py27
   - TOX_ENV=py33
   - TOX_ENV=py34
-  - TOX_ENV=squeeze
   - TOX_ENV=wheezy
-matrix:
-  allow_failures:
-    - env: TOX_ENV=squeeze
 install:
   - pip install tox
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
