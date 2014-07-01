@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9.1 (2014-05-29)
+0.9.2 (2014-06-25)
 ------------------
 
 - comment pagination by Srijan Choudhary, #15
@@ -67,6 +67,8 @@ Changelog for Isso
 - remove Django's PBKDF2 implementation in favour of the PBKDF2 function
   available in werkzeug 0.9 or higher. If you're still using werkzeug 0.8, Isso
   imports passlib__ as fallback (if available).
+
+- esperanto translation by Baptiste Darthenay
 
 
 This release also features a new templating engine Jade__ which replaces

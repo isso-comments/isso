@@ -38,6 +38,9 @@ In chronological order:
   * Convert SCSS to plain CSS
   * Refresh style, make it responsive
 
+* Baptiste Darthenay
+  * Esperanto translation
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
 
