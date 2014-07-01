@@ -24,7 +24,7 @@ PIDFILE=/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
 DAEMON=/usr/bin/gunicorn       # Introduce the server's location here
-DAEMON_ARGS="--log-file /var/log/isso.log --user $USER --group $GROUP --preload isso.run"
+DAEMON_ARGS="--log-file /var/log/isso.log --user $USER --group $GROUP --preload isso.dispatch"
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
