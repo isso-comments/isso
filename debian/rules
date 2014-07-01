@@ -8,14 +8,20 @@ export PYBUILD_NAME=isso
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm isso/js/components/almond/almond.js isso/js/components/requirejs-domready/domReady.js -rf
+	rm -rf isso/js/components/almond isso/js/components/requirejs-domready \
+		   isso/js/components/jade isso/js/components/requirejs-text \
+		   isso/js/components/
+	rm -f isso/js/embed.dev.js isso/js/embed.min.js
 
 override_dh_auto_build:
-	mkdir -p isso/js/components/requirejs-domready isso/js/components/almond
+	mkdir -p isso/js/components/requirejs-domready isso/js/components/almond \
+		     isso/js/components/jade isso/js/components/requirejs-text
 	ln -s /usr/lib/nodejs/almond.js isso/js/components/almond/
 	ln -s /usr/share/javascript/dojo/domReady.js isso/js/components/requirejs-domready/
-	#/usr/bin/nodejs /usr/lib/nodejs/r.js -o isso/js/build.embed.js out="isso/js/embed.min.js"
-	#/usr/bin/nodejs /usr/lib/nodejs/r.js -o isso/js/build.embed.js optimize="none" out="isso/js/embed.dev.js"
+	ln -s /usr/lib/nodejs/jade/lib/runtime.js isso/js/components/jade/runtime.js
+	ln -s /usr/lib/nodejs/requirejs/text.js isso/js/components/requirejs-text/text.js
+	/usr/bin/nodejs /usr/lib/nodejs/r.js -o isso/js/build.embed.js out="isso/js/embed.min.js"
+	/usr/bin/nodejs /usr/lib/nodejs/r.js -o isso/js/build.embed.js optimize="none" out="isso/js/embed.dev.js"
 	dh_auto_build
 	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml docs build/html
 
