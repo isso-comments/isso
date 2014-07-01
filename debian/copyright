@@ -1,7 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: isso
 Source: http://posativ.org/isso/
-
 Files-Excluded: docs/_static/flattr.png
 
 Files: *
