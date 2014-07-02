@@ -55,6 +55,12 @@ class Message(object):
     def __le__(self, other):
         return self.timestamp + self.wait <= other.timestamp + other.wait
 
+    def __eq__(self, other):
+        return self.type == other.type and self.data == other.data
+
+    def __repr__(self):
+        return "<Message {0}: {1}>".format(self.type, self.data)
+
 
 class Queue(object):
     """An in-memory queue with requeuing abilities.
@@ -236,5 +242,7 @@ class Jobs(dict):
         self[name] = cls(*args, **kwargs)
 
 
+from .sqlite import SQLite3Queue
+
 __all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue", "Targets",
-           "Task", "Cron"]
+           "Task", "Cron", "SQLite3Queue"]
