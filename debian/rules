@@ -8,22 +8,44 @@ R_JS = /usr/bin/nodejs /usr/lib/nodejs/r.js
 %:
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --test-args specs
 
-override_dh_auto_clean:
-	dh_auto_clean
-	rm -rf isso/js/components/almond isso/js/components/requirejs-domready \
-		   isso/js/components/jade isso/js/components/requirejs-text \
-		   isso/js/components/
-	rm -f isso/js/embed.dev.js isso/js/embed.min.js
+rm_js_symlinks:
+	echo "Removing JS symlinks"
+	rm -rf isso/js/components/almond
+	rm -rf isso/js/components/jade
+	rm -rf isso/js/components/requirejs-domready
+	rm -rf isso/js/components/requirejs-text
+	echo "Removing built JS libraries"
+	rm -f ./isso/js/count.min.js
+	rm -f ./isso/js/embed.min.js
+
+js_symlinks:
+	echo "Creating directories"
+	mkdir -p isso/js/components/almond
+	mkdir -p isso/js/components/jade
+	mkdir -p isso/js/components/requirejs-domready
+	mkdir -p isso/js/components/requirejs-text
+	echo "Linking JS libraries"
+	ln -s /usr/lib/nodejs/almond.js isso/js/components/almond/
+	ln -s /usr/lib/nodejs/jade/lib/runtime.js isso/js/components/jade/
+	ln -s /usr/lib/nodejs/requirejs/text.js isso/js/components/requirejs-text/
+	ln -s /usr/share/javascript/dojo/domReady.js isso/js/components/requirejs-domready/
+
+js_mini: js_symlinks
+	# Unused until node-uglify 2.4 will be available
+	echo "Checking required JS libraries"
+	test -f isso/js/components/almond/almond.js
+	test -f isso/js/components/jade/runtime.js
+	test -f isso/js/components/requirejs-domready/domReady.js
+	test -f isso/js/components/requirejs-text/text.js
+	echo "Compiling JS libraries"
+	$(R_JS) -o isso/js/build.embed.js out=isso/js/embed.min.js
+	$(R_JS) -o isso/js/build.embed.js optimize="none" out=isso/js/embed.dev.js
+	$(R_JS) -o isso/js/build.count.js out=isso/js/count.min.js
+	$(R_JS) -o isso/js/build.count.js optimize="none" out=isso/js/count.dev.js
+	test -f isso/js/embed.min.js
+	test -f isso/js/count.min.js
 
 override_dh_auto_build:
-	mkdir -p isso/js/components/requirejs-domready isso/js/components/almond \
-		     isso/js/components/jade isso/js/components/requirejs-text
-	ln -s /usr/lib/nodejs/almond.js isso/js/components/almond/
-	ln -s /usr/share/javascript/dojo/domReady.js isso/js/components/requirejs-domready/
-	ln -s /usr/lib/nodejs/jade/lib/runtime.js isso/js/components/jade/runtime.js
-	ln -s /usr/lib/nodejs/requirejs/text.js isso/js/components/requirejs-text/text.js
-	$(R_JS) -o isso/js/build.embed.js out="isso/js/embed.min.js"
-	$(R_JS) -o isso/js/build.embed.js optimize="none" out="isso/js/embed.dev.js"
 	dh_auto_build
 	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml docs build/html
 
