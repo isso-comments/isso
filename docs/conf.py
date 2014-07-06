@@ -12,13 +12,26 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import pkg_resources
-dist = pkg_resources.get_distribution("isso")
-
 import sys
+import io
+import re
+import pkg_resources
 
 from os.path import join, dirname
 sys.path.insert(0, join(dirname(__file__), "_isso/"))
+
+try:
+    dist = pkg_resources.get_distribution("isso")
+except pkg_resources.DistributionNotFound:
+    dist = type("I'm a Version", (object, ), {})
+    with io.open(join(dirname(__file__), "../setup.py")) as fp:
+        for line in fp:
+            m = re.match("\s*version='([^']+)'\s*", line)
+            if m:
+                dist.version = m.group(1)
+                break
+        else:
+            dist.version = ""
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
