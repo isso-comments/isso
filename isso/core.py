@@ -113,7 +113,7 @@ class Config:
         "direct-reply = 3",
         "reply-to-self = false",
         "[markup]",
-        "options = strikethrough, autolink",
+        "options = strikethrough, autolink, fenced_code",
         "allowed-elements = ",
         "allowed-attributes = "
     ]
