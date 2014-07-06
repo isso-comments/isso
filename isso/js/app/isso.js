@@ -89,10 +89,6 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     if(rv.hidden_replies > 0) {
                         insert_loader(rv, lastcreated);
                     }
-
-                    if (window.location.hash.length > 0) {
-                        $(window.location.hash).scrollIntoView();
-                    }
                 },
                 function(err) {
                     console.log(err);
