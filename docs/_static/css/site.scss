@@ -209,6 +209,21 @@ main {
     h4 {
       margin-bottom: 0.5em;
     }
+
+    blockquote {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding-left: 15px;
+      border-left: 3px solid #ccc;
+    }
+
+    pre {
+      background: #eee;
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+      color: #4d4d4c;
+      overflow: auto;
+    }
   }
 
   .sidebar {
