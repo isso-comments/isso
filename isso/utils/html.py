@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 import pkg_resources
 import operator
 
@@ -54,14 +56,28 @@ def Markdown(extensions=("strikethrough", "superscript", "autolink")):
 
     flags = reduce(operator.xor, map(
         lambda ext: getattr(misaka, 'EXT_' + ext.upper()), extensions), 0)
+    md = misaka.Markdown(Unofficial(), extensions=flags)
 
     def inner(text):
-        rv = misaka.html(text, extensions=flags).rstrip("\n")
-        if not rv.endswith("<p>") and not rv.endswith("</p>"):
-            return "<p>" + rv + "</p>"
-        return rv
+        rv = md.render(text).rstrip("\n")
+        if rv.startswith("<p>") or rv.endswith("</p>"):
+            return rv
+        return "<p>" + rv + "</p>"
 
     return inner
+
+
+class Unofficial(misaka.HtmlRenderer):
+    """A few modifications to process "common" Markdown.
+
+    For instance, fenced code blocks (~~~ or ```) are just wrapped in <code>
+    which does not preserve line breaks. If a language is given, it is added
+    to <code class="$lang">, compatible with Highlight.js.
+    """
+
+    def block_code(self, text, lang):
+        lang = ' class="{0}"'.format(lang) if lang else ''
+        return "<pre><code{1}>{0}</code></pre>\n".format(text, lang)
 
 
 class Markup(object):
