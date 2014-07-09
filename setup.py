@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-import sys
+from __future__ import unicode_literals
 
+import sys
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'misaka', 'html5lib']
