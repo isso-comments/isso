@@ -25,7 +25,7 @@
 #
 # Isso – a lightweight Disqus alternative
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 import pkg_resources
 dist = pkg_resources.get_distribution("isso")
