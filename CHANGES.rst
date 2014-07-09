@@ -1,6 +1,12 @@
 Changelog for Isso
 ==================
 
+0.9.5 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 0.9.4 (2014-07-09)
 ------------------
 
