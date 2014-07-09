@@ -4,7 +4,7 @@ Changelog for Isso
 0.9.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- fixed a regression when using Isso and Gevent
 
 
 0.9.3 (2014-07-09)
