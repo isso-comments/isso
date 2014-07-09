@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9.3 (unreleased)
+0.9.3 (2014-07-09)
 ------------------
 
 - remove scrollIntoView while expanding further comments if a fragment is used
