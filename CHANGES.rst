@@ -1,6 +1,32 @@
 Changelog for Isso
 ==================
 
+0.9.4 (2014-07-09)
+------------------
+
+- fixed a regression when using Isso and Gevent
+
+
+0.9.3 (2014-07-09)
+------------------
+
+- remove scrollIntoView while expanding further comments if a fragment is used
+  (e.g. #isso-thread brought you back to the top, unexpectedly)
+
+- implement a custom Markdown renderer to support multi-line code listings. The
+  extension "fenced_code" is now enabled by default and generates HTML
+  compatible with Highlight.js__.
+
+- escape HTML entities when editing a comment with raw HTML
+
+- fix CSS for input
+
+- remove isso.css from binary distribution to avoid confusion (it's still there
+  from the very first release, but modifications do not work)
+
+.. __: http://highlightjs.org/
+
+
 0.9.2 (2014-06-25)
 ------------------
 
