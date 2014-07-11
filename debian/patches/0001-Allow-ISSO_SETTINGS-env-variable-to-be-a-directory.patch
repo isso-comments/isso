@@ -6,12 +6,13 @@ Subject: Allow ISSO_SETTINGS env variable to be a directory
  isso/dispatch.py | 26 +++++++++++++++++---------
  1 file changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/isso/dispatch.py b/isso/dispatch.py
-index 14441e2..6cd3974 100644
---- a/isso/dispatch.py
-+++ b/isso/dispatch.py
-@@ -1,8 +1,11 @@
- # -*- encoding: utf-8 -*-
+Index: isso/isso/dispatch.py
+===================================================================
+--- isso.orig/isso/dispatch.py
++++ isso/isso/dispatch.py
+@@ -2,9 +2,12 @@
+ 
+ from __future__ import unicode_literals
  
 +import sys
  import os
@@ -22,7 +23,7 @@ index 14441e2..6cd3974 100644
  from werkzeug.wsgi import DispatcherMiddleware
  from werkzeug.wrappers import Response
  
-@@ -44,13 +47,18 @@ class Dispatcher(DispatcherMiddleware):
+@@ -46,13 +49,18 @@ class Dispatcher(DispatcherMiddleware):
          return resp(environ, start_response)
  
  
