@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+import textwrap
 import unittest
 
 from isso.utils import html
@@ -25,6 +26,37 @@ class TestHTML(unittest.TestCase):
 
         for (input, expected) in examples:
             self.assertEqual(convert(input), expected)
+
+    def test_github_flavoured_markdown(self):
+        convert = html.Markdown(extensions=("fenced_code", ))
+
+        # without lang
+        _in = textwrap.dedent("""\
+            Hello, World
+
+            ```
+            #!/usr/bin/env python
+            print("Hello, World")""")
+        _out = textwrap.dedent("""\
+            <p>Hello, World</p>
+            <pre><code>#!/usr/bin/env python
+            print("Hello, World")
+            </code></pre>""")
+
+        self.assertEqual(convert(_in), _out)
+
+        # w/ lang
+        _in = textwrap.dedent("""\
+            Hello, World
+
+            ```python
+            #!/usr/bin/env python
+            print("Hello, World")""")
+        _out = textwrap.dedent("""\
+            <p>Hello, World</p>
+            <pre><code class="python">#!/usr/bin/env python
+            print("Hello, World")
+            </code></pre>""")
 
     @unittest.skipIf(html.html5lib_version == "0.95", "backport")
     def test_sanitizer(self):

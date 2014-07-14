@@ -38,6 +38,21 @@ define(["app/i18n"], function(i18n) {
                                i18n.pluralize("date-year", Math.ceil(days / 365.25));
     };
 
+    var HTMLEntity = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': '&quot;',
+        "'": '&#39;',
+        "/": '&#x2F;'
+    };
+
+    var escape = function(html) {
+        return String(html).replace(/[&<>"'\/]/g, function (s) {
+            return HTMLEntity[s];
+        });
+    };
+
     var text = function(html) {
         var _ = document.createElement("div");
         _.innerHTML = html.replace(/<div><br><\/div>/gi, '<br>')
@@ -47,8 +62,8 @@ define(["app/i18n"], function(i18n) {
     };
 
     var detext = function(text) {
-        return text.replace(/\n\n/gi, '<br><div><br></div>')
-                   .replace(/\n/gi, '<br>');
+        return escape(text.replace(/\n\n/gi, '<br><div><br></div>')
+                          .replace(/\n/gi, '<br>'));
     };
 
     return {

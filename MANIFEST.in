@@ -9,5 +9,4 @@ include isso/js/embed.dev.js
 include isso/js/count.min.js
 include isso/js/count.dev.js
 
-include isso/css/isso.css
 include isso/demo/index.html

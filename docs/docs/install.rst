@@ -47,8 +47,8 @@ but not recommended):
 
 .. code-block:: sh
 
-    ~> virtualenv /home/user/python/isso
-    ~> source /home/user/python/isso/activate
+    ~> virtualenv /path/to/isso
+    ~> source /path/to/isso/bin/activate
 
 After calling `source`, you can now install packages from PyPi locally into this
 virtual environment. If you don't like Isso anymore, you just `rm -rf` the
@@ -69,11 +69,29 @@ machines or a shared host (e.g. Uberspace.de).
 Install from PyPi
 -----------------
 
-Requirements:
+Requirements
+^^^^^^^^^^^^
 
--  Python 2.7, 3.3 or 3.4 (+ devel headers)
--  SQLite 3.3.8 or later
--  a working C compiler
+- Python 2.7, 3.3 or 3.4+ (+ devel headers)
+- SQLite 3.3.8 or later
+- a working C compiler
+
+For Debian/Ubuntu just `copy and paste
+<http://thejh.net/misc/website-terminal-copy-paste>`_ to your terminal:
+
+.. code-block:: sh
+
+    ~> sudo apt-get install python-dev sqlite3 build-essential
+
+Similar for Fedora (and derivates):
+
+.. code-block:: sh
+
+    ~> sudo yum install python-devel sqlite
+    ~> sudo yum groupinstall “Development Tools”
+
+Installation
+^^^^^^^^^^^^
 
 Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:
 
@@ -88,16 +106,20 @@ Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:
     ~> easy_install isso  # cross your fingers
 
 For easier execution, you can symlink the executable to a location in your
-PATH:
+:envvar:`PATH`.
 
 .. code-block:: sh
 
     ~> ln -s /path/to/isso-venv/bin/isso /usr/local/bin/isso
 
+Upgrade
+^^^^^^^
+
 To upgrade Isso, activate your virtual environment again, and run
 
 .. code-block:: sh
 
+    ~> source /path/to/isso/bin/activate  # optional
     ~> pip install --upgrade isso
 
 .. _prebuilt-package:
@@ -108,16 +130,14 @@ Prebuilt Packages
 * Debian: https://packages.crapouillou.net/ – built from PyPi. Includes
   startup scripts and vhost configurations for Lighttpd, Apache and Nginx
   [`source <https://github.com/jgraichen/debian-isso>`__].
-
-  `#729218 <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=729218>`_ is a
-  ITP for Debian. To be officially packages by Debian, `#51
-  <https://github.com/posativ/isso/issues/51>`_ needs to be done (contributions
-  are welcome).
+  `#729218 <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=729218>`_ is an
+  ITP for Debian.
 
 * Gentoo: http://eroen.eu/cgit/cgit.cgi/eroen-overlay/tree/www-apps/isso?h=isso
   – not yet available in Portage, but you can use the ebuild to build Isso.
 
-* Arch Linux: https://aur.archlinux.org/packages/isso/ – built from PyPi.
+* Arch Linux: https://aur.archlinux.org/packages/isso/
+  – install with `yaourt isso`.
 
 Install from Source
 -------------------
