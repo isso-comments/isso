@@ -6,7 +6,7 @@ export PYBUILD_NAME=isso
 R_JS = /usr/bin/nodejs /usr/lib/nodejs/r.js
 
 %:
-	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --test-args specs
+	dh $@ --with python2,sphinxdoc --buildsystem=pybuild
 
 rm_js_symlinks:
 	echo "Removing JS symlinks"
@@ -56,3 +56,7 @@ endif
 
 override_dh_installchangelogs:
 	dh_installchangelogs CHANGES.rst
+
+override_dh_auto_install:
+	dh_auto_install
+	pybuild --install -i python{version} -p 2.7 --dir . --verbose --test-nose
