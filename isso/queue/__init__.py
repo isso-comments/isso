@@ -209,22 +209,14 @@ class Cron(Task):
         return
 
 
-class PurgeDB(Cron):
-
-    def __init__(self, db, after):
-        super(PurgeDB, self).__init__(hours=1)
-        self.db = db
-        self.after = after
-
-    def run(self, data):
-        self.db.comments.purge(self.after)
+from .tasks import db
 
 
 class Jobs(dict):
     """Obviously a poor man's factory"""
 
     available = {
-        "purge-db": PurgeDB
+        "db-purge": db.Purge
     }
 
     def __init__(self):

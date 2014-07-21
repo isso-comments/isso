@@ -218,7 +218,7 @@ enabled
     purposes.
 
 ratelimit
-    limit to N new comments per minute.
+    limit to N new comments per minute. Use -1 to disable rate limit.
 
 direct-reply
     how many comments directly to the thread (prevent a simple

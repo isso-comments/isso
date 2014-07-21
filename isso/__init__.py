@@ -44,16 +44,13 @@ import errno
 import atexit
 import logging
 
-import threading
-import multiprocessing
-
 from os.path import dirname, join
 from argparse import ArgumentParser
 from functools import partial, reduce
 
 from itsdangerous import URLSafeTimedSerializer
 
-from werkzeug.routing import Map
+from werkzeug.routing import Map, Rule, redirect
 from werkzeug.exceptions import HTTPException, InternalServerError
 
 from werkzeug.wsgi import SharedDataMiddleware
@@ -70,10 +67,9 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso import cache, config, db, migrate, wsgi, ext, views, queue
+from isso import cache, config, db, migrate, ext, queue, spam, views, wsgi
 from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, html, hash
-from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
 
@@ -87,63 +83,64 @@ logger = logging.getLogger("isso")
 
 class Isso(object):
 
-    def __init__(self, conf, cacheobj=None, connection=None,
-                             queueobj=None, shared=False):
+    def __init__(self, conf, cacheobj=None, dbobj=None):
+
         if cacheobj is None:
             cacheobj = cache.Cache(1024)
 
-        if connection is None:
-            connection = db.SQLite3(":memory:")
-
-        if queueobj is None:
-            queueobj = queue.Queue(1024)
+        if dbobj is None:
+            dbobj = db.Adapter("sqlite:///:memory:")
 
         self.conf = conf
-        self.cache = cacheobj
-        self.connection = connection
-        self.queue = queueobj
+        self.db = dbobj
 
-        self.db = db.Adapter(connection, conf)
-        self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
-        self.markup = html.Markup(
+        signer = URLSafeTimedSerializer(
+            dbobj.preferences.get("session-key"))
+        markup = html.Markup(
             conf.getlist("markup", "options"),
             conf.getlist("markup", "allowed-elements"),
             conf.getlist("markup", "allowed-attributes"))
-        self.hasher = hash.new(
+        hasher = hash.new(
             conf.get("hash", "algorithm"),
             conf.get("hash", "salt"))
+        guard = spam.Guard(
+            dbobj,
+            conf.getboolean("guard", "enabled"),
+            conf.getint("guard", "ratelimit"),
+            conf.getint("guard", "direct-reply"),
+            conf.getboolean("guard", "reply-to-self"),
+            conf.getint("general", "max-age"))
 
-        if shared:
-            self.lock = multiprocessing.Lock()
-            self.shared = True
-        else:
-            self.lock = threading.Lock()
-            self.shared = False
+        urls = Map()
+        Isso.routes(
+            urls,
+            views.API(conf, cacheobj, dbobj, guard, hasher.uhash, markup, signer),
+            views.Info(conf))
 
-        subscribers = []
-        for backend in conf.getlist("general", "notify"):
-            if backend == "stdout":
-                subscribers.append(Stdout(None))
-            elif backend in ("smtp", "SMTP"):
-                subscribers.append(SMTP(self))
-            else:
-                logger.warn("unknown notification backend '%s'", backend)
+        self.urls = urls
 
-        self.signal = ext.Signal(*subscribers)
+    @classmethod
+    def routes(cls, urls, api, info):
 
-        self.urls = Map()
+        for rule in [
+            Rule("/demo/", endpoint=lambda *z: redirect("/demo/index.html")),
+            Rule("/info", endpoint=info.show)
+        ]:
+            urls.add(rule)
 
-        views.Info(self)
-        comments.API(self, self.hasher)
-
-    def render(self, text):
-        return self.markup.render(text)
-
-    def sign(self, obj):
-        return self.signer.dumps(obj)
-
-    def unsign(self, obj, max_age=None):
-        return self.signer.loads(obj, max_age=max_age or self.conf.getint('general', 'max-age'))
+        for func, (method, rule) in [
+            ('fetch',   ('GET', '/')),
+            ('new',     ('POST', '/new')),
+            ('count',   ('POST', '/count')),
+            ('view',    ('GET', '/id/<int:id>')),
+            ('edit',    ('PUT', '/id/<int:id>')),
+            ('delete',  ('DELETE', '/id/<int:id>')),
+            ('moderate',('GET',  '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
+            ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
+            ('like',    ('POST', '/id/<int:id>/like')),
+            ('dislike', ('POST', '/id/<int:id>/dislike')),
+        ]:
+            urls.add(Rule(rule, methods=[method], endpoint=getattr(api, func)))
 
     def dispatch(self, request):
         local.request = request
@@ -167,10 +164,6 @@ class Isso(object):
                 return InternalServerError()
             else:
                 return response
-            finally:
-                # FIXME: always close connection but rather fix tests
-                if self.shared:
-                    self.connection.close()
 
     def wsgi_app(self, environ, start_response):
         response = self.dispatch(JSONRequest(environ))
@@ -180,23 +173,24 @@ class Isso(object):
         return self.wsgi_app(environ, start_response)
 
 
-def make_app(conf, shared=False):
+def make_app(conf):
 
-    connection = db.SQLite3(conf.get("general", "dbpath"))
+    dbobj = db.Adapter(conf.get("general", "dbpath"))
 
     if uwsgi is not None:
         cacheobj = cache.uWSGICache(timeout=3600)
     else:
-        cacheobj = cache.SQLite3Cache(connection, threshold=2048)
+        cacheobj = cache.SQLite3Cache(db.SQLite3("/dev/shm/isso"), threshold=2048)
 
     jobs = queue.Jobs()
-    jobs.register("purge-db", db.Adapter(connection, conf), conf.getint("moderation", "purge-after"))
+    jobs.register("db-purge", dbobj, conf.getint("moderation", "purge-after"))
 
     queueobj = queue.Queue(1024)
     worker = queue.Worker(queueobj, jobs)
-    atexit.register(worker.join, 0.25)
 
-    isso = Isso(conf, cacheobj, connection, queueobj, shared)
+    isso = Isso(conf, cacheobj, dbobj)
+
+    atexit.register(worker.join, 0.25)
     worker.start()
 
     # check HTTP server connection
@@ -212,7 +206,7 @@ def make_app(conf, shared=False):
 
     wrapper = [local_manager.make_middleware]
 
-    if isso.conf.getboolean("server", "profile"):
+    if conf.getboolean("server", "profile"):
         wrapper.append(partial(ProfilerMiddleware,
             sort_by=("cumulative", ), restrictions=("isso/(?!lib)", 10)))
 
@@ -220,10 +214,10 @@ def make_app(conf, shared=False):
         '/js': join(dirname(__file__), 'js/'),
         '/css': join(dirname(__file__), 'css/'),
         '/demo': join(dirname(__file__), 'demo/')
-        }))
+    }))
 
     wrapper.append(partial(wsgi.CORSMiddleware,
-        origin=origin(isso.conf.getiter("general", "host")),
+        origin=origin(conf.getiter("general", "host")),
         allowed=("Origin", "Referer", "Content-Type"),
         exposed=("X-Set-Cookie", "Date")))
 
@@ -239,7 +233,7 @@ def main():
 
     parser.add_argument('--version', action='version', version='%(prog)s ' + dist.version)
     parser.add_argument("-c", dest="conf", default="/etc/isso.conf",
-            metavar="/etc/isso.conf", help="set configuration file")
+                        metavar="/etc/isso.conf", help="set configuration file")
 
     imprt = subparser.add_parser('import', help="import Disqus XML export")
     imprt.add_argument("dump", metavar="FILE")

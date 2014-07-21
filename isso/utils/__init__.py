@@ -53,8 +53,6 @@ class Bloomfilter(object):
     >>> for i in range(256):
     ...     bf.add("1.2.%i.4" % i)
     ...
-    >>> len(bf)
-    256
     >>> "1.2.3.4" in bf
     True
     >>> "127.0.0.1" in bf
@@ -64,9 +62,8 @@ class Bloomfilter(object):
        http://code.activestate.com/recipes/577684-bloom-filter/
     """
 
-    def __init__(self, array=None, elements=0, iterable=()):
+    def __init__(self, array=None, iterable=()):
         self.array = array or bytearray(256)
-        self.elements = elements
         self.k = 11
         self.m = len(self.array) * 8
 
@@ -82,13 +79,9 @@ class Bloomfilter(object):
     def add(self, key):
         for i in self.get_probes(key):
             self.array[i//8] |= 2 ** (i%8)
-        self.elements += 1
 
     def __contains__(self, key):
-        return all(self.array[i//8] & (2 ** (i%8)) for i in self.get_probes(key))
-
-    def __len__(self):
-        return self.elements
+        return all(self.array[i//8] & (2 ** (i % 8)) for i in self.get_probes(key))
 
 
 class JSONRequest(Request):

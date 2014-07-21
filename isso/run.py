@@ -10,5 +10,4 @@ from isso import dist, config
 application = make_app(
     config.load(
         os.path.join(dist.location, "isso", "defaults.ini"),
-        os.environ.get('ISSO_SETTINGS')),
-    shared=True)
+        os.environ.get('ISSO_SETTINGS')))

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import logging
 import sqlite3
+import binascii
 import operator
 import threading
 
@@ -11,12 +12,82 @@ import os.path
 
 from collections import defaultdict
 
+from sqlalchemy import Table, Column, MetaData, create_engine
+from sqlalchemy import ForeignKey, Integer, Float, String, LargeBinary
+from sqlalchemy.sql import select
+
 logger = logging.getLogger("isso")
 
-from isso.db.comments import Comments
-from isso.db.threads import Threads
-from isso.db.spam import Guard
-from isso.db.preferences import Preferences
+
+class Adapter(object):
+
+    def __init__(self, db):
+        self.engine = create_engine(db, echo=False)
+        self.metadata = MetaData()
+
+        self.comments = Table("comments", self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("parent", Integer),
+            Column("thread", None, ForeignKey("threads.id")),
+            Column("created", Float),
+            Column("modified", Float),
+            Column("mode", Integer),
+            Column("remote_addr", String(48)),  # XXX use a BigInt
+            Column("text", String(65535)),
+            Column("author", String(255)),
+            Column("email", String(255)),
+            Column("website", String(255)),
+            Column("likes", Integer),
+            Column("dislikes", Integer),
+            Column("voters", LargeBinary(256)))
+
+        self.threads = Table("threads", self.metadata,
+            Column("id", Integer, primary_key=True),
+            Column("uri", String(255), unique=True),
+            Column("title", String(255)))
+
+        preferences = Table("preferences", self.metadata,
+            Column("key", String(255), primary_key=True),
+            Column("value", String(255)))
+
+        self.metadata.create_all(self.engine)
+        self.preferences = Preferences(self.engine, preferences)
+
+    @property
+    def transaction(self):
+        return self.engine.begin()
+
+
+class Preferences(object):
+    """A simple key-value store using SQL.
+    """
+
+    defaults = [
+        ("session-key", binascii.b2a_hex(os.urandom(24))),
+    ]
+
+    def __init__(self, engine, preferences):
+        self.engine = engine
+        self.preferences = preferences
+
+        for (key, value) in Preferences.defaults:
+            if self.get(key) is None:
+                self.set(key, value)
+
+    def get(self, key, default=None):
+        rv = self.engine.execute(
+            select([self.preferences.c.value])
+            .where(self.preferences.c.key == key)).fetchone()
+
+        if rv is None:
+            return default
+
+        return rv[0]
+
+    def set(self, key, value):
+        self.engine.execute(
+            self.preferences.insert().values(
+                key=key, value=value))
 
 
 class Transaction(object):
@@ -87,7 +158,7 @@ class SQLite3(object):
         return self.connection.total_changes
 
 
-class Adapter(object):
+class Foo(object):
     """DB-dependend wrapper around SQLite3.
 
     Runs migration if `user_version` is older than `MAX_VERSION` and register
