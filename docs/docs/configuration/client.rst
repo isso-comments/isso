@@ -14,8 +14,8 @@ preferably in the script tag which embeds the JS:
             data-isso-max-comments-nested="5"
             data-isso-reveal-on-click="5"
             data-isso-avatar="true"
-            data-avatar-bg="#f0f0f0"
-            data-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+            data-isso-avatar-bg="#f0f0f0"
+            data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
