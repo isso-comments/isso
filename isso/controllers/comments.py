@@ -11,7 +11,7 @@ from isso.spam import Guard
 from isso.utils import Bloomfilter
 from isso.models import Comment
 
-from isso.compat import string_types
+from isso.compat import string_types, buffer
 
 
 class Invalid(Exception):

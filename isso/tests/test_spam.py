@@ -32,7 +32,7 @@ class TestGuard(unittest.TestCase):
             controller.new(bob, thread, comment)
         except Exception as ex:
             self.assertIsInstance(ex, comments.Denied)
-            self.assertIn("ratelimit exceeded", ex.message)
+            self.assertIn("ratelimit exceeded", ex.args[0])
         else:
             self.assertTrue(False)
 
@@ -63,7 +63,7 @@ class TestGuard(unittest.TestCase):
                 controller.new(bob, thread, comment)
             except Exception as ex:
                 self.assertIsInstance(ex, comments.Denied)
-                self.assertIn("direct response", ex.message)
+                self.assertIn("direct response", ex.args[0])
             else:
                 self.assertTrue(False)
 
@@ -79,7 +79,7 @@ class TestGuard(unittest.TestCase):
             controller.new(bob, thread, dict(text="...", parent=ref))
         except Exception as ex:
             self.assertIsInstance(ex, comments.Denied)
-            self.assertIn("editing frame is still open", ex.message)
+            self.assertIn("editing frame is still open", ex.args[0])
         else:
             self.assertTrue(False)
 
