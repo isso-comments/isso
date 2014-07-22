@@ -3,7 +3,8 @@
 from __future__ import unicode_literals
 
 import cgi
-import functools
+
+from functools import partial
 
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -72,7 +73,7 @@ class API(object):
         self.moderated = conf.getboolean("moderation", "enabled")
 
         self.sign = signer.dumps
-        self.load = functools.partial(signer.loads, max_age=self.max_age)
+        self.load = partial(signer.loads, max_age=self.max_age)
 
     def serialize(self, comment, markup=True):
         _id = str(comment.id)
@@ -133,14 +134,14 @@ class API(object):
 
         # TODO queue new thread, send notification
 
-        _id = str(comment.id)
+        cookie = partial(dump_cookie, max_age=self.max_age)
         signature = self.sign([comment.id, sha1(comment.text)])
 
         resp = JSON(
             self.serialize(comment),
             202 if comment.moderated == 2 else 201)
-        resp.headers.add("Set-Cookie", dump_cookie(_id, signature))
-        resp.headers.add("X-Set-Cookie", dump_cookie("isso-" + _id, signature))
+        resp.headers.add("Set-Cookie", cookie(str(comment.id), signature))
+        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % comment.id, signature))
         return resp
 
     def view(self, environ, request, id):
@@ -185,14 +186,16 @@ class API(object):
             comment = self.comments.edit(id, data)
 
         _id = str(comment.id)
+
+        cookie = partial(dump_cookie, max_age=self.max_age)
         signature = self.sign([comment.id, sha1(comment.text)])
 
         self.cache.delete("text", _id)
         self.cache.delete("hash", _id)
 
         resp = JSON(self.serialize(comment), 200)
-        resp.headers.add("Set-Cookie", dump_cookie(_id, signature))
-        resp.headers.add("X-Set-Cookie", dump_cookie("isso-" + _id, signature))
+        resp.headers.add("Set-Cookie", cookie(_id, signature))
+        resp.headers.add("X-Set-Cookie", cookie("isso-" + _id, signature))
         return resp
 
     @xhr
@@ -221,7 +224,7 @@ class API(object):
         with self.db.transaction:
             comment = self.comments.delete(id)
 
-        cookie = functools.partial(dump_cookie, expires=0, max_age=0)
+        cookie = partial(dump_cookie, expires=0, max_age=0)
 
         resp = JSON(self.serialize(comment) if comment else None, 200)
         resp.headers.add("Set-Cookie", cookie(_id))

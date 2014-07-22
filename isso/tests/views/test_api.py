@@ -57,6 +57,7 @@ class TestComments(unittest.TestCase):
     def setUp(self):
         conf = config.load(os.path.join(dist.location, "isso", "defaults.ini"))
         conf.set("general", "dbpath", "sqlite:///:memory:")
+        conf.set("general", "max-age", "900")
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
 
@@ -173,3 +174,12 @@ class TestComments(unittest.TestCase):
                                          content_type=form).status_code, 403)
         # just for the record
         self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
+
+    def testCookieExpiration(self):
+
+        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Hello, World!"}))
+        headers = rv.headers
+
+        for key in ("Set-Cookie", "X-Set-Cookie"):
+            self.assertTrue(headers.has_key(key))
+            self.assertIn("max-age=900", headers.get(key).lower())
