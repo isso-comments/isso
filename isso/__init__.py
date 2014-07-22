@@ -180,7 +180,7 @@ def make_app(conf):
     if uwsgi is not None:
         cacheobj = cache.uWSGICache(timeout=3600)
     else:
-        cacheobj = cache.SQLite3Cache(db.SQLite3("/dev/shm/isso"), threshold=2048)
+        cacheobj = cache.SQLite3Cache(dbobj, threshold=2048)
 
     jobs = queue.Jobs()
     jobs.register("db-purge", dbobj, conf.getint("moderation", "purge-after"))

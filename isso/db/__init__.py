@@ -50,6 +50,11 @@ class Adapter(object):
             Column("key", String(255), primary_key=True),
             Column("value", String(255)))
 
+        self.cache = Table("cache", self.metadata,
+            Column("key", String(255), primary_key=True),
+            Column("value", LargeBinary(65535)),
+            Column("time", Float))
+
         self.metadata.create_all(self.engine)
         self.preferences = Preferences(self.engine, preferences)
 

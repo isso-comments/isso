@@ -6,7 +6,7 @@ import unittest
 
 from isso.compat import text_type as str
 
-from isso.db import SQLite3
+from isso.db import Adapter
 from isso.cache import Cache, SQLite3Cache
 
 ns = "test"
@@ -56,4 +56,4 @@ class TestCache(unittest.TestCase):
 class TestSQLite3Cache(TestCache):
 
     def setUp(self):
-        self.cache = SQLite3Cache(SQLite3(":memory:"), threshold=8)
+        self.cache = SQLite3Cache(Adapter("sqlite:///:memory:"), threshold=8)
