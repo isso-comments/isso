@@ -24,3 +24,6 @@
 
 /docs/_build
 /docs/_static/css/site.css
+
+/build
+/dist
