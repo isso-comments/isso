@@ -9,7 +9,7 @@ define(function() {
         "max-comments-nested": 5,
         "reveal-on-click": 5,
         "auth": false,
-        "signin": "",
+        "auth-sign-in-url": "",
         "avatar": true,
         "avatar-bg": "#f0f0f0",
         "avatar-fg": ["#9abf88", "#5698c4", "#e279a3", "#9163b6",
