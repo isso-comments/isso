@@ -1,3 +1,6 @@
 debian/isso.service lib/systemd/system
 debian/isso.socket lib/systemd/system
 debian/python-isso/usr/lib /usr
+isso/demo/index.html /usr/lib/python2.7/site-packages/isso/demo/
+debian/embed.min.js /usr/lib/python2.7/site-packages/isso/js/
+debian/count.min.js /usr/lib/python2.7/site-packages/isso/js/
