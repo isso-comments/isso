@@ -9,7 +9,7 @@ from sqlalchemy.sql import select, func
 from . import Base
 
 
-class SQLite3Cache(Base):
+class SACache(Base):
     """Implements cache using SQLAlchemy Core.
 
     JSON is used for safe serialization of python primitives.
@@ -18,7 +18,7 @@ class SQLite3Cache(Base):
     serialize = True
 
     def __init__(self, db, threshold=1024, timeout=-1):
-        super(SQLite3Cache, self).__init__(threshold, timeout)
+        super(SACache, self).__init__(threshold, timeout)
         self.db = db
 
     def _get(self, ns, key):

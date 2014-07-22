@@ -99,7 +99,7 @@ class Cache(Base):
         self.cache.pop(ns + b'-' + key, None)
 
 
+from .sa import SACache
 from .uwsgi import uWSGICache
-from .sqlite import SQLite3Cache
 
-__all__ = ["Cache", "SQLite3Cache", "uWSGICache"]
+__all__ = ["Cache", "SACache", "uWSGICache"]
