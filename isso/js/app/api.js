@@ -169,18 +169,18 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    var like = function(id) {
-        var deferred = Q.defer();
-        curl("POST", endpoint + "/id/" + id + "/like", null,
-            function(rv) { deferred.resolve(JSON.parse(rv.body)); });
-        return deferred.promise;
-    };
-
-    var dislike = function(id) {
-        var deferred = Q.defer();
-        curl("POST", endpoint + "/id/" + id + "/dislike", null,
-            function(rv) { deferred.resolve(JSON.parse(rv.body)); });
-        return deferred.promise;
+    var vote = function(type) {
+        return function(id) {
+            var deferred = Q.defer();
+            curl("POST", endpoint + "/id/" + id + "/" + type, null, function(rv) {
+                if (rv.status === 200) {
+                    return deferred.resolve(null);
+                } else {
+                    return deferred.reject("Unable to vote!");
+                }
+            });
+            return deferred.promise;
+        };
     };
 
     return {
@@ -193,7 +193,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         view: view,
         fetch: fetch,
         count: count,
-        like: like,
-        dislike: dislike
+        like: vote("like"),
+        dislike: vote("dislike")
     };
 });

@@ -144,29 +144,36 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
         );
 
-        // update vote counter, but hide if votes sum to 0
-        var votes = function(value) {
-            var span = $("span.votes", footer);
-            if (span === null && value !== 0) {
-                footer.prepend($.new("span.votes", value));
-            } else {
+        var vote = (function() {
+            var span = $("span.votes", footer),
+                value = span === null ? 0 : parseInt(span.textContent, 10);
+
+            return function(n) {
+                value += n;
+
                 if (value === 0) {
-                    span.remove();
+                    if (span !== null) {
+                        span.remove();
+                        span = null;
+                    }
                 } else {
+                    if (span === null) {
+                        span = footer.prepend($.new("span.votes"));
+                    }
                     span.textContent = value;
                 }
-            }
-        };
+            };
+        }());
 
         $("a.upvote", footer).on("click", function() {
-            api.like(comment.id).then(function(rv) {
-                votes(rv.likes - rv.dislikes);
+            api.like(comment.id).then(function() {
+                vote(+1);
             });
         });
 
         $("a.downvote", footer).on("click", function() {
-            api.dislike(comment.id).then(function(rv) {
-                votes(rv.likes - rv.dislikes);
+            api.dislike(comment.id).then(function() {
+                vote(-1);
             });
         });
 
