@@ -50,6 +50,20 @@ def xhr(func):
 
     return dec
 
+def auth(func):
+    """A decorator to check the validity of an auth cookie."""
+
+    def dec(self, env, req, *args, **kwargs):
+
+        if not self.conf.getboolean("auth", "enabled"):
+            return func(self, env, req, *args, **kwargs)
+        try:
+            self.load(req.cookies.get("auth", ""))
+        except (SignatureExpired, BadSignature):
+            raise Forbidden
+        return func(self, env, req, *args, **kwargs)
+
+    return dec
 
 class API(object):
 
@@ -100,6 +114,7 @@ class API(object):
         return obj
 
     @xhr
+    @auth
     @requires(str, 'uri')
     def new(self, environ, request, uri):
         data = request.get_json()
