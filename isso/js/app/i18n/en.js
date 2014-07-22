@@ -3,7 +3,10 @@ define({
     "postbox-author": "Name (optional)",
     "postbox-email": "E-mail (optional)",
     "postbox-website": "Website (optional)",
-    "postbox-submit": "Submit",
+    "postbox-submit": "submit",
+    "postbox-auth-required": "Authentication required to comment.",
+    "postbox-auth-sign-in": "Sign-in",
+    "postbox-auth-commenting-as": "Commenting as",
 
     "num-comments": "One Comment\n{{ n }} Comments",
     "no-comments": "No Comments Yet",

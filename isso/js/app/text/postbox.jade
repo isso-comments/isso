@@ -1,14 +1,25 @@
-div(class='isso-postbox')
+mixin form(style)
     div(class='form-wrapper')
         div(class='textarea-wrapper')
             div(class='textarea placeholder' contenteditable='true')
                 = i18n('postbox-text')
         section(class='auth-section')
-            p(class='input-wrapper')
+            p(class='input-wrapper' style=style)
                 input(type='text' name='author' placeholder=i18n('postbox-author'))
-            p(class='input-wrapper')
+            p(class='input-wrapper' style=style)
                 input(type='email' name='email' placeholder=i18n('postbox-email'))
-            p(class='input-wrapper')
+            p(class='input-wrapper' style=style)
                 input(type='text' name='website' placeholder=i18n('postbox-website'))
             p(class='post-action')
                 input(type='submit' value=i18n('postbox-submit'))
+
+div(class='isso-postbox')
+    if conf.auth
+        if cookie.valid
+            p=i18n('postbox-auth-commenting-as') + ' ' + cookie.username
+            +form('visibility: hidden;')
+        else
+            p=i18n('postbox-auth-required')
+                a(href='#{conf.signin}') #{i18n('postbox-auth-sign-in')}
+    else
+        +form('')
