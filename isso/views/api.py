@@ -2,8 +2,6 @@
 
 from __future__ import unicode_literals
 
-import cgi
-
 from functools import partial
 
 from itsdangerous import SignatureExpired, BadSignature
@@ -100,23 +98,23 @@ class API(object):
 
         return obj
 
-    @xhr
-    @requires(str, 'uri')
-    def new(self, environ, request, uri):
-        data = request.get_json()
-
+    @classmethod
+    def sanitize(cls, data):
         if not isinstance(data, dict):
             raise BadRequest(400, "request data is not an object")
 
         for field in set(data.keys()) - API.ACCEPT:
             data.pop(field)
 
-        for field in ("author", "email", "website"):
-            if isinstance(data.get(field, None), string_types):
-                data[field] = cgi.escape(data[field])
-
         if isinstance(data.get("website", None), string_types):
             data["website"] = normalize(data["website"])
+
+        return data
+
+    @xhr
+    @requires(str, 'uri')
+    def new(self, environ, request, uri):
+        data = API.sanitize(request.get_json())
 
         remote_addr = utils.anonymize(str(request.remote_addr))
 
@@ -174,7 +172,7 @@ class API(object):
         if rv[1] != sha1(comment.text):
             raise Forbidden
 
-        data = request.get_json()
+        data = API.sanitize(request.get_json())
 
         if not isinstance(data, dict):
             raise BadRequest(400, "request data is not an object")
