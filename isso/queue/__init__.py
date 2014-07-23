@@ -2,7 +2,6 @@
 
 from __future__ import unicode_literals, division
 
-import abc
 import json
 import logging
 import threading
@@ -12,13 +11,13 @@ import bisect
 import functools
 
 import time
-import datetime
 
 try:
     import queue
 except ImportError:
     import Queue as queue
 
+from isso.tasks import Cron
 from isso.compat import iteritems
 
 logger = logging.getLogger("isso")
@@ -189,56 +188,7 @@ class Worker(threading.Thread):
         time.sleep(f * Worker.interval)
 
 
-class Task(object):
-
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def run(self, data):
-        return
-
-    @classmethod
-    def __subclasshook__(cls, subclass):
-        return cls is Cron
-
-
-class Cron(Task):
-
-    __metaclass__ = abc.ABCMeta
-
-    def __init__(self, *args, **kwargs):
-        self.timedelta = datetime.timedelta(*args, **kwargs)
-
-    def run(self, data):
-        return
-
-
-from .tasks import db
-
-
-class Jobs(dict):
-    """Obviously a poor man's factory"""
-
-    available = {
-        "db-purge": db.Purge
-    }
-
-    def __init__(self):
-        super(Jobs, self).__init__()
-
-    def register(self, name, *args, **kwargs):
-        if name in self:
-            return
-
-        try:
-            cls = Jobs.available[name]
-        except KeyError:
-            raise RuntimeError("No such task '%s'" % name)
-
-        self[name] = cls(*args, **kwargs)
-
-
 from .sqlite import SQLite3Queue
 
-__all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue", "Targets",
-           "Task", "Cron", "SQLite3Queue"]
+__all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue",
+           "SQLite3Queue"]

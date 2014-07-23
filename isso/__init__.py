@@ -67,7 +67,7 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso import cache, config, db, migrate, ext, queue, spam, views, wsgi
+from isso import cache, config, db, migrate, queue, spam, tasks, views, wsgi
 from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, html, hash
 
@@ -182,8 +182,9 @@ def make_app(conf):
     else:
         cacheobj = cache.SACache(dbobj, threshold=2048)
 
-    jobs = queue.Jobs()
+    jobs = tasks.Jobs()
     jobs.register("db-purge", dbobj, conf.getint("moderation", "purge-after"))
+    jobs.register("http-fetch", dbobj)
 
     queueobj = queue.Queue(1024)
     worker = queue.Worker(queueobj, jobs)
