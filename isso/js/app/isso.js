@@ -24,7 +24,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
-        submit = $("[type=submit]", el)
+        var submit = $("[type=submit]", el)
         if (submit === null) {
             return el;
         }
