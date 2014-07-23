@@ -229,8 +229,8 @@ class TestController(unittest.TestCase):
     def test_prune(self):
 
         c = self.controller.new(IP, TH, dict(text="..."), moderated=True)
-        self.controller.prune(42)
+        self.assertEqual(self.controller.prune(42), 0)
         self.assertIsNotNone(self.controller.get(c.id))
 
-        self.controller.prune(0)
+        self.assertEqual(self.controller.prune(0), 1)
         self.assertIsNone(self.controller.get(c.id))

@@ -54,3 +54,14 @@ class TestController(unittest.TestCase):
 
         self.assertEqual(self.comments.count(th), [0])
         self.assertEqual(self.comments.count(cg), [3])
+
+    def test_prune_empty_threads(self):
+        th = self.threads.new("/", None)
+        comment = self.comments.new("127.0.0.1", th, dict(text="..."))
+
+        self.assertEqual(self.threads.prune(), 0)
+        self.assertIsNotNone(self.threads.get(th.uri))
+
+        self.comments.delete(comment.id)
+        self.assertEqual(self.threads.prune(), 1)
+        self.assertIsNone(self.threads.get(th.uri))

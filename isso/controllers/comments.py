@@ -281,9 +281,7 @@ class Controller(object):
         """
         now = time.time()
 
-        self.db.engine.execute(
-            self.db.comments.delete()
+        return self.db.engine.execute(self.db.comments
+            .delete()
             .where(self.db.comments.c.mode == 2)
-            .where(now - self.db.comments.c.created > delta))
-
-        return
+            .where(now - self.db.comments.c.created > delta)).rowcount

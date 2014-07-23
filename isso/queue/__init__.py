@@ -197,6 +197,10 @@ class Task(object):
     def run(self, data):
         return
 
+    @classmethod
+    def __subclasshook__(cls, subclass):
+        return cls is Cron
+
 
 class Cron(Task):
 

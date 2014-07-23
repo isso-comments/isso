@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+from sqlalchemy.sql import select, not_
+
 from isso.models import Thread
 
 
@@ -34,3 +36,10 @@ class Controller(object):
 
         self.db.engine.execute(
             self.db.threads.delete().where(self.db.threads.c.id == thread.id))
+
+    def prune(self):
+
+        return self.db.engine.execute(self.db.threads
+            .delete()
+            .where(not_(self.db.threads.c.id.in_(
+                select([self.db.comments.c.thread]))))).rowcount
