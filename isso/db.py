@@ -21,6 +21,8 @@ logger = logging.getLogger("isso")
 
 class Adapter(object):
 
+    MAX_VERSION = 3
+
     def __init__(self, db):
         self.engine = create_engine(db, echo=False)
         self.metadata = MetaData()
