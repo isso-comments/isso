@@ -57,9 +57,8 @@ def auth(func):
 
         if not self.conf.getboolean("auth", "enabled"):
             return func(self, env, req, *args, **kwargs)
-        cookie_name = self.conf.get("auth", "cookie")
         try:
-            self.load(req.cookies.get(cookie_name, ""))
+            self.load(req.cookies.get("auth", ""))
         except (SignatureExpired, BadSignature):
             raise Forbidden
         return func(self, env, req, *args, **kwargs)
@@ -118,12 +117,10 @@ class API(object):
         """Update the received data with the information from cookie."""
 
         if self.conf.getboolean("auth", "enabled"):
-            cookie_name = self.conf.get("auth", "cookie")
-            auth_data = self.load(request.cookies.get(cookie_name, ""))
+            auth_data = self.load(request.cookies.get("auth", ""))
             data["author"] = auth_data.get("username")
             data["email"] = auth_data.get("email")
             data["website"] = auth_data.get("website")
-
 
     @xhr
     @auth
