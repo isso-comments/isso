@@ -169,6 +169,7 @@ class API(object):
         return JSON(self.serialize(comment, markup), 200)
 
     @xhr
+    @auth
     def edit(self, environ, request, id):
 
         try:
@@ -211,6 +212,7 @@ class API(object):
         return resp
 
     @xhr
+    @auth
     def delete(self, environ, request, id, key=None):
 
         try:
@@ -364,6 +366,7 @@ class API(object):
         return map(self.serialize, fetched_list)
 
     @xhr
+    @auth
     def like(self, environ, request, id):
         remote_addr = utils.anonymize(str(request.remote_addr))
 
@@ -373,6 +376,7 @@ class API(object):
         return Response("Ok", 200)
 
     @xhr
+    @auth
     def dislike(self, environ, request, id):
         remote_addr = utils.anonymize(str(request.remote_addr))
 
