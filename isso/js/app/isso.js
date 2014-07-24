@@ -7,6 +7,20 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     var Postbox = function(parent) {
 
+        if (config['auth'] === true) {
+            var authCookie = utils.cookie('auth');
+            if (! authCookie) {
+                jade.set("cookie", {'valid': false});
+            } else {
+                var authData = lib.itsdangerous(authCookie)
+                if (! authData) {
+                    jade.set("cookie", {'valid': false});
+                } else {
+                    jade.set("cookie", {'valid': true, 'data': authData});
+                }
+            }
+        }
+
         var el = $.htmlify(jade.render("postbox"));
 
         // callback on success (e.g. to toggle the reply button)

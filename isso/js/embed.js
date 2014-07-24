@@ -11,7 +11,6 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
     jade.set("i18n", i18n.translate);
     jade.set("pluralize", i18n.pluralize);
     jade.set("svg", svg);
-    jade.set("cookie", {'valid': true, 'username': 'Nicolas'})
 
     domready(function() {
 

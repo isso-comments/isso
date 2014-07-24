@@ -16,7 +16,7 @@ mixin form(style)
 div(class='isso-postbox')
     if conf.auth
         if cookie.valid
-            p=i18n('postbox-auth-commenting-as') + ' ' + cookie.username
+            p=i18n('postbox-auth-commenting-as') + ' ' + cookie.data.username
             +form('visibility: hidden;')
         else
             p=i18n('postbox-auth-required')
