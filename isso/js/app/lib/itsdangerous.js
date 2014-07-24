@@ -30,10 +30,6 @@ define(function() {
      */
     return function(val, max_age) {
 
-        if (typeof max_age === "undefined") {
-            max_age = 900;
-        }
-
         var _ = val.split(".", 3),
             payload = _[0], ts = _[1], signature = _[2];
 
@@ -42,7 +38,7 @@ define(function() {
         }
 
         var age = (new Date()).getTime() / 1000 - timestamp(decode(ts));
-        if (age > max_age) {
+        if (typeof max_age !== "undefined" && age > max_age) {
             return null;
         }
 
