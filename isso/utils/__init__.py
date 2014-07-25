@@ -114,7 +114,7 @@ class URLSafeTimedSerializer(TimedSerializer):
 
     def load_payload(self, payload):
         try:
-            json = base64.b64decode(payload + b"=" * (len(payload) % 4))
+            json = base64.b64decode(payload + b"=" * (-len(payload) % 4))
         except Exception as e:
             raise BadPayload('Could not base64 decode the payload because of '
                              'an exception', original_error=e)
