@@ -6,7 +6,10 @@ import pkg_resources
 werkzeug = pkg_resources.get_distribution("werkzeug")
 
 import json
+import base64
 import hashlib
+
+from itsdangerous import BadPayload, TimedSerializer, compact_json
 
 from werkzeug.wrappers import Request, Response
 from werkzeug.exceptions import BadRequest
@@ -103,3 +106,21 @@ class JSONResponse(Response):
         kwargs["content_type"] = "application/json"
         super(JSONResponse, self).__init__(
             json.dumps(obj).encode("utf-8"), *args, **kwargs)
+
+
+class URLSafeTimedSerializer(TimedSerializer):
+
+    default_serializer = compact_json
+
+    def load_payload(self, payload):
+        try:
+            json = base64.b64decode(payload + b"=" * (len(payload) % 4))
+        except Exception as e:
+            raise BadPayload('Could not base64 decode the payload because of '
+                             'an exception', original_error=e)
+
+        return super(TimedSerializer, self).load_payload(json)
+
+    def dump_payload(self, obj):
+        json = super(TimedSerializer, self).dump_payload(obj)
+        return base64.b64encode(json)

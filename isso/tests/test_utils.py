@@ -2,6 +2,8 @@
 
 import unittest
 
+import itsdangerous
+
 from isso import utils
 from isso.utils import parse
 
@@ -17,6 +19,22 @@ class TestUtils(unittest.TestCase):
 
         for (addr, anonymized) in examples:
             self.assertEqual(utils.anonymize(addr), anonymized)
+
+
+class TestURLSafeTimedSerializer(unittest.TestCase):
+
+    def test_serializer(self):
+        signer = utils.URLSafeTimedSerializer("")
+        payload = [1, "x" * 1024]
+        self.assertEqual(signer.loads(signer.dumps(payload)), payload)
+
+    def test_nocompression(self):
+        plain = utils.URLSafeTimedSerializer("")
+        zlib = itsdangerous.URLSafeTimedSerializer("")
+
+        payload = "x" * 1024
+        self.assertTrue(zlib.dumps(payload).startswith("."))
+        self.assertNotEqual(plain.dumps(payload), zlib.dumps(payload))
 
 
 class TestParse(unittest.TestCase):
