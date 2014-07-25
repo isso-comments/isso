@@ -48,8 +48,6 @@ from os.path import dirname, join
 from argparse import ArgumentParser
 from functools import partial, reduce
 
-from itsdangerous import URLSafeTimedSerializer
-
 from werkzeug.routing import Map, Rule, redirect
 from werkzeug.exceptions import HTTPException, InternalServerError
 
@@ -69,7 +67,7 @@ except ImportError:
 
 from isso import cache, config, db, migrate, ext, queue, spam, views, wsgi
 from isso.wsgi import origin, urlsplit
-from isso.utils import http, JSONRequest, html, hash
+from isso.utils import http, JSONRequest, html, hash, URLSafeTimedSerializer
 
 from isso.ext.notifications import Stdout, SMTP
 

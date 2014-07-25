@@ -123,4 +123,4 @@ class URLSafeTimedSerializer(TimedSerializer):
 
     def dump_payload(self, obj):
         json = super(TimedSerializer, self).dump_payload(obj)
-        return base64.b64encode(json)
+        return base64.b64encode(json).rstrip(b"=")
