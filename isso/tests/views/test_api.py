@@ -7,11 +7,13 @@ import json
 
 import unittest
 
-from werkzeug.test import Client
-from werkzeug.wrappers import Response
+from werkzeug.test import Client, EnvironBuilder
+from werkzeug.wrappers import Response, Request
+from werkzeug.exceptions import Forbidden
 
 from isso import Isso, config, dist
 from isso.utils import http
+from isso.views.api import xhr
 
 
 class FakeIP(object):
@@ -160,20 +162,23 @@ class TestComments(unittest.TestCase):
 
     def testCSRF(self):
 
-        js = "application/json"
-        form = "application/x-www-form-urlencoded"
+        csrf = xhr(lambda *x, **z: True)
 
-        self.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
+        def build(**kw):
+            environ = EnvironBuilder(**kw).get_environ()
+            return environ, Request(environ)
 
         # no header is fine (default for XHR)
-        self.assertEqual(self.post('/id/1/dislike', content_type="").status_code, 200)
+        env, req = build()
+        self.assertTrue(csrf(None, env, req))
 
-        # x-www-form-urlencoded is definitely not RESTful
-        self.assertEqual(self.post('/id/1/dislike', content_type=form).status_code, 403)
-        self.assertEqual(self.post('/new?uri=%2F', data=json.dumps({"text": "..."}),
-                                         content_type=form).status_code, 403)
-        # just for the record
-        self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
+        # for the record
+        env, req = build(content_type="application/json")
+        self.assertTrue(csrf(None, env, req))
+
+        # # x-www-form-urlencoded is definitely not RESTful
+        env, req = build(content_type="application/x-www-form-urlencoded")
+        self.assertRaises(Forbidden, csrf, None, env, req)
 
     def testCookieExpiration(self):
 
