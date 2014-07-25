@@ -15,6 +15,8 @@ from collections import defaultdict
 from isso.utils import anonymize
 from isso.compat import string_types
 
+from isso.controllers.comments import Invalid
+
 try:
     input = raw_input
 except NameError:
@@ -28,6 +30,7 @@ except ImportError:
 from xml.etree import ElementTree
 
 logger = logging.getLogger("isso")
+
 
 def strip(val):
     if isinstance(val, string_types):
@@ -67,33 +70,40 @@ class Disqus(object):
     ns = '{http://disqus.com}'
     internals = '{http://disqus.com/disqus-internals}'
 
-    def __init__(self, db, xmlfile):
-        self.threads = set([])
-        self.comments = set([])
+    def __init__(self, threads, comments):
+        self.threads = threads
+        self.comments = comments
 
-        self.db = db
-        self.xmlfile = xmlfile
+        self.dqthreads = set([])
+        self.dqcomments = set([])
 
     def insert(self, thread, posts):
 
         path = urlparse(thread.find('%slink' % Disqus.ns).text).path
         remap = dict()
 
-        if path not in self.db.threads:
-            self.db.threads.new(path, thread.find(Disqus.ns + 'title').text.strip())
+        th = self.threads.get(path)
+        if th is None:
+            th = self.threads.new(path, thread.find(Disqus.ns + 'title').text.strip())
 
-        for item in sorted(posts, key=lambda k: k['created']):
+        for data in sorted(posts, key=lambda k: k['created']):
+            remote_addr = data.pop('remote_addr')
 
-            dsq_id = item.pop('dsq:id')
-            item['parent'] = remap.get(item.pop('dsq:parent', None))
-            rv = self.db.comments.add(path, item)
-            remap[dsq_id] = rv["id"]
+            dsq_id = data.pop('dsq:id')
+            data['parent'] = remap.get(data.pop('dsq:parent', None))
 
-        self.comments.update(set(remap.keys()))
+            try:
+                rv = self.comments.new(remote_addr, th, data)
+            except Invalid :
+                logger.exception("Unable to insert comment `%s`", data)
+            else:
+                remap[dsq_id] = rv.id
 
-    def migrate(self):
+        self.dqcomments.update(set(remap.keys()))
 
-        tree = ElementTree.parse(self.xmlfile)
+    def migrate(self, xmlfile):
+
+        tree = ElementTree.parse(xmlfile)
         res = defaultdict(list)
 
         for post in tree.findall(Disqus.ns + 'post'):
@@ -124,16 +134,17 @@ class Disqus(object):
 
             id = thread.attrib.get(Disqus.internals + 'id')
             if id in res:
-                self.threads.add(id)
+                self.dqthreads.add(id)
                 self.insert(thread, res[id])
 
-        # in case a comment has been deleted (and no further childs)
-        self.db.comments._remove_stale()
-
         progress.finish("{0} threads, {1} comments".format(
-            len(self.threads), len(self.comments)))
+            len(self.dqthreads), len(self.dqcomments)))
 
-        orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"), tree.findall(Disqus.ns + "post"))) - self.comments
+        orphans = set(map(
+            lambda e: e.attrib.get(Disqus.internals + "id"),
+            tree.findall(Disqus.ns + "post"))
+        ) - self.dqcomments
+
         if orphans:
             print("Found %i orphans:" % len(orphans))
             for post in tree.findall(Disqus.ns + "post"):
@@ -153,18 +164,11 @@ class WordPress(object):
 
     ns = "{http://wordpress.org/export/1.0/}"
 
-    def __init__(self, db, xmlfile):
-        self.db = db
-        self.xmlfile = xmlfile
-        self.count = 0
+    def __init__(self, threads, comments):
+        self.threads = threads
+        self.comments = comments
 
-        for line in io.open(xmlfile):
-            m = WordPress.detect(line)
-            if m:
-                self.ns = WordPress.ns.replace("1.0", m.group(1))
-                break
-        else:
-            logger.warn("No WXR namespace found, assuming 1.0")
+        self.count = 0
 
     def insert(self, thread):
 
@@ -174,7 +178,7 @@ class WordPress(object):
         if url.query:
             path += "?" + url.query
 
-        self.db.threads.new(path, thread.find("title").text.strip())
+        th = self.threads.new(path, thread.find("title").text.strip())
 
         comments = list(map(self.Comment, thread.findall(self.ns + "comment")))
         comments.sort(key=lambda k: k["id"])
@@ -185,25 +189,36 @@ class WordPress(object):
         self.count += len(ids)
 
         while comments:
-            for i, item in enumerate(comments):
-                if item["parent"] in ids:
+            for i, data in enumerate(comments):
+                if data["parent"] in ids:
                     continue
 
-                item["parent"] = remap.get(item["parent"], None)
-                rv = self.db.comments.add(path, item)
-                remap[item["id"]] = rv["id"]
-
-                ids.remove(item["id"])
-                comments.pop(i)
-
-                break
+                _id = data["id"]
+                data["parent"] = remap.get(data["parent"], None)
+                try:
+                    rv = self.comments.new(data.pop("remote_addr"), th, data)
+                except Invalid:
+                    logger.exception("Unable to insert comment `%s`", data)
+                else:
+                    remap[_id] = rv.id
+                    ids.remove(_id)
+                    break
+                finally:
+                    comments.pop(i)
             else:
                 # should never happen, but... it's WordPress.
                 return
 
-    def migrate(self):
+    def migrate(self, xmlfile):
+        for line in io.open(xmlfile):
+            m = WordPress.detect(line)
+            if m:
+                self.ns = WordPress.ns.replace("1.0", m.group(1))
+                break
+        else:
+            logger.warn("No WXR namespace found, assuming 1.0")
 
-        tree = ElementTree.parse(self.xmlfile)
+        tree = ElementTree.parse(xmlfile)
 
         skip = 0
         items = tree.findall("channel/item")
@@ -253,10 +268,7 @@ def autodetect(peek):
     return None
 
 
-def dispatch(type, db, dump):
-        if db.execute("SELECT * FROM comments").fetchone():
-            if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
-                raise SystemExit("Abort.")
+def dispatch(threads, comments, type, dump):
 
         if type == "disqus":
             cls = Disqus
@@ -269,4 +281,4 @@ def dispatch(type, db, dump):
         if cls is None:
             raise SystemExit("Unknown format, abort.")
 
-        cls(db, dump).migrate()
+        cls(threads, comments).migrate(dump)

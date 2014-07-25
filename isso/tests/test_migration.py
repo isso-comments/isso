@@ -5,73 +5,69 @@ from __future__ import unicode_literals
 import unittest
 from os.path import join, dirname
 
-from isso import config
-
-from isso.db import SQLite3, Adapter
+from isso.db import Adapter
+from isso.controllers import threads, comments
 from isso.migrate import Disqus, WordPress, autodetect
-
-conf = config.new({
-    "general": {
-        "dbpath": "/dev/null",
-        "max-age": "1h"
-    }
-})
 
 
 class TestMigration(unittest.TestCase):
 
+    def setUp(self):
+        db = Adapter("sqlite:///:memory:")
+        self.threads = threads.Controller(db)
+        self.comments = comments.Controller(db)
+
     def test_disqus(self):
 
-        xml = join(dirname(__file__), "disqus.xml")
+        Disqus(self.threads, self.comments).migrate(
+            join(dirname(__file__), "disqus.xml"))
 
-        db = Adapter(SQLite3(":memory:"), conf)
-        Disqus(db, xml).migrate()
+        th = self.threads.get("/")
+        self.assertIsNotNone(th)
+        self.assertEqual(th.title, "Hello, World!")
+        self.assertEqual(th.id, 1)
 
-        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
+        self.assertEqual(self.comments.count(th)[0], 2)
 
-        self.assertEqual(db.threads["/"]["title"], "Hello, World!")
-        self.assertEqual(db.threads["/"]["id"], 1)
+        a = self.comments.get(1)
+        self.assertIsNotNone(a)
 
-        a = db.comments.get(1)
+        self.assertEqual(a.author, "peter")
+        self.assertEqual(a.email, "foo@bar.com")
+        self.assertEqual(a.remote_addr, "127.0.0.0")
 
-        self.assertEqual(a["author"], "peter")
-        self.assertEqual(a["email"], "foo@bar.com")
-        self.assertEqual(a["remote_addr"], "127.0.0.0")
-
-        b = db.comments.get(2)
-        self.assertEqual(b["parent"], a["id"])
+        b = self.comments.get(2)
+        self.assertEqual(b.parent, a.id)
 
     def test_wordpress(self):
+        WordPress(self.threads, self.comments).migrate(
+            join(dirname(__file__), "wordpress.xml"))
 
-        xml = join(dirname(__file__), "wordpress.xml")
+        r = self.threads.get("/2014/test/")
+        self.assertEqual(r.title, "Hello, World…")
+        self.assertEqual(r.id, 1)
 
-        db = Adapter(SQLite3(":memory:"), conf)
-        WordPress(db, xml).migrate()
+        s = self.threads.get("/?p=4")
+        self.assertEqual(s.title, "...")
+        self.assertEqual(s.id, 2)
 
-        self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World…")
-        self.assertEqual(db.threads["/2014/test/"]["id"], 1)
+        self.assertEqual(sum(self.comments.count(r, s)), 7)
 
-        self.assertEqual(db.threads["/?p=4"]["title"], "...")
-        self.assertEqual(db.threads["/?p=4"]["id"], 2)
+        a = self.comments.get(1)
+        self.assertEqual(a.author, "Ohai")
+        self.assertEqual(a.text, "Erster!1")
+        self.assertEqual(a.remote_addr, "82.119.20.0")
 
-        self.assertEqual(len(db.execute("SELECT id FROM threads").fetchall()), 2)
-        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 7)
-
-        first = db.comments.get(1)
-        self.assertEqual(first["author"], "Ohai")
-        self.assertEqual(first["text"], "Erster!1")
-        self.assertEqual(first["remote_addr"], "82.119.20.0")
-
-        second = db.comments.get(2)
-        self.assertEqual(second["author"], "Tester")
-        self.assertEqual(second["text"], "Zweiter.")
+        b = self.comments.get(2)
+        self.assertEqual(b.author, "Tester")
+        self.assertEqual(b.text, "Zweiter.")
 
         for i in (3, 4, 5):
-            self.assertEqual(db.comments.get(i)["parent"], second["id"])
+            self.assertEqual(self.comments.get(i).parent, b.id)
 
-        last = db.comments.get(6)
-        self.assertEqual(last["author"], "Letzter :/")
-        self.assertEqual(last["parent"], None)
+        last = self.comments.get(6)
+        self.assertEqual(last.author, "Letzter :/")
+        self.assertEqual(last.parent, None)
 
     def test_detection(self):
 

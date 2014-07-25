@@ -48,6 +48,11 @@ from os.path import dirname, join
 from argparse import ArgumentParser
 from functools import partial, reduce
 
+try:
+    input = raw_input
+except NameError:
+    pass
+
 from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map, Rule, redirect
@@ -250,16 +255,19 @@ def main():
     conf = config.load(join(dist.location, "isso", "defaults.ini"), args.conf)
 
     if args.command == "import":
-        conf.set("guard", "enabled", "off")
+        from isso.controllers import threads, comments
 
-        if args.dryrun:
-            dbpath = ":memory:"
-        else:
-            dbpath = conf.get("general", "dbpath")
+        dburl = "sqlite:///:memory:" if args.dryrun else conf.get("general", "dbpath")
+        dbobj = db.Adapter(dburl)
 
-        mydb = db.Adapter(db.SQLite3(dbpath), conf)
-        migrate.dispatch(args.type, mydb, args.dump)
+        tc = threads.Controller(dbobj)
+        cc = comments.Controller(dbobj)
 
+        if not cc.empty():
+            if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+                raise SystemExit("Abort.")
+
+        migrate.dispatch(tc, cc, args.type, args.dump)
         sys.exit(0)
 
     if not any(conf.getiter("general", "host")):
