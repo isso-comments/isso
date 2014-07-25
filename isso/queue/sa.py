@@ -16,12 +16,12 @@ pickle = lambda val: json.dumps(val).encode("utf-8")
 unpickle = lambda val: json.loads(val.decode("utf-8"))
 
 
-class SQLite3Queue(Queue):
+class SAQueue(Queue):
     """Implements a shared queue using SQLAlchemy Core
     """
 
     def __init__(self, db, maxlen=-1, timeout=2**10):
-        super(SQLite3Queue, self).__init__(maxlen, timeout)
+        super(SAQueue, self).__init__(maxlen, timeout)
         self.metadata = MetaData()
         self.engine = create_engine(db)
         self.queue = Table("queue", self.metadata,

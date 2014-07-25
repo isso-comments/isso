@@ -188,7 +188,6 @@ class Worker(threading.Thread):
         time.sleep(f * Worker.interval)
 
 
-from .sqlite import SQLite3Queue
+from .sa import SAQueue
 
-__all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue",
-           "SQLite3Queue"]
+__all__ = ["Full", "Empty", "Retry", "Timeout", "Message", "Queue", "SAQueue"]

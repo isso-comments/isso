@@ -5,8 +5,7 @@ from __future__ import unicode_literals
 import unittest
 import datetime
 
-from isso.db import SQLite3
-from isso.queue import Message, Queue, Full, Empty, Timeout, SQLite3Queue
+from isso.queue import Message, Queue, Full, Empty, Timeout, SAQueue
 
 
 class TestMessage(unittest.TestCase):
@@ -100,4 +99,4 @@ class TestQueue(unittest.TestCase):
 class TestSQLite3Queue(TestQueue):
 
     def setUp(self):
-        self.cls = lambda *x, **z: SQLite3Queue("sqlite:///:memory:", *x, **z)
+        self.cls = lambda *x, **z: SAQueue("sqlite:///:memory:", *x, **z)
