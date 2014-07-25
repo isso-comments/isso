@@ -175,18 +175,19 @@ class Isso(object):
 
 def make_app(conf):
 
-    dbobj = db.Adapter(conf.get("general", "dbpath"))
 
     if uwsgi is not None:
         cacheobj = cache.uWSGICache(timeout=3600)
     else:
         cacheobj = cache.SACache(conf.get("general", "dbpath"), threshold=2048)
 
+    dbobj = db.Adapter(conf.get("general", "dbpath"))
+
     jobs = tasks.Jobs()
     jobs.register("db-purge", dbobj, conf.getint("moderation", "purge-after"))
     jobs.register("http-fetch", dbobj)
 
-    queueobj = queue.Queue(1024)
+    queueobj = queue.SAQueue(conf.get("general", "dbpath"), 1024)
     worker = queue.Worker(queueobj, jobs)
 
     isso = Isso(conf, cacheobj, dbobj)

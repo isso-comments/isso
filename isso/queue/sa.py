@@ -32,6 +32,7 @@ class SAQueue(Queue):
             Column("wait", Float))
 
         self.metadata.create_all(self.engine)
+        self.engine.execute(self.queue.delete())
 
     def put(self, item):
         with self.engine.begin() as con:

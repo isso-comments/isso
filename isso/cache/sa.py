@@ -71,6 +71,7 @@ class SACache(Base):
             Column("time", Float))
 
         self.metadata.create_all(self.engine)
+        self.engine.execute(self.cache.delete())
 
     def _get(self, ns, key):
         return get(self.engine.connect(), self.cache, ns + b'-' + key)
