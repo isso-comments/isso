@@ -5,7 +5,7 @@ define(function() {
     var epoch = 1293840000;
 
     var decode = function(str) {
-        return atob(str + new Array(4 - str.length % 4 + 1).join("="));
+        return atob(str + new Array((((- str.length) % 4 + 4) % 4) + 1).join("="));
     };
 
     var timestamp = function(str) {
