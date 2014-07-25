@@ -130,7 +130,7 @@ class Worker(threading.Thread):
     :param queue: a Queue
     :param targets: a mapping of task names and the actual task objects"""
 
-    interval = 0.05
+    interval = 0.1
 
     def __init__(self, queue, targets):
         super(Worker, self).__init__()
@@ -148,7 +148,7 @@ class Worker(threading.Thread):
             try:
                 payload = self.queue.get()
             except queue.Empty:
-                Worker.wait(0.5)
+                self.wait(10)
             else:
                 task = self.targets.get(payload.type)
                 if task is None:
@@ -175,17 +175,18 @@ class Worker(threading.Thread):
         self.alive = False
         super(Worker, self).join(timeout)
 
-    @classmethod
-    def wait(cls, seconds):
+    def wait(self, seconds):
         """Sleep for :param seconds: but split into :var interval: sleeps to
         be interruptable.
         """
         f, i = math.modf(seconds / Worker.interval)
 
         for x in range(int(i)):
-            time.sleep(Worker.interval)
+            if self.alive:
+                time.sleep(Worker.interval)
 
-        time.sleep(f * Worker.interval)
+        if self.alive:
+            time.sleep(f * Worker.interval)
 
 
 from .sa import SAQueue

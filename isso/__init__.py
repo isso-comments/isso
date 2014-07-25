@@ -191,7 +191,7 @@ def make_app(conf):
 
     isso = Isso(conf, cacheobj, dbobj)
 
-    atexit.register(worker.join, 0.25)
+    atexit.register(worker.join, 0.1)
     worker.start()
 
     # check HTTP server connection
