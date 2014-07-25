@@ -100,4 +100,4 @@ class TestQueue(unittest.TestCase):
 class TestSQLite3Queue(TestQueue):
 
     def setUp(self):
-        self.cls = lambda *x, **z: SQLite3Queue(SQLite3(":memory:"), *x, **z)
+        self.cls = lambda *x, **z: SQLite3Queue("sqlite:///:memory:", *x, **z)
