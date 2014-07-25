@@ -180,7 +180,7 @@ def make_app(conf):
     if uwsgi is not None:
         cacheobj = cache.uWSGICache(timeout=3600)
     else:
-        cacheobj = cache.SACache(dbobj, threshold=2048)
+        cacheobj = cache.SACache(conf.get("general", "dbpath"), threshold=2048)
 
     jobs = tasks.Jobs()
     jobs.register("db-purge", dbobj, conf.getint("moderation", "purge-after"))
