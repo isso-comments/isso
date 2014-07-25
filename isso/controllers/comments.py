@@ -237,6 +237,10 @@ class Controller(object):
 
         return obj
 
+    def empty(self):
+        return self.db.engine.execute(
+            select([func.count(self.db.comments)])).fetchone()[0] == 0
+
     def count(self, *threads):
         """Retrieve comment count for :param threads:
         """

@@ -176,6 +176,11 @@ class TestController(unittest.TestCase):
         self.controller.delete(c2.id)
         self.assertIsNone(self.controller.get(p.id))
 
+    def test_empty(self):
+        self.assertTrue(self.controller.empty())
+        self.controller.new(IP, TH, dict(text="..."))
+        self.assertFalse(self.controller.empty())
+
     def test_count(self):
         threads = [Thread(0, "a"), None, Thread(1, "c")]
         counter = [1, 0, 2]
