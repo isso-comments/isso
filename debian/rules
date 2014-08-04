@@ -15,8 +15,8 @@ rm_js_symlinks:
 	rm -rf isso/js/components/requirejs-domready
 	rm -rf isso/js/components/requirejs-text
 	echo "Removing built JS libraries"
-	rm -f ./isso/js/count.min.js
-	rm -f ./isso/js/embed.min.js
+	rm -f ./isso/js/count.min.js isso/js/count.dev.js
+	rm -f ./isso/js/embed.min.js isso/js/embed.dev.js
 
 js_symlinks:
 	echo "Creating directories"
@@ -42,8 +42,6 @@ js_mini: js_symlinks
 	$(R_JS) -o isso/js/build.embed.js optimize="none" out=isso/js/embed.dev.js
 	$(R_JS) -o isso/js/build.count.js out=isso/js/count.min.js
 	$(R_JS) -o isso/js/build.count.js optimize="none" out=isso/js/count.dev.js
-	test -f isso/js/embed.min.js
-	test -f isso/js/count.min.js
 
 override_dh_auto_build:
 	dh_auto_build
