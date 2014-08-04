@@ -43,7 +43,7 @@ js_mini: js_symlinks
 	$(R_JS) -o isso/js/build.count.js out=isso/js/count.min.js
 	$(R_JS) -o isso/js/build.count.js optimize="none" out=isso/js/count.dev.js
 
-override_dh_auto_build:
+override_dh_auto_build: js_mini
 	dh_auto_build
 	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml docs build/html
 
