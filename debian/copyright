@@ -4,11 +4,14 @@ Source: http://posativ.org/isso/
 Files-Excluded: docs/_static/flattr.png
 
 Files: *
-Copyright: © 2012-2013 Martin Zimmermann <info@posativ.org>
+Copyright:
+ © 2012-2014 Martin Zimmermann <info@posativ.org>
+ © 2013 Gregory Schier <gschier1990@gmail.com>
 License: MIT
 
 Files: debian/*
-Copyright: © 2014 Jan Graichen <jg@altimos.de>
+Copyright:
+ © 2014 Jan Graichen <jg@altimos.de>
  © 2014 Jelmer Vernooij <jelmer@debian.org>
  © 2014 Federico Ceratto <federico.ceratto@gmail.com>
 License: MIT
