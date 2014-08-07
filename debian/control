@@ -2,7 +2,7 @@ Source: isso
 Section: python
 Priority: optional
 Maintainer:Jelmer Vernooij <jelmer@debian.org>
-Uploaders: Jan Graichen <jg@altimos.de>, Federico Ceratto <federico.ceratto@gmail.com>
+Uploaders: Federico Ceratto <federico.ceratto@gmail.com>
 Build-Depends:
  debhelper (>= 9~),
  dh-python,
