@@ -57,7 +57,8 @@ define(["app/i18n"], function(i18n) {
         var _ = document.createElement("div");
         _.innerHTML = html.replace(/<div><br><\/div>/gi, '<br>')
                           .replace(/<div>/gi,'<br>')
-                          .replace(/<br>/gi, '\n');
+                          .replace(/<br>/gi, '\n')
+                          .replace(/&nbsp;/gi, ' ');
         return _.textContent.trim();
     };
 
