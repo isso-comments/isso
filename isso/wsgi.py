@@ -17,6 +17,7 @@ except ImportError:
     from BaseHTTPServer import HTTPServer
 
 from werkzeug.serving import WSGIRequestHandler
+from werkzeug.wrappers import Request as _Request
 from werkzeug.datastructures import Headers
 
 from isso.compat import string_types
@@ -146,6 +147,14 @@ class CORSMiddleware(object):
             return [b'200 Ok']
 
         return self.app(environ, add_cors_headers)
+
+
+class Request(_Request):
+
+    # Assuming UTF-8, comments with 65536 characters would consume
+    # 128 kb memory. The remaining 128 kb cover additional parameters
+    # and WSGI headers.
+    max_content_length = 256 * 1024
 
 
 class SocketWSGIRequestHandler(WSGIRequestHandler):

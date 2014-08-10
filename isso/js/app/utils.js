@@ -57,13 +57,15 @@ define(["app/i18n"], function(i18n) {
         var _ = document.createElement("div");
         _.innerHTML = html.replace(/<div><br><\/div>/gi, '<br>')
                           .replace(/<div>/gi,'<br>')
-                          .replace(/<br>/gi, '\n');
+                          .replace(/<br>/gi, '\n')
+                          .replace(/&nbsp;/gi, ' ');
         return _.textContent.trim();
     };
 
     var detext = function(text) {
-        return escape(text.replace(/\n\n/gi, '<br><div><br></div>')
-                          .replace(/\n/gi, '<br>'));
+        text = escape(text);
+        return text.replace(/\n\n/gi, '<br><div><br></div>')
+                   .replace(/\n/gi, '<br>');
     };
 
     return {
