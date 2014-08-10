@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9.5 (unreleased)
+0.9.5 (2014-08-10)
 ------------------
 
 - prevent no-break space (&nbsp;) insertion to enable manual line breaks using
