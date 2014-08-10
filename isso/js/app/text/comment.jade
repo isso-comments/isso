@@ -12,7 +12,7 @@ div(class='isso-comment' id='isso-#{comment.id}')
                     = bool(comment.author) ? comment.author : i18n('comment-anonymous')
             span(class="spacer") •
             a(class='permalink' href='#isso-#{comment.id}')
-                date(datetime='#{datetime(comment.created)}')
+                time(title='#{humanize(comment.created)}' datetime='#{datetime(comment.created)}')
             span(class='note')
                 = comment.mode == 2 ? i18n('comment-queued') : comment.mode == 4 ? i18n('comment-deleted') : ''
 
