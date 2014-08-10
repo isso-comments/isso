@@ -4,7 +4,24 @@ Changelog for Isso
 0.9.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- prevent no-break space (&nbsp;) insertion to enable manual line breaks using
+  two trailing spaces (as per Markdown convention), #112
+
+- limit request size to 256 kb, #107
+
+  Previously unlimited or limited by proxy server). 256 kb is a rough
+  approximation of the next database schema with comments limited to 65535
+  characters and additional fields.
+
+- add support for logging to file, #103
+
+    [general]
+    log-file =
+
+- show timestamp when hovering <time>, #104
+
+- fix a regression when editing comments with multiple paragraphs introduced
+  in 0.9.3 which would HTML escape manually inserted linebreaks.
 
 
 0.9.4 (2014-07-09)
