@@ -78,7 +78,7 @@ from isso.utils import http, JSONRequest, html, hash
 
 from isso.ext.notifications import Stdout, SMTP
 
-logging.getLogger('werkzeug').setLevel(logging.ERROR)
+logging.getLogger('werkzeug').setLevel(logging.WARN)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s: %(message)s")
@@ -269,6 +269,15 @@ def main():
 
         migrate.dispatch(tc, cc, args.type, args.dump)
         sys.exit(0)
+
+    if conf.get("general", "log-file"):
+        handler = logging.FileHandler(conf.get("general", "log-file"))
+
+        logger.addHandler(handler)
+        logging.getLogger("werkzeug").addHandler(handler)
+
+        logger.propagate = False
+        logging.getLogger("werkzeug").propagate = False
 
     if not any(conf.getiter("general", "host")):
         logger.error("No website(s) configured, Isso won't work.")

@@ -139,6 +139,8 @@ Prebuilt Packages
 * Arch Linux: https://aur.archlinux.org/packages/isso/
   – install with `yaourt isso`.
 
+* Docker Image: https://registry.hub.docker.com/u/bl4n/isso/
+
 Install from Source
 -------------------
 
