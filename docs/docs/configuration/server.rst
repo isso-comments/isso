@@ -44,6 +44,7 @@ session key and hostname. Here are the default values for this section:
     host =
     max-age = 15m
     notify = stdout
+    log-file =
 
 dbpath
     file location to the SQLite3 database, highly recommended to change this
@@ -85,6 +86,9 @@ notify
     smtp
         Send notifications via SMTP on new comments with activation (if
         moderated) and deletion links.
+
+log-file
+    Log console messages to file instead of standard out.
 
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS

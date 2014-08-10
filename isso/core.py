@@ -96,6 +96,7 @@ class Config:
         "host = ",
         "max-age = 15m",
         "notify = stdout",
+        "log-file = ",
         "[moderation]",
         "enabled = false",
         "purge-after = 30d",
