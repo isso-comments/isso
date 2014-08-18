@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9.6 (unreleased)
+0.9.6 (2014-08-18)
 ------------------
 
 - remember name, email and website in localStorage, #119
