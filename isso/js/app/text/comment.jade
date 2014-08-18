@@ -23,13 +23,14 @@ div(class='isso-comment' id='isso-#{comment.id}')
                 != comment.text
 
         div(class='isso-comment-footer')
-            if comment.likes - comment.dislikes != 0
-                span(class='votes') #{comment.likes - comment.dislikes}
-            a(class='upvote' href='#')
-                i!= svg['arrow-up']
-            span(class='spacer') |
-            a(class='downvote' href='#')
-                i!= svg['arrow-down']
+            if conf.vote
+                if comment.likes - comment.dislikes != 0
+                    span(class='votes') #{comment.likes - comment.dislikes}
+                a(class='upvote' href='#')
+                    != svg['arrow-up']
+                span(class='spacer') |
+                a(class='downvote' href='#')
+                    != svg['arrow-down']
             a(class='reply' href='#') #{i18n('comment-reply')}
             a(class='edit' href='#') #{i18n('comment-edit')}
             a(class='delete' href='#') #{i18n('comment-delete')}

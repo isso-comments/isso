@@ -7,10 +7,30 @@ Changelog for Isso
 - Nothing changed yet.
 
 
-0.9.6 (unreleased)
+0.9.7 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+0.9.6 (2014-08-18)
+------------------
+
+- remember name, email and website in localStorage, #119
+
+- add option to hide voting feature, #115
+
+    data-isso-vote="true|false"
+
+- remove email field from JSON responses
+
+  This is a quite serious issue. For the identicon, an expensive hash is used
+  to avoid the leakage of personal information like a real email address. A
+  `git blame` reveals, the email has been unintenionally exposed since the very
+  first release of Isso :-/
+
+  The testsuite now contains a dedicated test to prevent this error in the
+  future.
 
 
 0.9.5 (2014-08-10)
