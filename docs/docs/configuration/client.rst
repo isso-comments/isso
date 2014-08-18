@@ -16,6 +16,7 @@ preferably in the script tag which embeds the JS:
             data-isso-avatar="true"
             data-isso-avatar-bg="#f0f0f0"
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
+            data-isso-vote="true"
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
@@ -87,6 +88,11 @@ Set avatar foreground color. Up to 8 colors are possible. The default color
 scheme is based in `this color palette <http://colrd.com/palette/19308/>`_.
 Multiple colors must be separated by space. If you use less than eight colors
 and not a multiple of 2, the color distribution is not even.
+
+data-isso-vote
+--------------
+
+Enable or disable voting feature on the client side.
 
 data-isso-id
 ------------

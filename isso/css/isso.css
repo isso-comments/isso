@@ -127,10 +127,11 @@
     color: #111111 !important;
     text-shadow: #aaaaaa 0 0 1px !important;
 }
-.isso-comment > div.text-wrapper > .isso-comment-footer a.reply,
-.isso-comment > div.text-wrapper > .isso-comment-footer a.edit,
-.isso-comment > div.text-wrapper > .isso-comment-footer a.cancel,
-.isso-comment > div.text-wrapper > .isso-comment-footer a.delete {
+.isso-comment > div.text-wrapper > .isso-comment-footer > a {
+    position: relative;
+    top: .2em;
+}
+.isso-comment > div.text-wrapper > .isso-comment-footer > a + a {
     padding-left: 1em;
 }
 .isso-comment > div.text-wrapper > .isso-comment-footer .votes {
