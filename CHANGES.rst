@@ -7,10 +7,17 @@ Changelog for Isso
 - Nothing changed yet.
 
 
-0.9.7 (unreleased)
+0.9.8 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+0.9.7 (2014-09-25)
+------------------
+
+- fix SMTP authentication using CRAM-MD5 (incorrect usage of
+  `smtplib`), #126
 
 
 0.9.6 (2014-08-18)
