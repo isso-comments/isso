@@ -97,22 +97,8 @@ To execute Isso, use a command similar to:
 `mod_wsgi <https://code.google.com/p/modwsgi/>`__
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. note:: This information may be incorrect, if you have more knowledge on how
-   to deploy Python via `mod_wsgi`, consider extending/correcting this section.
-
-   For more information, see `Flask: Configuring Apache
-   <http://flask.pocoo.org/docs/deploying/mod_wsgi/#configuring-apache>`_.
-
-.. code-block:: apache
-
-    <VirtualHost *>
-        ServerName example.org
-
-        WSGIDaemonProcess isso user=www-data group=www-data threads=5
-        WSGIScriptAlias / /var/www/isso.wsgi
-    </VirtualHost>
-
-Next, copy'n'paste to `/var/www/isso.wsgi`:
+First, create a startup script, called `isso.wsgi`. If Isso is in your system module 
+search path, then the script is quite simple:
 
 .. code-block:: python
 
@@ -121,6 +107,66 @@ Next, copy'n'paste to `/var/www/isso.wsgi`:
 
     application = make_app(Config.load("/path/to/isso.cfg"))
 
+If you have installed Isso in a virtual environment, then you will have to add the path
+of the virtualenv to the site-specific paths of Python:
+
+.. code-block:: python
+    
+    import site
+    site.addsitedir("/path/to/isso_virtualenv")
+
+    from isso import make_app
+    from isso.core import Config
+
+    application = make_app(Config.load("/path/to/isso.cfg"))
+
+Using the aforementioned script will load system modules when available and modules
+from the virtualenv otherwise. Should you want the opposite behavior, where modules from
+the virtualenv have priority over system modules, the following script does the trick:
+
+.. code-block:: python
+
+    import site 
+    import sys 
+
+    # Remember original sys.path.
+    prev_sys_path = list(sys.path) 
+
+    # Add the new site-packages directory.
+    site.addsitedir("/path/to/isso_virtualenv")
+
+    # Reorder sys.path so new directories at the front.
+    new_sys_path = [] 
+    for item in list(sys.path): 
+        if item not in prev_sys_path: 
+            new_sys_path.append(item) 
+            sys.path.remove(item) 
+    sys.path[:0] = new_sys_path 
+    
+    from isso import make_app
+    from isso.core import Config
+
+    application = make_app(Config.load("/path/to/isso.cfg"))
+
+The last two scripts are based on those given by 
+`mod_wsgi documentation <https://code.google.com/p/modwsgi/wiki/VirtualEnvironments>`_.
+
+The Apache configuration will then be similar to the following: 
+
+.. code-block:: apache
+
+    <VirtualHost *>
+        ServerName example.org
+
+        WSGIDaemonProcess isso user=www-data group=www-data threads=5
+        WSGIScriptAlias /mounted_isso_path /path/to/isso.wsgi
+    </VirtualHost>
+
+You will need to adjust the user and group according to your Apache installation and 
+security policy. Be also aware that the directory containing the comments database must
+be writable by the user or group running the WSGI daemon process: having a writable 
+database only is not enough, since SQLite will need to create a lock file in the same
+directory.
 
 `mod_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
