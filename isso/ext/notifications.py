@@ -66,8 +66,8 @@ class SMTP(object):
             self.client.starttls();
 
         if self.conf.get('username') and self.conf.get('password'):
-            self.client.login(self.conf.get('username'),
-                              self.conf.get('password'))
+            self.client.login(self.conf.get('username').encode('ascii', errors='ignore'),
+                              self.conf.get('password').encode('ascii', errors='ignore'))
 
         return self.client
 

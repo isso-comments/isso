@@ -88,7 +88,7 @@ def xhr(func):
 
 class API(object):
 
-    FIELDS = set(['id', 'parent', 'text', 'author', 'website', 'email',
+    FIELDS = set(['id', 'parent', 'text', 'author', 'website',
                   'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
 
     # comment fields, that can be submitted
@@ -141,6 +141,9 @@ class API(object):
 
         if len(comment["text"].rstrip()) < 3:
             return False, "text is too short (minimum length: 3)"
+
+        if len(comment["text"]) > 65535:
+            return False, "text is too long (maximum length: 65535)"
 
         if len(comment.get("email") or "") > 254:
             return False, "http://tools.ietf.org/html/rfc5321#section-4.5.3"

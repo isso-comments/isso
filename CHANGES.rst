@@ -1,6 +1,56 @@
 Changelog for Isso
 ==================
 
+0.9.7 (2014-09-25)
+------------------
+
+- fix SMTP authentication using CRAM-MD5 (incorrect usage of
+  `smtplib`), #126
+
+
+0.9.6 (2014-08-18)
+------------------
+
+- remember name, email and website in localStorage, #119
+
+- add option to hide voting feature, #115
+
+    data-isso-vote="true|false"
+
+- remove email field from JSON responses
+
+  This is a quite serious issue. For the identicon, an expensive hash is used
+  to avoid the leakage of personal information like a real email address. A
+  `git blame` reveals, the email has been unintenionally exposed since the very
+  first release of Isso :-/
+
+  The testsuite now contains a dedicated test to prevent this error in the
+  future.
+
+
+0.9.5 (2014-08-10)
+------------------
+
+- prevent no-break space (&nbsp;) insertion to enable manual line breaks using
+  two trailing spaces (as per Markdown convention), #112
+
+- limit request size to 256 kb, #107
+
+  Previously unlimited or limited by proxy server). 256 kb is a rough
+  approximation of the next database schema with comments limited to 65535
+  characters and additional fields.
+
+- add support for logging to file, #103
+
+    [general]
+    log-file =
+
+- show timestamp when hovering <time>, #104
+
+- fix a regression when editing comments with multiple paragraphs introduced
+  in 0.9.3 which would HTML escape manually inserted linebreaks.
+
+
 0.9.4 (2014-07-09)
 ------------------
 

@@ -8,7 +8,6 @@ a quickstart quide that covers the most common setup. Sections covered:
     :local:
     :depth: 1
 
-
 Configuration
 -------------
 
@@ -68,8 +67,8 @@ on *Discussions* and select the *Export* tab. You'll receive an email with your
 comments. Unfortunately, Disqus does not export up- and downvotes.
 
 To export comments from your previous WordPress installation, go to *Tools*,
-export your data. WordPress WXR import is quite new and may not work for you;
-please report any failures.
+export your data. It has been reported that WordPress may generate broken XML.
+Try to repair the file using ``xmllint`` before you continue with the import.
 
 Now import the XML dump:
 

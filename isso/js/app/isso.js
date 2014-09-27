@@ -7,7 +7,11 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     var Postbox = function(parent) {
 
-        var el = $.htmlify(jade.render("postbox"));
+        var el = $.htmlify(jade.render("postbox", {
+            "author":  JSON.parse(localStorage.getItem("author")),
+            "email":   JSON.parse(localStorage.getItem("email")),
+            "website": JSON.parse(localStorage.getItem("website"))
+        }));
 
         // callback on success (e.g. to toggle the reply button)
         el.onsuccess = function() {};
@@ -29,16 +33,19 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 return;
             }
 
+            var author = $("[name=author]", el).value || null,
+                email = $("[name=email]", el).value || null,
+                website = $("[name=website]", el).value || null;
+
+            localStorage.setItem("author", JSON.stringify(author));
+            localStorage.setItem("email", JSON.stringify(email));
+            localStorage.setItem("website", JSON.stringify(website));
+
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
-                author: $("[name=author]", el).value || null,
-                email: $("[name=email]", el).value || null,
-                website: $("[name=website]", el).value || null,
+                author: author, email: email, website: website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
             }).then(function(comment) {
-                $("[name=author]", el).value = "";
-                $("[name=email]", el).value = "";
-                $("[name=website]", el).value = "";
                 $(".textarea", el).innerHTML = "";
                 $(".textarea", el).blur();
                 insert(comment, true);
@@ -101,7 +108,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         // update datetime every 60 seconds
         var refresh = function() {
-            $(".permalink > date", el).textContent = utils.ago(
+            $(".permalink > time", el).textContent = utils.ago(
                 globals.offset.localTime(), new Date(parseInt(comment.created, 10) * 1000));
             setTimeout(refresh, 60*1000);
         };
@@ -144,31 +151,33 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
         );
 
-        // update vote counter, but hide if votes sum to 0
-        var votes = function(value) {
-            var span = $("span.votes", footer);
-            if (span === null && value !== 0) {
-                footer.prepend($.new("span.votes", value));
-            } else {
-                if (value === 0) {
-                    span.remove();
+        if (config.vote) {
+            // update vote counter, but hide if votes sum to 0
+            var votes = function (value) {
+                var span = $("span.votes", footer);
+                if (span === null && value !== 0) {
+                    footer.prepend($.new("span.votes", value));
                 } else {
-                    span.textContent = value;
+                    if (value === 0) {
+                        span.remove();
+                    } else {
+                        span.textContent = value;
+                    }
                 }
-            }
-        };
+            };
 
-        $("a.upvote", footer).on("click", function() {
-            api.like(comment.id).then(function(rv) {
-                votes(rv.likes - rv.dislikes);
+            $("a.upvote", footer).on("click", function () {
+                api.like(comment.id).then(function (rv) {
+                    votes(rv.likes - rv.dislikes);
+                });
             });
-        });
 
-        $("a.downvote", footer).on("click", function() {
-            api.dislike(comment.id).then(function(rv) {
-                votes(rv.likes - rv.dislikes);
+            $("a.downvote", footer).on("click", function () {
+                api.dislike(comment.id).then(function (rv) {
+                    votes(rv.likes - rv.dislikes);
+                });
             });
-        });
+        }
 
         $("a.edit", footer).toggle("click",
             function(toggler) {
