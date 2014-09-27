@@ -39,31 +39,31 @@ define(function() {
         });
     };
 
-    window.Element.prototype.toggle = function(type, on, off) {
+    window.Element.prototype.toggle = function(type, a, b) {
         /*
         Toggle between two internal states on event :param type: e.g. to
-        cycle form visibility. Callback :param on: is called on first event,
-        :param off: next time.
+        cycle form visibility. Callback :param a: is called on first event,
+        :param b: next time.
 
         You can skip to the next state without executing the callback with
         `toggler.next()`. You can prevent a cycle when you call `toggler.wait()`
         during an event.
          */
 
-        function Toggle(el, on, off) {
+        function Toggle(el, a, b) {
             this.state = false;
             this.el = el;
-            this.on = on;
-            this.off = off;
+            this.a = a;
+            this.b = b;
         }
 
         Toggle.prototype.next = function next() {
             if (! this.state) {
                 this.state = true;
-                this.on(this);
+                this.a(this);
             } else {
                 this.state = false;
-                this.off(this);
+                this.b(this);
             }
         };
 
@@ -71,7 +71,7 @@ define(function() {
             this.state = ! this.state;
         };
 
-        var toggler = new Toggle(this, on, off);
+        var toggler = new Toggle(this, a, b);
         this.on(type, function() {
             toggler.next();
         });

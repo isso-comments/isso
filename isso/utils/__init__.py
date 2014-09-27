@@ -8,8 +8,10 @@ werkzeug = pkg_resources.get_distribution("werkzeug")
 import json
 import hashlib
 
-from werkzeug.wrappers import Request, Response
+from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest
+
+from isso.wsgi import Request
 
 try:
     import ipaddress

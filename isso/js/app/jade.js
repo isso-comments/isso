@@ -21,6 +21,13 @@ define(["libjs-jade-runtime", "app/utils", "jade!app/text/postbox", "jade!app/te
     load("comment-loader", tt_comment_loader);
 
     set("bool", function(arg) { return arg ? true : false; });
+    set("humanize", function(date) {
+        if (typeof date !== "object") {
+            date = new Date(parseInt(date, 10) * 1000);
+        }
+
+        return date.toString();
+    });
     set("datetime", function(date) {
         if (typeof date !== "object") {
             date = new Date(parseInt(date, 10) * 1000);
@@ -30,7 +37,11 @@ define(["libjs-jade-runtime", "app/utils", "jade!app/text/postbox", "jade!app/te
             date.getUTCFullYear(),
             utils.pad(date.getUTCMonth(), 2),
             utils.pad(date.getUTCDay(), 2)
-        ].join("-");
+        ].join("-") + "T" + [
+            utils.pad(date.getUTCHours(), 2),
+            utils.pad(date.getUTCMinutes(), 2),
+            utils.pad(date.getUTCSeconds(), 2)
+        ].join(":") + "Z";
     });
 
     return {
