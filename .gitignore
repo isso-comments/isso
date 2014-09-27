@@ -33,4 +33,5 @@
 *.substvars
 /debian/files
 /debian/isso/
+/debian/python-isso/
 .pybuild
