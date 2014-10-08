@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9.8 (unreleased)
+0.9.8 (2014-10-08)
 ------------------
 
 - add compatibility with configparser==3.5.0b1, #128
