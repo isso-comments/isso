@@ -7,7 +7,10 @@ import logging
 import datetime
 
 from email.utils import parseaddr, formataddr
-from configparser import ConfigParser
+try:
+    from backports.configparser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 
 from isso.compat import text_type as str
 
