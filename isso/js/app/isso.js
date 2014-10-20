@@ -155,8 +155,10 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             // update vote counter, but hide if votes sum to 0
             var votes = function (value) {
                 var span = $("span.votes", footer);
-                if (span === null && value !== 0) {
-                    footer.prepend($.new("span.votes", value));
+                if (span === null) {
+                    if (value !== 0) {
+                        footer.prepend($.new("span.votes", value));
+                    }
                 } else {
                     if (value === 0) {
                         span.remove();
