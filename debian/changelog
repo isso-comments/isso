@@ -1,4 +1,4 @@
-isso (0.9.8-1) UNRELEASED; urgency=medium
+isso (0.9.8-1) unstable; urgency=medium
 
   * New upstream release.
   * Bump standards version to 3.9.6 (no changes).
