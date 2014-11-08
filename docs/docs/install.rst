@@ -10,6 +10,8 @@ next section carefully.
     :local:
     :depth: 1
 
+ .. _install-interludium:
+
 Interludium: Python is not PHP
 ------------------------------
 
