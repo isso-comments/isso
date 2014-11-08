@@ -1,6 +1,7 @@
 isso (0.9.8-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+  * Bump standards version to 3.9.6 (no changes).
 
  -- Jelmer Vernooij <jelmer@debian.org>  Sat, 08 Nov 2014 13:02:56 +0000
 
