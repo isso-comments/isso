@@ -1,3 +1,9 @@
+isso (0.9.8-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Jelmer Vernooij <jelmer@debian.org>  Sat, 08 Nov 2014 13:02:56 +0000
+
 isso (0.9.7-1) experimental; urgency=medium
 
   * New upstream release.
