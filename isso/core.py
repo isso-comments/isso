@@ -9,7 +9,11 @@ import threading
 import multiprocessing
 
 from email.utils import parseaddr, formataddr
-from configparser import ConfigParser
+
+try:
+    from backports.configparser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 
 try:
     import uwsgi
