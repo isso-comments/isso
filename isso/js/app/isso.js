@@ -7,7 +7,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     var Postbox = function(parent) {
 
-        var el = $.htmlify(jade.render("postbox", {
+        var localStorage = utils.localStorageImpl,
+            el = $.htmlify(jade.render("postbox", {
             "author":  JSON.parse(localStorage.getItem("author")),
             "email":   JSON.parse(localStorage.getItem("email")),
             "website": JSON.parse(localStorage.getItem("website"))
