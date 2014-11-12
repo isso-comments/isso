@@ -164,7 +164,7 @@ class WordPress(object):
         self.xmlfile = xmlfile
         self.count = 0
 
-        with io.open(xmlfile) as fp:
+        with io.open(xmlfile, encoding="utf-8") as fp:
             ns = WordPress.detect(fp.read(io.DEFAULT_BUFFER_SIZE))
 
         if ns:
@@ -257,7 +257,7 @@ def dispatch(type, db, dump):
 
         if type is None:
 
-            with io.open(dump) as fp:
+            with io.open(dump, encoding="utf-8") as fp:
                 peek = fp.read(io.DEFAULT_BUFFER_SIZE)
 
             if WordPress.detect(peek):
