@@ -118,10 +118,6 @@ class Disqus(object):
         for i, thread in enumerate(tree.findall(Disqus.ns + 'thread')):
             progress.update(i, thread.find(Disqus.ns + 'id').text)
 
-            # skip (possibly?) duplicate, but empty thread elements
-            if thread.find(Disqus.ns + 'id').text is None:
-                continue
-
             id = thread.attrib.get(Disqus.internals + 'id')
             if id in res:
                 self.threads.add(id)
