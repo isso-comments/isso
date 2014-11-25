@@ -81,7 +81,8 @@ notify
     Available backends:
 
     stdout
-        Log to standard output. Default, if none selected.
+        Log to standard output. Default, if none selected. Note, this
+        functionality is broken since a few releases.
 
     smtp
         Send notifications via SMTP on new comments with activation (if
