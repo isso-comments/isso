@@ -212,6 +212,8 @@ def main():
                        help="perform a trial run with no changes made")
     imprt.add_argument("-t", "--type", dest="type", default=None,
                        choices=["disqus", "wordpress"], help="export type")
+    imprt.add_argument("--empty-id", dest="empty_id", action="store_true",
+                       help="workaround for weird Disqus XML exports, #135")
 
     serve = subparser.add_parser("run", help="run server")
 
@@ -228,7 +230,7 @@ def main():
             dbpath = conf.get("general", "dbpath")
 
         mydb = db.SQLite3(dbpath, conf)
-        migrate.dispatch(args.type, mydb, args.dump)
+        migrate.dispatch(args.type, mydb, args.dump, args.empty_id)
 
         sys.exit(0)
 
