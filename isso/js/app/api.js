@@ -90,7 +90,13 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
     var create = function(tid, data) {
         var deferred = Q.defer();
         curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data),
-            function (rv) { deferred.resolve(JSON.parse(rv.body)); });
+            function (rv) {
+                if (rv.status === 201) {
+                    deferred.resolve(JSON.parse(rv.body));
+                } else {
+                    deferred.reject(rv.body);
+                }
+            });
         return deferred.promise;
     };
 
