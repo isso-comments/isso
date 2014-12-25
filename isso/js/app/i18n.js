@@ -1,13 +1,14 @@
-define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru", "app/i18n/it", "app/i18n/eo"], function(config, de, en, fr, ru, it, eo) {
+define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru", "app/i18n/it", "app/i18n/eo", "app/i18n/sv"], function(config, de, en, fr, ru, it, eo, sv) {
 
     "use strict";
 
     var pluralforms = function(lang) {
         switch (lang) {
-        case "en":
         case "de":
-        case "it":
+        case "en":
         case "eo":
+        case "it":
+        case "sv":
             return function(msgs, n) {
                 return msgs[n === 1 ? 0 : 1];
             };
@@ -41,10 +42,11 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"
     var catalogue = {
         de: de,
         en: en,
+        eo: eo,
         fr: fr,
-        ru: ru,
         it: it,
-        eo: eo
+        ru: ru,
+        sv: sv
     };
 
     var plural = pluralforms(lang);
