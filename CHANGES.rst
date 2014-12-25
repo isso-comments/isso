@@ -4,13 +4,37 @@ Changelog for Isso
 0.10 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- add new configuration section for hash handling.
 
+    [hash]
+    salt = Eech7co8Ohloopo9Ol6baimi
+    algorithm = pbkdf2
 
-0.9.9 (unreleased)
-------------------
+  You can customize the salt, choose different hash functions and tweak the
+  parameters for PBKDF2.
 
-- Nothing changed yet.
+- Python 3.4+ and Python 2.7.9+ validate TLS connections against the system's
+  CA. Previously no validation was in place, see PEP-446__ for details.
+
+- add `fenced_code` and `no_intra_emphasis` to default configuration.
+
+  Fenced code allows to write code without indentation using `~~~` delimiters
+  (optionally with language identifier).
+
+  Intra emphasis would compile `foo_bar_baz` to foo<em>bar</em>baz. This
+  behavior is very confusing for users not knowing the Markdown spec in detail.
+
+- don't lose comment form if the server rejected the POST request, #144
+
+- add localStorage fallback if QUOTA_EXCEEDED_ERR is thrown (e.g. Safari
+  private browsing)
+
+- new Bulgarian translation by sahwar, new Swedish translation by <Gustav
+  Näslund, #143
+
+- add --emptyid flag to import strange Disqus exports, #135
+
+.. __: https://www.python.org/dev/peps/pep-0466/
 
 
 0.9.8 (2014-10-08)
