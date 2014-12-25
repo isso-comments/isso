@@ -8,6 +8,7 @@ import io
 import re
 import logging
 import textwrap
+import functools
 
 from time import mktime, strptime, time
 from collections import defaultdict
@@ -67,12 +68,13 @@ class Disqus(object):
     ns = '{http://disqus.com}'
     internals = '{http://disqus.com/disqus-internals}'
 
-    def __init__(self, db, xmlfile):
+    def __init__(self, db, xmlfile, empty_id=False):
         self.threads = set([])
         self.comments = set([])
 
         self.db = db
         self.xmlfile = xmlfile
+        self.empty_id = empty_id
 
     def insert(self, thread, posts):
 
@@ -119,7 +121,7 @@ class Disqus(object):
             progress.update(i, thread.find(Disqus.ns + 'id').text)
 
             # skip (possibly?) duplicate, but empty thread elements
-            if thread.find(Disqus.ns + 'id').text is None:
+            if thread.find(Disqus.ns + 'id').text is None and not self.empty_id:
                 continue
 
             id = thread.attrib.get(Disqus.internals + 'id')
@@ -134,7 +136,9 @@ class Disqus(object):
             len(self.threads), len(self.comments)))
 
         orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"), tree.findall(Disqus.ns + "post"))) - self.comments
-        if orphans:
+        if orphans and not self.threads:
+            print("Isso couldn't import any thread, try again with --empty-id")
+        elif orphans:
             print("Found %i orphans:" % len(orphans))
             for post in tree.findall(Disqus.ns + "post"):
                 if post.attrib.get(Disqus.internals + "id") not in orphans:
@@ -158,7 +162,7 @@ class WordPress(object):
         self.xmlfile = xmlfile
         self.count = 0
 
-        for line in io.open(xmlfile):
+        for line in io.open(xmlfile, encoding="utf-8"):
             m = WordPress.detect(line)
             if m:
                 self.ns = WordPress.ns.replace("1.0", m.group(1))
@@ -253,7 +257,7 @@ def autodetect(peek):
     return None
 
 
-def dispatch(type, db, dump):
+def dispatch(type, db, dump, empty_id=False):
         if db.execute("SELECT * FROM comments").fetchone():
             if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
                 raise SystemExit("Abort.")
@@ -263,10 +267,13 @@ def dispatch(type, db, dump):
         elif type == "wordpress":
             cls = WordPress
         else:
-            with io.open(dump) as fp:
+            with io.open(dump, encoding="utf-8") as fp:
                 cls = autodetect(fp.read(io.DEFAULT_BUFFER_SIZE))
 
         if cls is None:
             raise SystemExit("Unknown format, abort.")
+
+        if cls is Disqus:
+            cls = functools.partial(cls, empty_id=empty_id)
 
         cls(db, dump).migrate()

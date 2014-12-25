@@ -23,7 +23,6 @@ Isso:
         "mode": 1,
         "hash": "4505c1eeda98",
         "author": null,
-        "email": null,
         "website": null
         "created": 1387321261.572392,
         "modified": null,
