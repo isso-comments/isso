@@ -28,7 +28,7 @@ DOCS_HTML_DST := docs/_build/html
 all: man js site
 
 init:
-	(cd isso/js; bower install almond requirejs requirejs-text jade)
+	(cd isso/js; bower --allow-root install almond requirejs requirejs-text jade)
 
 check:
 	@echo "Python 2.x"
