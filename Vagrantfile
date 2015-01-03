@@ -46,7 +46,7 @@ $bootstrap = <<BOOTSTRAP
   pip install uwsgi
   mkdir -p /tmp/isso/spool
 
-  uwsgi --socket 127.0.0.1:8080 --master --processes 4 --cache2 name=hash,items=1024,blocksize=32 --spooler /tmp/isso/spool --module isso.run --env ISSO_SETTINGS=/vagrant/share/isso-dev.conf --daemonize /tmp/uwsgi.log  
+  uwsgi --socket 127.0.0.1:8080 --master --processes 4 --cache2 name=hash,items=1024,blocksize=32 --spooler /tmp/isso/spool --module isso.run --env ISSO_SETTINGS=/vagrant/share/isso-dev.conf --daemonize /tmp/uwsgi.log --py-autoreload 1 
   chmod a+r /tmp/uwsgi.log
   
   apt-get install libapache2-mod-proxy-uwsgi
