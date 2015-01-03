@@ -83,4 +83,5 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", inline: $bootstrap
 
+  config.vm.post_up_message = "Browse to http://isso-dev.local/demo/index.html to start."
 end

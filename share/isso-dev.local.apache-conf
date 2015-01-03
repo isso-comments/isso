@@ -7,7 +7,7 @@
 	ErrorLog ${APACHE_LOG_DIR}/error.log
 	CustomLog ${APACHE_LOG_DIR}/access.log combined
 
-	ProxyPass /isso/ uwsgi://127.0.0.1:8080/
+	ProxyPass / uwsgi://127.0.0.1:8080/
 
 </VirtualHost>
 
