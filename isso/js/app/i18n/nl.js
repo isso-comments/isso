@@ -1,14 +1,14 @@
 define({
-    "postbox-text": "Type reactie hier (minstens 3 karakters)",
+    "postbox-text": "Typ reactie hier (minstens 3 karakters)",
     "postbox-author": "Naam (optioneel)",
     "postbox-email": "E-mail (optioneel)",
-    "postbox-website": "Website (optional)",
+    "postbox-website": "Website (optioneel)",
     "postbox-submit": "Versturen",
 
     "num-comments": "Één reactie\n{{ n }} reacties",
     "no-comments": "Nog geen reacties",
 
-    "comment-reply": "Antwoorden",
+    "comment-reply": "Beantwoorden",
     "comment-edit": "Bewerken",
     "comment-save": "Opslaan",
     "comment-delete": "Verwijderen",
@@ -16,11 +16,11 @@ define({
     "comment-close": "Sluiten",
     "comment-cancel": "Annuleren",
     "comment-deleted": "Reactie verwijderd.",
-    "comment-queued": "Reacties in de wachtrij voor goedkeuring.",
+    "comment-queued": "Reactie staat in de wachtrij voor goedkeuring.",
     "comment-anonymous": "Anoniem",
     "comment-hidden": "{{ n }} verborgen",
 
-    "date-now": "nu",
+    "date-now": "zojuist",
     "date-minute": "een minuut geleden\n{{ n }} minuten geleden",
     "date-hour": "een uur geleden\n{{ n }} uur geleden",
     "date-day": "gisteren\n{{ n }} dagen geleden",
