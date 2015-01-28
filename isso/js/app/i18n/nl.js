@@ -4,10 +4,8 @@ define({
     "postbox-email": "E-mail (optioneel)",
     "postbox-website": "Website (optioneel)",
     "postbox-submit": "Versturen",
-
     "num-comments": "Één reactie\n{{ n }} reacties",
     "no-comments": "Nog geen reacties",
-
     "comment-reply": "Beantwoorden",
     "comment-edit": "Bewerken",
     "comment-save": "Opslaan",
@@ -19,7 +17,6 @@ define({
     "comment-queued": "Reactie staat in de wachtrij voor goedkeuring.",
     "comment-anonymous": "Anoniem",
     "comment-hidden": "{{ n }} verborgen",
-
     "date-now": "zojuist",
     "date-minute": "een minuut geleden\n{{ n }} minuten geleden",
     "date-hour": "een uur geleden\n{{ n }} uur geleden",
