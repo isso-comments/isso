@@ -51,7 +51,7 @@ data-isso-lang
 --------------
 
 Override useragent's preferred language. Currently available: german (de),
-english (en), french (fr), italian (it), esperanto (eo) and russian (ru).
+english (en), french (fr), italian (it), esperanto (eo), russian (ru) and spanish (es).
 
 data-isso-reply-to-self
 -----------------------
