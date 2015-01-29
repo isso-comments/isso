@@ -43,4 +43,6 @@ In chronological order:
 
 * Matías Ducasa <https://github.com/matiasducasa>
   * Spanish translation
-
+  
+* [Your name or handle] <[email or website]>
+  * [Brief summary of your changes]
