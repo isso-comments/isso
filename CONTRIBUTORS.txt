@@ -41,6 +41,8 @@ In chronological order:
 * Baptiste Darthenay
   * Esperanto translation
 
+* Matías Ducasa <https://github.com/matiasducasa>
+  * Spanish translation
+  
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
-
