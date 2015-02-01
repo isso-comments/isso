@@ -29,10 +29,13 @@ def anonymize(remote_addr):
         ipv4 = ipaddress.IPv4Address(remote_addr)
         return u''.join(ipv4.exploded.rsplit('.', 1)[0]) + '.' + '0'
     except ipaddress.AddressValueError:
-        ipv6 = ipaddress.IPv6Address(remote_addr)
-        if ipv6.ipv4_mapped is not None:
-            return anonymize(ipv6.ipv4_mapped)
-        return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*5)
+        try:
+            ipv6 = ipaddress.IPv6Address(remote_addr)
+            if ipv6.ipv4_mapped is not None:
+                return anonymize(ipv6.ipv4_mapped)
+            return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*5)
+        except ipaddress.AddressValueError:
+            return u'0.0.0.0'
 
 
 class Bloomfilter:
