@@ -34,7 +34,7 @@ $bootstrap = <<BOOTSTRAP
   curl -sL https://deb.nodesource.com/setup | bash -
   apt-get install -y nodejs
 
-  npm install -g bower requirejs uglifyjs jade
+  npm install -g bower requirejs uglify-js jade
 
   cd /vagrant
   python setup.py develop
