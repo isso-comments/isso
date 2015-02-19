@@ -187,7 +187,7 @@ Install JavaScript modules:
 
     ~> make init
 
-Integration without previous optimization:
+Integration without optimization:
 
 .. code-block:: html
 
@@ -198,7 +198,7 @@ Optimization:
 
 .. code-block:: sh
 
-    ~> npm install -g requirejs uglifyjs jade
+    ~> npm install -g requirejs uglify-js jade
     ~> make js
 
 .. _init-scripts:
@@ -207,10 +207,10 @@ Init scripts
 ------------
 
 Init scripts to run Isso as a service (check your distribution's documentation
-for your init-system; e.g. Debian uses SysVinit, Fedora uses SystemD) if you
+for your init-system; e.g. Debian uses SysVinit, Fedora uses systemd) if you
 don't use FastCGi or uWSGI:
 
--  SystemD (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
+-  systemd (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
 -  SysVinit (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
 -  OpenBSD: https://gist.github.com/noqqe/7397719
 -  Supervisor: https://github.com/posativ/isso/issues/47
