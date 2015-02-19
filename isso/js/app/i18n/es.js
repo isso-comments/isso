@@ -4,10 +4,8 @@ define({
     "postbox-email": "E-mail (opcional)",
     "postbox-website": "Sitio web (opcional)",
     "postbox-submit": "Enviar",
-
     "num-comments": "Un Comentario\n{{ n }} Comentarios",
     "no-comments": "Sin Comentarios Todavía",
-
     "comment-reply": "Responder",
     "comment-edit": "Editar",
     "comment-save": "Guardar",
@@ -19,7 +17,6 @@ define({
     "comment-queued": "Comentario en espera para moderación.",
     "comment-anonymous": "Anónimo",
     "comment-hidden": "{{ n }} Oculto(s)",
-
     "date-now": "ahora",
     "date-minute": "hace un minuto\nhace {{ n }} minutos",
     "date-hour": "hace una hora\nhace {{ n }} horas",
