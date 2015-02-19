@@ -39,7 +39,10 @@ class curl(object):
         except (httplib.HTTPException, socket.error):
             return None
 
-        return self.con.getresponse()
+        try:
+            return self.con.getresponse()
+        except (socket.timeout, socket.error):
+            return None
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.con.close()
