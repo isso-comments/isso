@@ -25,7 +25,6 @@
         - python-dev
         - python-software-properties
         - python-setuptools
-        - python-virtualenv
         - python-pip
         - nginx
         - uwsgi
@@ -42,11 +41,8 @@
         - uglify-js
         - jade
 
-    - name: Virtualenv | Create
-      shell: virtualenv "/home/vagrant/virtualenv" creates="/vagrant/virtualenv/bin/activate"
-
-    - name: Virtualenv | Install python egg
-      shell: /home/vagrant/virtualenv/bin/python /vagrant/setup.py develop
+    - name: Python | Install egg
+      shell: cd /vagrant; python setup.py develop
 
     - name: Make
       shell: cd /vagrant; {{ item }}
