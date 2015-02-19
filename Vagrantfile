@@ -27,6 +27,9 @@
 # When the VM is getting rebooted vagrant mounts the shared folder after uWSGI is getting startet. To fix this issue for
 # the moment you need to 'vagrant ssh' into the VM and execute 'sudo service uwsgi restart'.
 #
+# For debugging with _pudb_ stop uWSGI service and start it manually
+# 'sudo uwsgi --ini /etc/uwsgi/apps-available/isso.ini'.
+#
 # Enjoy!
 
 Vagrant.configure(2) do |config|
