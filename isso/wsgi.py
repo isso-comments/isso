@@ -133,17 +133,17 @@ class CORSMiddleware(object):
 
         def add_cors_headers(status, headers, exc_info=None):
             headers = Headers(headers)
-            headers.add("Access-Control-Allow-Origin", self.origin(environ))
-            headers.add("Access-Control-Allow-Credentials", "true")
-            headers.add("Access-Control-Allow-Methods", ", ".join(self.methods))
+            headers.add(b"Access-Control-Allow-Origin", self.origin(environ))
+            headers.add(b"Access-Control-Allow-Credentials", "true")
+            headers.add(b"Access-Control-Allow-Methods", ", ".join(self.methods))
             if self.allowed:
-                headers.add("Access-Control-Allow-Headers", ", ".join(self.allowed))
+                headers.add(b"Access-Control-Allow-Headers", ", ".join(self.allowed))
             if self.exposed:
-                headers.add("Access-Control-Expose-Headers", ", ".join(self.exposed))
+                headers.add(b"Access-Control-Expose-Headers", ", ".join(self.exposed))
             return start_response(status, headers.to_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":
-            add_cors_headers(b"200 Ok", [("Content-Type", "text/plain")])
+            add_cors_headers(b"200 Ok", [(b"Content-Type", "text/plain")])
             return [b'200 Ok']
 
         return self.app(environ, add_cors_headers)
