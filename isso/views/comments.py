@@ -230,8 +230,8 @@ class API(object):
         self.signal("comments.new:finish", thread, rv)
 
         resp = JSON(rv, 202 if rv["mode"] == 2 else 201)
-        resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
-        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
+        resp.headers.add(b"Set-Cookie", cookie(str(rv["id"])))
+        resp.headers.add(b"X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
     def view(self, environ, request, id):
@@ -288,8 +288,8 @@ class API(object):
         rv["text"] = self.isso.render(rv["text"])
 
         resp = JSON(rv, 200)
-        resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
-        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
+        resp.headers.add(b"Set-Cookie", cookie(str(rv["id"])))
+        resp.headers.add(b"X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
     @xhr
@@ -325,8 +325,8 @@ class API(object):
 
         resp = JSON(rv, 200)
         cookie = functools.partial(dump_cookie, expires=0, max_age=0)
-        resp.headers.add("Set-Cookie", cookie(str(id)))
-        resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
+        resp.headers.add(b"Set-Cookie", cookie(str(id)))
+        resp.headers.add(b"X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
     def moderate(self, environ, request, id, action, key):
