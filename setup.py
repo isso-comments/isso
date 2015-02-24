@@ -5,7 +5,7 @@ import sys
 
 from setuptools import setup, find_packages
 
-requires = ['itsdangerous', 'misaka', 'html5lib']
+requires = ['itsdangerous', 'misaka', 'html5lib>=0.95']
 
 if (3, 0) <= sys.version_info < (3, 3):
     raise SystemExit("Python 3.0, 3.1 and 3.2 are not supported")
