@@ -52,7 +52,9 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             }
 
             if (xhr.status >= 500) {
-                reject(xhr.body);
+                if (reject) {
+                    reject(xhr.body);
+                }
             } else {
                 resolve({status: xhr.status, body: xhr.responseText});
             }
