@@ -35,7 +35,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         endpoint = endpoint.substring(0, endpoint.length - 1);
     }
 
-    var curl = function(method, url, data, resolve, reject) {
+    var curl = function(method, url, data, resolve) {
 
         var xhr = new XMLHttpRequest();
 
@@ -51,11 +51,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
                 document.cookie = cookie;
             }
 
-            if (xhr.status >= 500) {
-                reject(xhr.body);
-            } else {
-                resolve({status: xhr.status, body: xhr.responseText});
-            }
+            resolve({status: xhr.status, body: xhr.responseText});
         }
 
         try {
@@ -69,7 +65,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
                 }
             };
         } catch (exception) {
-            (reject || console.log)(exception.message);
+            console.log(exception.message);
         }
 
         xhr.send(data);
