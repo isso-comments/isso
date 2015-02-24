@@ -64,7 +64,7 @@ class SMTP(object):
                             timeout=self.conf.getint('timeout'))
 
         if self.conf.get('security') == 'starttls':
-            if sys.version_info >= (3, 4) or (2, 7, 9) <= sys.version_info <= (3, 0):
+            if sys.version_info >= (3, 4):
                 import ssl
                 self.client.starttls(context=ssl.create_default_context())
             else:
