@@ -8,7 +8,7 @@ import pkg_resources
 from distutils.version import LooseVersion as Version
 
 HTML5LIB_VERSION = Version(pkg_resources.get_distribution("html5lib").version)
-HTML5LIB_SIMPLETREE = Version("0.9.5")
+HTML5LIB_SIMPLETREE = Version("0.95")
 
 from isso.compat import reduce
 
