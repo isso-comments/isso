@@ -7,7 +7,7 @@ import binascii
 class Preferences:
 
     defaults = [
-        ("session-key", binascii.b2a_hex(os.urandom(24))),
+        ("session-key", binascii.b2a_hex(os.urandom(24)).decode('utf-8')),
     ]
 
     def __init__(self, db):
