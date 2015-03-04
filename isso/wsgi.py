@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+import sys
 import socket
 
 try:
@@ -147,6 +148,27 @@ class CORSMiddleware(object):
             return [b'200 Ok']
 
         return self.app(environ, add_cors_headers)
+
+
+class LegacyWerkzeugMiddleware(object):
+    # Add compatibility with werkzeug 0.8
+    # -- https://github.com/posativ/isso/pull/170
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+
+        def to_native(x, charset=sys.getdefaultencoding(), errors='strict'):
+            if x is None or isinstance(x, str):
+                return x
+            return x.decode(charset, errors)
+
+        def fix_headers(status, headers, exc_info=None):
+            headers = [(to_native(key), value) for key, value in headers]
+            return start_response(status, headers, exc_info)
+
+        return self.app(environ, fix_headers)
 
 
 class Request(_Request):

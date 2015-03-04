@@ -24,18 +24,29 @@ Changelog for Isso
   Intra emphasis would compile `foo_bar_baz` to foo<em>bar</em>baz. This
   behavior is very confusing for users not knowing the Markdown spec in detail.
 
+- new Bulgarian translation by sahwar, new Swedish translation by <Gustav
+  Näslund, #143
+
+.. __: https://www.python.org/dev/peps/pep-0466/
+
+
+0.9.9 (2015-03-04)
+------------------
+
+- several Python 3.x related bugfixes
+
 - don't lose comment form if the server rejected the POST request, #144
 
 - add localStorage fallback if QUOTA_EXCEEDED_ERR is thrown (e.g. Safari
   private browsing)
 
-- new Bulgarian translation by sahwar, new Swedish translation by <Gustav
-  Näslund, #143
+- add '--empty-id' flag to Disqus import, because Disqus' export sucks
 
-- add --emptyid flag to import strange Disqus exports, #135
+- (re)gain compatibility with Werkzeug 0.8 and really old html5lib versions
+  available in Debian Squeeze, #170 & #168
 
-.. __: https://www.python.org/dev/peps/pep-0466/
-
+- add User-Agent when Isso requests the URL, an alternate way to #151 (add
+  'X-Isso' when requesting).
 
 0.9.8 (2014-10-08)
 ------------------
