@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.9.9 (unreleased)
+0.9.9 (2015-03-04)
 ------------------
 
 - several Python 3.x related bugfixes
