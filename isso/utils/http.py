@@ -7,6 +7,7 @@ try:
 except ImportError:
     import http.client as httplib
 
+from isso import dist
 from isso.wsgi import urlsplit
 
 
@@ -20,6 +21,10 @@ class curl(object):
             if resp:  # may be None if request failed
                 return resp.status
     """
+
+    headers = {
+        "User-Agent": "Isso/{0} (+http://posativ.org/isso)".format(dist.version)
+    }
 
     def __init__(self, method, host, path, timeout=3):
         self.method = method
@@ -35,7 +40,7 @@ class curl(object):
         self.con = http(host, port, timeout=self.timeout)
 
         try:
-            self.con.request(self.method, self.path)
+            self.con.request(self.method, self.path, headers=self.headers)
         except (httplib.HTTPException, socket.error):
             return None
 
