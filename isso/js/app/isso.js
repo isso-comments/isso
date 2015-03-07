@@ -7,7 +7,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     var Postbox = function(parent) {
 
-        var el = $.htmlify(jade.render("postbox", {
+        var localStorage = utils.localStorageImpl,
+            el = $.htmlify(jade.render("postbox", {
             "author":  JSON.parse(localStorage.getItem("author")),
             "email":   JSON.parse(localStorage.getItem("email")),
             "website": JSON.parse(localStorage.getItem("website"))
@@ -182,7 +183,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         $("a.edit", footer).toggle("click",
             function(toggler) {
                 var edit = $("a.edit", footer);
-                var avatar = $(".avatar", el, false)[0];
+                var avatar = config["avatar"] ? $(".avatar", el, false)[0] : null;
 
                 edit.textContent = i18n.translate("comment-save");
                 edit.insertAfter($.new("a.cancel", i18n.translate("comment-cancel"))).on("click", function() {
@@ -210,7 +211,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             },
             function(toggler) {
                 var textarea = $(".textarea", text);
-                var avatar = $(".avatar", el, false)[0];
+                var avatar = config["avatar"] ? $(".avatar", el, false)[0] : null;
 
                 if (! toggler.canceled && textarea !== null) {
                     if (utils.text(textarea.innerHTML).length < 3) {

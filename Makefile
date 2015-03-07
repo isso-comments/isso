@@ -7,7 +7,7 @@ ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js \
 
 ISSO_CSS := isso/css/isso.css
 
-ISSO_PY_SRC := $(shell git ls-files | grep .py)
+ISSO_PY_SRC := $(shell git ls-files | grep -E "^isso/.+.py$$")
 
 DOCS_RST_SRC := $(shell find docs/ -type f -name '*.rst') \
 		$(wildcard docs/_isso/*) \
@@ -29,6 +29,12 @@ all: man js site
 
 init:
 	(cd isso/js; bower install almond requirejs requirejs-text jade)
+
+check:
+	@echo "Python 2.x"
+	-@python2 -m pyflakes $(ISSO_PY_SRC)
+	@echo "Python 3.x"
+	-@python3 -m pyflakes $(ISSO_PY_SRC)
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	r.js -o isso/js/build.$*.js out=$@
