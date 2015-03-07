@@ -1,10 +1,10 @@
 Installation
 ============
 
-Isso is a web application written in Python. If pip and virtualenv mean
-anything to you, continue with :ref:`install-from-pypi`. If you are running
-Debian/Ubuntu or Gentoo, you can use :ref:`prebuilt-package`. If not, read the
-next section carefully.
+Isso is a web application written in Python. If pip and virtualenv mean anything
+to you, continue with :ref:`install-from-pypi`. If you are running
+Debian/Ubuntu, Gentoo, Archlinux or Fedora, you can use
+:ref:`prebuilt-package`. If not, read the next section carefully.
 
 .. contents::
     :local:
@@ -145,6 +145,9 @@ Prebuilt Packages
 
 * Arch Linux: https://aur.archlinux.org/packages/isso/
   – install with `yaourt isso`.
+
+* Fedora: https://copr.fedoraproject.org/coprs/jujens/isso/ — copr
+  repository. Built from Pypi, includes a systemctl unit script.
 
 * Docker Image: https://registry.hub.docker.com/u/bl4n/isso/
 
