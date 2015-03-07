@@ -72,7 +72,7 @@ class SMTP(object):
 
         username = self.conf.get('username')
         password = self.conf.get('password')
-        if username is not None and password is not None:
+        if username and password:
             if PY2K:
                 username = username.encode('ascii')
                 password = password.encode('ascii')
