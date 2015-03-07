@@ -58,3 +58,6 @@ override_dh_installchangelogs:
 override_dh_auto_install:
 	dh_auto_install
 	pybuild --install -i python{version} -p 2.7 --dir . --verbose --test-nose
+
+override_dh_auto_clean: rm_js_symlinks
+	dh_auto_clean
