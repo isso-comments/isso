@@ -63,11 +63,16 @@ class SMTP(object):
                             timeout=self.conf.getint('timeout'))
 
         if self.conf.get('security') == 'starttls':
-            self.client.starttls();
+            self.client.starttls()
 
-        if self.conf.get('username') and self.conf.get('password'):
-            self.client.login(self.conf.get('username').encode('ascii', errors='ignore'),
-                              self.conf.get('password').encode('ascii', errors='ignore'))
+        username = self.conf.get('username')
+        password = self.conf.get('password')
+        if username is not None and password is not None:
+            if PY2K:
+                username = username.encode('ascii')
+                password = password.encode('ascii')
+
+            self.client.login(username, password)
 
         return self.client
 

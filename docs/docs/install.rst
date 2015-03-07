@@ -10,6 +10,8 @@ next section carefully.
     :local:
     :depth: 1
 
+ .. _install-interludium:
+
 Interludium: Python is not PHP
 ------------------------------
 
@@ -47,14 +49,19 @@ but not recommended):
 
 .. code-block:: sh
 
-    ~> virtualenv /path/to/isso
-    ~> source /path/to/isso/bin/activate
+    ~> virtualenv /opt/isso
+    ~> source /opt/isso/bin/activate
 
 After calling `source`, you can now install packages from PyPi locally into this
 virtual environment. If you don't like Isso anymore, you just `rm -rf` the
 folder. Inside this virtual environment, you may also execute the example
 commands from above to upgrade your Python Package Manager (although it barely
 makes sense), it is completely independent from your global system.
+
+To use Isso installed in a virtual environment outside of the virtual
+environment, you just need to add */opt/isso/bin* to your :envvar:`PATH` or
+execute */opt/isso/bin/isso* directly. It will launch Isso from within the
+virtual environment.
 
 With a virtualenv active, you may now continue to :ref:`install-from-pypi`!
 Of course you may not need a virtualenv when you are running dedicated virtual
@@ -110,7 +117,7 @@ For easier execution, you can symlink the executable to a location in your
 
 .. code-block:: sh
 
-    ~> ln -s /path/to/isso-venv/bin/isso /usr/local/bin/isso
+    ~> ln -s /opt/isso/bin/isso /usr/local/bin/isso
 
 Upgrade
 ^^^^^^^
@@ -119,7 +126,7 @@ To upgrade Isso, activate your virtual environment again, and run
 
 .. code-block:: sh
 
-    ~> source /path/to/isso/bin/activate  # optional
+    ~> source /opt/isso/bin/activate  # optional
     ~> pip install --upgrade isso
 
 .. _prebuilt-package:
@@ -203,7 +210,54 @@ Init scripts to run Isso as a service (check your distribution's documentation
 for your init-system; e.g. Debian uses SysVinit, Fedora uses SystemD) if you
 don't use FastCGi or uWSGI:
 
--  SystemD: https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
--  SysVinit: https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
+-  SystemD (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
+-  SysVinit (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
 -  OpenBSD: https://gist.github.com/noqqe/7397719
 -  Supervisor: https://github.com/posativ/isso/issues/47
+
+If you're writing your own init script, you can utilize ``start-stop-daemon``
+to run Isso in the background (Isso runs in the foreground usually). Below you
+find a very basic SysVinit script which you can use for inspiration:
+
+.. code-block:: sh
+
+    #!/bin/sh
+    ### BEGIN INIT INFO
+    # Provides:          isso
+    # Required-Start:    $local_fs $network
+    # Default-Start:     2 3 4 5
+    # Default-Stop:      0 1 6
+    # Description:       lightweight Disqus alternative
+    ### END INIT INFO
+
+    EXEC=/opt/isso/bin/isso
+    EXEC_OPTS="-c /etc/isso.cfg"
+
+    RUNAS=isso
+    PIDFILE=/var/run/isso.pid
+
+    start() {
+      echo 'Starting service…' >&2
+      start-stop-daemon --start --user "$RUNAS" --background --make-pidfile --pidfile $PIDFILE \
+                        --exec $EXEC -- $EXEC_OPTS
+    }
+
+    stop() {
+      echo 'Stopping service…' >&2
+      start-stop-daemon --stop --user "$RUNAS" --pidfile $PIDFILE --exec $EXEC
+    }
+
+    case "$1" in
+      start)
+        start
+        ;;
+      stop)
+        stop
+        ;;
+      retart)
+        stop
+        start
+        ;;
+      *)
+        echo "Usage: $0 {start|stop|restart}"
+    esac
