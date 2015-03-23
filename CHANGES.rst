@@ -13,8 +13,8 @@ Changelog for Isso
   You can customize the salt, choose different hash functions and tweak the
   parameters for PBKDF2.
 
-- Python 3.4+ and Python 2.7.9+ validate TLS connections against the system's
-  CA. Previously no validation was in place, see PEP-446__ for details.
+- Python 3.4+ validate TLS connections against the system's CA. Previously no
+  validation was in place, see PEP-446__ for details.
 
 - add `fenced_code` and `no_intra_emphasis` to default configuration.
 
@@ -26,6 +26,8 @@ Changelog for Isso
 
 - new Bulgarian translation by sahwar, new Swedish translation by <Gustav
   Näslund, #143
+
+- fix SMTP setup without credentials, #174
 
 .. __: https://www.python.org/dev/peps/pep-0466/
 
