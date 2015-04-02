@@ -12,6 +12,9 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
     for (var i = 0; i < js.length; i++) {
         if (js[i].hasAttribute("data-isso")) {
             endpoint = js[i].getAttribute("data-isso");
+            if (js[i].hasAttribute("data-isso-salt")) {
+                salt = js[i].getAttribute("data-isso-salt");
+            }
             break;
         }
     }
