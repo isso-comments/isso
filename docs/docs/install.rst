@@ -257,7 +257,7 @@ find a very basic SysVinit script which you can use for inspiration:
       stop)
         stop
         ;;
-      retart)
+      restart)
         stop
         start
         ;;
