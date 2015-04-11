@@ -10,7 +10,7 @@ Changelog for Isso
 0.9.10 (2015-04-11)
 -------------------
 
-- Nothing changed yet.
+- fix regression in SMTP authentication, #174
 
 
 0.9.9 (2015-03-04)
