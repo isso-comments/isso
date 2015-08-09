@@ -169,8 +169,8 @@ class API(object):
         with self.isso.lock:
             if uri not in self.threads:
                 with http.curl('GET', local("origin"), uri) as resp:
-                    if resp and resp.status == 200:
-                        uri, title = parse.thread(resp.read(), id=uri)
+                    if resp and resp.status_code == 200:
+                        uri, title = parse.thread(resp.content, id=uri)
                     else:
                         return NotFound('URI does not exist')
 
