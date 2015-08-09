@@ -47,5 +47,8 @@ In chronological order:
 * Daniel Gräber <https://github.com/albohlabs>
   * Added ansible for provisioning
 
+* Ben Boeckel <mathstuf@gmail.com>
+  * httplib -> requests to handle redirects
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]

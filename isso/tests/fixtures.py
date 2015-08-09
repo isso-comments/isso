@@ -25,7 +25,7 @@ class JSONClient(Client):
 
 class Dummy:
 
-    status = 200
+    status_code = 200
 
     def __enter__(self):
         return self
