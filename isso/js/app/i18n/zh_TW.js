@@ -1,6 +1,6 @@
 define({
     "postbox-text": "在此輸入留言（至少3個字元）",
-    "postbox-author": "姓名 (非必填)",
+    "postbox-author": "名稱 (非必填)",
     "postbox-email": "電子信箱 (非必填)",
     "postbox-website": "個人網站 (非必填)",
     "postbox-submit": "送出",
