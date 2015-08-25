@@ -32,6 +32,7 @@
         - supervisor
         - sqlite3
         - nodejs
+        - libffi-dev
 
     - name: NPM | Install packages
       npm: name={{ item }} global=yes
