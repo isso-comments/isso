@@ -118,5 +118,15 @@ class TestGuard(unittest.TestCase):
 
     def testRequireEmail(self):
 
-        #TODO
-        pass
+        payload = lambda email: json.dumps({"text": "...", "email": email})
+
+        client = self.makeClient("127.0.0.1", ratelimit=4, require_email=False) 
+        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_email=True) 
+
+        # if we don't require email
+        self.assertEqual(client.post("/new?uri=test", data=payload("")).status_code, 201)
+        self.assertEqual(client.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
+
+        # if we do require email
+        self.assertEqual(client_strict.post("/new?uri=test", data=payload("")).status_code, 403)
+        self.assertEqual(client_strict.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
