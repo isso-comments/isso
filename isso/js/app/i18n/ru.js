@@ -15,7 +15,7 @@ define('app/i18n/ru',{
     "comment-cancel": "Отменить",
     "comment-deleted": "Комментарий удалён",
     "comment-queued": "Комментарий будет проверен модератором",
-    "comment-anonymous": "Анонимус",
+    "comment-anonymous": "Аноним",
     "comment-hidden": "Показать ещё 1 комментарий\nПоказать ещё {{ n }} комментария\nПоказать ещё {{ n }} комментариев",
     "date-now": "Только что",
     "date-minute": "{{ n }} минуту назад\n{{ n }} минуты назад\n{{ n }} минут назад",
