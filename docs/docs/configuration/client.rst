@@ -100,6 +100,8 @@ data-isso-nesting-level
 Maximum level of comment nesting allowed. The default value of `"1"` will allow
 comments only at the top-level and as direct replies to top-level comments.
 
+Set to `"inf"` to allow unlimited nesting.
+
 data-isso-id
 ------------
 

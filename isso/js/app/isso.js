@@ -156,7 +156,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 // Check if this new reply will result in a nesting level over
                 // the limit, and if so, associate the reply with the parent of
                 // the comment being replied to.
-                if (el.get_level() >= config["nesting-level"]) {
+                if (config["nesting-level"] !== "inf"
+                    && el.get_level() >= config["nesting-level"]) {
                   form = footer.insertAfter(new Postbox(comment.parent));
                 }
                 else {
