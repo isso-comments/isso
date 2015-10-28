@@ -107,6 +107,18 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
     var insert = function(comment, scrollIntoView) {
         var el = $.htmlify(jade.render("comment", {"comment": comment}));
 
+        el.get_level = function() {
+          var node = this.parentNode,
+              level = 0;
+          while (node != null) {
+            if (node.classList && node.classList.contains('isso-comment')) {
+              level++;
+            }
+            node = node.parentNode;
+          }
+          return level;
+        };
+
         // update datetime every 60 seconds
         var refresh = function() {
             $(".permalink > time", el).textContent = utils.ago(
@@ -141,7 +153,15 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         var form = null;  // XXX: probably a good place for a closure
         $("a.reply", footer).toggle("click",
             function(toggler) {
-                form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
+                // Check if this new reply will result in a nesting level over
+                // the limit, and if so, associate the reply with the parent of
+                // the comment being replied to.
+                if (el.get_level() >= config["nesting-level"]) {
+                  form = footer.insertAfter(new Postbox(comment.parent));
+                }
+                else {
+                  form = footer.insertAfter(new Postbox(comment.id));
+                }
                 form.onsuccess = function() { toggler.next(); };
                 $(".textarea", form).focus();
                 $("a.reply", footer).textContent = i18n.translate("comment-close");
