@@ -94,6 +94,12 @@ data-isso-vote
 
 Enable or disable voting feature on the client side.
 
+data-isso-nesting-level
+--------------
+
+Maximum level of comment nesting allowed. The default value of `"1"` will allow
+comments only at the top-level and as direct replies to top-level comments.
+
 data-isso-id
 ------------
 
