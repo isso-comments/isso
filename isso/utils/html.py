@@ -66,7 +66,7 @@ def Markdown(extensions=("strikethrough", "superscript", "autolink")):
     md = misaka.Markdown(Unofficial(), extensions=flags)
 
     def inner(text):
-        rv = md.render(text).rstrip("\n")
+        rv = md(text).rstrip("\n")
         if rv.startswith("<p>") or rv.endswith("</p>"):
             return rv
         return "<p>" + rv + "</p>"
