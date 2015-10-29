@@ -39,6 +39,7 @@ setup(
     extras_require={
         ':python_version=="2.7"': ['ipaddr>=2.1', 'configparser']
     },
+    setup_requires=["cffi>=1.3.0"],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
