@@ -37,6 +37,7 @@ setup(
         "Programming Language :: Python :: 3.3"
     ],
     install_requires=requires,
+    setup_requires=["cffi>=1.3.0"],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
