@@ -5,7 +5,7 @@ import sys
 
 from setuptools import setup, find_packages
 
-requires = ['itsdangerous', 'misaka', 'html5lib<0.9999']
+requires = ['itsdangerous', 'misaka>=2.0,<3.0', 'html5lib<0.9999']
 
 if (3, 0) <= sys.version_info < (3, 3):
     raise SystemExit("Python 3.0, 3.1 and 3.2 are not supported")
@@ -37,6 +37,7 @@ setup(
         "Programming Language :: Python :: 3.3"
     ],
     install_requires=requires,
+    setup_requires=["cffi>=1.3.0"],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],

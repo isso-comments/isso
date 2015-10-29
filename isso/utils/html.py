@@ -59,14 +59,14 @@ def sanitize(tokenizer, document):
     return serializer.render(stream)
 
 
-def Markdown(extensions=("strikethrough", "superscript", "autolink")):
+def Markdown(extensions=("strikethrough", "superscript", "autolink",
+                         "fenced-code")):
 
-    flags = reduce(operator.xor, map(
-        lambda ext: getattr(misaka, 'EXT_' + ext.upper()), extensions), 0)
-    md = misaka.Markdown(Unofficial(), extensions=flags)
+    renderer = Unofficial()
+    md = misaka.Markdown(renderer, extensions=extensions)
 
     def inner(text):
-        rv = md.render(text).rstrip("\n")
+        rv = md(text).rstrip("\n")
         if rv.startswith("<p>") or rv.endswith("</p>"):
             return rv
         return "<p>" + rv + "</p>"
@@ -82,7 +82,7 @@ class Unofficial(misaka.HtmlRenderer):
     to <code class="$lang">, compatible with Highlight.js.
     """
 
-    def block_code(self, text, lang):
+    def blockcode(self, text, lang):
         lang = ' class="{0}"'.format(lang) if lang else ''
         return "<pre><code{1}>{0}</code></pre>\n".format(text, lang)
 
