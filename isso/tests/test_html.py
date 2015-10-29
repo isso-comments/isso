@@ -33,7 +33,7 @@ class TestHTML(unittest.TestCase):
             self.assertEqual(convert(input), expected)
 
     def test_github_flavoured_markdown(self):
-        convert = html.Markdown(extensions=("fenced_code", ))
+        convert = html.Markdown(extensions=("fenced-code", ))
 
         # without lang
         _in = textwrap.dedent("""\
