@@ -19,6 +19,7 @@ Changelog for Isso
 - Add optionnal gravatar support
 - Add nofollow noopener on links inside comments
 - Add Dockerfile
+- Upgraded to Misaka 2
 - Some tests/travis/documentation improvements and fixes + pep8
 - Improvement on german translation
 
