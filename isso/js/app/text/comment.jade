@@ -31,7 +31,8 @@ div(class='isso-comment' id='isso-#{comment.id}')
                 span(class='spacer') |
                 a(class='downvote' href='#')
                     != svg['arrow-down']
-            a(class='reply' href='#') #{i18n('comment-reply')}
+            if conf["nesting-level"] >= 1
+                a(class='reply' href='#') #{i18n('comment-reply')}
             a(class='edit' href='#') #{i18n('comment-edit')}
             a(class='delete' href='#') #{i18n('comment-delete')}
 

@@ -151,27 +151,29 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             text   = $("#isso-" + comment.id + " > .text-wrapper > .text");
 
         var form = null;  // XXX: probably a good place for a closure
-        $("a.reply", footer).toggle("click",
-            function(toggler) {
-                // Check if this new reply will result in a nesting level over
-                // the limit, and if so, associate the reply with the parent of
-                // the comment being replied to.
-                if (config["nesting-level"] !== "inf"
-                    && el.get_level() >= config["nesting-level"]) {
-                  form = footer.insertAfter(new Postbox(comment.parent));
-                }
-                else {
-                  form = footer.insertAfter(new Postbox(comment.id));
-                }
-                form.onsuccess = function() { toggler.next(); };
-                $(".textarea", form).focus();
-                $("a.reply", footer).textContent = i18n.translate("comment-close");
-            },
-            function() {
-                form.remove();
-                $("a.reply", footer).textContent = i18n.translate("comment-reply");
-            }
-        );
+        if (config["nesting-level"] >= 1) {
+          $("a.reply", footer).toggle("click",
+              function(toggler) {
+                  // Check if this new reply will result in a nesting level over
+                  // the limit, and if so, associate the reply with the parent of
+                  // the comment being replied to.
+                  if (config["nesting-level"] !== "inf"
+                      && el.get_level() >= config["nesting-level"]) {
+                    form = footer.insertAfter(new Postbox(comment.parent));
+                  }
+                  else {
+                    form = footer.insertAfter(new Postbox(comment.id));
+                  }
+                  form.onsuccess = function() { toggler.next(); };
+                  $(".textarea", form).focus();
+                  $("a.reply", footer).textContent = i18n.translate("comment-close");
+              },
+              function() {
+                  form.remove();
+                  $("a.reply", footer).textContent = i18n.translate("comment-reply");
+              }
+          );
+        };
 
         if (config.vote) {
             // update vote counter, but hide if votes sum to 0
@@ -314,7 +316,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
         };
 
-        if (! config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
+        if (config["nesting-level"] >= 1 && config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
             show($("a.reply", footer).detach());
         }
 
