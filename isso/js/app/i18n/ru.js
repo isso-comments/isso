@@ -1,5 +1,5 @@
 define({
-    "postbox-text": "Комментировать здесь  (миниум 3 символа)",
+    "postbox-text": "Комментировать здесь  (минимум 3 символа)",
     "postbox-author": "Имя (необязательно)",
     "postbox-email": "Email (необязательно)",
     "postbox-submit": "Отправить",

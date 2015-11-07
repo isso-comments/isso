@@ -48,6 +48,9 @@ from os.path import dirname, join
 from argparse import ArgumentParser
 from functools import partial, reduce
 
+import pkg_resources
+werkzeug = pkg_resources.get_distribution("werkzeug")
+
 from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map
@@ -192,7 +195,10 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
         allowed=("Origin", "Referer", "Content-Type"),
         exposed=("X-Set-Cookie", "Date")))
 
-    wrapper.extend([wsgi.SubURI, ProxyFix])
+    wrapper.extend([wsgi.SubURI, ProxyFix, wsgi.LegacyWerkzeugMiddleware])
+
+    if werkzeug.version.startswith("0.8"):
+        wrapper.append(wsgi.LegacyWerkzeugMiddleware)
 
     return reduce(lambda x, f: f(x), wrapper, isso)
 
@@ -212,6 +218,8 @@ def main():
                        help="perform a trial run with no changes made")
     imprt.add_argument("-t", "--type", dest="type", default=None,
                        choices=["disqus", "wordpress"], help="export type")
+    imprt.add_argument("--empty-id", dest="empty_id", action="store_true",
+                       help="workaround for weird Disqus XML exports, #135")
 
     serve = subparser.add_parser("run", help="run server")
 
@@ -228,7 +236,7 @@ def main():
             dbpath = conf.get("general", "dbpath")
 
         mydb = db.SQLite3(dbpath, conf)
-        migrate.dispatch(args.type, mydb, args.dump)
+        migrate.dispatch(args.type, mydb, args.dump, args.empty_id)
 
         sys.exit(0)
 

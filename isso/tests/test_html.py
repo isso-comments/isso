@@ -62,7 +62,7 @@ class TestHTML(unittest.TestCase):
             print("Hello, World")
             </code></pre>""")
 
-    @unittest.skipIf(html.html5lib_version == "0.95", "backport")
+    @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
     def test_sanitizer(self):
         sanitizer = html.Sanitizer(elements=[], attributes=[])
         examples = [
@@ -75,7 +75,7 @@ class TestHTML(unittest.TestCase):
         for (input, expected) in examples:
             self.assertEqual(html.sanitize(sanitizer, input), expected)
 
-    @unittest.skipIf(html.html5lib_version == "0.95", "backport")
+    @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
     def test_sanitizer_extensions(self):
         sanitizer = html.Sanitizer(elements=["img"], attributes=["src"])
         examples = [

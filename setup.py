@@ -18,7 +18,7 @@ else:
 
 setup(
     name='isso',
-    version='0.9.7',
+    version='0.9.10.dev0',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),

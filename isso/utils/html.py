@@ -2,14 +2,17 @@
 
 from __future__ import unicode_literals
 
-import pkg_resources
 import operator
+import pkg_resources
+
+from distutils.version import LooseVersion as Version
+
+HTML5LIB_VERSION = Version(pkg_resources.get_distribution("html5lib").version)
+HTML5LIB_SIMPLETREE = Version("0.95")
 
 from isso.compat import reduce
 
 import html5lib
-html5lib_version = pkg_resources.get_distribution("html5lib").version
-
 from html5lib.sanitizer import HTMLSanitizer
 from html5lib.serializer import HTMLSerializer
 
@@ -45,7 +48,11 @@ def sanitize(tokenizer, document):
     parser = html5lib.HTMLParser(tokenizer=tokenizer)
     domtree = parser.parseFragment(document)
 
-    builder = "simpletree" if html5lib_version == "0.95" else "etree"
+    if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
+        builder = "etree"
+    else:
+        builder = "simpletree"
+
     stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
     serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
 

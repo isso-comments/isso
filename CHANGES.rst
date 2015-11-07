@@ -1,6 +1,29 @@
 Changelog for Isso
 ==================
 
+0.9.10 (unreleased)
+-------------------
+
+- Nothing changed yet.
+
+
+0.9.9 (2015-03-04)
+------------------
+
+- several Python 3.x related bugfixes
+- add compatibility with Safari's incognito mode
+- add '--empty-id' flag to Disqus import, because Disqus' export sucks
+- (re)gain compatibility with Werkzeug 0.8 and really old html5lib versions
+  available in Debian Squeeze, #170 & #168
+- add User-Agent when Isso requests the URL, an alternate way to #151 (add
+  'X-Isso' when requesting).
+
+0.9.8 (2014-10-08)
+------------------
+
+- add compatibility with configparser==3.5.0b1, #128
+
+
 0.9.7 (2014-09-25)
 ------------------
 

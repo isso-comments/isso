@@ -65,12 +65,13 @@ class Disqus(object):
     ns = '{http://disqus.com}'
     internals = '{http://disqus.com/disqus-internals}'
 
-    def __init__(self, db, xmlfile):
+    def __init__(self, db, xmlfile, empty_id=False):
         self.threads = set([])
         self.comments = set([])
 
         self.db = db
         self.xmlfile = xmlfile
+        self.empty_id = empty_id
 
     def insert(self, thread, posts):
 
@@ -117,7 +118,7 @@ class Disqus(object):
             progress.update(i, thread.find(Disqus.ns + 'id').text)
 
             # skip (possibly?) duplicate, but empty thread elements
-            if thread.find(Disqus.ns + 'id').text is None:
+            if thread.find(Disqus.ns + 'id').text is None and not self.empty_id:
                 continue
 
             id = thread.attrib.get(Disqus.internals + 'id')
@@ -132,7 +133,9 @@ class Disqus(object):
             len(self.threads), len(self.comments)))
 
         orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"), tree.findall(Disqus.ns + "post"))) - self.comments
-        if orphans:
+        if orphans and not self.threads:
+            print("Isso couldn't import any thread, try again with --empty-id")
+        elif orphans:
             print("Found %i orphans:" % len(orphans))
             for post in tree.findall(Disqus.ns + "post"):
                 if post.attrib.get(Disqus.internals + "id") not in orphans:
@@ -164,7 +167,7 @@ class WordPress(object):
         self.xmlfile = xmlfile
         self.count = 0
 
-        with io.open(xmlfile) as fp:
+        with io.open(xmlfile, encoding="utf-8") as fp:
             ns = WordPress.detect(fp.read(io.DEFAULT_BUFFER_SIZE))
 
         if ns:
@@ -250,25 +253,24 @@ class WordPress(object):
         return None
 
 
-def dispatch(type, db, dump):
-        if db.execute("SELECT * FROM comments").fetchone():
-            if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
-                raise SystemExit("Abort.")
+def dispatch(type, db, dump, empty_id=False):
+    if db.execute("SELECT * FROM comments").fetchone():
+        if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+            raise SystemExit("Abort.")
 
-        if type is None:
+    if type is None:
+        with io.open(dump, encoding="utf-8") as fp:
+            peek = fp.read(io.DEFAULT_BUFFER_SIZE)
 
-            with io.open(dump) as fp:
-                peek = fp.read(io.DEFAULT_BUFFER_SIZE)
+        if WordPress.detect(peek):
+            type = "wordpress"
 
-            if WordPress.detect(peek):
-                type = "wordpress"
+        if Disqus.detect(peek):
+            type = "disqus"
 
-            if Disqus.detect(peek):
-                type = "disqus"
-
-        if type == "wordpress":
-            WordPress(db, dump).migrate()
-        elif type == "disqus":
-            Disqus(db, dump).migrate()
-        else:
-            raise SystemExit("Unknown format, abort.")
+    if type == "wordpress":
+        WordPress(db, dump).migrate()
+    elif type == "disqus":
+        Disqus(db, dump, empty_id).migrate()
+    else:
+        raise SystemExit("Unknown format, abort.")
