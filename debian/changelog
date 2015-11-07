@@ -1,6 +1,8 @@
 isso (0.9.10-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+  * Add patch 0002-remove-flattr.patch, remove flattr link that uses non-
+    free icon.
 
  -- Jelmer Vernooij <jelmer@debian.org>  Sat, 07 Nov 2015 16:14:38 +0000
 
