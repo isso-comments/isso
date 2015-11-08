@@ -3,6 +3,7 @@ define(["app/dom", "app/i18n"], function($, i18n) {
     "use strict";
 
     return function(el) {
+        el = $.htmlify(el);
         el.setAttribute("contentEditable", true);
 
         el.on("focus", function() {
@@ -21,5 +22,4 @@ define(["app/dom", "app/i18n"], function($, i18n) {
 
         return el;
     };
-
 });
