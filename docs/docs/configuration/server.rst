@@ -217,6 +217,7 @@ for IPv4, ``/48`` for IPv6).
     ratelimit = 2
     direct-reply = 3
     reply-to-self = false
+    require-email = false
 
 enabled
     enable guard, recommended in production. Not useful for debugging
@@ -233,6 +234,12 @@ reply-to-self
     allow commenters to reply to their own comments when they could still edit
     the comment. After the editing timeframe is gone, commenters can reply to
     their own comments anyways.
+
+    Do not forget to configure the client.
+
+require-email
+    force commenters to enter a value into the email field. No validation is
+    performed on the provided value.
 
     Do not forget to configure the client.
 

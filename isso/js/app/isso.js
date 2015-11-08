@@ -24,8 +24,21 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".textarea", this).focus();
                 return false;
             }
+            if (config["require-email"] &&
+                $("[name='email']", this).value.length <= 0)
+            {
+              $("[name='email']", this).focus();
+              return false;
+            }
             return true;
         };
+
+        // email is not optional if this config parameter is set
+        if (config["require-email"])
+        {
+          $("[name='email']", el).placeholder =
+            $("[name='email']", el).placeholder.replace(/ \(.*\)/, "");
+        }
 
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
