@@ -91,14 +91,6 @@ define(function() {
         this.parentNode.removeChild(this);
     };
 
-    window.Element.prototype.show = function() {
-        this.style.display = "block";
-    };
-
-    window.Element.prototype.hide = function() {
-        this.style.display = "none";
-    };
-
     var DOM = function(query, root, single) {
         /*
         jQuery-like CSS selector which returns on :param query: either a

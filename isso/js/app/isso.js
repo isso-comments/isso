@@ -221,7 +221,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 });
 
                 if (avatar !== null) {
-                    avatar.hide();
+                    avatar.style.display = "none";
                 }
             },
             function(toggler) {
@@ -247,7 +247,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 text.classList.add("text");
 
                 if (avatar !== null) {
-                    avatar.show();
+                    avatar.style.display = "block";
                 }
 
                 $("a.cancel", footer).remove();
