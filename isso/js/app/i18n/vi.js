@@ -24,7 +24,7 @@ define({
     "date-minute": "một phút trước\n{{ n }} phút trước",
     "date-hour": "một giờ trước\n{{ n }} giờ trước",
     "date-day": "Hôm qua\n{{ n }} ngày trước",
-    "date-week": "Tuần qua\n{{ n }} tuần trướ",
+    "date-week": "Tuần qua\n{{ n }} tuần trước",
     "date-month": "Tháng trước\n{{ n }} tháng trước",
     "date-year": "Năm trước\n{{ n }} năm trước"
 });
