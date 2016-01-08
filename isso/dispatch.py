@@ -28,7 +28,8 @@ class Dispatcher(DispatcherMiddleware):
 
         self.isso = {}
 
-        for i, conf in enumerate(map(config.load(Dispatcher.default, conf))):
+        for i, path in enumerate(confs):
+            conf = config.load(Dispatcher.default, path)
 
             if not conf.get("general", "name"):
                 logger.warn("unable to dispatch %r, no 'name' set", confs[i])
