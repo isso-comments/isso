@@ -25,3 +25,5 @@
 
 /docs/_build
 /docs/_static/css/site.css
+
+/pip-selfcheck.json
