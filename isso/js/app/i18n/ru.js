@@ -1,4 +1,4 @@
-define('app/i18n/ru',{
+define({
     "postbox-text": "Оставить комментарий (минимум 3 символа)",
     "postbox-author": "Имя (необязательно)",
     "postbox-email": "Email (необязательно)",
