@@ -32,6 +32,12 @@ Changelog for Isso
 .. __: https://www.python.org/dev/peps/pep-0466/
 
 
+0.9.10 (2015-04-11)
+-------------------
+
+- fix regression in SMTP authentication, #174
+
+
 0.9.9 (2015-03-04)
 ------------------
 
