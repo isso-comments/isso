@@ -16,8 +16,8 @@ and web-scale than the built-in web server.
 * Openshift, Isso has a one click installer
 
 
-`gevent <http://gunicorn.org/>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`gevent <http://www.gevent.org/>`__
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Probably the easiest deployment method. Install with PIP (requires libevent):
 
