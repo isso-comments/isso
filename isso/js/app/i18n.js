@@ -1,9 +1,10 @@
-define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru", "app/i18n/it", "app/i18n/eo", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR", "app/i18n/es", "app/i18n/zh_CN"], function(config, de, en, fr, ru, it, eo, sv, nl, el, es, zh) {
+define(["app/config", "app/i18n/cs", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru", "app/i18n/it", "app/i18n/eo", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR", "app/i18n/es", "app/i18n/zh_CN"], function(config, cs, de, en, fr, ru, it, eo, sv, nl, el, es, zh) {
 
     "use strict";
 
     var pluralforms = function(lang) {
         switch (lang) {
+        case "cs":
         case "de":
         case "el":
         case "en":
@@ -44,6 +45,7 @@ define(["app/config", "app/i18n/de", "app/i18n/en", "app/i18n/fr", "app/i18n/ru"
     }
 
     var catalogue = {
+        cs: cs,
         de: de,
         el: el,
         en: en,

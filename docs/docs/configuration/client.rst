@@ -51,8 +51,12 @@ Defaults to `true`.
 data-isso-lang
 --------------
 
-Override useragent's preferred language. Currently available: german (de),
-english (en), french (fr), italian (it), esperanto (eo), russian (ru) and spanish (es).
+Override useragent's preferred language. Isso has been translated in over 12
+languages. The language is configured by its `ISO 639-1
+<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) code.
+
+You find a list of all supported languages on `GitHub
+<https://github.com/posativ/isso/tree/master/isso/js/app/i18n>`_.
 
 data-isso-reply-to-self
 -----------------------
