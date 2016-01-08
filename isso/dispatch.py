@@ -22,7 +22,7 @@ class Dispatcher(DispatcherMiddleware):
     a relative URI, e.g. /foo.example and /other.bar.
     """
 
-    default = os.path.join(dist.location, "share", "isso.conf")
+    default = os.path.join(dist.location, dist.project_name, "defaults.ini")
 
     def __init__(self, *confs):
 
