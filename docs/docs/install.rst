@@ -234,7 +234,7 @@ find a very basic SysVinit script which you can use for inspiration:
     ### END INIT INFO
 
     EXEC=/opt/isso/bin/isso
-    EXEC_OPTS="-c /etc/isso.cfg"
+    EXEC_OPTS="-c /etc/isso.cfg run"
 
     RUNAS=isso
     PIDFILE=/var/run/isso.pid
