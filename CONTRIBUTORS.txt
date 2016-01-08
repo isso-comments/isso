@@ -49,6 +49,7 @@ In chronological order:
 
 * Nick Hu <https://github.com/NickHu>
   * Added configuration to require email addresses (no validation)
+  * Fix Vagrantfile
 
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
