@@ -31,7 +31,7 @@ sane defaults.
         https://example.tld/
 
 Note, that multiple, *different* websites are **not** supported in a single
-configuration. To serve comments for diffent websites, refer to
+configuration. To serve comments for different websites, refer to
 :ref:`Multiple Sites <configure-multiple-sites>`.
 
 The moderation is done with signed URLs sent by email or logged to stdout.
@@ -44,7 +44,7 @@ enable moderation queue, add:
     enabled = true
 
 To moderate comments, either use the activation or deletion URL in the logs or
-:ref:`use SMTP <configure-smtp>` to get notified on new comments including the
+:ref:`use SMTP <configure-smtp>` to get notified of new comments, including the
 URLs for activation and deletion:
 
 .. code-block:: ini
