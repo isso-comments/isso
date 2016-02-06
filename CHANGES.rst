@@ -30,10 +30,21 @@ Changelog for Isso
   Intra emphasis would compile `foo_bar_baz` to foo<em>bar</em>baz. This
   behavior is very confusing for users not knowing the Markdown spec in detail.
 
+- new configuration to require an email when submitting comments, #199. Set
+
+    [guard]
+    require-email = true
+
+  and use `data-isso-require-email="true"` to enable this feature. Disabled by
+  default.
+
 - new Bulgarian translation by sahwar, new Swedish translation by <Gustav
-  Näslund, #143
+  Näslund – #143, new Vietnamese translation by Đinh Xuân Sâm, new Croatian
+  translation by streger, new Czech translation by Jan Chren
 
 - fix SMTP setup without credentials, #174
+
+- version pin Misaka to 1.x, html5lib to 0.9999999
 
 .. __: https://www.python.org/dev/peps/pep-0466/
 
