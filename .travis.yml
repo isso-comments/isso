@@ -11,6 +11,7 @@ matrix:
   allow_failures:
     - env: TOX_ENV=squeeze
 install:
+  - pip install -U pip
   - pip install tox
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
