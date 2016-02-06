@@ -44,7 +44,7 @@ Changelog for Isso
   and use `data-isso-require-email="true"` to enable this feature. Disabled by
   default.
 
-- new Bulgarian translation by sahwar, new Swedish translation by <Gustav
+- new Bulgarian translation by sahwar, new Swedish translation by Gustav
   Näslund – #143, new Vietnamese translation by Đinh Xuân Sâm, new Croatian
   translation by streger, new Czech translation by Jan Chren
 
