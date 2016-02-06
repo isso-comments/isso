@@ -103,6 +103,10 @@ define(function() {
             "innerHTML": {
                 get: function() { return node.innerHTML; },
                 set: function(innerHTML) { node.innerHTML = innerHTML; }
+            },
+            "value": {
+                get: function() { return node.value; },
+                set: function(value) { node.value = value; }
             }
         });
     }

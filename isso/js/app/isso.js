@@ -34,8 +34,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         };
 
         // email is not optional if this config parameter is set
-        if (config["require-email"])
-        {
+        if (config["require-email"]) {
           $("[name='email']", el).placeholder =
             $("[name='email']", el).placeholder.replace(/ \(.*\)/, "");
         }
