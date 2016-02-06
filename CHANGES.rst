@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.10 (unreleased)
+0.10 (2016-02-06)
 -----------------
 
 - add new configuration section for hash handling.
