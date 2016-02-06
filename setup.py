@@ -10,11 +10,6 @@ requires = ['itsdangerous', 'misaka>=1.0,<2.0', 'html5lib==0.9999999']
 if (3, 0) <= sys.version_info < (3, 3):
     raise SystemExit("Python 3.0, 3.1 and 3.2 are not supported")
 
-if sys.version_info < (3, 0):
-    requires += ['ipaddr>=2.1', 'configparser', 'werkzeug>=0.8']
-else:
-    requires += ['werkzeug>=0.9']
-
 setup(
     name='isso',
     version='0.10.dev0',
@@ -34,9 +29,15 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.3"
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4"
     ],
     install_requires=requires,
+    extras_require={
+        ':python_version=="2.6"': ['argparse', 'ordereddict'],
+        ':python_version<="2.7"': ['ipaddr>=2.1', 'configparser', 'werkzeug>=0.8'],
+        ':python_version>="3.0"': ['werkzeug>=0.9']
+    },
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
