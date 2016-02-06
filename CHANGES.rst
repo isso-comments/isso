@@ -1,8 +1,8 @@
 Changelog for Isso
 ==================
 
-0.10.1 (unreleased)
------------------
+0.10.1 (2016-02-06)
+-------------------
 
 - fix empty author, email and website values when writing a comment
 
