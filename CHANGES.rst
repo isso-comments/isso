@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.10.2 (unreleased)
+0.10.2 (2016-02-21)
 -------------------
 
 - fix getAttribute return value
