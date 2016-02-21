@@ -91,7 +91,7 @@ define(function() {
         this.scrollIntoView = function(args) { node.scrollIntoView(args) };
 
         this.setAttribute = function(key, value) { node.setAttribute(key, value) };
-        this.getAttribute = function(key) { node.getAttribute(key) };
+        this.getAttribute = function(key) { return node.getAttribute(key) };
 
         this.classList = node.classList;
 
