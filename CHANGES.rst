@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.10.3 (unreleased)
+0.10.3 (2016-02-24)
 -------------------
 
 - follow redirects, #193
