@@ -1,0 +1,18 @@
+commit 2dca30f46ded4459703982cdde87bd631b219e40
+Author: Jelmer Vernooĳ <jelmer@jelmer.uk>
+Date:   Thu Feb 25 04:20:38 2016 +0000
+
+    Create man page directory before moving files to them.
+
+diff --git a/Makefile b/Makefile
+index 9cb3175..221bf66 100644
+--- a/Makefile
++++ b/Makefile
+@@ -46,6 +46,7 @@ js: $(ISSO_JS_DST)
+ 
+ man: $(DOCS_RST_SRC)
+ 	sphinx-build -b man docs/ man/
++	mkdir -p man/man1/ man/man5
+ 	mv man/isso.1 man/man1/isso.1
+ 	mv man/isso.conf.5 man/man5/isso.conf.5
+ 
