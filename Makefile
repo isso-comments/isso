@@ -46,6 +46,7 @@ js: $(ISSO_JS_DST)
 
 man: $(DOCS_RST_SRC)
 	sphinx-build -b man docs/ man/
+	mkdir -p man/man1/ man/man5
 	mv man/isso.1 man/man1/isso.1
 	mv man/isso.conf.5 man/man5/isso.conf.5
 
