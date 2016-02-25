@@ -114,8 +114,12 @@ class Comments:
                 sql.append('AND comments.parent=?')
                 sql_args.append(parent)
 
-        sql.append('ORDER BY ? ASC')
-        sql_args.append(order_by)
+        # custom sanitization
+        if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes']:
+            order_by = 'id'
+        sql.append('ORDER BY ')
+        sql.append(order_by)
+        sql.append(' ASC')
 
         if limit:
             sql.append('LIMIT ?')

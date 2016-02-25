@@ -7,14 +7,14 @@ except ImportError:
 
 import io
 
-from isso import core
+from isso import config
 
 
 class TestConfig(unittest.TestCase):
 
     def test_parser(self):
 
-        parser = core.IssoParser(allow_no_value=True)
+        parser = config.IssoParser(allow_no_value=True)
         parser.read_file(io.StringIO(u"""
             [foo]
             bar = 1h

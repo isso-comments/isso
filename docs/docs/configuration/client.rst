@@ -10,6 +10,7 @@ preferably in the script tag which embeds the JS:
             data-isso-css="true"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
+            data-isso-require-email="false"
             data-isso-max-comments-top="10"
             data-isso-max-comments-nested="5"
             data-isso-reveal-on-click="5"
@@ -50,13 +51,22 @@ Defaults to `true`.
 data-isso-lang
 --------------
 
-Override useragent's preferred language. Currently available: german (de),
-english (en), french (fr), italian (it), esperanto (eo) and russian (ru).
+Override useragent's preferred language. Isso has been translated in over 12
+languages. The language is configured by its `ISO 639-1
+<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) code.
+
+You find a list of all supported languages on `GitHub
+<https://github.com/posativ/isso/tree/master/isso/js/app/i18n>`_.
 
 data-isso-reply-to-self
 -----------------------
 
 Set to `true` when spam guard is configured with `reply-to-self = true`.
+
+data-isso-require-email
+-----------------------
+
+Set to `true` when spam guard is configured with `require-email = true`.
 
 data-isso-max-comments-top and data-isso-max-comments-nested
 ------------------------------------------------------------
@@ -99,8 +109,8 @@ data-isso-id
 
 Broken – do not use. https://github.com/posativ/isso/issues/27
 
-Set a custom thread id, defaults to current URI. If you a comment counter, add
-this attribute to the link tag, too.
+Set a custom thread id, defaults to current URI. If you use a comment counter,
+add this attribute to the link tag, too.
 
 .. code-block:: html
 

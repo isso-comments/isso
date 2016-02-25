@@ -1,10 +1,7 @@
 
 from __future__ import print_function, unicode_literals
 
-import datetime
 from itertools import chain
-
-import re
 
 
 try:
@@ -19,37 +16,6 @@ from isso.compat import map, filter, PY2K
 if PY2K:  # http://bugs.python.org/issue12984
     from xml.dom.minidom import NamedNodeMap
     NamedNodeMap.__contains__ = lambda self, key: self.has_key(key)
-
-
-def timedelta(value):
-    """
-    Parse :param value: into :class:`datetime.timedelta`, you can use any (logical)
-    combination of Nw, Nd, Nh and Nm, e.g. `1h30m` for 1 hour, 30 minutes or `3w` for
-    3 weeks. Raises a ValueError if the input is invalid/unparseable.
-
-    >>> print(timedelta("3w"))
-    21 days, 0:00:00
-    >>> print(timedelta("3w 12h 57m"))
-    21 days, 12:57:00
-    >>> print(timedelta("1h30m37s"))
-    1:30:37
-    >>> print(timedelta("1asdf3w"))
-    Traceback (most recent call last):
-        ...
-    ValueError: invalid human-readable timedelta
-    """
-
-    keys = ["weeks", "days", "hours", "minutes", "seconds"]
-    regex = "".join(["((?P<%s>\d+)%s ?)?" % (k, k[0]) for k in keys])
-    kwargs = {}
-    for k, v in re.match(regex, value).groupdict(default="0").items():
-        kwargs[k] = int(v)
-
-    rv = datetime.timedelta(**kwargs)
-    if rv == datetime.timedelta():
-        raise ValueError("invalid human-readable timedelta")
-    return datetime.timedelta(**kwargs)
-
 
 
 def thread(data, default=u"Untitled.", id=None):

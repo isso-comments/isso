@@ -10,7 +10,7 @@ div(class='isso-comment' id='isso-#{comment.id}')
             else
                 span(class='author')
                     = bool(comment.author) ? comment.author : i18n('comment-anonymous')
-            span(class="spacer") •
+            span(class="spacer") &bull;
             a(class='permalink' href='#isso-#{comment.id}')
                 time(title='#{humanize(comment.created)}' datetime='#{datetime(comment.created)}')
             span(class='note')

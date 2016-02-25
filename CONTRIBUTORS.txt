@@ -41,6 +41,15 @@ In chronological order:
 * Baptiste Darthenay
   * Esperanto translation
 
+* Matías Ducasa <https://github.com/matiasducasa>
+  * Spanish translation
+
+* Daniel Gräber <https://github.com/albohlabs>
+  * Added ansible for provisioning
+
+* Nick Hu <https://github.com/NickHu>
+  * Added configuration to require email addresses (no validation)
+  * Fix Vagrantfile
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
-

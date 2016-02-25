@@ -8,6 +8,7 @@
 *.pyc
 .Python
 .sass-cache
+.vagrant
 
 /bin
 /include
@@ -24,3 +25,5 @@
 
 /docs/_build
 /docs/_static/css/site.css
+
+/pip-selfcheck.json

@@ -6,7 +6,9 @@ import sys
 import os
 import io
 import re
+import logging
 import textwrap
+import functools
 
 from time import mktime, strptime, time
 from collections import defaultdict
@@ -26,6 +28,7 @@ except ImportError:
 
 from xml.etree import ElementTree
 
+logger = logging.getLogger("isso")
 
 def strip(val):
     if isinstance(val, string_types):
@@ -149,14 +152,6 @@ class Disqus(object):
                                     initial_indent="  ", subsequent_indent="  "))
                 print("")
 
-    @classmethod
-    def detect(cls, peek):
-
-        if 'xmlns="http://disqus.com' in peek:
-            return "http://disqus.com"
-
-        return None
-
 
 class WordPress(object):
 
@@ -167,11 +162,13 @@ class WordPress(object):
         self.xmlfile = xmlfile
         self.count = 0
 
-        with io.open(xmlfile, encoding="utf-8") as fp:
-            ns = WordPress.detect(fp.read(io.DEFAULT_BUFFER_SIZE))
-
-        if ns:
-            self.ns = "{" + ns + "}"
+        for line in io.open(xmlfile, encoding="utf-8"):
+            m = WordPress.detect(line)
+            if m:
+                self.ns = WordPress.ns.replace("1.0", m.group(1))
+                break
+        else:
+            logger.warn("No WXR namespace found, assuming 1.0")
 
     def insert(self, thread):
 
@@ -245,32 +242,38 @@ class WordPress(object):
 
     @classmethod
     def detect(cls, peek):
+        return re.compile("http://wordpress.org/export/(1\.\d)/").search(peek)
 
-        m = re.search("http://wordpress.org/export/1\.\d/", peek)
-        if m:
-            return m.group(0)
 
-        return None
+def autodetect(peek):
+
+    if 'xmlns="http://disqus.com' in peek:
+        return Disqus
+
+    m = WordPress.detect(peek)
+    if m:
+        return WordPress
+
+    return None
 
 
 def dispatch(type, db, dump, empty_id=False):
-    if db.execute("SELECT * FROM comments").fetchone():
-        if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
-            raise SystemExit("Abort.")
+        if db.execute("SELECT * FROM comments").fetchone():
+            if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+                raise SystemExit("Abort.")
 
-    if type is None:
-        with io.open(dump, encoding="utf-8") as fp:
-            peek = fp.read(io.DEFAULT_BUFFER_SIZE)
+        if type == "disqus":
+            cls = Disqus
+        elif type == "wordpress":
+            cls = WordPress
+        else:
+            with io.open(dump, encoding="utf-8") as fp:
+                cls = autodetect(fp.read(io.DEFAULT_BUFFER_SIZE))
 
-        if WordPress.detect(peek):
-            type = "wordpress"
+        if cls is None:
+            raise SystemExit("Unknown format, abort.")
 
-        if Disqus.detect(peek):
-            type = "disqus"
+        if cls is Disqus:
+            cls = functools.partial(cls, empty_id=empty_id)
 
-    if type == "wordpress":
-        WordPress(db, dump).migrate()
-    elif type == "disqus":
-        Disqus(db, dump, empty_id).migrate()
-    else:
-        raise SystemExit("Unknown format, abort.")
+        cls(db, dump).migrate()

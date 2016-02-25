@@ -188,9 +188,10 @@ port
 
 security
     use a secure connection to the server, possible values: *none*, *starttls*
-    or *ssl*. Note, that Python does not validate the server's certificate and
-    thus the connection is vulnerable to Man-in-the-Middle attacks. Therefore,
-    you should definitely use a dedicated SMTP account for Isso.
+    or *ssl*. Note, that there is no easy way for Python 2.7 and 3.3 to
+    implement certification validation and thus the connection is vulnerable to
+    Man-in-the-Middle attacks. You should definitely use a dedicated SMTP
+    account for Isso in that case.
 
 to
     recipient address, e.g. your email address
@@ -216,6 +217,7 @@ for IPv4, ``/48`` for IPv6).
     ratelimit = 2
     direct-reply = 3
     reply-to-self = false
+    require-email = false
 
 enabled
     enable guard, recommended in production. Not useful for debugging
@@ -232,6 +234,12 @@ reply-to-self
     allow commenters to reply to their own comments when they could still edit
     the comment. After the editing timeframe is gone, commenters can reply to
     their own comments anyways.
+
+    Do not forget to configure the client.
+
+require-email
+    force commenters to enter a value into the email field. No validation is
+    performed on the provided value.
 
     Do not forget to configure the client.
 
@@ -266,6 +274,32 @@ allowed-attributes
 To allow images in comments, you just need to add ``allowed-elements = img`` and
 ``allowed-attributes = src``.
 
+Hash
+----
+
+Customize used hash functions to hide the actual email addresses from
+commenters but still be able to generate an identicon.
+
+.. code-block:: ini
+
+    [hash]
+    salt = Eech7co8Ohloopo9Ol6baimi
+    algorithm = pbkdf2
+
+salt
+    A salt is used to protect against rainbow tables. Isso does not make use of
+    pepper (yet). The default value has been in use since the release of Isso
+    and generates the same identicons for same addresses across installations.
+
+algorithm
+    Hash algorithm to use -- either from Python's `hashlib` or PBKDF2 (a
+    computational expensive hash function).
+
+    The actual identifier for PBKDF2 is `pbkdf2:1000:6:sha1`, which means 1000
+    iterations, 6 bytes to generate and SHA1 as pseudo-random family used for
+    key strengthening.
+    Arguments have to be in that order, but can be reduced to `pbkdf2:4096`
+    for example to override the iterations only.
 
 Appendum
 --------

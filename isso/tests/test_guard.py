@@ -1,10 +1,13 @@
 # -*- encoding: utf-8 -*-
 
+from __future__ import unicode_literals
+
 try:
     import unittest2 as unittest
 except ImportError:
     import unittest
 
+import os
 import json
 import tempfile
 
@@ -12,7 +15,7 @@ from werkzeug import __version__
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, core
+from isso import Isso, config, core, dist
 from isso.utils import http
 
 from fixtures import curl, FakeIP
@@ -32,19 +35,22 @@ class TestGuard(unittest.TestCase):
     def setUp(self):
         self.path = tempfile.NamedTemporaryFile().name
 
-    def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False):
+    def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False, require_email=False):
 
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
+        conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")
         conf.set("guard", "ratelimit", str(ratelimit))
         conf.set("guard", "direct-reply", str(direct_reply))
         conf.set("guard", "reply-to-self", "1" if self_reply else "0")
+        conf.set("guard", "require-email", "1" if require_email else "0")
 
         class App(Isso, core.Mixin):
             pass
 
         app = App(conf)
+
         app.wsgi_app = FakeIP(app.wsgi_app, ip)
 
         return Client(app, Response)
@@ -109,3 +115,18 @@ class TestGuard(unittest.TestCase):
         self.assertEqual(client.post("/new?uri=test", data=self.data).status_code, 201)
         self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 201)
         self.assertEqual(client.post("/new?uri=test", data=payload(2)).status_code, 201)
+
+    def testRequireEmail(self):
+
+        payload = lambda email: json.dumps({"text": "...", "email": email})
+
+        client = self.makeClient("127.0.0.1", ratelimit=4, require_email=False) 
+        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_email=True) 
+
+        # if we don't require email
+        self.assertEqual(client.post("/new?uri=test", data=payload("")).status_code, 201)
+        self.assertEqual(client.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
+
+        # if we do require email
+        self.assertEqual(client_strict.post("/new?uri=test", data=payload("")).status_code, 403)
+        self.assertEqual(client_strict.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
