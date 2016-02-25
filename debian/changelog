@@ -1,4 +1,4 @@
-isso (0.9.10-1) UNRELEASED; urgency=medium
+isso (0.10.3-1) UNRELEASED; urgency=medium
 
   * New upstream release.
   * Add patch 0002-remove-flattr.patch, remove flattr link that uses non-
