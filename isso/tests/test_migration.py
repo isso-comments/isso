@@ -10,10 +10,17 @@ except ImportError:
 import tempfile
 from os.path import join, dirname
 
-from isso.core import Config
+from isso import config
 
 from isso.db import SQLite3
-from isso.migrate import Disqus, WordPress
+from isso.migrate import Disqus, WordPress, autodetect
+
+conf = config.new({
+    "general": {
+        "dbpath": "/dev/null",
+        "max-age": "1h"
+    }
+})
 
 
 class TestMigration(unittest.TestCase):
@@ -23,7 +30,7 @@ class TestMigration(unittest.TestCase):
         xml = join(dirname(__file__), "disqus.xml")
         xxx = tempfile.NamedTemporaryFile()
 
-        db = SQLite3(xxx.name, Config.load(None))
+        db = SQLite3(xxx.name, conf)
         Disqus(db, xml).migrate()
 
         self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
@@ -45,7 +52,7 @@ class TestMigration(unittest.TestCase):
         xml = join(dirname(__file__), "wordpress.xml")
         xxx = tempfile.NamedTemporaryFile()
 
-        db = SQLite3(xxx.name, Config.load(None))
+        db = SQLite3(xxx.name, conf)
         WordPress(db, xml).migrate()
 
         self.assertEqual(db.threads["/2014/test/"]["title"], "Hello, World…")
@@ -82,14 +89,13 @@ class TestMigration(unittest.TestCase):
                     xmlns:dc="http://purl.org/dc/elements/1.1/"
                     xmlns:wp="http://wordpress.org/export/%s/">"""
 
-        self.assertEqual(WordPress.detect(wp % "invalid"), None)
+        self.assertEqual(autodetect(wp % "foo"), None)
 
         for version in ("1.0", "1.1", "1.2", "1.3"):
-            self.assertEqual(WordPress.detect(wp % version),
-                             "http://wordpress.org/export/%s/" % version)
+            self.assertEqual(autodetect(wp % version), WordPress)
 
         dq = '''\
         <?xml version="1.0"?>
         <disqus xmlns="http://disqus.com"
                 xmlns:dsq="http://disqus.com/disqus-internals"'''
-        self.assertIsNotNone(Disqus.detect(dq))
+        self.assertEqual(autodetect(dq), Disqus)

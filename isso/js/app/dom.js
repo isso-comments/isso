@@ -2,101 +2,131 @@ define(function() {
 
     "use strict";
 
-    window.Element.prototype.replace = function(el) {
-        var element = DOM.htmlify(el);
-        this.parentNode.replaceChild(element, this);
-        return element;
-    };
+    function Element(node) {
+        this.obj = node;
 
-    window.Element.prototype.prepend = function(el) {
-        var element = DOM.htmlify(el);
-        this.insertBefore(element, this.firstChild);
-        return element;
-    };
+        this.replace = function (el) {
+            var element = DOM.htmlify(el);
+            node.parentNode.replaceChild(element.obj, node);
+            return element;
+        };
 
-    window.Element.prototype.append = function(el) {
-        var element = DOM.htmlify(el);
-        this.appendChild(element);
-        return element;
-    };
+        this.prepend = function (el) {
+            var element = DOM.htmlify(el);
+            node.insertBefore(element.obj, node.firstChild);
+            return element;
+        };
 
-    window.Element.prototype.insertAfter = function(el) {
-        var element = DOM.htmlify(el);
-        this.parentNode.insertBefore(element, this.nextSibling);
-        return element;
-    };
+        this.append = function (el) {
+            var element = DOM.htmlify(el);
+            node.appendChild(element.obj);
+            return element;
+        };
 
-    window.Element.prototype.on = function(type, listener, prevent) {
-        /*
-        Shortcut for `Element.addEventListener`, prevents default event
-        by default, set :param prevents: to `false` to change that behavior.
+        this.insertAfter = function(el) {
+            var element = DOM.htmlify(el);
+            node.parentNode.insertBefore(element.obj, node.nextSibling);
+            return element;
+        };
+
+        /**
+         * Shortcut for `Element.addEventListener`, prevents default event
+         * by default, set :param prevents: to `false` to change that behavior.
          */
-        this.addEventListener(type, function(event) {
-            listener(event);
-            if (prevent === undefined || prevent) {
-                event.preventDefault();
+        this.on = function(type, listener, prevent) {
+            node.addEventListener(type, function(event) {
+                listener(event);
+                if (prevent === undefined || prevent) {
+                    event.preventDefault();
+                }
+            });
+        };
+
+        /**
+         * Toggle between two internal states on event :param type: e.g. to
+         * cycle form visibility. Callback :param a: is called on first event,
+         * :param b: next time.
+         *
+         * You can skip to the next state without executing the callback with
+         * `toggler.next()`. You can prevent a cycle when you call `toggler.wait()`
+         * during an event.
+         */
+        this.toggle = function(type, a, b) {
+
+            var toggler = new Toggle(a, b);
+            this.on(type, function() {
+                toggler.next();
+            });
+        };
+
+        this.detach = function() {
+            // Detach an element from the DOM and return it.
+            node.parentNode.removeChild(this.obj);
+            return this;
+        };
+
+        this.remove = function() {
+            // IE quirks
+            node.parentNode.removeChild(this.obj);
+        };
+
+        this.show = function() {
+            node.style.display = "block";
+        };
+
+        this.hide = function() {
+            node.style.display = "none";
+        };
+
+        this.setText = function(text) {
+            node.textContent = text;
+        };
+
+        this.setHtml = function(html) {
+            node.innerHTML = html;
+        };
+
+        this.blur = function() { node.blur() };
+        this.focus = function() { node.focus() };
+        this.scrollIntoView = function(args) { node.scrollIntoView(args) };
+
+        this.setAttribute = function(key, value) { node.setAttribute(key, value) };
+        this.getAttribute = function(key) { return node.getAttribute(key) };
+
+        this.classList = node.classList;
+
+        Object.defineProperties(this, {
+            "textContent": {
+                get: function() { return node.textContent; },
+                set: function(textContent) { node.textContent = textContent; }
+            },
+            "innerHTML": {
+                get: function() { return node.innerHTML; },
+                set: function(innerHTML) { node.innerHTML = innerHTML; }
+            },
+            "value": {
+                get: function() { return node.value; },
+                set: function(value) { node.value = value; }
             }
         });
-    };
+    }
 
-    window.Element.prototype.toggle = function(type, a, b) {
-        /*
-        Toggle between two internal states on event :param type: e.g. to
-        cycle form visibility. Callback :param a: is called on first event,
-        :param b: next time.
+    var Toggle = function(a, b) {
+        this.state = false;
 
-        You can skip to the next state without executing the callback with
-        `toggler.next()`. You can prevent a cycle when you call `toggler.wait()`
-        during an event.
-         */
-
-        function Toggle(el, a, b) {
-            this.state = false;
-            this.el = el;
-            this.a = a;
-            this.b = b;
-        }
-
-        Toggle.prototype.next = function next() {
+        this.next = function() {
             if (! this.state) {
                 this.state = true;
-                this.a(this);
+                a(this);
             } else {
                 this.state = false;
-                this.b(this);
+                b(this);
             }
         };
 
-        Toggle.prototype.wait = function wait() {
+        this.wait = function() {
             this.state = ! this.state;
         };
-
-        var toggler = new Toggle(this, a, b);
-        this.on(type, function() {
-            toggler.next();
-        });
-    };
-
-    window.Element.prototype.detach = function() {
-        /*
-        Detach an element from the DOM and return it.
-         */
-
-        this.parentNode.removeChild(this);
-        return this;
-    };
-
-    window.Element.prototype.remove = function() {
-        // Mimimi, I am IE and I am so retarded, mimimi.
-        this.parentNode.removeChild(this);
-    };
-
-    window.Element.prototype.show = function() {
-        this.style.display = "block";
-    };
-
-    window.Element.prototype.hide = function() {
-        this.style.display = "none";
     };
 
     var DOM = function(query, root, single) {
@@ -115,31 +145,43 @@ define(function() {
             root = window.document;
         }
 
-        var elements = root.querySelectorAll(query);
+        if (root instanceof Element) {
+            root = root.obj;
+        }
+        var elements = [].slice.call(root.querySelectorAll(query), 0);
 
         if (elements.length === 0) {
             return null;
         }
 
         if (elements.length === 1 && single) {
-            return elements[0];
+            return new Element(elements[0]);
         }
 
-        return elements;
+        // convert NodeList to Array
+        elements = [].slice.call(elements, 0);
+
+        return elements.map(function(el) {
+            return new Element(el);
+        });
     };
 
-    DOM.htmlify = function(html) {
+    DOM.htmlify = function(el) {
         /*
         Convert :param html: into an Element (if not already).
-         */
+        */
 
-        if (html instanceof window.Element) {
-            return html;
+        if (el instanceof Element) {
+            return el;
+        }
+
+        if (el instanceof window.Element) {
+            return new Element(el);
         }
 
         var wrapper = DOM.new("div");
-        wrapper.innerHTML = html;
-        return wrapper.firstChild;
+        wrapper.innerHTML = el;
+        return new Element(wrapper.firstChild);
     };
 
     DOM.new = function(tag, content) {

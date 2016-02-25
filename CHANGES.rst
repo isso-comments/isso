@@ -1,20 +1,87 @@
 Changelog for Isso
 ==================
 
-0.9.10 (unreleased)
+0.10.3 (2016-02-24)
 -------------------
 
-- Nothing changed yet.
+- follow redirects, #193
+
+
+0.10.2 (2016-02-21)
+-------------------
+
+- fix getAttribute return value
+
+
+0.10.1 (2016-02-06)
+-------------------
+
+- fix empty author, email and website values when writing a comment
+
+
+0.10 (2016-02-06)
+-----------------
+
+- add new configuration section for hash handling.
+
+    [hash]
+    salt = Eech7co8Ohloopo9Ol6baimi
+    algorithm = pbkdf2
+
+  You can customize the salt, choose different hash functions and tweak the
+  parameters for PBKDF2.
+
+- Python 3.4+ validate TLS connections against the system's CA. Previously no
+  validation was in place, see PEP-446__ for details.
+
+- add `fenced_code` and `no_intra_emphasis` to default configuration.
+
+  Fenced code allows to write code without indentation using `~~~` delimiters
+  (optionally with language identifier).
+
+  Intra emphasis would compile `foo_bar_baz` to foo<em>bar</em>baz. This
+  behavior is very confusing for users not knowing the Markdown spec in detail.
+
+- new configuration to require an email when submitting comments, #199. Set
+
+    [guard]
+    require-email = true
+
+  and use `data-isso-require-email="true"` to enable this feature. Disabled by
+  default.
+
+- new Bulgarian translation by sahwar, new Swedish translation by Gustav
+  Näslund – #143, new Vietnamese translation by Đinh Xuân Sâm, new Croatian
+  translation by streger, new Czech translation by Jan Chren
+
+- fix SMTP setup without credentials, #174
+
+- version pin Misaka to 1.x, html5lib to 0.9999999
+
+.. __: https://www.python.org/dev/peps/pep-0466/
+
+
+0.9.10 (2015-04-11)
+-------------------
+
+- fix regression in SMTP authentication, #174
 
 
 0.9.9 (2015-03-04)
 ------------------
 
 - several Python 3.x related bugfixes
-- add compatibility with Safari's incognito mode
+
+- don't lose comment form if the server rejected the POST request, #144
+
+- add localStorage fallback if QUOTA_EXCEEDED_ERR is thrown (e.g. Safari
+  private browsing)
+
 - add '--empty-id' flag to Disqus import, because Disqus' export sucks
+
 - (re)gain compatibility with Werkzeug 0.8 and really old html5lib versions
   available in Debian Squeeze, #170 & #168
+
 - add User-Agent when Isso requests the URL, an alternate way to #151 (add
   'X-Isso' when requesting).
 
@@ -100,8 +167,8 @@ Changelog for Isso
 .. __: http://highlightjs.org/
 
 
-0.9.2 (2014-06-25)
-------------------
+0.9 (2014-05-29)
+----------------
 
 - comment pagination by Srijan Choudhary, #15
 
@@ -166,8 +233,6 @@ Changelog for Isso
 - remove Django's PBKDF2 implementation in favour of the PBKDF2 function
   available in werkzeug 0.9 or higher. If you're still using werkzeug 0.8, Isso
   imports passlib__ as fallback (if available).
-
-- esperanto translation by Baptiste Darthenay
 
 
 This release also features a new templating engine Jade__ which replaces

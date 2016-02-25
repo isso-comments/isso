@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 
 try:
     import unittest2 as unittest
@@ -8,8 +9,8 @@ import os
 import sqlite3
 import tempfile
 
+from isso import config
 from isso.db import SQLite3
-from isso.core import Config
 
 from isso.compat import iteritems
 
@@ -24,14 +25,25 @@ class TestDBMigration(unittest.TestCase):
 
     def test_defaults(self):
 
-        db = SQLite3(self.path, Config.load(None))
+        conf = config.new({
+            "general": {
+                "dbpath": "/dev/null",
+                "max-age": "1h"
+            }
+        })
+        db = SQLite3(self.path, conf)
 
         self.assertEqual(db.version, SQLite3.MAX_VERSION)
         self.assertTrue(db.preferences.get("session-key", "").isalnum())
 
     def test_session_key_migration(self):
 
-        conf = Config.load(None)
+        conf = config.new({
+            "general": {
+                "dbpath": "/dev/null",
+                "max-age": "1h"
+            }
+        })
         conf.set("general", "session-key", "supersecretkey")
 
         with sqlite3.connect(self.path) as con:
@@ -88,7 +100,12 @@ class TestDBMigration(unittest.TestCase):
                             "   tid, parent, created)"
                             "VALUEs (?, ?, ?)", (id, parent, id))
 
-        conf = Config.load(None)
+        conf = config.new({
+            "general": {
+                "dbpath": "/dev/null",
+                "max-age": "1h"
+            }
+        })
         SQLite3(self.path, conf)
 
         flattened = [

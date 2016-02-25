@@ -65,10 +65,10 @@ from werkzeug.contrib.profiler import ProfilerMiddleware
 local = Local()
 local_manager = LocalManager([local])
 
-from isso import db, migrate, wsgi, ext, views
-from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin, Config
+from isso import config, db, migrate, wsgi, ext, views
+from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin
 from isso.wsgi import origin, urlsplit
-from isso.utils import http, JSONRequest, html
+from isso.utils import http, JSONRequest, html, hash
 from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
@@ -83,14 +83,13 @@ logger = logging.getLogger("isso")
 
 class Isso(object):
 
-    salt = b"Eech7co8Ohloopo9Ol6baimi"
-
     def __init__(self, conf):
 
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
         self.markup = html.Markup(conf.section('markup'))
+        self.hasher = hash.new(conf.section("hash"))
 
         super(Isso, self).__init__(conf)
 
@@ -108,7 +107,7 @@ class Isso(object):
         self.urls = Map()
 
         views.Info(self)
-        comments.API(self)
+        comments.API(self, self.hasher)
 
     def render(self, text):
         return self.markup.render(text)
@@ -224,7 +223,7 @@ def main():
     serve = subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = Config.load(args.conf)
+    conf = config.load(join(dist.location, dist.project_name, "defaults.ini"), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

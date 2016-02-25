@@ -52,7 +52,9 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             }
 
             if (xhr.status >= 500) {
-                reject(xhr.body);
+                if (reject) {
+                    reject(xhr.body);
+                }
             } else {
                 resolve({status: xhr.status, body: xhr.responseText});
             }
@@ -90,7 +92,13 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
     var create = function(tid, data) {
         var deferred = Q.defer();
         curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data),
-            function (rv) { deferred.resolve(JSON.parse(rv.body)); });
+            function (rv) {
+                if (rv.status === 201 || rv.status === 202) {
+                    deferred.resolve(JSON.parse(rv.body));
+                } else {
+                    deferred.reject(rv.body);
+                }
+            });
         return deferred.promise;
     };
 

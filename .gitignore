@@ -8,7 +8,7 @@
 *.pyc
 .Python
 .sass-cache
-*~
+.vagrant
 
 /bin
 /include
@@ -26,12 +26,4 @@
 /docs/_build
 /docs/_static/css/site.css
 
-# Debian-specific ignores
-/build/
-*.debhelper
-*.debhelper.log
-*.substvars
-/debian/files
-/debian/isso/
-/debian/python-isso/
-.pybuild
+/pip-selfcheck.json

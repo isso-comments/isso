@@ -18,7 +18,7 @@ except ImportError:
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, core
+from isso import Isso, core, config, dist
 from isso.utils import http
 from isso.views import comments
 
@@ -32,9 +32,10 @@ class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
 
         class App(Isso, core.Mixin):
             pass
@@ -292,7 +293,6 @@ class TestComments(unittest.TestCase):
         b = loads(b.data)
         c = loads(c.data)
 
-        self.assertIsInstance(int(a['hash'], 16), int)
         self.assertNotEqual(a['hash'], '192.168.1.1')
         self.assertEqual(a['hash'], b['hash'])
         self.assertNotEqual(a['hash'], c['hash'])
@@ -375,18 +375,16 @@ class TestComments(unittest.TestCase):
         # just for the record
         self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
 
-    def testPBKDF2(self):
-        self.assertEqual(comments.API.pbkdf2(u"", Isso.salt, 1000, 6), u"42476aafe2e4")
-
 
 class TestModeratedComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
 
         class App(Isso, core.Mixin):
             pass
@@ -414,10 +412,11 @@ class TestPurgeComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = core.Config.load(None)
+        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
 
         class App(Isso, core.Mixin):
             pass
