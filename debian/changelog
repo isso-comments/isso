@@ -3,6 +3,8 @@ isso (0.10.3-1) UNRELEASED; urgency=medium
   * New upstream release.
   * Add patch 0002-remove-flattr.patch, remove flattr link that uses non-
     free icon.
+  * Drop patch 0001-Allow-ISSO_SETTINGS-env-variable-to-be-a-
+    directory.patch.
 
  -- Jelmer Vernooij <jelmer@debian.org>  Sat, 07 Nov 2015 16:14:38 +0000
 
