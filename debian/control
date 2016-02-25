@@ -15,7 +15,8 @@ Build-Depends:
  nodejs,
  python-all,
  python-setuptools,
- python-sphinx
+ python-sphinx,
+ ruby-sass
 Standards-Version: 3.9.6
 X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/

@@ -5,6 +5,7 @@ isso (0.10.3-1) UNRELEASED; urgency=medium
     free icon.
   * Drop patch 0001-Allow-ISSO_SETTINGS-env-variable-to-be-a-
     directory.patch.
+  * Add dependency on ruby-sass for scss.
 
  -- Jelmer Vernooij <jelmer@debian.org>  Sat, 07 Nov 2015 16:14:38 +0000
 
