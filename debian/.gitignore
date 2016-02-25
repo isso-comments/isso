@@ -6,3 +6,4 @@ files
 isso/
 python-isso/
 .pybuild
+debhelper-build-stamp
