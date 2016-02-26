@@ -8,7 +8,7 @@ Build-Depends:
  dh-python,
  libjs-dojo-core,
  node-almond (>= 0.2.9),
- node-jade (>= 1.5.0),
+ node-jade (>= 1.11.0),
  node-requirejs (>= 2.1.9),
  node-requirejs-text (>= 2.0.12),
  node-uglify (>= 2.4.13-2),
