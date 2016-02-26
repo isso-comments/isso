@@ -25,6 +25,8 @@ DOCS_MAN_DST := man/man1/isso.1 man/man5/isso.conf.5
 
 DOCS_HTML_DST := docs/_build/html
 
+RJS = r.js
+
 all: man js site
 
 init:
@@ -37,10 +39,10 @@ check:
 	-@python3 -m pyflakes $(ISSO_PY_SRC)
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
-	r.js -o isso/js/build.$*.js out=$@
+	$(RJS) -o isso/js/build.$*.js out=$@
 
 isso/js/%.dev.js: $(ISSO_JS_SRC) $(ISSO_CSS)
-	r.js -o isso/js/build.$*.js optimize="none" out=$@
+	$(RJS) -o isso/js/build.$*.js optimize="none" out=$@
 
 js: $(ISSO_JS_DST)
 
