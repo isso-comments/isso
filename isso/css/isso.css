@@ -40,6 +40,7 @@
     margin: 3px 15px 0 0;
 }
 .isso-postbox > .avatar {
+    display: none;
     float: left;
     margin: 5px 10px 0 5px;
     width: 48px;

@@ -11,6 +11,7 @@ define(["app/dom", "app/api"], function($, api) {
             FB.api("/me", function(response) {
                 loggedIn = true;
                 authorData = {
+                    uid: response["id"],
                     name: response["name"],
                 };
                 updateAllPostboxes();
@@ -58,11 +59,14 @@ define(["app/dom", "app/api"], function($, api) {
                 $(".auth-not-loggedin", el).hide();
                 $(".auth-loggedin-facebook", el).showInline();
                 $(".auth-facebook-name", el).innerHTML = authorData.name;
+                $(".isso-postbox .avatar", el).setAttribute("src", "//graph.facebook.com/" + authorData.uid + "/picture");
+                $(".isso-postbox .avatar", el).show();
             } else {
                 $(".auth-not-loggedin", el).showInline();
                 $(".auth-loggedin-facebook", el).hide();
                 $(".social-login-link-facebook", el).showInline();
                 $(".social-login-link-facebook > img", el).setAttribute("src", api.endpoint + "/images/facebook-color.png");
+                $(".isso-postbox .avatar", el).hide();
             }
         }
     }
