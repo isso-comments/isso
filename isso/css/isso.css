@@ -170,6 +170,17 @@
 #isso-thread input:focus {
     border-color: rgba(0, 0, 0, 0.8);
 }
+.isso-postbox > .form-wrapper > .auth-section .auth-not-loggedin {
+    display: inline;
+}
+.isso-postbox > .form-wrapper > .auth-section .auth-loggedin-facebook {
+    display: none;
+}
+.isso-postbox > .form-wrapper > .auth-section .auth-facebook-name {
+    display: inline-block;
+    position: relative;
+    font-weight: bold;
+}
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper {
     display: inline-block;
     position: relative;
@@ -184,6 +195,46 @@
     line-height: 1.4em;
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.isso-postbox > .form-wrapper > .auth-section .social-login-separator {
+    display: inline-block;
+    position: relative;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-login-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-login-wrapper > a {
+    display: none;
+    margin-left: 0;
+    margin-right: .3em;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-login-wrapper > a > img {
+    width: 28px;
+    height: 28px;
+    margin-top: -.3em;
+    border-radius: 3px;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper > a {
+    color: #FFF;
+    background-color: #3b5998;
+    border-radius: 3px;
+    margin-left: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-weight: bold;
 }
 .isso-postbox > .form-wrapper > .auth-section .post-action {
     display: inline-block;

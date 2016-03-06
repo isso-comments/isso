@@ -74,6 +74,10 @@ define(function() {
             node.style.display = "block";
         };
 
+        this.showInline = function() {
+            node.style.display = "inline";
+        };
+
         this.hide = function() {
             node.style.display = "none";
         };
@@ -212,6 +216,11 @@ define(function() {
     DOM.each = function(tag, func) {
         // XXX really needed? Maybe better as NodeList method
         Array.prototype.forEach.call(document.getElementsByTagName(tag), func);
+    };
+
+    DOM.eachByClass = function(eClass, func) {
+        // XXX really needed? Maybe better as NodeList method
+        Array.prototype.forEach.call(document.getElementsByClassName(eClass), func);
     };
 
     return DOM;
