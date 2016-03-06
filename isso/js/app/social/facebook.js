@@ -8,11 +8,12 @@ define(["app/dom", "app/api"], function($, api) {
 
     var statusChangeCallback = function(response) {
         if (response.status === "connected") {
-            FB.api("/me", function(response) {
+            FB.api("/me", {fields: ["name", "email"]}, function(response) {
                 loggedIn = true;
                 authorData = {
                     uid: response["id"],
                     name: response["name"],
+                    email: response["email"] || "",
                 };
                 updateAllPostboxes();
             });
@@ -87,13 +88,29 @@ define(["app/dom", "app/api"], function($, api) {
         $(".social-login-link-facebook", el).on("click", function() {
             FB.login(function(response) {
                 statusChangeCallback(response);
-            });
+            }, {scope: 'public_profile,email'});
         });
+    }
+
+    var isLoggedIn = function() {
+        return loggedIn;
+    }
+
+    var getAuthorData = function() {
+        return {
+            network: "facebook",
+            id: authorData.uid,
+            name: authorData.name,
+            email: authorData.email,
+            website: "",
+        };
     }
 
     return {
         init: init,
-        initPostbox: initPostbox
+        initPostbox: initPostbox,
+        isLoggedIn: isLoggedIn,
+        getAuthorData: getAuthorData
     };
 
 });

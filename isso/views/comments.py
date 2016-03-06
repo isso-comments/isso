@@ -71,11 +71,11 @@ def xhr(func):
 
 class API(object):
 
-    FIELDS = set(['id', 'parent', 'text', 'author', 'website',
+    FIELDS = set(['id', 'parent', 'text', 'social_network', 'social_id', 'author', 'website',
                   'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'social_network', 'social_id'])
 
     VIEWS = [
         ('fetch',   ('GET', '/')),
@@ -91,6 +91,8 @@ class API(object):
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('demo',    ('GET', '/demo'))
     ]
+
+    SOCIAL_NETWORKS = set(['facebook'])
 
     def __init__(self, isso, hasher):
 
@@ -137,6 +139,14 @@ class API(object):
                 return False, "arbitrary length limit"
             if not isurl(comment["website"]):
                 return False, "Website not Django-conform"
+
+        if "social_network" in comment:
+            if comment["social_network"] is not None and comment["social_network"] not in API.SOCIAL_NETWORKS:
+                return False, "unknown social network"
+            if comment["social_network"] == "facebook":
+                idPattern = re.compile("^[0-9]+$");
+                if not idPattern.match(comment["social_id"]):
+                    return False, "invalid Facebook UID"
 
         return True, ""
 

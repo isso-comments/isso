@@ -25,7 +25,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".textarea", this).focus();
                 return false;
             }
-            if (config["require-email"] &&
+            if (config["require-email"] && !facebook.isLoggedIn() &&
                 $("[name='email']", this).value.length <= 0)
             {
               $("[name='email']", this).focus();
@@ -43,20 +43,30 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
         $("[type=submit]", el).on("click", function() {
+            var authorData, network, id, author, email, website;
+
             if (! el.validate()) {
                 return;
             }
 
-            var author = $("[name=author]", el).value || null,
-                email = $("[name=email]", el).value || null,
-                website = $("[name=website]", el).value || null;
-
-            localStorage.setItem("author", JSON.stringify(author));
-            localStorage.setItem("email", JSON.stringify(email));
-            localStorage.setItem("website", JSON.stringify(website));
+            if (facebook.isLoggedIn()) {
+                authorData = facebook.getAuthorData();
+            } else {
+                authorData = {
+                    network: null,
+                    id: null,
+                    name: $("[name=author]", el).value || null,
+                    email: $("[name=email]", el).value || null,
+                    website: $("[name=website]", el).value || null,
+                };
+                localStorage.setItem("author", JSON.stringify(authorData.name));
+                localStorage.setItem("email", JSON.stringify(authorData.email));
+                localStorage.setItem("website", JSON.stringify(authorData.website));
+            }
 
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
-                author: author, email: email, website: website,
+                social_network: authorData.network, social_id: authorData.id,
+                author: authorData.name, email: authorData.email, website: authorData.website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
             }).then(function(comment) {
