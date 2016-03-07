@@ -106,11 +106,17 @@ define(["app/dom", "app/api"], function($, api) {
         };
     }
 
+    var prepareComment = function(comment) {
+        comment.website = "//www.facebook.com/" + comment.social_id;
+        comment.pictureURL = "//graph.facebook.com/" + comment.social_id + "/picture";
+    }
+
     return {
         init: init,
         initPostbox: initPostbox,
         isLoggedIn: isLoggedIn,
-        getAuthorData: getAuthorData
+        getAuthorData: getAuthorData,
+        prepareComment: prepareComment
     };
 
 });

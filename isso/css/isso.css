@@ -47,8 +47,9 @@
     height: 48px;
     overflow: hidden;
 }
-.isso-comment > div.avatar > svg,
-.isso-postbox > .avatar > svg {
+.isso-comment > div.avatar svg,
+.isso-comment > div.avatar img,
+.isso-postbox > .avatar {
     max-width: 48px;
     max-height: 48px;
     border: 1px solid rgba(0, 0, 0, 0.2);

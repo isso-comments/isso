@@ -1,7 +1,11 @@
 div(class='isso-comment' id='isso-#{comment.id}')
     if conf.avatar
         div(class='avatar')
-            svg(data-hash='#{comment.hash}')
+            if bool(comment.pictureURL)
+                a(href='#{comment.website}')
+                    img(src='#{comment.pictureURL}')
+            else
+                svg(data-hash='#{comment.hash}')
     div(class='text-wrapper')
         div(class='isso-comment-header' role='meta')
             if bool(comment.website)

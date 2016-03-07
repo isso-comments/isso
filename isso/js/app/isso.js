@@ -130,6 +130,13 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
     };
 
     var insert = function(comment, scrollIntoView) {
+
+        if (comment.social_network === "facebook") {
+            facebook.prepareComment(comment);
+        } else {
+            comment.pictureURL = false;
+        }
+
         var el = $.htmlify(jade.render("comment", {"comment": comment}));
 
         // update datetime every 60 seconds
@@ -142,7 +149,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         // run once to activate
         refresh();
 
-        if (config["avatar"]) {
+        if (config["avatar"] && !comment.pictureURL) {
             $("div.avatar > svg", el).replace(lib.identicons.generate(comment.hash, 4, 48));
         }
 
