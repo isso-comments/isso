@@ -183,6 +183,14 @@
     position: relative;
     font-weight: bold;
 }
+.isso-postbox > .form-wrapper > .auth-section .auth-loggedin-google {
+    display: none;
+}
+.isso-postbox > .form-wrapper > .auth-section .auth-google-name {
+    display: inline-block;
+    position: relative;
+    font-weight: bold;
+}
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper {
     display: inline-block;
     position: relative;
@@ -228,8 +236,6 @@
     margin: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper > a {
-    color: #FFF;
-    background-color: #3b5998;
     border-radius: 3px;
     margin-left: 10px;
     padding-top: 2px;
@@ -237,6 +243,14 @@
     padding-left: 8px;
     padding-right: 8px;
     font-weight: bold;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper > a.social-logout-link-facebook {
+    color: #FFF;
+    background-color: #3b5998;
+}
+.isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper > a.social-logout-link-google {
+    color: #FFF;
+    background-color: #dd4b39;
 }
 .isso-postbox > .form-wrapper > .auth-section .post-action {
     display: inline-block;

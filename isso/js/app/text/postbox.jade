@@ -19,9 +19,15 @@ div(class='isso-postbox')
                 p(class='social-login-wrapper')
                     a(class='social-login-link-facebook' href='#')
                         img(alt='Authenticate using Facebook')
+                    a(class='social-login-link-google' href='#')
+                        img(alt='Authenticate using Google+')
             div(class='auth-loggedin-facebook')
                 p(class='auth-facebook-name') Name
                 p(class='social-logout-wrapper')
                     a(class='social-logout-link-facebook' href='#') Log out
+            div(class='auth-loggedin-google')
+                p(class='auth-google-name') Name
+                p(class='social-logout-wrapper')
+                    a(class='social-logout-link-google' href='#') Log out
             p(class='post-action')
                 input(type='submit' value=i18n('postbox-submit'))

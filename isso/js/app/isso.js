@@ -1,8 +1,8 @@
 /* Isso – Ich schrei sonst!
  */
 define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals",
-        "app/social/facebook"],
-    function($, utils, config, api, jade, i18n, lib, globals, facebook) {
+        "app/social/facebook", "app/social/google"],
+    function($, utils, config, api, jade, i18n, lib, globals, facebook, google) {
 
     "use strict";
 
@@ -83,6 +83,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         lib.editorify($(".textarea", el));
 
         facebook.initPostbox(el);
+        google.initPostbox(el);
 
         return el;
     };

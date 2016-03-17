@@ -3,7 +3,7 @@
  * Distributed under the MIT license
  */
 
-require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade", "app/social/facebook"], function(domready, config, i18n, api, isso, count, $, css, svg, jade, facebook) {
+require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade", "app/social/facebook", "app/social/google"], function(domready, config, i18n, api, isso, count, $, css, svg, jade, facebook, google) {
 
     "use strict";
 
@@ -32,6 +32,7 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
         $("#isso-thread").append('<div id="isso-root"></div>');
 
         facebook.init();
+        google.init();
 
         api.fetch($("#isso-thread").getAttribute("data-isso-id"),
             config["max-comments-top"],
