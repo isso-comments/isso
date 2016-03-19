@@ -89,11 +89,16 @@ define(["app/dom", "app/api"], function($, api) {
         };
     }
 
+    var prepareComment = function(comment) {
+        comment.website = "//plus.google.com/" + comment.social_id + "/posts";
+    }
+
     return {
         init: init,
         initPostbox: initPostbox,
         isLoggedIn: isLoggedIn,
-        getAuthorData: getAuthorData
+        getAuthorData: getAuthorData,
+        prepareComment: prepareComment
     };
 
 });

@@ -137,6 +137,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         if (comment.social_network === "facebook") {
             facebook.prepareComment(comment);
+        } else if (comment.social_network === "google") {
+            google.prepareComment(comment);
         } else {
             comment.pictureURL = false;
         }
