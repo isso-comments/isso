@@ -63,7 +63,6 @@ define(["app/dom", "app/api"], function($, api) {
             gAuth.signIn().then(function(googleUser) {
                 var profile = googleUser.getBasicProfile();
                 loggedIn = true;
-                console.log(profile.getId());
                 authorData = {
                     uid: profile.getId(),
                     name: profile.getName(),
@@ -79,10 +78,22 @@ define(["app/dom", "app/api"], function($, api) {
         return loggedIn;
     }
 
+    var getAuthorData = function() {
+        return {
+            network: "google",
+            id: authorData.uid,
+            pictureURL: authorData.pictureURL,
+            name: authorData.name,
+            email: authorData.email,
+            website: "",
+        };
+    }
+
     return {
         init: init,
         initPostbox: initPostbox,
-        isLoggedIn: isLoggedIn
+        isLoggedIn: isLoggedIn,
+        getAuthorData: getAuthorData
     };
 
 });

@@ -72,10 +72,11 @@ def xhr(func):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'social_network', 'social_id', 'author', 'website',
-                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
+                  'pictureURL', 'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'social_network', 'social_id'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'social_network', 'social_id',
+                  'pictureURL'])
 
     VIEWS = [
         ('fetch',   ('GET', '/')),
@@ -92,7 +93,7 @@ class API(object):
         ('demo',    ('GET', '/demo'))
     ]
 
-    SOCIAL_NETWORKS = set(['facebook'])
+    SOCIAL_NETWORKS = set(['facebook', 'google'])
 
     def __init__(self, isso, hasher):
 
@@ -147,6 +148,10 @@ class API(object):
                 idPattern = re.compile("^[0-9]+$");
                 if not idPattern.match(comment["social_id"]):
                     return False, "invalid Facebook UID"
+            if comment["social_network"] == "google":
+                idPattern = re.compile("^[0-9]+$");
+                if not idPattern.match(comment["social_id"]):
+                    return False, "invalid Google UID"
 
         return True, ""
 

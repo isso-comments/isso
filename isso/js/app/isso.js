@@ -25,7 +25,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".textarea", this).focus();
                 return false;
             }
-            if (config["require-email"] && !facebook.isLoggedIn() &&
+            if (config["require-email"] && !facebook.isLoggedIn() && !google.isLoggedIn() &&
                 $("[name='email']", this).value.length <= 0)
             {
               $("[name='email']", this).focus();
@@ -51,10 +51,13 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
             if (facebook.isLoggedIn()) {
                 authorData = facebook.getAuthorData();
+            } else if (google.isLoggedIn()) {
+                authorData = google.getAuthorData();
             } else {
                 authorData = {
                     network: null,
                     id: null,
+                    pictureURL: null,
                     name: $("[name=author]", el).value || null,
                     email: $("[name=email]", el).value || null,
                     website: $("[name=website]", el).value || null,
@@ -65,7 +68,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
 
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
-                social_network: authorData.network, social_id: authorData.id,
+                social_network: authorData.network, social_id: authorData.id, pictureURL: authorData.pictureURL,
                 author: authorData.name, email: authorData.email, website: authorData.website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
