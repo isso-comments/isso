@@ -1,6 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 import socket
+import logging
+logger = logging.getLogger("isso")
 
 try:
     import httplib
@@ -37,6 +39,15 @@ class curl(object):
         self.timeout = timeout
 
     def __enter__(self):
+
+
+        logger.debug("enter !")
+        try:
+            ahost = str(self.host )
+        except RuntimeError as e:
+            return None
+        logger.debug("enter '%s'", ahost)
+
         host, port, ssl = urlsplit(self.host)
         http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
 
@@ -62,4 +73,5 @@ class curl(object):
                 return None
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.con.close()
+        if 'con' in self.__dict__:
+            self.con.close()

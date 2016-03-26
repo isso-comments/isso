@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from __future__ import unicode_literals
-
+import pprint
 import re
 import cgi
 import time
@@ -22,6 +22,8 @@ from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
 from isso.views import requires
 from isso.utils.hash import sha1
+import logging
+logger = logging.getLogger("isso")
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
@@ -136,7 +138,7 @@ class API(object):
             if len(comment["website"]) > 254:
                 return False, "arbitrary length limit"
             if not isurl(comment["website"]):
-                return False, "Website not Django-conform"
+                return False, "Website not Django-conform! : %s" % comment["website"]
 
         return True, ""
 
@@ -144,10 +146,18 @@ class API(object):
     @requires(str, 'uri')
     def new(self, environ, request, uri):
 
+        logger.debug("got uri :%s" % uri)
+        logger.debug("got eviron :%s" % str(environ))
+        logger.debug("got request :%s" % pprint.pformat(request.__dict__))
+                
         data = request.get_json()
 
+        logger.debug("got data :%s" % data)
+
+        
         for field in set(data.keys()) - API.ACCEPT:
-            data.pop(field)
+            f = data.pop(field)
+            logger.debug("skip data %s:%s" % (field, f ))
 
         for key in ("author", "email", "website", "parent"):
             data.setdefault(key, None)
@@ -164,11 +174,20 @@ class API(object):
             data["website"] = normalize(data["website"])
 
         data['mode'] = 2 if self.moderated else 1
+
+        logger.debug("request.remote_addr %s" % (request.remote_addr ))
+                    
         data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
         with self.isso.lock:
             if uri not in self.threads:
-                with http.curl('GET', local("origin"), uri) as resp:
+                org = str(local("origin"))
+                if org == '<LocalProxy unbound>':
+                    org = environ['HTTP_ORIGIN']
+
+                logger.debug("got origin %s" % (org))
+                
+                with http.curl('GET', org, uri) as resp:
                     if resp and resp.status == 200:
                         uri, title = parse.thread(resp.read(), id=uri)
                     else:

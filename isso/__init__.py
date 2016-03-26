@@ -73,9 +73,9 @@ from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
 
-logging.getLogger('werkzeug').setLevel(logging.WARN)
+logging.getLogger('werkzeug').setLevel(logging.DEBUG)
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s %(levelname)s: %(message)s")
 
 logger = logging.getLogger("isso")
@@ -148,6 +148,7 @@ class Isso(object):
     def __call__(self, environ, start_response):
         return self.wsgi_app(environ, start_response)
 
+from werkzeug.debug import DebuggedApplication
 
 def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
@@ -165,6 +166,8 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
             pass
 
     isso = App(conf)
+
+
 
     # check HTTP server connection
     for host in conf.getiter("general", "host"):
@@ -258,7 +261,10 @@ def main():
             from gevent.pywsgi import WSGIServer
             WSGIServer((host, port), make_app(conf)).serve_forever()
         except ImportError:
-            run_simple(host, port, make_app(conf), threaded=True,
+            run_simple(host, port, make_app(conf),
+                       use_debugger=True,
+                       use_evalex=True,
+                       threaded=True,
                        use_reloader=conf.getboolean('server', 'reload'))
     else:
         sock = conf.get("server", "listen").partition("unix://")[2]
@@ -268,3 +274,5 @@ def main():
             if ex.errno != errno.ENOENT:
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
+if __name__ == "__main__":
+    main()
