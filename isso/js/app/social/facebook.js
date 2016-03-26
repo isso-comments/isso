@@ -100,6 +100,7 @@ define(["app/dom", "app/api"], function($, api) {
         return {
             network: "facebook",
             id: authorData.uid,
+            idToken: null,
             pictureURL: null,
             name: authorData.name,
             email: authorData.email,

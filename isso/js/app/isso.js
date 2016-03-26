@@ -57,6 +57,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 authorData = {
                     network: null,
                     id: null,
+                    idToken: null,
                     pictureURL: null,
                     name: $("[name=author]", el).value || null,
                     email: $("[name=email]", el).value || null,
@@ -68,8 +69,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
 
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
-                social_network: authorData.network, social_id: authorData.id, pictureURL: authorData.pictureURL,
-                author: authorData.name, email: authorData.email, website: authorData.website,
+                social_network: authorData.network, social_id: authorData.id, id_token: authorData.idToken,
+                pictureURL: authorData.pictureURL, author: authorData.name,
+                email: authorData.email, website: authorData.website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
             }).then(function(comment) {

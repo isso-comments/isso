@@ -6,8 +6,16 @@ import re
 import cgi
 import time
 import functools
+import logging
+import json
+import jwt
+
+from datetime import datetime
 
 from itsdangerous import SignatureExpired, BadSignature
+
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.hazmat.backends import default_backend
 
 from werkzeug.http import dump_cookie
 from werkzeug.wsgi import get_current_url
@@ -22,6 +30,8 @@ from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
 from isso.views import requires
 from isso.utils.hash import sha1
+
+logger = logging.getLogger("isso")
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
@@ -76,7 +86,7 @@ class API(object):
 
     # comment fields, that can be submitted
     ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'social_network', 'social_id',
-                  'pictureURL'])
+                  'id_token', 'pictureURL'])
 
     VIEWS = [
         ('fetch',   ('GET', '/')),
@@ -94,6 +104,12 @@ class API(object):
     ]
 
     SOCIAL_NETWORKS = set(['facebook', 'google'])
+    GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"]
+    GOOGLE_CLIENT_ID = "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com"
+    GOOGLE_CERT_HOST = "https://www.googleapis.com"
+    GOOGLE_CERT_PATH = "/oauth2/v1/certs"
+
+    google_certs = None
 
     def __init__(self, isso, hasher):
 
@@ -112,6 +128,31 @@ class API(object):
         for (view, (method, path)) in self.VIEWS:
             isso.urls.add(
                 Rule(path, methods=[method], endpoint=getattr(self, view)))
+
+    @classmethod
+    def update_google_certs(cls):
+        if API.google_certs:
+            for key in API.google_certs:
+                if datetime.utcnow() <= API.google_certs[key].not_valid_after:
+                    return
+        with http.curl('GET', API.GOOGLE_CERT_HOST, API.GOOGLE_CERT_PATH, 5) as resp:
+            try:
+                assert resp and resp.status == 200
+                pems = json.loads(resp.read())
+                API.google_certs = {key: load_pem_x509_certificate(pems[key].encode("ascii"), default_backend()) for key in pems}
+            except:
+                logger.warn("failed to renew Google certificates")
+
+    @classmethod
+    def validate_jwt(cls, token, certificates, audience, issuers):
+        for cert in certificates.values():
+            pubkey = cert.public_key()
+            for iss in issuers:
+                try:
+                    return jwt.decode(token, pubkey, audience=audience, issuer=iss)
+                except:
+                    pass
+        return False
 
     @classmethod
     def verify(cls, comment):
@@ -150,8 +191,13 @@ class API(object):
                     return False, "invalid Facebook UID"
             if comment["social_network"] == "google":
                 idPattern = re.compile("^[0-9]+$");
-                if not idPattern.match(comment["social_id"]):
+                if "social_id" not in comment or not idPattern.match(comment["social_id"]):
                     return False, "invalid Google UID"
+                if "id_token" not in comment:
+                    return False, "Google ID token missing"
+                API.update_google_certs()
+                if not API.validate_jwt(comment["id_token"], API.google_certs, API.GOOGLE_CLIENT_ID, API.GOOGLE_ISSUERS):
+                    return False, "Google ID token validation failed"
 
         return True, ""
 

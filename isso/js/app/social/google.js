@@ -68,6 +68,7 @@ define(["app/dom", "app/api"], function($, api) {
                     name: profile.getName(),
                     email: profile.getEmail() || "",
                     pictureURL: profile.getImageUrl(),
+                    idToken: googleUser.getAuthResponse().id_token,
                 };
                 updateAllPostboxes();
             });
@@ -82,6 +83,7 @@ define(["app/dom", "app/api"], function($, api) {
         return {
             network: "google",
             id: authorData.uid,
+            idToken: authorData.idToken,
             pictureURL: authorData.pictureURL,
             name: authorData.name,
             email: authorData.email,
