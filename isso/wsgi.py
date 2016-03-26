@@ -22,7 +22,8 @@ from werkzeug.wrappers import Request as _Request
 from werkzeug.datastructures import Headers
 
 from isso.compat import string_types
-
+import logging
+logger = logging.getLogger("isso")
 
 def host(environ):  # pragma: no cover
     """
@@ -52,6 +53,8 @@ def urlsplit(name):
     Parse :param:`name` into (netloc, port, ssl)
     """
 
+    logger.debug("urlsplit '%s'", name)
+                
     if not (isinstance(name, string_types)):
         name = str(name)
 
@@ -81,15 +84,23 @@ def origin(hosts):
     if none found.
     """
 
+    logger.debug("origin '%s'", hosts)
+    
     hosts = [urlsplit(h) for h in hosts]
 
     def func(environ):
 
+ 
+        logger.debug("get origin '%s'", str(hosts))
+            
         if not hosts:
             return "http://invalid.local"
 
         loc = environ.get("HTTP_ORIGIN", environ.get("HTTP_REFERER", None))
 
+        l = str(loc)
+        logger.debug("get origin from loc '%s'", l)
+        
         if loc is None:
             return urljoin(*hosts[0])
 
