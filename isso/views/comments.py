@@ -136,7 +136,7 @@ class API(object):
             if len(comment["website"]) > 254:
                 return False, "arbitrary length limit"
             if not isurl(comment["website"]):
-                return False, "Website not Django-conform"
+                return False, "Website not Django-conform! : %s" % comment["website"]
 
         return True, ""
 
