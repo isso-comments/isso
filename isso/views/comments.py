@@ -196,7 +196,8 @@ class API(object):
                 if "id_token" not in comment:
                     return False, "Google ID token missing"
                 API.update_google_certs()
-                if not API.validate_jwt(comment["id_token"], API.google_certs, API.GOOGLE_CLIENT_ID, API.GOOGLE_ISSUERS):
+                token = API.validate_jwt(comment["id_token"], API.google_certs, API.GOOGLE_CLIENT_ID, API.GOOGLE_ISSUERS)
+                if not token or "sub" not in token or token["sub"] != comment["social_id"]:
                     return False, "Google ID token validation failed"
 
         return True, ""
