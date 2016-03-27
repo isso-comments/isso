@@ -268,3 +268,5 @@ def main():
             if ex.errno != errno.ENOENT:
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
+if __name__ == "__main__":
+    main()
