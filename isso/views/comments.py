@@ -108,6 +108,9 @@ class API(object):
     GOOGLE_CLIENT_ID = "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com"
     GOOGLE_CERT_HOST = "https://www.googleapis.com"
     GOOGLE_CERT_PATH = "/oauth2/v1/certs"
+    FACEBOOK_GRAPH_HOST = "https://graph.facebook.com"
+    FACEBOOK_APP_ID = "1561583880825335"
+    FACEBOOK_APP_SECRET = "071fb52133f6fd26113bf20b2428adb7"
 
     google_certs = None
 
@@ -155,6 +158,21 @@ class API(object):
         return False
 
     @classmethod
+    def validate_fb_token(cls, token, uid):
+        req_path = "/debug_token?input_token=%s&access_token=%s|%s" % (token, API.FACEBOOK_APP_ID, API.FACEBOOK_APP_SECRET)
+        with http.curl('GET', API.FACEBOOK_GRAPH_HOST, req_path, 5) as resp:
+            try:
+                assert resp and resp.status == 200
+                data = json.loads(resp.read())["data"]
+                assert data["is_valid"]
+                assert data["user_id"] == uid
+                assert data["app_id"] == API.FACEBOOK_APP_ID
+                assert datetime.utcnow() <= datetime.utcfromtimestamp(data["expires_at"])
+                return True
+            except:
+                return False
+
+    @classmethod
     def verify(cls, comment):
 
         if "text" not in comment:
@@ -189,6 +207,10 @@ class API(object):
                 idPattern = re.compile("^[0-9]+$");
                 if not idPattern.match(comment["social_id"]):
                     return False, "invalid Facebook UID"
+                if "id_token" not in comment:
+                    return False, "Facebook token missing"
+                if not API.validate_fb_token(comment["id_token"], comment["social_id"]):
+                    return False, "Facebook token validation failed"
             if comment["social_network"] == "google":
                 idPattern = re.compile("^[0-9]+$");
                 if "social_id" not in comment or not idPattern.match(comment["social_id"]):

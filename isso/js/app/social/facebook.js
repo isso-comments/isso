@@ -5,9 +5,11 @@ define(["app/dom", "app/api"], function($, api) {
     var loadedSDK = false;
     var loggedIn = false;
     var authorData = null;
+    var token = null;
 
     var statusChangeCallback = function(response) {
         if (response.status === "connected") {
+            token = response.authResponse.accessToken;
             FB.api("/me", {fields: ["name", "email"]}, function(response) {
                 loggedIn = true;
                 authorData = {
@@ -20,6 +22,7 @@ define(["app/dom", "app/api"], function($, api) {
         } else {
             loggedIn = false;
             authorData = null;
+            token = null;
             updateAllPostboxes();
         }
 
@@ -100,7 +103,7 @@ define(["app/dom", "app/api"], function($, api) {
         return {
             network: "facebook",
             id: authorData.uid,
-            idToken: null,
+            idToken: token,
             pictureURL: null,
             name: authorData.name,
             email: authorData.email,
