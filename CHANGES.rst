@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.10.4 (unreleased)
+0.10.4 (2016-04-12)
 -------------------
 
 - fix wrapper attribute when using data-isso-require-mail="true", #238
