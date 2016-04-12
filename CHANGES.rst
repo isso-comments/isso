@@ -4,7 +4,9 @@ Changelog for Isso
 0.10.4 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- fix wrapper attribute when using data-isso-require-mail="true", #238
+
+- fix reponse for OPTIONS response on Python 3, #242
 
 
 0.10.3 (2016-02-24)
