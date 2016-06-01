@@ -75,7 +75,7 @@ class API(object):
                   'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title'])
 
     VIEWS = [
         ('fetch',   ('GET', '/')),
@@ -168,11 +168,14 @@ class API(object):
 
         with self.isso.lock:
             if uri not in self.threads:
-                with http.curl('GET', local("origin"), uri) as resp:
-                    if resp and resp.status == 200:
-                        uri, title = parse.thread(resp.read(), id=uri)
-                    else:
-                        return NotFound('URI does not exist')
+                if 'title' not in data:
+                    with http.curl('GET', local("origin"), uri) as resp:
+                        if resp and resp.status == 200:
+                            uri, title = parse.thread(resp.read(), id=uri)
+                        else:
+                            return NotFound('URI does not exist %s')
+                else:
+                    title = data['title']
 
                 thread = self.threads.new(uri, title)
                 self.signal("comments.new:new-thread", thread)
