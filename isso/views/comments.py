@@ -347,6 +347,90 @@ class API(object):
 
         return Response("Yo", 200)
 
+
+        """
+        @api {get} / get comments
+        @apiGroup Thread
+        @apiDescription Queries the comments of a thread.
+
+        @apiParam {string} uri
+            The URI of thread to get the comments from.
+        @apiParam {number} [parent]
+            Return only comments that are children of the comment with the provided ID.
+        @apiParam {number=0,1} [plain]
+            Iff set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
+        @apiParam {number} [limit]
+            The maximum number of returned top-level comments. Omit for unlimited results.
+        @apiParam {number} [nested_limit]
+            The maximum number of returned nested comments per commint. Omit for unlimited results.
+        @apiParam {number} [after]
+            Includes only comments were added after the provided UNIX timestamp.
+
+        @apiSuccess {number} total_replies
+			The number of replies if the `limit` parameter was not set. If `after` is set to `X`, this is the number of comments that were created after `X`. So setting `after` may change this value!
+        @apiSuccess {Object[]} replies
+			The list of comments. Each comment also has the `total_replies`, `replies`, `id` and `hidden_replies` properties to represent nested comments.
+        @apiSuccess {number} id
+			Id of the comment `replies` is the list of replies of. `null` for the list of toplevel comments.
+        @apiSuccess {number} hidden_replies
+			The number of comments that were ommited from the results because of the `limit` request parameter. Usually, this will be `total_replies` - `limit`.
+
+        @apiExample {curl} Get 2 comments with 5 responses:
+            curl 'https://comments.example.com/?uri=/thread/&limit=2&nested_limit=5'
+        @apiSuccessExample Example reponse:
+            {
+              "total_replies": 14,
+              "replies": [
+                {
+                  "website": null,
+                  "author": null,
+                  "parent": null,
+                  "created": 1464818460.732863,
+                  "text": "&lt;p&gt;Hello, World!&lt;/p&gt;",
+                  "total_replies": 1,
+                  "hidden_replies": 0,
+                  "dislikes": 2,
+                  "modified": null,
+                  "mode": 1,
+                  "replies": [
+                    {
+                      "website": null,
+                      "author": null,
+                      "parent": 1,
+                      "created": 1464818460.769638,
+                      "text": "&lt;p&gt;Hi, now some Markdown: &lt;em&gt;Italic&lt;/em&gt;, &lt;strong&gt;bold&lt;/strong&gt;, &lt;code&gt;monospace&lt;/code&gt;.&lt;/p&gt;",
+                      "dislikes": 0,
+                      "modified": null,
+                      "mode": 1,
+                      "hash": "2af4e1a6c96a",
+                      "id": 2,
+                      "likes": 2
+                    }
+                  ],
+                  "hash": "1cb6cc0309a2",
+                  "id": 1,
+                  "likes": 2
+                },
+                {
+                  "website": null,
+                  "author": null,
+                  "parent": null,
+                  "created": 1464818460.80574,
+                  "text": "&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium at commodi cum deserunt dolore, error fugiat harum incidunt, ipsa ipsum mollitia nam provident rerum sapiente suscipit tempora vitae? Est, qui?&lt;/p&gt;",
+                  "total_replies": 0,
+                  "hidden_replies": 0,
+                  "dislikes": 0,
+                  "modified": null,
+                  "mode": 1,
+                  "replies": [],
+                  "hash": "1cb6cc0309a2",
+                  "id": 3,
+                  "likes": 0
+                },
+                "id": null,
+                "hidden_replies": 12
+            }
+        """
     @requires(str, 'uri')
     def fetch(self, environ, request, uri):
 
