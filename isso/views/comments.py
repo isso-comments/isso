@@ -146,26 +146,14 @@ class API(object):
 
         return True, ""
 
-    """
-    @api {post} /new create new
-    @apiGroup Comment
-	@apiUse csrf
-
-    @apiParam {string} uri
-        The uri of the thread to create the comment on.
-    @apiParam {string} text
-        The comment’s raw text.
-    @apiParam {string} [author]
-        The comment’s author’s name.
-    @apiParam {string} [email]
-        The comment’s author’s email address.
-    @apiParam {string} [website]
-        The comment’s author’s website’s url.
-    @apiParam {number} [parent]
-        The parent comment’s id iff the new comment is a response to an existing comment.
-
-	@apiExample {curl} Create a reply to comment with id 15:
-		curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json'
+	# Common definitions for apidoc follow:
+	"""
+	@apiDefine plainParam
+	@apiParam {number=0,1} [plain]
+	    Iff set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
+	"""
+	"""
+	@apiDefine commentResponse
 
 	@apiSuccess {number} id
 		The comment’s id (assigned by the server).
@@ -188,6 +176,30 @@ class API(object):
 		UNIX timestamp of the time the comment was created (on the server).
 	@apiSuccess {number} modified
 		UNIX timestamp of the time the comment was last modified (on the server). `null` if the comment was not yet modified.
+	"""
+
+    """
+    @api {post} /new create new
+    @apiGroup Comment
+	@apiUse csrf
+
+    @apiParam {string} uri
+        The uri of the thread to create the comment on.
+    @apiParam {string} text
+        The comment’s raw text.
+    @apiParam {string} [author]
+        The comment’s author’s name.
+    @apiParam {string} [email]
+        The comment’s author’s email address.
+    @apiParam {string} [website]
+        The comment’s author’s website’s url.
+    @apiParam {number} [parent]
+        The parent comment’s id iff the new comment is a response to an existing comment.
+
+	@apiExample {curl} Create a reply to comment with id 15:
+		curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json'
+
+	@apiUse commentResponse
 
 	@apiSuccessExample Success after the above request:
 	    {
@@ -200,7 +212,7 @@ class API(object):
 			"modified": null,
 			"mode": 1,
 			"hash": "e644f6ee43c0",
-			"id": 10,
+			"id": 23,
 			"likes": 0
 		}
     """
@@ -277,6 +289,33 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
+    """
+	@api {get} /id/:id view
+	@apiGroup Comment
+
+	@apiParam {number} id
+		The id of the comment to view.
+	@apiUse plainParam
+
+	@apiExample {curl} View the comment with id 4:
+		curl 'https://comments.example.com/id/4'
+
+	@apiUse commentResponse
+
+	@apiSuccessExample Example result:
+		{
+			"website": null,
+			"author": null,
+			"parent": null,
+			"created": 1464914341.312426,
+			"text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+			"dislikes": 0,
+			"modified": null,
+			"mode": 1,
+			"id": 4,
+			"likes": 1
+		}
+	"""
     def view(self, environ, request, id):
 
         rv = self.comments.get(id)
@@ -421,8 +460,7 @@ class API(object):
             The URI of thread to get the comments from.
         @apiParam {number} [parent]
             Return only comments that are children of the comment with the provided ID.
-        @apiParam {number=0,1} [plain]
-            Iff set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
+		@apiUse plainParam
         @apiParam {number} [limit]
             The maximum number of returned top-level comments. Omit for unlimited results.
         @apiParam {number} [nested_limit]
