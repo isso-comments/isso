@@ -411,6 +411,21 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
+	"""
+	@api {delete} '/id/:id' delete
+	@apiGroup Comment
+	@apiDescription
+		Delte an existing comment. Deleting a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
+
+	@apiParam {number} id
+		Id of the comment to delete.
+
+	@apiExample {curl} Delete comment with id 14:
+		curl -X DELETE 'https://comments.example.com/id/14' -b cookie.txt
+
+	@apiSuccessExample Successful deletion returns null:
+		null
+	"""
     @xhr
     def delete(self, environ, request, id, key=None):
 
