@@ -89,7 +89,8 @@ class API(object):
         ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('demo',    ('GET', '/demo'))
+        ('demo',    ('GET', '/demo')),
+        ('preview', ('POST', '/preview'))
     ]
 
     def __init__(self, isso, hasher):
@@ -475,6 +476,14 @@ class API(object):
             raise BadRequest("JSON must be a list of URLs")
 
         return JSON(self.comments.count(*data), 200)
+
+    def preview(self, environment, request):
+        data = request.get_json()
+
+        if "text" not in data or data["text"] is None:
+            raise BadRequest("no text given")
+
+        return JSON({'text': self.isso.render(data["text"])}, 200)
 
     def demo(self, env, req):
         return redirect(get_current_url(env) + '/index.html')
