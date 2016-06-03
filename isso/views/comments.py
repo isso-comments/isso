@@ -716,12 +716,60 @@ class API(object):
 
         return fetched_list
 
+	"""
+	@apiDefine likeResponse
+	@apiSuccess {number} likes
+		The (new) number of likes on the comment.
+	@apiSuccess {number} dislikes
+		The (new) number of dislikes on the comment.
+	"""
+
+	"""
+	@api {post} /id/:id/like like
+	@apiGroup Comment
+	@apiDescription
+	 	Puts a “like” on a comment. The author of a comment cannot like its own comment.
+
+	@apiParam {number} id
+		The id of the comment to like.
+
+	@apiExample {curl} Like comment with id 23:
+		curl -X POST 'https://comments.example.com/id/23/like'
+
+	@apiUse likeResponse
+
+	@apiSuccessExample Example response
+		{
+			"likes": 5,
+			"dislikes": 2
+		}
+	"""
     @xhr
     def like(self, environ, request, id):
 
         nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
         return JSON(nv, 200)
 
+	"""
+	@api {post} /id/:id/dislike dislike
+	@apiGroup Comment
+	@apiDescription
+	 	Puts a “dislike” on a comment. The author of a comment cannot dislike its own comment.
+
+	@apiParam {number} id
+		The id of the comment to dislike.
+
+	@apiExample {curl} Dislike comment with id 23:
+		curl -X POST 'https://comments.example.com/id/23/dislike'
+
+	@apiUse likeResponse
+
+	@apiSuccessExample Example response
+		{
+			"likes": 4,
+			"dislikes": 3
+		}
+	"""
     @xhr
     def dislike(self, environ, request, id):
 
