@@ -787,6 +787,18 @@ class API(object):
 
         return JSON(rv, 200)
 
+	"""
+	@api {post} /count count comments
+	@apiGroup Thread
+	@apiDescription
+		Counts the number of comments on multiple threads. The requestor provides a list of thread uris. The number of comments on each thread is returned as a list, in the same order as the threads were requested. The counts include comments that are reponses to comments.
+
+	@apiExample {curl} get the count of 5 threads:
+		curl 'https://comments.example.com/count' -d '["/blog/firstPost.html", "/blog/controversalPost.html", "/blog/howToCode.html",	"/blog/boringPost.html", "/blog/isso.html"]
+
+	@apiSuccessExample Counts of 5 threads:
+		[2, 18, 4, 0, 3]
+	"""
     def counts(self, environ, request):
 
         data = request.get_json()
