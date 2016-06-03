@@ -61,11 +61,11 @@ def xhr(func):
     """
 
 
-	"""
-	@apiDefine csrf
-	@apiHeader {string="application/json"} Content-Type
-		The content type must be set to `application/json` to prevent CSRF attacks.
-	"""
+    """
+    @apiDefine csrf
+    @apiHeader {string="application/json"} Content-Type
+        The content type must be set to `application/json` to prevent CSRF attacks.
+    """
     def dec(self, env, req, *args, **kwargs):
 
         if req.content_type and not req.content_type.startswith("application/json"):
@@ -146,44 +146,44 @@ class API(object):
 
         return True, ""
 
-	# Common definitions for apidoc follow:
-	"""
-	@apiDefine plainParam
-	@apiParam {number=0,1} [plain]
-	    Iff set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
-	"""
-	"""
-	@apiDefine commentResponse
+    # Common definitions for apidoc follow:
+    """
+    @apiDefine plainParam
+    @apiParam {number=0,1} [plain]
+        Iff set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
+    """
+    """
+    @apiDefine commentResponse
 
-	@apiSuccess {number} id
-		The comment’s id (assigned by the server).
-	@apiSuccess {number} parent
-		Id of the comment this comment is a reply to. `null` if this is a top-level-comment.
-	@apiSuccess {number=1,2,4} mode
-		The comment’s mode:
-		value | explanation
-		 ---  | ---
-		 `1`  | accepted: The comment was accepted by the server and is published.
-		 `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
-		 `4`  | deleted, but referenced: The comment was deleted on the server but is still referenced by replies.
-	@apiSuccess {string} author
-		The comments’s author’s name or `null`.
-	@apiSuccess {string} website
-		The comment’s author’s website or `null`.
-	@apiSuccess {string} hash
-		A hash uniquely identifying the comment’s author.
-	@apiSuccess {number} created
-		UNIX timestamp of the time the comment was created (on the server).
-	@apiSuccess {number} modified
-		UNIX timestamp of the time the comment was last modified (on the server). `null` if the comment was not yet modified.
-	"""
+    @apiSuccess {number} id
+        The comment’s id (assigned by the server).
+    @apiSuccess {number} parent
+        Id of the comment this comment is a reply to. `null` if this is a top-level-comment.
+    @apiSuccess {number=1,2,4} mode
+        The comment’s mode:
+        value | explanation
+         ---  | ---
+         `1`  | accepted: The comment was accepted by the server and is published.
+         `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
+         `4`  | deleted, but referenced: The comment was deleted on the server but is still referenced by replies.
+    @apiSuccess {string} author
+        The comments’s author’s name or `null`.
+    @apiSuccess {string} website
+        The comment’s author’s website or `null`.
+    @apiSuccess {string} hash
+        A hash uniquely identifying the comment’s author.
+    @apiSuccess {number} created
+        UNIX timestamp of the time the comment was created (on the server).
+    @apiSuccess {number} modified
+        UNIX timestamp of the time the comment was last modified (on the server). `null` if the comment was not yet modified.
+    """
 
     """
     @api {post} /new create new
     @apiGroup Comment
-	@apiDescription
-		Creates a new comment. The response will set a cookie on the requestor to enable them to later edit the comment.
-	@apiUse csrf
+    @apiDescription
+        Creates a new comment. The response will set a cookie on the requestor to enable them to later edit the comment.
+    @apiUse csrf
 
     @apiParam {string} uri
         The uri of the thread to create the comment on.
@@ -198,25 +198,25 @@ class API(object):
     @apiParam {number} [parent]
         The parent comment’s id iff the new comment is a response to an existing comment.
 
-	@apiExample {curl} Create a reply to comment with id 15:
-		curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json' -c cookie.txt
+    @apiExample {curl} Create a reply to comment with id 15:
+        curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json' -c cookie.txt
 
-	@apiUse commentResponse
+    @apiUse commentResponse
 
-	@apiSuccessExample Success after the above request:
-	    {
-			"website": null,
-			"author": "Max Rant",
-			"parent": 15,
-			"created": 1464940838.254393,
-			"text": "&lt;p&gt;Stop saying that! &lt;em&gt;isso&lt;/em&gt;!&lt;/p&gt;",
-			"dislikes": 0,
-			"modified": null,
-			"mode": 1,
-			"hash": "e644f6ee43c0",
-			"id": 23,
-			"likes": 0
-		}
+    @apiSuccessExample Success after the above request:
+        {
+            "website": null,
+            "author": "Max Rant",
+            "parent": 15,
+            "created": 1464940838.254393,
+            "text": "&lt;p&gt;Stop saying that! &lt;em&gt;isso&lt;/em&gt;!&lt;/p&gt;",
+            "dislikes": 0,
+            "modified": null,
+            "mode": 1,
+            "hash": "e644f6ee43c0",
+            "id": 23,
+            "likes": 0
+        }
     """
     @xhr
     @requires(str, 'uri')
@@ -292,32 +292,32 @@ class API(object):
         return resp
 
     """
-	@api {get} /id/:id view
-	@apiGroup Comment
+    @api {get} /id/:id view
+    @apiGroup Comment
 
-	@apiParam {number} id
-		The id of the comment to view.
-	@apiUse plainParam
+    @apiParam {number} id
+        The id of the comment to view.
+    @apiUse plainParam
 
-	@apiExample {curl} View the comment with id 4:
-		curl 'https://comments.example.com/id/4'
+    @apiExample {curl} View the comment with id 4:
+        curl 'https://comments.example.com/id/4'
 
-	@apiUse commentResponse
+    @apiUse commentResponse
 
-	@apiSuccessExample Example result:
-		{
-			"website": null,
-			"author": null,
-			"parent": null,
-			"created": 1464914341.312426,
-			"text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
-			"dislikes": 0,
-			"modified": null,
-			"mode": 1,
-			"id": 4,
-			"likes": 1
-		}
-	"""
+    @apiSuccessExample Example result:
+        {
+            "website": null,
+            "author": null,
+            "parent": null,
+            "created": 1464914341.312426,
+            "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+            "dislikes": 0,
+            "modified": null,
+            "mode": 1,
+            "id": 4,
+            "likes": 1
+        }
+    """
     def view(self, environ, request, id):
 
         rv = self.comments.get(id)
@@ -332,41 +332,41 @@ class API(object):
 
         return JSON(rv, 200)
 
-	"""
-	@api {put} /id/:id edit
-	@apiGroup Comment
+    """
+    @api {put} /id/:id edit
+    @apiGroup Comment
     @apiDescription
-		Edit an existing comment. Editing a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details. Editing a comment will set a new edit cookie in the response.
-	@apiUse csrf
+        Edit an existing comment. Editing a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details. Editing a comment will set a new edit cookie in the response.
+    @apiUse csrf
 
-	@apiParam {number} id
-		The id of the comment to edit.
-	@apiParam {string} text
-		A new (raw) text for the comment.
-	@apiParam {string} [author]
-		The modified comment’s author’s name.
-	@apiParam {string} [webiste]
-		The modified comment’s author’s website.
+    @apiParam {number} id
+        The id of the comment to edit.
+    @apiParam {string} text
+        A new (raw) text for the comment.
+    @apiParam {string} [author]
+        The modified comment’s author’s name.
+    @apiParam {string} [webiste]
+        The modified comment’s author’s website.
 
-	@apiExample {curl} Edit comment with id 23:
-		curl -X PUT 'https://comments.example.com/id/23' -d {"text": "I see your point. However, I still disagree.", "website": "maxrant.important.com"} -H 'Content-Type: application/json' -b cookie.txt
+    @apiExample {curl} Edit comment with id 23:
+        curl -X PUT 'https://comments.example.com/id/23' -d {"text": "I see your point. However, I still disagree.", "website": "maxrant.important.com"} -H 'Content-Type: application/json' -b cookie.txt
 
-	@apiUse commentResponse
+    @apiUse commentResponse
 
-	@apiSuccessExample Example response:
-		{
-			"website": "maxrant.important.com",
-			"author": "Max Rant",
-			"parent": 15,
-			"created": 1464940838.254393,
-			"text": "&lt;p&gt;I see your point. However, I still disagree.&lt;/p&gt;",
-			"dislikes": 0,
-			"modified": 1464943439.073961,
-			"mode": 1,
-			"id": 23,
-			"likes": 0
-		}
-	"""
+    @apiSuccessExample Example response:
+        {
+            "website": "maxrant.important.com",
+            "author": "Max Rant",
+            "parent": 15,
+            "created": 1464940838.254393,
+            "text": "&lt;p&gt;I see your point. However, I still disagree.&lt;/p&gt;",
+            "dislikes": 0,
+            "modified": 1464943439.073961,
+            "mode": 1,
+            "id": 23,
+            "likes": 0
+        }
+    """
     @xhr
     def edit(self, environ, request, id):
 
@@ -411,21 +411,21 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
 
-	"""
-	@api {delete} '/id/:id' delete
-	@apiGroup Comment
-	@apiDescription
-		Delte an existing comment. Deleting a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
+    """
+    @api {delete} '/id/:id' delete
+    @apiGroup Comment
+    @apiDescription
+        Delte an existing comment. Deleting a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
 
-	@apiParam {number} id
-		Id of the comment to delete.
+    @apiParam {number} id
+        Id of the comment to delete.
 
-	@apiExample {curl} Delete comment with id 14:
-		curl -X DELETE 'https://comments.example.com/id/14' -b cookie.txt
+    @apiExample {curl} Delete comment with id 14:
+        curl -X DELETE 'https://comments.example.com/id/14' -b cookie.txt
 
-	@apiSuccessExample Successful deletion returns null:
-		null
-	"""
+    @apiSuccessExample Successful deletion returns null:
+        null
+    """
     @xhr
     def delete(self, environ, request, id, key=None):
 
@@ -463,40 +463,40 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
-	"""
-	@api {post} /id/:id/:action/key moderate
-	@apiGroup Comment
-	@apiDescription
-		Publish or delete a comment that is in the moderation queue (mode `2`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
+    """
+    @api {post} /id/:id/:action/key moderate
+    @apiGroup Comment
+    @apiDescription
+        Publish or delete a comment that is in the moderation queue (mode `2`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
 
-		This endpoint can also be used with a `GET` request. In that case, a html page is returned that asks the user whether they are sure to perform the selected action. If they select “yes”, the query is repeated using `POST`.
+        This endpoint can also be used with a `GET` request. In that case, a html page is returned that asks the user whether they are sure to perform the selected action. If they select “yes”, the query is repeated using `POST`.
 
-	@apiParam {number} id
-		The id of the comment to moderate.
-	@apiParam {string=activate,delete} action
-		`activate` to publish the comment (change its mode to `1`).
-		`delete` to delete the comment
-	@apiParam {string} key
-		The moderation key to authenticate the moderation.
+    @apiParam {number} id
+        The id of the comment to moderate.
+    @apiParam {string=activate,delete} action
+        `activate` to publish the comment (change its mode to `1`).
+        `delete` to delete the comment
+    @apiParam {string} key
+        The moderation key to authenticate the moderation.
 
-	@apiExample {curl} delete comment with id 13:
-		curl -X POST 'https://comments.example.com/id/13/delete/MTM.CjL6Fg.REIdVXa-whJS_x8ojQL4RrXnuF4'
+    @apiExample {curl} delete comment with id 13:
+        curl -X POST 'https://comments.example.com/id/13/delete/MTM.CjL6Fg.REIdVXa-whJS_x8ojQL4RrXnuF4'
 
-	@apiSuccessExample {html} Using GET:
-		&lt;!DOCTYPE html&gt;
-		&lt;html&gt;
-			&lt;head&gt;
-				&lt;script&gt;
-					if (confirm('Delete: Are you sure?')) {
-						xhr = new XMLHttpRequest;
-						xhr.open('POST', window.location.href);
-						xhr.send(null);
-					}
-				&lt;/script&gt;
+    @apiSuccessExample {html} Using GET:
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+            &lt;head&gt;
+                &lt;script&gt;
+                    if (confirm('Delete: Are you sure?')) {
+                        xhr = new XMLHttpRequest;
+                        xhr.open('POST', window.location.href);
+                        xhr.send(null);
+                    }
+                &lt;/script&gt;
 
-	@apiSuccessExample Using POST:
-		Yo
-	"""
+    @apiSuccessExample Using POST:
+        Yo
+    """
     def moderate(self, environ, request, id, action, key):
 
         try:
@@ -546,7 +546,7 @@ class API(object):
             The URI of thread to get the comments from.
         @apiParam {number} [parent]
             Return only comments that are children of the comment with the provided ID.
-		@apiUse plainParam
+        @apiUse plainParam
         @apiParam {number} [limit]
             The maximum number of returned top-level comments. Omit for unlimited results.
         @apiParam {number} [nested_limit]
@@ -555,13 +555,13 @@ class API(object):
             Includes only comments were added after the provided UNIX timestamp.
 
         @apiSuccess {number} total_replies
-			The number of replies if the `limit` parameter was not set. If `after` is set to `X`, this is the number of comments that were created after `X`. So setting `after` may change this value!
+            The number of replies if the `limit` parameter was not set. If `after` is set to `X`, this is the number of comments that were created after `X`. So setting `after` may change this value!
         @apiSuccess {Object[]} replies
-			The list of comments. Each comment also has the `total_replies`, `replies`, `id` and `hidden_replies` properties to represent nested comments.
+            The list of comments. Each comment also has the `total_replies`, `replies`, `id` and `hidden_replies` properties to represent nested comments.
         @apiSuccess {number} id
-			Id of the comment `replies` is the list of replies of. `null` for the list of toplevel comments.
+            Id of the comment `replies` is the list of replies of. `null` for the list of toplevel comments.
         @apiSuccess {number} hidden_replies
-			The number of comments that were ommited from the results because of the `limit` request parameter. Usually, this will be `total_replies` - `limit`.
+            The number of comments that were ommited from the results because of the `limit` request parameter. Usually, this will be `total_replies` - `limit`.
 
         @apiExample {curl} Get 2 comments with 5 responses:
             curl 'https://comments.example.com/?uri=/thread/&limit=2&nested_limit=5'
@@ -716,60 +716,60 @@ class API(object):
 
         return fetched_list
 
-	"""
-	@apiDefine likeResponse
-	@apiSuccess {number} likes
-		The (new) number of likes on the comment.
-	@apiSuccess {number} dislikes
-		The (new) number of dislikes on the comment.
-	"""
+    """
+    @apiDefine likeResponse
+    @apiSuccess {number} likes
+        The (new) number of likes on the comment.
+    @apiSuccess {number} dislikes
+        The (new) number of dislikes on the comment.
+    """
 
-	"""
-	@api {post} /id/:id/like like
-	@apiGroup Comment
-	@apiDescription
-	 	Puts a “like” on a comment. The author of a comment cannot like its own comment.
+    """
+    @api {post} /id/:id/like like
+    @apiGroup Comment
+    @apiDescription
+         Puts a “like” on a comment. The author of a comment cannot like its own comment.
 
-	@apiParam {number} id
-		The id of the comment to like.
+    @apiParam {number} id
+        The id of the comment to like.
 
-	@apiExample {curl} Like comment with id 23:
-		curl -X POST 'https://comments.example.com/id/23/like'
+    @apiExample {curl} Like comment with id 23:
+        curl -X POST 'https://comments.example.com/id/23/like'
 
-	@apiUse likeResponse
+    @apiUse likeResponse
 
-	@apiSuccessExample Example response
-		{
-			"likes": 5,
-			"dislikes": 2
-		}
-	"""
+    @apiSuccessExample Example response
+        {
+            "likes": 5,
+            "dislikes": 2
+        }
+    """
     @xhr
     def like(self, environ, request, id):
 
         nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
         return JSON(nv, 200)
 
-	"""
-	@api {post} /id/:id/dislike dislike
-	@apiGroup Comment
-	@apiDescription
-	 	Puts a “dislike” on a comment. The author of a comment cannot dislike its own comment.
+    """
+    @api {post} /id/:id/dislike dislike
+    @apiGroup Comment
+    @apiDescription
+         Puts a “dislike” on a comment. The author of a comment cannot dislike its own comment.
 
-	@apiParam {number} id
-		The id of the comment to dislike.
+    @apiParam {number} id
+        The id of the comment to dislike.
 
-	@apiExample {curl} Dislike comment with id 23:
-		curl -X POST 'https://comments.example.com/id/23/dislike'
+    @apiExample {curl} Dislike comment with id 23:
+        curl -X POST 'https://comments.example.com/id/23/dislike'
 
-	@apiUse likeResponse
+    @apiUse likeResponse
 
-	@apiSuccessExample Example response
-		{
-			"likes": 4,
-			"dislikes": 3
-		}
-	"""
+    @apiSuccessExample Example response
+        {
+            "likes": 4,
+            "dislikes": 3
+        }
+    """
     @xhr
     def dislike(self, environ, request, id):
 
@@ -787,18 +787,18 @@ class API(object):
 
         return JSON(rv, 200)
 
-	"""
-	@api {post} /count count comments
-	@apiGroup Thread
-	@apiDescription
-		Counts the number of comments on multiple threads. The requestor provides a list of thread uris. The number of comments on each thread is returned as a list, in the same order as the threads were requested. The counts include comments that are reponses to comments.
+    """
+    @api {post} /count count comments
+    @apiGroup Thread
+    @apiDescription
+        Counts the number of comments on multiple threads. The requestor provides a list of thread uris. The number of comments on each thread is returned as a list, in the same order as the threads were requested. The counts include comments that are reponses to comments.
 
-	@apiExample {curl} get the count of 5 threads:
-		curl 'https://comments.example.com/count' -d '["/blog/firstPost.html", "/blog/controversalPost.html", "/blog/howToCode.html",	"/blog/boringPost.html", "/blog/isso.html"]
+    @apiExample {curl} get the count of 5 threads:
+        curl 'https://comments.example.com/count' -d '["/blog/firstPost.html", "/blog/controversalPost.html", "/blog/howToCode.html",    "/blog/boringPost.html", "/blog/isso.html"]
 
-	@apiSuccessExample Counts of 5 threads:
-		[2, 18, 4, 0, 3]
-	"""
+    @apiSuccessExample Counts of 5 threads:
+        [2, 18, 4, 0, 3]
+    """
     def counts(self, environ, request):
 
         data = request.get_json()
