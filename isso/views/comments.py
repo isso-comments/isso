@@ -181,6 +181,8 @@ class API(object):
     """
     @api {post} /new create new
     @apiGroup Comment
+	@apiDescription
+		Creates a new comment. The response will set a cookie on the requestor to enable them to later edit the comment.
 	@apiUse csrf
 
     @apiParam {string} uri
@@ -197,7 +199,7 @@ class API(object):
         The parent comment’s id iff the new comment is a response to an existing comment.
 
 	@apiExample {curl} Create a reply to comment with id 15:
-		curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json'
+		curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json' -c cookie.txt
 
 	@apiUse commentResponse
 
@@ -330,6 +332,41 @@ class API(object):
 
         return JSON(rv, 200)
 
+	"""
+	@api {put} /id/:id edit
+	@apiGroup Comment
+    @apiDescription
+		Edit an existing comment. Editing a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details. Editing a comment will set a new edit cookie in the response.
+	@apiUse csrf
+
+	@apiParam {number} id
+		The id of the comment to edit.
+	@apiParam {string} text
+		A new (raw) text for the comment.
+	@apiParam {string} [author]
+		The modified comment’s author’s name.
+	@apiParam {string} [webiste]
+		The modified comment’s author’s website.
+
+	@apiExample {curl} Edit comment with id 23:
+		curl -X PUT 'https://comments.example.com/id/23' -d {"text": "I see your point. However, I still disagree.", "website": "maxrant.important.com"} -H 'Content-Type: application/json' -b cookie.txt
+
+	@apiUse commentResponse
+
+	@apiSuccessExample Example response:
+		{
+			"website": "maxrant.important.com",
+			"author": "Max Rant",
+			"parent": 15,
+			"created": 1464940838.254393,
+			"text": "&lt;p&gt;I see your point. However, I still disagree.&lt;/p&gt;",
+			"dislikes": 0,
+			"modified": 1464943439.073961,
+			"mode": 1,
+			"id": 23,
+			"likes": 0
+		}
+	"""
     @xhr
     def edit(self, environ, request, id):
 
