@@ -463,6 +463,40 @@ class API(object):
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
 
+	"""
+	@api {post} /id/:id/:action/key moderate
+	@apiGroup Comment
+	@apiDescription
+		Publish or delete a comment that is in the moderation queue (mode `2`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
+
+		This endpoint can also be used with a `GET` request. In that case, a html page is returned that asks the user whether they are sure to perform the selected action. If they select “yes”, the query is repeated using `POST`.
+
+	@apiParam {number} id
+		The id of the comment to moderate.
+	@apiParam {string=activate,delete} action
+		`activate` to publish the comment (change its mode to `1`).
+		`delete` to delete the comment
+	@apiParam {string} key
+		The moderation key to authenticate the moderation.
+
+	@apiExample {curl} delete comment with id 13:
+		curl -X POST 'https://comments.example.com/id/13/delete/MTM.CjL6Fg.REIdVXa-whJS_x8ojQL4RrXnuF4'
+
+	@apiSuccessExample {html} Using GET:
+		&lt;!DOCTYPE html&gt;
+		&lt;html&gt;
+			&lt;head&gt;
+				&lt;script&gt;
+					if (confirm('Delete: Are you sure?')) {
+						xhr = new XMLHttpRequest;
+						xhr.open('POST', window.location.href);
+						xhr.send(null);
+					}
+				&lt;/script&gt;
+
+	@apiSuccessExample Using POST:
+		Yo
+	"""
     def moderate(self, environ, request, id, action, key):
 
         try:
