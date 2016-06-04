@@ -7,6 +7,7 @@ import cgi
 import time
 import functools
 
+from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
 
 from werkzeug.http import dump_cookie
@@ -15,11 +16,13 @@ from werkzeug.utils import redirect
 from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
+from werkzeug.contrib.securecookie import SecureCookie
 
 from isso.compat import text_type as str
 
 from isso import utils, local
-from isso.utils import http, parse, JSONResponse as JSON
+from isso.utils import (http, parse, JSONResponse as JSON,
+                        render_template)
 from isso.views import requires
 from isso.utils.hash import sha1
 
@@ -90,7 +93,9 @@ class API(object):
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('demo',    ('GET', '/demo')),
-        ('preview', ('POST', '/preview'))
+        ('preview', ('POST', '/preview')),
+        ('login',   ('POST', '/login')),
+        ('admin',   ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):
@@ -490,3 +495,41 @@ class API(object):
 
     def demo(self, env, req):
         return redirect(get_current_url(env) + '/index.html')
+
+    def login(self, env, req):
+        data = req.form
+        password = self.isso.conf.get("general", "admin_password")
+        if data['password'] and data['password'] == password:
+            response = redirect(get_current_url(env, host_only=True) + '/admin')
+            cookie = functools.partial(dump_cookie,
+                value=self.isso.sign({"logged": True}),
+                expires=datetime.now() + timedelta(1))
+            response.headers.add("Set-Cookie", cookie("admin-session"))
+            response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
+            return response
+        else:
+            return render_template('login.html')
+
+    def admin(self, env, req):
+        try:
+            data = self.isso.unsign(req.cookies.get('admin-session', ''),
+                                    max_age=60 * 60 * 24)
+        except BadSignature:
+            return render_template('login.html')
+        if not data or not data['logged']:
+            return render_template('login.html')
+        page_size = 100
+        page = req.args.get('page', 0)
+        mode = req.args.get('mode', 2)
+        comments = self.comments.fetchall(mode=mode, page=page,
+                                          limit=page_size)
+        comments_enriched = []
+        for comment in list(comments):
+            comment['hash'] = self.isso.sign(comment['id'])
+            comments_enriched.append(comment)
+        comment_mode_count = self.comments.count_modes()
+        max_page = int(sum(comment_mode_count.values()) / 100)
+        return render_template('admin.html', comments=comments_enriched,
+                               page=int(page), mode=int(mode),
+                               conf=self.conf, max_page=max_page,
+                               counts=comment_mode_count)
