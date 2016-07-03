@@ -9,27 +9,11 @@ RJS = /usr/bin/nodejs /usr/lib/nodejs/r.js
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild
 
 rm_js_symlinks:
-	echo "Removing JS symlinks"
-	rm -rf isso/js/components/almond
-	rm -rf isso/js/components/jade
-	rm -rf isso/js/components/text
 	echo "Removing built JS libraries"
-	rm -f ./isso/js/count.min.js isso/js/count.dev.js
-	rm -f ./isso/js/embed.min.js isso/js/embed.dev.js
+	rm -f ./isso/js/count.min.js
+	rm -f ./isso/js/embed.min.js
 
-isso/js/components/almond/almond.js:
-	mkdir -p isso/js/components/almond
-	ln -sf /usr/lib/nodejs/almond.js $@
-
-isso/js/components/text/text.js:
-	mkdir -p isso/js/components/text
-	ln -sf //usr/lib/nodejs/requirejs/text.js $@
-
-isso/js/components/jade/runtime.js:
-	mkdir -p isso/js/components/jade
-	ln -s /usr/lib/nodejs/jade/lib/runtime.js isso/js/components/jade/
-
-override_dh_auto_build: isso/js/components/almond/almond.js isso/js/components/almond/almond.js isso/js/components/jade/runtime.js
+override_dh_auto_build:
 	RJS="$(RJS)" dh_auto_build
 	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml docs build/html
 
