@@ -107,6 +107,10 @@ define(function() {
             "value": {
                 get: function() { return node.value; },
                 set: function(value) { node.value = value; }
+            },
+            "placeholder": {
+                get: function() { return node.placeholder; },
+                set: function(placeholder) { node.placeholder = placeholder; }
             }
         });
     }

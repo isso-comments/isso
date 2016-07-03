@@ -144,8 +144,8 @@ class CORSMiddleware(object):
             return start_response(status, headers.to_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":
-            add_cors_headers(b"200 Ok", [("Content-Type", "text/plain")])
-            return [b'200 Ok']
+            add_cors_headers("200 Ok", [("Content-Type", "text/plain")])
+            return []
 
         return self.app(environ, add_cors_headers)
 
