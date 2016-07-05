@@ -10,6 +10,7 @@ preferably in the script tag which embeds the JS:
             data-isso-css="true"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
+            data-isso-require-author="false"
             data-isso-require-email="false"
             data-isso-max-comments-top="10"
             data-isso-max-comments-nested="5"
@@ -62,6 +63,11 @@ data-isso-reply-to-self
 -----------------------
 
 Set to `true` when spam guard is configured with `reply-to-self = true`.
+
+data-isso-require-author
+------------------------
+
+Set to `true` when spam guard is configured with `require-author = true`.
 
 data-isso-require-email
 -----------------------
