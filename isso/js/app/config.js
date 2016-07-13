@@ -6,6 +6,7 @@ define(function() {
         "lang": (navigator.language || navigator.userLanguage).split("-")[0],
         "reply-to-self": false,
         "require-email": false,
+        "require-author": false,
         "max-comments-top": "inf",
         "max-comments-nested": 5,
         "reveal-on-click": 5,
