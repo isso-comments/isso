@@ -375,6 +375,14 @@ class TestComments(unittest.TestCase):
         # just for the record
         self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
 
+    def testPreview(self):
+        response = self.post('/preview', data=json.dumps({'text': 'This is **mark***down*'}))
+        self.assertEqual(response.status_code, 200)
+
+        rv = loads(response.data)
+        self.assertEqual(rv["text"], '<p>This is <strong>mark</strong><em>down</em></p>')
+
+
 
 class TestModeratedComments(unittest.TestCase):
 
