@@ -108,6 +108,9 @@ function delete_com(com_id, hash) {
         {% else %}
           <span class='author'>Anonymous</span>
         {% endif %}
+        {% if comment.email %}
+          <a href="mailto:{{comment.email}}" rel='nofollow' class='email'>({{comment.email}})</a>
+        {% endif %}
         {% if comment.website %}
           <a href="{{comment.website}}" rel='nofollow' class='website'>({{comment.website}})</a>
         {% endif %}
