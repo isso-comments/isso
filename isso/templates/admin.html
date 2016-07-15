@@ -77,6 +77,9 @@ function delete_com(com_id, hash) {
             </span>
           </a>
         </div>
+        <div class="group">
+          Group by thread: <input type="checkbox" {% if order_by == "tid" %}checked{% endif %} onClick="javascript:window.location='?mode={{mode}}&page={{page}}&order_by={% if order_by == "tid" %}id{% else %}tid{% endif %}';" />
+        </div>
         <div class="pagination">
           Pages:
           {% if page > 0 %}
@@ -94,7 +97,14 @@ function delete_com(com_id, hash) {
       </div>
     </div>
     <main>
+    {% set thread_id = "no_id" %}
     {% for comment in comments %}
+      {% if order_by == "tid" %}
+        {% if thread_id != comment.tid %}
+          {% set thread_id = comment.tid %}
+          <h2 class="thread-title">{{comment.title}}</h2>
+        {% endif %}
+      {% endif %}
 <div class='isso-comment' id='isso-{{comment.id}}'>
   {% if conf.avatar %}
     <div class='avatar'>
@@ -103,6 +113,9 @@ function delete_com(com_id, hash) {
   {% endif %}
     <div class='text-wrapper'>
       <div class='isso-comment-header' role='meta'>
+        {% if order_by != "tid" %}
+          Thread: {{comment.title}}<br />
+        {% endif %}
         {% if comment.author %}
           <span class='author'>{{comment.author}}</span>
         {% else %}

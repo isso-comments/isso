@@ -137,10 +137,10 @@ class Comments:
                 sql_args.append(parent)
 
         # custom sanitization
-        if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes']:
+        if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'tid']:
             order_by = 'id'
         sql.append('ORDER BY ')
-        sql.append('comments.' + order_by)
+        sql.append('comments.' + order_by + ", comments.created")
         sql.append(' DESC')
 
         if limit:

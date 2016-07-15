@@ -116,3 +116,10 @@ a {
 .isso-comment-footer a {
   cursor: pointer;
 }
+.thread-title {
+  margin-left: 3em;
+}
+.group {
+  float: left;
+  margin-left: 2em;
+}

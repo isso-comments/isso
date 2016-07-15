@@ -520,9 +520,11 @@ class API(object):
             return render_template('login.html')
         page_size = 100
         page = req.args.get('page', 0)
+        order_by = req.args.get('order_by', "id")
         mode = req.args.get('mode', 2)
         comments = self.comments.fetchall(mode=mode, page=page,
-                                          limit=page_size)
+                                          limit=page_size,
+                                          order_by=order_by)
         comments_enriched = []
         for comment in list(comments):
             comment['hash'] = self.isso.sign(comment['id'])
@@ -532,4 +534,5 @@ class API(object):
         return render_template('admin.html', comments=comments_enriched,
                                page=int(page), mode=int(mode),
                                conf=self.conf, max_page=max_page,
-                               counts=comment_mode_count)
+                               counts=comment_mode_count,
+                               order_by=order_by)
