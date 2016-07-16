@@ -165,6 +165,12 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         );
 
         if (config.vote) {
+            var voteLevels = config['vote-levels'];
+            if (typeof voteLevels === 'string') {
+                // Eg. -5,5,15
+                voteLevels = voteLevels.split(',');
+            }
+            
             // update vote counter
             var votes = function (value) {
                 var span = $("span.votes", footer);
@@ -177,6 +183,17 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     el.classList.remove('isso-no-votes');
                 } else {
                     el.classList.add('isso-no-votes');
+                }
+                if (voteLevels) {
+                    var before = true;
+                    for (var index = 0; index <= voteLevels.length; index++) {
+                        if (before && (index >= voteLevels.length || value < voteLevels[index])) {
+                            el.classList.add('isso-vote-level-' + index);
+                            before = false;
+                        } else {
+                            el.classList.remove('isso-vote-level-' + index);
+                        }
+                    }
                 }
             };
 
@@ -191,7 +208,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     votes(rv.likes - rv.dislikes);
                 });
             });
-
+            
             votes(comment.likes - comment.dislikes);
         }
 
