@@ -165,19 +165,18 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         );
 
         if (config.vote) {
-            // update vote counter, but hide if votes sum to 0
+            // update vote counter
             var votes = function (value) {
                 var span = $("span.votes", footer);
                 if (span === null) {
-                    if (value !== 0) {
-                        footer.prepend($.new("span.votes", value));
-                    }
+                    footer.prepend($.new("span.votes", value));
                 } else {
-                    if (value === 0) {
-                        span.remove();
-                    } else {
-                        span.textContent = value;
-                    }
+                    span.textContent = value;
+                }
+                if (value) {
+                    el.classList.remove('isso-no-votes');
+                } else {
+                    el.classList.add('isso-no-votes');
                 }
             };
 
@@ -192,6 +191,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     votes(rv.likes - rv.dislikes);
                 });
             });
+
+            votes(comment.likes - comment.dislikes);
         }
 
         $("a.edit", footer).toggle("click",
