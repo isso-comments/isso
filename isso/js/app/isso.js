@@ -171,7 +171,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
                     var lastcreated = 0;
                     rv.replies.forEach(function(commentObject) {
-                        insert(commentObject, false);
+                        insert(commentObject, server, false);
                         if(commentObject.created > lastcreated) {
                             lastcreated = commentObject.created;
                         }
@@ -182,7 +182,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     }
                 },
                 function(err) {
-                    console.log(err);
+                    console.error(err);
                 });
         });
     };
