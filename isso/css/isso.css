@@ -18,6 +18,8 @@
 #isso-thread .textarea {
     min-height: 58px;
     outline: 0;
+    -webkit-transition: border-color 0.3s, color 0.3s;
+    transition: border-color 0.3s, color 0.3s;
 }
 #isso-thread .textarea.placeholder {
     color: #AAA;
@@ -165,8 +167,6 @@
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    -webkit-transition: border-color 0.3s, color 0.3s;
-    transition: border-color 0.3s, color 0.3s;
 }
 #isso-thread .textarea:focus,
 #isso-thread input:focus {
@@ -219,7 +219,7 @@
 .isso-postbox.isso-postbox-password-mode > .form-wrapper > .auth-section .input-wrapper-email {
     display: none;
 }
-.isso-postbox > .form-wrapper .textarea.has-error,
+.textarea.has-error,
 .isso-postbox > .form-wrapper > .auth-section input.has-error {
     border-color: red!important;
     color: red;

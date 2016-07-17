@@ -114,7 +114,7 @@ class API(object):
                 Rule(path, methods=[method], endpoint=getattr(self, view)))
 
     @classmethod
-    def verify(cls, comment):
+    def verify(cls, comment, user_mode=False):
 
         if "text" not in comment:
             return False, "text is missing"
@@ -135,7 +135,7 @@ class API(object):
         if len(comment.get("email") or "") > 254:
             return False, "http://tools.ietf.org/html/rfc5321#section-4.5.3"
 
-        if "@" not in (comment.get("email") or ""):
+        if not user_mode and "@" not in (comment.get("email") or ""):
             return False, "Invalid email address (must contain @)"
 
         if comment.get("website"):
@@ -158,11 +158,12 @@ class API(object):
         for key in ("author", "password", "email", "website", "parent"):
             data.setdefault(key, None)
 
-        valid, reason = API.verify(data)
+        user = next((user for user in self.users if user[0] == data["author"]), None)
+
+        valid, reason = API.verify(data, user_mode=user is not None)
         if not valid:
             return BadRequest(reason)
 
-        user = next((user for user in self.users if user[0] == data["author"]), None)
         if user:
             if user[1] != data["password"]:
                 return Unauthorized("Invalid password")

@@ -5,6 +5,33 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     "use strict";
 
+    var validateText = function(el, config) {
+        if (utils.text(el.innerHTML).length < 3 || el.classList.contains("placeholder")) {
+            el.classList.add('has-error');
+            el.focus();
+            return false;
+        }
+        return true;
+    };
+
+    var validateAuthor = function(el, config) {
+        if (config["require-author"] && el.value.length <= 0) {
+            el.classList.add('has-error');
+            el.focus();
+            return false;
+        }
+        return true;
+    };
+
+    var validateEmail = function(el, config) {
+        if ((config["require-email"] && el.value.length <= 0) || (el.value.length && el.value.indexOf("@") < 0)) {
+            el.classList.add('has-error');
+            el.focus();
+            return false;
+        }
+        return true;
+    };
+
     var Postbox = function(server, parent) {
 
         var localStorage = utils.localStorageImpl,
@@ -48,7 +75,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
         inputs.submit.on("click", function() {
-            if (!validate()) {
+            if (3 > Number(validateText(inputs.text, config)) +
+                Number(validateAuthor(inputs.author, config)) +
+                (passwordMode ? 1 : Number(validateEmail(inputs.email, config)))) {
                 return;
             }
 
@@ -62,11 +91,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             localStorage.setItem("password", JSON.stringify(password));
             localStorage.setItem("website", JSON.stringify(website));
 
-            inputs.author.classList.remove("has-error");
-            inputs.email.classList.remove("has-error");
-            inputs.password.classList.remove("has-error");
-            inputs.website.classList.remove("has-error");
-            inputs.text.classList.remove("has-error");
+            ['author', 'email', 'password', 'website', 'text'].forEach(function (key) {
+                inputs[key].classList.remove("has-error");
+            });
 
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
                 author: author, email: email, password: password, website: website,
@@ -98,29 +125,6 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         update();
 
         return el;
-
-        function validate() {
-            if (utils.text(inputs.text.innerHTML).length < 3 ||
-                inputs.text.classList.contains("placeholder"))
-            {
-                inputs.text.classList.add('has-error');
-                inputs.text.focus();
-                return false;
-            }
-            if ((config["require-email"] && inputs.email.value.length <= 0) ||
-                (inputs.email.value.length && inputs.email.value.indexOf("@") < 0))
-            {
-                inputs.email.classList.add('has-error');
-                inputs.email.focus();
-                return false;
-            }
-            if (config["require-author"] && inputs.author.value.length <= 0) {
-                inputs.author.classList.add('has-error');
-                inputs.author.focus();
-                return false;
-            }
-            return true;
-        }
 
         function update(e) {
             if (e) {
@@ -300,16 +304,14 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 var avatar = config["avatar"] ? $(".avatar", el, false)[0] : null;
 
                 if (! toggler.canceled && textarea !== null) {
-                    if (utils.text(textarea.innerHTML).length < 3) {
-                        textarea.focus();
+                    if (!validateText(textarea, config)) {
                         toggler.wait();
                         return;
-                    } else {
-                        api.modify(comment.id, {"text": utils.text(textarea.innerHTML)}).then(function(rv) {
-                            text.innerHTML = rv.text;
-                            comment.text = rv.text;
-                        });
                     }
+                    api.modify(comment.id, {"text": utils.text(textarea.innerHTML)}).then(function(rv) {
+                        text.innerHTML = rv.text;
+                        comment.text = rv.text;
+                    });
                 } else {
                     text.innerHTML = comment.text;
                 }
