@@ -28,6 +28,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         inputs.email.on(['change', 'keyup'], update);
         inputs.password.on(['change', 'keyup'], update);
         inputs.website.on(['change', 'keyup'], update);
+        inputs.text.on(['change', 'keyup'], update);
 
         var passwordMode = false;
 
@@ -41,7 +42,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         // author is not optional if this config parameter is set
         if (config["require-author"]) {
-            inputs.email.author = inputs.email.author.replace(/ \(.*\)/, "");
+            inputs.author.placeholder = inputs.author.placeholder.replace(/ \(.*\)/, "");
         }
 
         // submit form, initialize optional fields with `null` and reset form.
@@ -65,6 +66,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             inputs.email.classList.remove("has-error");
             inputs.password.classList.remove("has-error");
             inputs.website.classList.remove("has-error");
+            inputs.text.classList.remove("has-error");
 
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
                 author: author, email: email, password: password, website: website,
@@ -101,14 +103,19 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             if (utils.text(inputs.text.innerHTML).length < 3 ||
                 inputs.text.classList.contains("placeholder"))
             {
+                inputs.text.classList.add('has-error');
                 inputs.text.focus();
                 return false;
             }
-            if (config["require-email"] && inputs.email.value.length <= 0) {
+            if ((config["require-email"] && inputs.email.value.length <= 0) ||
+                (inputs.email.value.length && inputs.email.value.indexOf("@") < 0))
+            {
+                inputs.email.classList.add('has-error');
                 inputs.email.focus();
                 return false;
             }
             if (config["require-author"] && inputs.author.value.length <= 0) {
+                inputs.author.classList.add('has-error');
                 inputs.author.focus();
                 return false;
             }
