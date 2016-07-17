@@ -301,6 +301,30 @@ algorithm
     Arguments have to be in that order, but can be reduced to `pbkdf2:4096`
     for example to override the iterations only.
 
+User
+----
+
+Give yourself, your friends and/or your contributors lightweight accounts. These can be used
+to later stylize your comments through CSS and distinguish them from the from anonymous commenters.
+
+.. code-block:: ini
+
+    [user]
+    accounts =
+        Administrator,hunter9
+        John Smith,passw0rd
+
+accounts
+    List of protected accounts. Each account is a name / password pair.
+    If a commenter enters a protected account name, they will be required to enter
+    the corresponding password in order to post their comment.
+    The password field will be offered in place of email.
+
+    The "sluggified" user names will then be added as CSS classses on the comments.
+    For the above example, classes will be: `isso-known-user isso-user-administrator`
+    and `isso-known-user isso-user-john_smith`.
+
+
 Appendum
 --------
 

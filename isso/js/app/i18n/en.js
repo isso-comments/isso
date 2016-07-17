@@ -2,6 +2,7 @@ define({
     "postbox-text": "Type Comment Here (at least 3 chars)",
     "postbox-author": "Name (optional)",
     "postbox-email": "E-mail (optional)",
+    "postbox-password": "Password",
     "postbox-website": "Website (optional)",
     "postbox-submit": "Submit",
 

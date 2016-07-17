@@ -32,8 +32,16 @@ define(function() {
         /**
          * Shortcut for `Element.addEventListener`, prevents default event
          * by default, set :param prevents: to `false` to change that behavior.
+         * You can also provide an array of types, to listen on multiple events
          */
         this.on = function(type, listener, prevent) {
+            if (Array.isArray(type)) {
+                var that = this;
+                type.forEach(function (type) {
+                    that.on(type, listener, prevent);
+                });
+                return;
+            }
             node.addEventListener(type, function(event) {
                 listener(event);
                 if (prevent === undefined || prevent) {

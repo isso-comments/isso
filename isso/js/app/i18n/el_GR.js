@@ -2,6 +2,7 @@ define({
     "postbox-text": "Γράψτε το σχόλιο εδώ (τουλάχιστον 3 χαρακτήρες)",
     "postbox-author": "Όνομα (προαιρετικό)",
     "postbox-email": "E-mail (προαιρετικό)",
+    "postbox-password": "Κωδικός πρόσβασης",
     "postbox-website": "Ιστοσελίδα (προαιρετικό)",
     "postbox-submit": "Υποβολή",
     "num-comments": "Ένα σχόλιο\n{{ n }} σχόλια",

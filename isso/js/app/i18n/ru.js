@@ -2,6 +2,7 @@ define({
     "postbox-text": "Оставить комментарий (минимум 3 символа)",
     "postbox-author": "Имя (необязательно)",
     "postbox-email": "Email (необязательно)",
+    "postbox-password": "Пароль",
     "postbox-website": "Сайт (необязательно)",
     "postbox-submit": "Отправить",
     "num-comments": "{{ n }} комментарий\n{{ n }} комментария\n{{ n }} комментариев",

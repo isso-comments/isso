@@ -2,6 +2,7 @@ define({
     "postbox-text": "Skriv din kommentar här (minst 3 tecken)",
     "postbox-author": "Namn (frivilligt)",
     "postbox-email": "E-mail (frivilligt)",
+    "postbox-password": "Lösenord",
     "postbox-website": "Hemsida (frivilligt)",
     "postbox-submit": "Skicka",
     "num-comments": "En kommentar\n{{ n }} kommentarer",

@@ -64,6 +64,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             xhr.open(method, url, true);
             xhr.withCredentials = true;
             xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("Accept", "application/json");
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === 4) {
@@ -71,7 +72,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
                 }
             };
         } catch (exception) {
-            (reject || console.log)(exception.message);
+            (reject || console.error)(exception.message);
         }
 
         xhr.send(data);
@@ -89,6 +90,19 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return rv.substring(0, rv.length - 1);  // chop off trailing "&"
     };
 
+    var info = function () {
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/info", null,
+            function (rv) {
+                if (rv.status >= 200 && rv.status < 300) {
+                    deferred.resolve(JSON.parse(rv.body));
+                } else {
+                    deferred.reject({message: rv.body, status: rv.status});
+                }
+            });
+        return deferred.promise;
+    };
+
     var create = function(tid, data) {
         var deferred = Q.defer();
         curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data),
@@ -96,7 +110,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
                 if (rv.status === 201 || rv.status === 202) {
                     deferred.resolve(JSON.parse(rv.body));
                 } else {
-                    deferred.reject(rv.body);
+                    deferred.reject({message: rv.body, status: rv.status});
                 }
             });
         return deferred.promise;
@@ -110,7 +124,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             } else if (rv.status === 200) {
                 deferred.resolve(JSON.parse(rv.body));
             } else {
-                deferred.reject(rv.body);
+                deferred.reject({message: rv.body, status: rv.status});
             }
         });
         return deferred.promise;
@@ -124,7 +138,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             } else if (rv.status === 200) {
                 deferred.resolve(JSON.parse(rv.body) === null);
             } else {
-                deferred.reject(rv.body);
+                deferred.reject({message: rv.body, status: rv.status});
             }
         });
         return deferred.promise;
@@ -159,7 +173,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
                 } else if (rv.status === 404) {
                     deferred.resolve({total_replies: 0});
                 } else {
-                    deferred.reject(rv.body);
+                    deferred.reject({message: rv.body, status: rv.status});
                 }
             });
         return deferred.promise;
@@ -171,7 +185,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             if (rv.status === 200) {
                 deferred.resolve(JSON.parse(rv.body));
             } else {
-                deferred.reject(rv.body);
+                deferred.reject({message: rv.body, status: rv.status});
             }
         });
         return deferred.promise;
@@ -195,6 +209,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         endpoint: endpoint,
         salt: salt,
 
+        info: info,
         create: create,
         modify: modify,
         remove: remove,

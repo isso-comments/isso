@@ -68,6 +68,10 @@ define(["app/i18n"], function(i18n) {
                    .replace(/\n/gi, '<br>');
     };
 
+    var slug = function (str) {
+        return str.replace(/[^A-Za-z0-9_-]/g, '_').toLowerCase();
+    };
+
     // Safari private browsing mode supports localStorage, but throws QUOTA_EXCEEDED_ERR
     var localStorageImpl;
     try {
@@ -94,6 +98,7 @@ define(["app/i18n"], function(i18n) {
         cookie: cookie,
         pad: pad,
         ago: ago,
+        slug: slug,
         text: text,
         detext: detext,
         localStorageImpl: localStorageImpl

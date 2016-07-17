@@ -2,6 +2,7 @@ define({
     "postbox-text": "Въведете коментара си тук (поне 3 знака)",
     "postbox-author": "Име/псевдоним (незадължително)",
     "postbox-email": "Ел. поща (незадължително)",
+    "postbox-password": "Парола",
     "postbox-website": "Уебсайт (незадължително)",
     "postbox-submit": "Публикуване",
     "num-comments": "1 коментар\n{{ n }} коментара",

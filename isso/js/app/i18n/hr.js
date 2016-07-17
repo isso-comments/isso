@@ -2,6 +2,7 @@ define({
     "postbox-text": "Napiši komentar ovdje (najmanje 3 znaka)",
     "postbox-author": "Ime (neobavezno)",
     "postbox-email": "E-mail (neobavezno)",
+    "postbox-password": "Lozinka",
     "postbox-website": "Web stranica (neobavezno)",
     "postbox-submit": "Pošalji",
     "num-comments": "Jedan komentar\n{{ n }} komentara",

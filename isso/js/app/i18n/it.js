@@ -2,6 +2,7 @@ define({
     "postbox-text": "Scrivi un commento qui (minimo 3 caratteri)",
     "postbox-author": "Nome (opzionale)",
     "postbox-email": "E-mail (opzionale)",
+    "postbox-password": "Parola d'ordine",
     "postbox-website": "Sito web (opzionale)",
     "postbox-submit": "Invia",
     "num-comments": "Un Commento\n{{ n }} Commenti",

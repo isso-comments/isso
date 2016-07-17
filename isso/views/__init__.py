@@ -51,6 +51,8 @@ class Info(object):
 
     def __init__(self, isso):
         self.moderation = isso.conf.getboolean("moderation", "enabled")
+        self.users = list(map(lambda line: str.strip(line.split(',')[0]),
+            isso.conf.getiter("user", "accounts")))
         isso.urls.add(Rule('/info', endpoint=self.show))
 
     def show(self, environ, request):
@@ -60,6 +62,7 @@ class Info(object):
             "host": str(local("host")),
             "origin": str(local("origin")),
             "moderation": self.moderation,
+            "users": self.users
         }
 
         return Response(json.dumps(rv), 200, content_type="application/json")

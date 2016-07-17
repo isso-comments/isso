@@ -2,6 +2,7 @@ define({
     "postbox-text": "Tajpu komenton ĉi-tie (almenaŭ 3 signoj)",
     "postbox-author": "Nomo (malnepra)",
     "postbox-email": "Retadreso (malnepra)",
+    "postbox-password": "Pasvorto",
     "postbox-website": "Retejo (malnepra)",
     "postbox-submit": "Sendu",
     "num-comments": "{{ n }} komento\n{{ n }} komentoj",

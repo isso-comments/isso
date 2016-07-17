@@ -5,76 +5,126 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     "use strict";
 
-    var Postbox = function(parent) {
+    var Postbox = function(server, parent) {
 
         var localStorage = utils.localStorageImpl,
             el = $.htmlify(jade.render("postbox", {
             "author":  JSON.parse(localStorage.getItem("author")),
+            "password":  JSON.parse(localStorage.getItem("password")),
             "email":   JSON.parse(localStorage.getItem("email")),
             "website": JSON.parse(localStorage.getItem("website"))
         }));
 
+        var inputs = {
+            author: $("[name=author]", el),
+            email: $("[name=email]", el),
+            password: $("[name=password]", el),
+            website: $("[name=website]", el),
+            text: $(".textarea", el),
+            submit: $("[type=submit]", el)
+        };
+        
+        inputs.author.on(['change', 'keyup'], update);
+        inputs.email.on(['change', 'keyup'], update);
+        inputs.password.on(['change', 'keyup'], update);
+        inputs.website.on(['change', 'keyup'], update);
+
+        var passwordMode = false;
+
         // callback on success (e.g. to toggle the reply button)
         el.onsuccess = function() {};
 
-        el.validate = function() {
-            if (utils.text($(".textarea", this).innerHTML).length < 3 ||
-                $(".textarea", this).classList.contains("placeholder"))
-            {
-                $(".textarea", this).focus();
-                return false;
-            }
-            if (config["require-email"] &&
-                $("[name='email']", this).value.length <= 0)
-            {
-              $("[name='email']", this).focus();
-              return false;
-            }
-            return true;
-        };
-
         // email is not optional if this config parameter is set
         if (config["require-email"]) {
-          $("[name='email']", el).placeholder =
-            $("[name='email']", el).placeholder.replace(/ \(.*\)/, "");
+          inputs.email.placeholder = inputs.email.placeholder.replace(/ \(.*\)/, "");
         }
 
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
-        $("[type=submit]", el).on("click", function() {
-            if (! el.validate()) {
+        inputs.submit.on("click", function() {
+            if (!validate()) {
                 return;
             }
 
-            var author = $("[name=author]", el).value || null,
-                email = $("[name=email]", el).value || null,
-                website = $("[name=website]", el).value || null;
+            var author = inputs.author.value || null,
+                email = inputs.email.value || null,
+                password = inputs.password.value || null,
+                website = inputs.website.value || null;
 
             localStorage.setItem("author", JSON.stringify(author));
             localStorage.setItem("email", JSON.stringify(email));
+            localStorage.setItem("password", JSON.stringify(password));
             localStorage.setItem("website", JSON.stringify(website));
 
+            inputs.author.classList.remove("has-error");
+            inputs.email.classList.remove("has-error");
+            inputs.password.classList.remove("has-error");
+            inputs.website.classList.remove("has-error");
+
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
-                author: author, email: email, website: website,
+                author: author, email: email, password: password, website: website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null
-            }).then(function(comment) {
-                $(".textarea", el).innerHTML = "";
-                $(".textarea", el).blur();
-                insert(comment, true);
-
-                if (parent !== null) {
-                    el.onsuccess();
+            }).then(
+                function(comment) {
+                    inputs.text.innerHTML = "";
+                    inputs.text.blur();
+                    insert(comment, server, true);
+    
+                    if (parent !== null) {
+                        el.onsuccess();
+                    }
+                },
+                function (err) {
+                    if (err.status === 401) {
+                        inputs.password.classList.add('has-error');
+                    } else {
+                        console.error(err.message);
+                    }
                 }
-            });
+            );
         });
 
         lib.editorify($(".textarea", el));
 
+        update();
+
         return el;
+
+        function validate() {
+            if (utils.text(inputs.text.innerHTML).length < 3 ||
+                inputs.text.classList.contains("placeholder"))
+            {
+                inputs.text.focus();
+                return false;
+            }
+            if (config["require-email"] && inputs.email.value.length <= 0) {
+              inputs.email.focus();
+              return false;
+            }
+            return true;
+        }
+
+        function update(e) {
+            if (e) {
+                e.target.classList.remove("has-error");
+            }
+
+            if (!e || e.target.name === "author") {
+                var isKnownUser = server.users.indexOf(inputs.author.value) >= 0;
+                if (isKnownUser && !passwordMode) {
+                    el.classList.add('isso-postbox-password-mode');
+                    passwordMode = true;
+                }
+                else if (!isKnownUser && passwordMode) {
+                    el.classList.remove('isso-postbox-password-mode');
+                    passwordMode = false;
+                }
+            }
+        }
     };
 
-    var insert_loader = function(comment, lastcreated) {
+    var insert_loader = function(comment, server, lastcreated) {
         var entrypoint;
         if (comment.id === null) {
             entrypoint = $("#isso-root");
@@ -107,7 +157,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     });
 
                     if(rv.hidden_replies > 0) {
-                        insert_loader(rv, lastcreated);
+                        insert_loader(rv, server, lastcreated);
                     }
                 },
                 function(err) {
@@ -116,7 +166,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         });
     };
 
-    var insert = function(comment, scrollIntoView) {
+    var insert = function(comment, server, scrollIntoView) {
         var el = $.htmlify(jade.render("comment", {"comment": comment}));
 
         // update datetime every 60 seconds
@@ -140,6 +190,11 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             entrypoint = $("#isso-" + comment.parent + " > .text-wrapper > .isso-follow-up");
         }
 
+        if (server.users && server.users.indexOf(comment.author) >= 0) {
+            el.classList.add("isso-known-user");
+            el.classList.add("isso-user-" + utils.slug(comment.author));
+        }
+
         entrypoint.append(el);
 
         if (scrollIntoView) {
@@ -153,7 +208,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         var form = null;  // XXX: probably a good place for a closure
         $("a.reply", footer).toggle("click",
             function(toggler) {
-                form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
+                form = footer.insertAfter(new Postbox(server, comment.parent === null ? comment.id : comment.parent));
                 form.onsuccess = function() { toggler.next(); };
                 $(".textarea", form).focus();
                 $("a.reply", footer).textContent = i18n.translate("comment-close");
@@ -312,14 +367,14 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         if(comment.hasOwnProperty('replies')) {
             var lastcreated = 0;
             comment.replies.forEach(function(replyObject) {
-                insert(replyObject, false);
+                insert(replyObject, server, false);
                 if(replyObject.created > lastcreated) {
                     lastcreated = replyObject.created;
                 }
 
             });
             if(comment.hidden_replies > 0) {
-                insert_loader(comment, lastcreated);
+                insert_loader(comment, server, lastcreated);
             }
 
         }

@@ -2,6 +2,7 @@ define({
     "postbox-text": "Nhập bình luận tại đây (tối thiểu 3 ký tự)",
     "postbox-author": "Tên (tùy chọn)",
     "postbox-email": "E-mail (tùy chọn)",
+    "postbox-password": "Mật khẩu",
     "postbox-website": "Website (tùy chọn)",
     "postbox-submit": "Gửi",
 

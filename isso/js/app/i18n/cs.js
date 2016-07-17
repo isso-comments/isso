@@ -2,6 +2,7 @@ define({
     "postbox-text": "Sem napiště svůj komentář (nejméně 3 znaky)",
     "postbox-author": "Jméno (nepovinné)",
     "postbox-email": "E-mail (nepovinný)",
+    "postbox-password": "Heslo",
     "postbox-website": "Web (nepovinný)",
     "postbox-submit": "Publikovat",
     "num-comments": "Jeden komentář\n{{ n }} Komentářů",

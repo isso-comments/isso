@@ -2,6 +2,7 @@ define({
     "postbox-text": "Kommentar hier eintippen (mindestens 3 Zeichen)",
     "postbox-author": "Name (optional)",
     "postbox-email": "Email (optional)",
+    "postbox-password": "Passwort",
     "postbox-website": "Website (optional)",
     "postbox-submit": "Abschicken",
     "num-comments": "1 Kommentar\n{{ n }} Kommentare",

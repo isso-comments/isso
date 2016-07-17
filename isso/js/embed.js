@@ -3,7 +3,7 @@
  * Distributed under the MIT license
  */
 
-require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade"], function(domready, config, i18n, api, isso, count, $, css, svg, jade) {
+require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade", "app/lib/promise"], function(domready, config, i18n, api, isso, count, $, css, svg, jade, Q) {
 
     "use strict";
 
@@ -27,41 +27,65 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
             return console.log("abort, #isso-thread is missing");
         }
 
-        $("#isso-thread").append($.new('h4'));
-        $("#isso-thread").append(new isso.Postbox(null));
-        $("#isso-thread").append('<div id="isso-root"></div>');
+        var server = null,
+            comments = null;
 
-        api.fetch($("#isso-thread").getAttribute("data-isso-id"),
+        api.info().then(
+            function (rv) {
+                server = rv;
+
+                $("#isso-thread").append($.new('h4'));
+                $("#isso-thread").append(new isso.Postbox(server, null));
+                $("#isso-thread").append('<div id="isso-root"></div>');
+
+                tryInitComments();
+            },
+            errorHandler
+        );
+
+        api.fetch(
+            $("#isso-thread").getAttribute("data-isso-id"),
             config["max-comments-top"],
             config["max-comments-nested"]).then(
-            function(rv) {
-                if (rv.total_replies === 0) {
-                    $("#isso-thread > h4").textContent = i18n.translate("no-comments");
-                    return;
-                }
-
-                var lastcreated = 0;
-                var count = rv.total_replies;
-                rv.replies.forEach(function(comment) {
-                    isso.insert(comment, false);
-                    if(comment.created > lastcreated) {
-                        lastcreated = comment.created;
-                    }
-                    count = count + comment.total_replies;
-                });
-                $("#isso-thread > h4").textContent = i18n.pluralize("num-comments", count);
-
-                if(rv.hidden_replies > 0) {
-                    isso.insert_loader(rv, lastcreated);
-                }
-
-                if (window.location.hash.length > 0) {
-                    $(window.location.hash).scrollIntoView();
-                }
+            function (rv) {
+                comments = rv;
+                tryInitComments();
             },
-            function(err) {
-                console.log(err);
-            }
+            errorHandler
         );
+
+        function tryInitComments() {
+            if (!server || !comments) {
+                return;
+            }
+
+            if (comments.total_replies === 0) {
+                $("#isso-thread > h4").textContent = i18n.translate("no-comments");
+                return;
+            }
+
+            var lastcreated = 0;
+            var count = comments.total_replies;
+            comments.replies.forEach(function(comment) {
+                isso.insert(comment, server, false);
+                if(comment.created > lastcreated) {
+                    lastcreated = comment.created;
+                }
+                count = count + comment.total_replies;
+            });
+            $("#isso-thread > h4").textContent = i18n.pluralize("num-comments", count);
+
+            if(comments.hidden_replies > 0) {
+                isso.insert_loader(comments, server, lastcreated);
+            }
+
+            if (window.location.hash.length > 0) {
+                $(window.location.hash).scrollIntoView();
+            }
+        }
+
+        function errorHandler(err) {
+            console.log(err);
+        }
     });
 });

@@ -2,6 +2,7 @@ define({
     "postbox-text": "Typ reactie hier (minstens 3 karakters)",
     "postbox-author": "Naam (optioneel)",
     "postbox-email": "E-mail (optioneel)",
+    "postbox-password": "Wachtwoord",
     "postbox-website": "Website (optioneel)",
     "postbox-submit": "Versturen",
     "num-comments": "Één reactie\n{{ n }} reacties",
