@@ -23,5 +23,10 @@ define({
     "date-day": "igår\n{{ n }} dagar sedan",
     "date-week": "förra veckan\n{{ n }} veckor sedan",
     "date-month": "förra månaden\n{{ n }} månader sedan",
-    "date-year": "förra året\n{{ n }} år sedan"
+    "date-year": "förra året\n{{ n }} år sedan",
+    "login": "eller logga in:",
+    "logout": "Logga ut",
+    "auth-openid": "Legitimera dig med OpenID Connect",
+    "auth-facebook": "Legitimera dig med Facebook",
+    "auth-google": "Legitimera dig med Google+"
 });

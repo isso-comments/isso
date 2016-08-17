@@ -15,19 +15,19 @@ div(class='isso-postbox')
                 p(class='input-wrapper')
                     input(type='text' name='website' placeholder=i18n('postbox-website')
                           value=website != null ? '#{website}' : '')
-                p(class='social-login-separator') or login:
+                p(class='social-login-separator') #{i18n('login')}
                 p(class='social-login-wrapper')
                     a(class='social-login-link-facebook' href='#')
-                        img(alt='Authenticate using Facebook')
+                        img(alt=i18n('auth-facebook'))
                     a(class='social-login-link-google' href='#')
-                        img(alt='Authenticate using Google+')
+                        img(alt=i18n('auth-google'))
             div(class='auth-loggedin-facebook')
-                p(class='auth-facebook-name') Name
+                p(class='auth-facebook-name')
                 p(class='social-logout-wrapper')
-                    a(class='social-logout-link-facebook' href='#') Log out
+                    a(class='social-logout-link-facebook' href='#') #{i18n('logout')}
             div(class='auth-loggedin-google')
-                p(class='auth-google-name') Name
+                p(class='auth-google-name')
                 p(class='social-logout-wrapper')
-                    a(class='social-logout-link-google' href='#') Log out
+                    a(class='social-logout-link-google' href='#') #{i18n('logout')}
             p(class='post-action')
                 input(type='submit' value=i18n('postbox-submit'))

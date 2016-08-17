@@ -26,5 +26,12 @@ define({
     "date-day": "Yesterday\n{{ n }} days ago",
     "date-week": "last week\n{{ n }} weeks ago",
     "date-month": "last month\n{{ n }} months ago",
-    "date-year": "last year\n{{ n }} years ago"
+    "date-year": "last year\n{{ n }} years ago",
+
+    "login": "or login:",
+    "logout": "Logout",
+
+    "auth-openid": "Authenticate using OpenID Connect",
+    "auth-facebook": "Authenticate using Facebook",
+    "auth-google": "Authenticate using Google+"
 });
