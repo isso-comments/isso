@@ -22,14 +22,17 @@ class curl(object):
                 return resp.status
     """
 
-    headers = {
+    default_headers = {
         "User-Agent": "Isso/{0} (+http://posativ.org/isso)".format(dist.version)
     }
 
-    def __init__(self, method, host, path, timeout=3):
+    def __init__(self, method, host, path, body=None, extra_headers={}, timeout=3):
         self.method = method
         self.host = host
         self.path = path
+        self.body = body
+        self.headers = self.default_headers.copy()
+        self.headers.update(extra_headers)
         self.timeout = timeout
 
     def __enter__(self):
@@ -40,7 +43,7 @@ class curl(object):
         self.con = http(host, port, timeout=self.timeout)
 
         try:
-            self.con.request(self.method, self.path, headers=self.headers)
+            self.con.request(self.method, self.path, body=self.body, headers=self.headers)
         except (httplib.HTTPException, socket.error):
             return None
 

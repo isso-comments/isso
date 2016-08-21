@@ -138,7 +138,7 @@ class API(object):
             for key in API.google_certs:
                 if datetime.utcnow() <= API.google_certs[key].not_valid_after:
                     return
-        with http.curl('GET', API.GOOGLE_CERT_HOST, API.GOOGLE_CERT_PATH, 5) as resp:
+        with http.curl('GET', API.GOOGLE_CERT_HOST, API.GOOGLE_CERT_PATH, timeout=5) as resp:
             try:
                 assert resp and resp.status == 200
                 pems = json.loads(resp.read())
@@ -160,7 +160,7 @@ class API(object):
     @classmethod
     def validate_fb_token(cls, token, uid):
         req_path = "/debug_token?input_token=%s&access_token=%s|%s" % (token, API.FACEBOOK_APP_ID, API.FACEBOOK_APP_SECRET)
-        with http.curl('GET', API.FACEBOOK_GRAPH_HOST, req_path, 5) as resp:
+        with http.curl('GET', API.FACEBOOK_GRAPH_HOST, req_path, timeout=5) as resp:
             try:
                 assert resp and resp.status == 200
                 data = json.loads(resp.read())["data"]
