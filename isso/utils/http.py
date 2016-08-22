@@ -8,7 +8,7 @@ except ImportError:
     import http.client as httplib
 
 from isso import dist
-from isso.wsgi import urlsplit
+from isso.utils.parse import urlsplit, urlunsplit
 
 
 class curl(object):
@@ -17,7 +17,7 @@ class curl(object):
 
     .. code-block:: python
 
-        with http.curl('GET', 'http://localhost:8080', '/') as resp:
+        with http.curl('GET', 'http://localhost:8080/') as resp:
             if resp:  # may be None if request failed
                 return resp.status
     """
@@ -26,10 +26,9 @@ class curl(object):
         "User-Agent": "Isso/{0} (+http://posativ.org/isso)".format(dist.version)
     }
 
-    def __init__(self, method, host, path, body=None, extra_headers={}, timeout=3):
+    def __init__(self, method, url, body=None, extra_headers={}, timeout=3):
         self.method = method
-        self.host = host
-        self.path = path
+        self.url = url
         self.body = body
         self.headers = self.default_headers.copy()
         self.headers.update(extra_headers)
@@ -37,13 +36,15 @@ class curl(object):
 
     def __enter__(self):
 
-        host, port, ssl = urlsplit(self.host)
-        http = httplib.HTTPSConnection if ssl else httplib.HTTPConnection
+        u = urlsplit(self.url, "http")
+        host = u.netloc.rsplit(':')[0]
+        path = urlunsplit(("", "") + u[2:])
+        http = httplib.HTTPSConnection if u.scheme == "https" else httplib.HTTPConnection
 
-        self.con = http(host, port, timeout=self.timeout)
+        self.con = http(host, u.port, timeout=self.timeout)
 
         try:
-            self.con.request(self.method, self.path, body=self.body, headers=self.headers)
+            self.con.request(self.method, path, body=self.body, headers=self.headers)
         except (httplib.HTTPException, socket.error):
             return None
 

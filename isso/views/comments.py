@@ -106,8 +106,7 @@ class API(object):
     SOCIAL_NETWORKS = set(['facebook', 'google'])
     GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"]
     GOOGLE_CLIENT_ID = "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com"
-    GOOGLE_CERT_HOST = "https://www.googleapis.com"
-    GOOGLE_CERT_PATH = "/oauth2/v1/certs"
+    GOOGLE_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs"
     FACEBOOK_GRAPH_HOST = "https://graph.facebook.com"
     FACEBOOK_APP_ID = "1561583880825335"
     FACEBOOK_APP_SECRET = "071fb52133f6fd26113bf20b2428adb7"
@@ -138,7 +137,7 @@ class API(object):
             for key in API.google_certs:
                 if datetime.utcnow() <= API.google_certs[key].not_valid_after:
                     return
-        with http.curl('GET', API.GOOGLE_CERT_HOST, API.GOOGLE_CERT_PATH, timeout=5) as resp:
+        with http.curl('GET', API.GOOGLE_CERT_URL, timeout=5) as resp:
             try:
                 assert resp and resp.status == 200
                 pems = json.loads(resp.read())
@@ -159,8 +158,9 @@ class API(object):
 
     @classmethod
     def validate_fb_token(cls, token, uid):
-        req_path = "/debug_token?input_token=%s&access_token=%s|%s" % (token, API.FACEBOOK_APP_ID, API.FACEBOOK_APP_SECRET)
-        with http.curl('GET', API.FACEBOOK_GRAPH_HOST, req_path, timeout=5) as resp:
+        req_url = "%s/debug_token?input_token=%s&access_token=%s|%s" % (API.FACEBOOK_GRAPH_HOST, token, API.FACEBOOK_APP_ID,
+                                                                        API.FACEBOOK_APP_SECRET)
+        with http.curl('GET', req_url, timeout=5) as resp:
             try:
                 assert resp and resp.status == 200
                 data = json.loads(resp.read())["data"]
@@ -252,7 +252,7 @@ class API(object):
 
         with self.isso.lock:
             if uri not in self.threads:
-                with http.curl('GET', local("origin"), uri) as resp:
+                with http.curl('GET', local("origin") + uri) as resp:
                     if resp and resp.status == 200:
                         uri, title = parse.thread(resp.read(), id=uri)
                     else:

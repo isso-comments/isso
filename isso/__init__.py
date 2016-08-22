@@ -168,7 +168,7 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     # check HTTP server connection
     for host in conf.getiter("general", "host"):
-        with http.curl('HEAD', host, '/', timeout=5) as resp:
+        with http.curl('HEAD', host, timeout=5) as resp:
             if resp is not None:
                 logger.info("connected to %s", host)
                 break

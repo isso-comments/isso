@@ -6,8 +6,9 @@ from itertools import chain
 
 try:
     from urllib import unquote
+    from urlparse import urlsplit, urlunsplit
 except ImportError:
-    from urllib.parse import unquote
+    from urllib.parse import unquote, urlsplit, urlunsplit
 
 import html5lib
 
