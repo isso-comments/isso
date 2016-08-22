@@ -139,7 +139,7 @@ class API(object):
                     return
         with http.curl('GET', API.GOOGLE_CERT_URL, timeout=5) as resp:
             try:
-                assert resp and resp.status == 200
+                assert resp and resp.getcode() == 200
                 pems = json.loads(resp.read())
                 API.google_certs = {key: load_pem_x509_certificate(pems[key].encode("ascii"), default_backend()) for key in pems}
             except:
@@ -162,7 +162,7 @@ class API(object):
                                                                         API.FACEBOOK_APP_SECRET)
         with http.curl('GET', req_url, timeout=5) as resp:
             try:
-                assert resp and resp.status == 200
+                assert resp and resp.getcode() == 200
                 data = json.loads(resp.read())["data"]
                 assert data["is_valid"]
                 assert data["user_id"] == uid
@@ -253,7 +253,7 @@ class API(object):
         with self.isso.lock:
             if uri not in self.threads:
                 with http.curl('GET', local("origin") + uri) as resp:
-                    if resp and resp.status == 200:
+                    if resp and resp.getcode() == 200:
                         uri, title = parse.thread(resp.read(), id=uri)
                     else:
                         return NotFound('URI does not exist')
