@@ -73,10 +73,27 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
         return loggedIn;
     }
 
+    var getAuthorData = function() {
+        return {
+            network: "openid",
+            id: sessionID,
+            idToken: null,
+            pictureURL: authorData.pictureURL,
+            name: authorData.name,
+            email: authorData.email,
+            website: authorData.website,
+        };
+    }
+
+    var prepareComment = function(comment) {
+    }
+
     return {
         init: init,
         initPostbox: initPostbox,
-        isLoggedIn: isLoggedIn
+        isLoggedIn: isLoggedIn,
+        getAuthorData: getAuthorData,
+        prepareComment: prepareComment
     };
 
 });

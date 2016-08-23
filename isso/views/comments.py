@@ -103,7 +103,7 @@ class API(object):
         ('demo',    ('GET', '/demo'))
     ]
 
-    SOCIAL_NETWORKS = set(['facebook', 'google'])
+    SOCIAL_NETWORKS = set(['openid', 'facebook', 'google'])
     GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"]
     GOOGLE_CLIENT_ID = "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com"
     GOOGLE_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs"
@@ -116,6 +116,7 @@ class API(object):
     def __init__(self, isso, hasher):
 
         self.isso = isso
+        API.isso = isso
         self.hash = hasher.uhash
         self.cache = isso.cache
         self.signal = isso.signal
@@ -203,6 +204,14 @@ class API(object):
         if "social_network" in comment:
             if comment["social_network"] is not None and comment["social_network"] not in API.SOCIAL_NETWORKS:
                 return False, "unknown social network"
+            if comment["social_network"] == "openid":
+                idPattern = re.compile("^[0-9a-zA-Z]+$")
+                if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+                    return False, "invalid session ID"
+                session = cls.isso.db.openid_sessions.get(comment["social_id"])
+                if session is None:
+                    return False, "unknown or expired session ID"
+                comment["social_id"] = session["identifier"]
             if comment["social_network"] == "facebook":
                 idPattern = re.compile("^[0-9]+$")
                 if "social_id" not in comment or not idPattern.match(comment["social_id"]):

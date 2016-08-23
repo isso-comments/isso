@@ -49,7 +49,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 return;
             }
 
-            if (facebook.isLoggedIn()) {
+            if (openid.isLoggedIn()) {
+                authorData = openid.getAuthorData();
+            } else if (facebook.isLoggedIn()) {
                 authorData = facebook.getAuthorData();
             } else if (google.isLoggedIn()) {
                 authorData = google.getAuthorData();
@@ -138,7 +140,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     var insert = function(comment, scrollIntoView) {
 
-        if (comment.social_network === "facebook") {
+        if (comment.social_network === "openid") {
+            openid.prepareComment(comment);
+        } else if (comment.social_network === "facebook") {
             facebook.prepareComment(comment);
         } else if (comment.social_network === "google") {
             google.prepareComment(comment);
