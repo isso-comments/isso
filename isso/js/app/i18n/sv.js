@@ -32,5 +32,6 @@ define({
     "auth-google": "Legitimera dig med Google+",
     "openid-title": "Logga in med OpenID Connect",
     "openid-intro": "Vänligen ange din identifierare för OpenID Connect:",
-    "openid-hints": "t.ex. jane@example.com, acct:jane@example.com, http://example.com/jane"
+    "openid-hints": "t.ex. jane@example.com, acct:jane@example.com, http://example.com/jane",
+    "openid-identifier": "Verifierat OpenID: "
 });

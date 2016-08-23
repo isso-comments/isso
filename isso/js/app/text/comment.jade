@@ -15,6 +15,12 @@ div(class='isso-comment' id='isso-#{comment.id}')
                 span(class='author')
                     = bool(comment.author) ? comment.author : i18n('comment-anonymous')
             span(class="spacer") &bull;
+            if comment.social_network == 'openid'
+                span(class='identifier-heading')
+                    = i18n('openid-identifier')
+                span(class='identifier-value')
+                    = comment.social_id
+                span(class="spacer") &bull;
             a(class='permalink' href='#isso-#{comment.id}')
                 time(title='#{humanize(comment.created)}' datetime='#{datetime(comment.created)}')
             span(class='note')

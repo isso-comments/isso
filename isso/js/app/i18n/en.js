@@ -38,5 +38,6 @@ define({
 
     "openid-title": "OpenID Connect login",
     "openid-intro": "Please specify your OpenID Connect identifier:",
-    "openid-hints": "e.g. jane@example.com, acct:jane@example.com, http://example.com/jane"
+    "openid-hints": "e.g. jane@example.com, acct:jane@example.com, http://example.com/jane",
+    "openid-identifier": "Verified OpenID: "
 });

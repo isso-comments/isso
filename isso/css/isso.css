@@ -74,7 +74,8 @@
 .isso-comment > div.text-wrapper > .isso-comment-header .spacer,
 .isso-comment > div.text-wrapper > .isso-comment-header a.permalink,
 .isso-comment > div.text-wrapper > .isso-comment-header .note,
-.isso-comment > div.text-wrapper > .isso-comment-header a.parent {
+.isso-comment > div.text-wrapper > .isso-comment-header a.parent,
+.isso-comment > div.text-wrapper > .isso-comment-header .identifier-heading {
     color: gray !important;
     font-weight: normal;
     text-shadow: none !important;
@@ -91,6 +92,10 @@
 .isso-comment > div.text-wrapper > .isso-comment-header .author {
     font-weight: bold;
     color: #555;
+}
+.isso-comment > div.text-wrapper > .isso-comment-header .identifier-value {
+    color: #000;
+    font-weight: normal;
 }
 .isso-comment > div.text-wrapper > .textarea-wrapper .textarea {
     margin-top: 0.2em;
