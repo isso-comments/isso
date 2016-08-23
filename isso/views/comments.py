@@ -204,7 +204,7 @@ class API(object):
             if comment["social_network"] is not None and comment["social_network"] not in API.SOCIAL_NETWORKS:
                 return False, "unknown social network"
             if comment["social_network"] == "facebook":
-                idPattern = re.compile("^[0-9]+$");
+                idPattern = re.compile("^[0-9]+$")
                 if not idPattern.match(comment["social_id"]):
                     return False, "invalid Facebook UID"
                 if "id_token" not in comment:
@@ -212,7 +212,7 @@ class API(object):
                 if not API.validate_fb_token(comment["id_token"], comment["social_id"]):
                     return False, "Facebook token validation failed"
             if comment["social_network"] == "google":
-                idPattern = re.compile("^[0-9]+$");
+                idPattern = re.compile("^[0-9]+$")
                 if "social_id" not in comment or not idPattern.match(comment["social_id"]):
                     return False, "invalid Google UID"
                 if "id_token" not in comment:
