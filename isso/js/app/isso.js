@@ -1,8 +1,8 @@
 /* Isso – Ich schrei sonst!
  */
 define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals",
-        "app/social/facebook", "app/social/google"],
-    function($, utils, config, api, jade, i18n, lib, globals, facebook, google) {
+        "app/social/openid", "app/social/facebook", "app/social/google"],
+    function($, utils, config, api, jade, i18n, lib, globals, openid, facebook, google) {
 
     "use strict";
 
@@ -25,7 +25,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".textarea", this).focus();
                 return false;
             }
-            if (config["require-email"] && !facebook.isLoggedIn() && !google.isLoggedIn() &&
+            if (config["require-email"] && !facebook.isLoggedIn() && !google.isLoggedIn() && !openid.isLoggedIn() &&
                 $("[name='email']", this).value.length <= 0)
             {
               $("[name='email']", this).focus();
@@ -87,6 +87,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         lib.editorify($(".textarea", el));
 
+        openid.initPostbox(el);
         facebook.initPostbox(el);
         google.initPostbox(el);
 

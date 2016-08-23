@@ -175,6 +175,14 @@
 .isso-postbox > .form-wrapper > .auth-section .auth-not-loggedin {
     display: inline;
 }
+.isso-postbox > .form-wrapper > .auth-section .auth-loggedin-openid {
+    display: none;
+}
+.isso-postbox > .form-wrapper > .auth-section .auth-openid-name {
+    display: inline-block;
+    position: relative;
+    font-weight: bold;
+}
 .isso-postbox > .form-wrapper > .auth-section .auth-loggedin-facebook {
     display: none;
 }
@@ -244,6 +252,10 @@
     padding-right: 8px;
     font-weight: bold;
 }
+.isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper > a.social-logout-link-openid {
+    color: #FFF;
+    background-color: #f7931e;
+}
 .isso-postbox > .form-wrapper > .auth-section .social-logout-wrapper > a.social-logout-link-facebook {
     color: #FFF;
     background-color: #3b5998;
@@ -272,6 +284,46 @@
 }
 .isso-postbox > .form-wrapper > .auth-section .post-action > input:active {
     background-color: #BBB;
+}
+.isso-openid-popup {
+    font-family: sans-serif;
+    background-color: #777;
+}
+.isso-openid-form-box {
+    width: 400px;
+    height: 200px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding: 12px;
+    background-color: #EEE;
+    border: 2px solid #555;
+}
+#isso-openid-logo {
+    width: 64px;
+    height: 64px;
+    float: left;
+    margin-right: 16px;
+    margin-bottom: 16px;
+}
+.isso-openid-intro-line {
+    font-size: 0.90em;
+    font-weight: bold;
+
+}
+.isso-openid-login-line {
+    clear: both;
+}
+.isso-openid-hint-line {
+    font-size: 0.70em;
+    color: #555;
+}
+#isso-openid-identifier {
+    width: 240px;
+    margin-right: 8px;
 }
 @media screen and (max-width:600px) {
     .isso-postbox > .form-wrapper > .auth-section .input-wrapper {

@@ -5,10 +5,10 @@ from itertools import chain
 
 
 try:
-    from urllib import unquote
+    from urllib import unquote, urlencode
     from urlparse import urlsplit, urlunsplit
 except ImportError:
-    from urllib.parse import unquote, urlsplit, urlunsplit
+    from urllib.parse import unquote, urlencode, urlsplit, urlunsplit
 
 import html5lib
 

@@ -72,6 +72,7 @@ from isso.utils import http, JSONRequest, html, hash
 from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
+from isso.ext.openid import OpenID
 
 logging.getLogger('werkzeug').setLevel(logging.WARN)
 logging.basicConfig(
@@ -108,6 +109,7 @@ class Isso(object):
 
         views.Info(self)
         comments.API(self, self.hasher)
+        OpenID(self)
 
     def render(self, text):
         return self.markup.render(text)

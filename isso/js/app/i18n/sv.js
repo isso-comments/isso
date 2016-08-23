@@ -24,9 +24,13 @@ define({
     "date-week": "förra veckan\n{{ n }} veckor sedan",
     "date-month": "förra månaden\n{{ n }} månader sedan",
     "date-year": "förra året\n{{ n }} år sedan",
-    "login": "eller logga in:",
+    "login": "Logga in",
     "logout": "Logga ut",
+    "auth-login": "eller logga in:",
     "auth-openid": "Legitimera dig med OpenID Connect",
     "auth-facebook": "Legitimera dig med Facebook",
-    "auth-google": "Legitimera dig med Google+"
+    "auth-google": "Legitimera dig med Google+",
+    "openid-title": "Logga in med OpenID Connect",
+    "openid-intro": "Vänligen ange din identifierare för OpenID Connect:",
+    "openid-hints": "t.ex. jane@example.com, acct:jane@example.com, http://example.com/jane"
 });

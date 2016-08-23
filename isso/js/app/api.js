@@ -191,6 +191,11 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
+    var openidLogout = function(sessionID) {
+        curl("GET", endpoint + "/openid/logout?state=" + sessionID, null,
+            function(rv) {});
+    };
+
     return {
         endpoint: endpoint,
         salt: salt,
@@ -202,6 +207,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         fetch: fetch,
         count: count,
         like: like,
-        dislike: dislike
+        dislike: dislike,
+        openidLogout: openidLogout
     };
 });

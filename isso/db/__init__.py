@@ -15,6 +15,7 @@ from isso.db.comments import Comments
 from isso.db.threads import Threads
 from isso.db.spam import Guard
 from isso.db.preferences import Preferences
+from isso.db.openid import OpenIDSessions
 
 
 class SQLite3:
@@ -40,6 +41,7 @@ class SQLite3:
         self.threads = Threads(self)
         self.comments = Comments(self)
         self.guard = Guard(self)
+        self.openid_sessions = OpenIDSessions(self)
 
         if rv is None:
             self.execute("PRAGMA user_version = %i" % SQLite3.MAX_VERSION)

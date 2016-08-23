@@ -28,10 +28,15 @@ define({
     "date-month": "last month\n{{ n }} months ago",
     "date-year": "last year\n{{ n }} years ago",
 
-    "login": "or login:",
+    "login": "Login",
     "logout": "Logout",
 
+    "auth-login": "or login:",
     "auth-openid": "Authenticate using OpenID Connect",
     "auth-facebook": "Authenticate using Facebook",
-    "auth-google": "Authenticate using Google+"
+    "auth-google": "Authenticate using Google+",
+
+    "openid-title": "OpenID Connect login",
+    "openid-intro": "Please specify your OpenID Connect identifier:",
+    "openid-hints": "e.g. jane@example.com, acct:jane@example.com, http://example.com/jane"
 });
