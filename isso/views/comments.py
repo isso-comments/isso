@@ -142,7 +142,7 @@ class API(object):
                 assert resp and resp.getcode() == 200
                 pems = json.loads(resp.read())
                 API.google_certs = {key: load_pem_x509_certificate(pems[key].encode("ascii"), default_backend()) for key in pems}
-            except:
+            except (AssertionError, ValueError):
                 logger.warn("failed to renew Google certificates")
 
     @classmethod
@@ -152,7 +152,7 @@ class API(object):
             for iss in issuers:
                 try:
                     return jwt.decode(token, pubkey, audience=audience, issuer=iss)
-                except:
+                except jwt.JWTError:
                     pass
         return False
 
@@ -169,7 +169,7 @@ class API(object):
                 assert data["app_id"] == API.FACEBOOK_APP_ID
                 assert datetime.utcnow() <= datetime.utcfromtimestamp(data["expires_at"])
                 return True
-            except:
+            except (AssertionError, ValueError, KeyError):
                 return False
 
     @classmethod
