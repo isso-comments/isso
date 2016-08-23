@@ -205,7 +205,7 @@ class API(object):
                 return False, "unknown social network"
             if comment["social_network"] == "facebook":
                 idPattern = re.compile("^[0-9]+$")
-                if not idPattern.match(comment["social_id"]):
+                if "social_id" not in comment or not idPattern.match(comment["social_id"]):
                     return False, "invalid Facebook UID"
                 if "id_token" not in comment:
                     return False, "Facebook token missing"
