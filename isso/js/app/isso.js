@@ -25,8 +25,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".textarea", this).focus();
                 return false;
             }
-            if (config["require-email"] && !facebook.isLoggedIn() && !google.isLoggedIn() && !openid.isLoggedIn() &&
-                $("[name='email']", this).value.length <= 0)
+            if (config["require-email"] && !isLoggedIn() && $("[name='email']", this).value.length <= 0)
             {
               $("[name='email']", this).focus();
               return false;
@@ -95,6 +94,22 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         return el;
     };
+
+    var isLoggedIn = function() {
+        return facebook.isLoggedIn() || google.isLoggedIn() || openid.isLoggedIn();
+    }
+
+    var updateAllPostboxes = function() {
+        $.eachByClass("isso-postbox", function(el) {
+            openid.updatePostbox(el);
+            facebook.updatePostbox(el);
+            google.updatePostbox(el);
+            if (!isLoggedIn()) {
+                $(".auth-not-loggedin", el).showInline();
+                $(".isso-postbox .avatar", el).hide();
+            }
+        });
+    }
 
     var insert_loader = function(comment, lastcreated) {
         var entrypoint;
@@ -362,6 +377,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
     return {
         insert: insert,
         insert_loader: insert_loader,
+        updateAllPostboxes: updateAllPostboxes,
         Postbox: Postbox
     };
 });

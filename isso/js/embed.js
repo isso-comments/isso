@@ -31,9 +31,9 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
         $("#isso-thread").append(new isso.Postbox(null));
         $("#isso-thread").append('<div id="isso-root"></div>');
 
-        openid.init();
-        facebook.init();
-        google.init();
+        openid.init(isso);
+        facebook.init(isso);
+        google.init(isso);
 
         api.fetch($("#isso-thread").getAttribute("data-isso-id"),
             config["max-comments-top"],

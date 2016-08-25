@@ -2,12 +2,14 @@ define(["app/dom", "app/api"], function($, api) {
 
     "use strict";
 
+    var isso = null;
     var loadedSDK = false;
     var loggedIn = false;
     var authorData = null;
     var gAuth = null;
 
-    var init = function() {
+    var init = function(isso_ref) {
+        isso = isso_ref;
 
         // Load Google API
         var gScriptEl = document.createElement("script");
@@ -20,7 +22,7 @@ define(["app/dom", "app/api"], function($, api) {
                     cookiepolicy: "single_host_origin",
                 });
                 loadedSDK = true;
-                updateAllPostboxes();
+                isso.updateAllPostboxes();
             });
         });
 
@@ -35,19 +37,11 @@ define(["app/dom", "app/api"], function($, api) {
                 $(".isso-postbox .avatar", el).setAttribute("src", authorData.pictureURL);
                 $(".isso-postbox .avatar", el).show();
             } else {
-                $(".auth-not-loggedin", el).showInline();
                 $(".auth-loggedin-google", el).hide();
                 $(".social-login-link-google", el).showInline();
                 $(".social-login-link-google > img", el).setAttribute("src", api.endpoint + "/images/googleplus-color.png");
-                $(".isso-postbox .avatar", el).hide();
             }
         }
-    }
-
-    var updateAllPostboxes = function() {
-        $.eachByClass("isso-postbox", function(el) {
-            updatePostbox(el);
-        });
     }
 
     var initPostbox = function(el) {
@@ -56,7 +50,7 @@ define(["app/dom", "app/api"], function($, api) {
             gAuth.signOut().then(function() {
                 loggedIn = false;
                 authorData = null;
-                updateAllPostboxes();
+                isso.updateAllPostboxes();
             });
         });
         $(".social-login-link-google", el).on("click", function() {
@@ -70,7 +64,7 @@ define(["app/dom", "app/api"], function($, api) {
                     pictureURL: profile.getImageUrl(),
                     idToken: googleUser.getAuthResponse().id_token,
                 };
-                updateAllPostboxes();
+                isso.updateAllPostboxes();
             });
         });
     }
@@ -98,6 +92,7 @@ define(["app/dom", "app/api"], function($, api) {
     return {
         init: init,
         initPostbox: initPostbox,
+        updatePostbox: updatePostbox,
         isLoggedIn: isLoggedIn,
         getAuthorData: getAuthorData,
         prepareComment: prepareComment

@@ -2,11 +2,13 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
 
     "use strict";
 
+    var isso = null;
     var loggedIn = false;
     var sessionID = null;
     var authorData = null;
 
-    var init = function() {
+    var init = function(isso_ref) {
+        isso = isso_ref;
         window.addEventListener("message", function(event) {
             var origin = event.origin || event.originalEvent.origin;
             if (origin != api.endpoint)
@@ -19,7 +21,7 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
                 pictureURL: event.data.picture,
                 website: event.data.website,
             };
-            updateAllPostboxes();
+            isso.updateAllPostboxes();
         }, false);
     }
 
@@ -34,18 +36,10 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
                 $(".isso-postbox .avatar", el).hide();
             $(".isso-postbox .avatar", el).show();
         } else {
-            $(".auth-not-loggedin", el).showInline();
             $(".auth-loggedin-openid", el).hide();
             $(".social-login-link-openid", el).showInline();
             $(".social-login-link-openid > img", el).setAttribute("src", api.endpoint + "/images/openid-icon-32x32.png");
-            $(".isso-postbox .avatar", el).hide();
         }
-    }
-
-    var updateAllPostboxes = function() {
-        $.eachByClass("isso-postbox", function(el) {
-            updatePostbox(el);
-        });
     }
 
     var initPostbox = function(el) {
@@ -55,7 +49,7 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
             loggedIn = false;
             sessionID = null;
             authorData = null;
-            updateAllPostboxes();
+            isso.updateAllPostboxes();
         });
         $(".social-login-link-openid", el).on("click", function() {
             var win = window.open("", "OpenID Connect login",
@@ -91,6 +85,7 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
     return {
         init: init,
         initPostbox: initPostbox,
+        updatePostbox: updatePostbox,
         isLoggedIn: isLoggedIn,
         getAuthorData: getAuthorData,
         prepareComment: prepareComment

@@ -2,6 +2,7 @@ define(["app/dom", "app/api"], function($, api) {
 
     "use strict";
 
+    var isso = null;
     var loadedSDK = false;
     var loggedIn = false;
     var authorData = null;
@@ -17,18 +18,19 @@ define(["app/dom", "app/api"], function($, api) {
                     name: response["name"],
                     email: response["email"] || "",
                 };
-                updateAllPostboxes();
+                isso.updateAllPostboxes();
             });
         } else {
             loggedIn = false;
             authorData = null;
             token = null;
-            updateAllPostboxes();
+            isso.updateAllPostboxes();
         }
 
     }
 
-    var init = function() {
+    var init = function(isso_ref) {
+        isso = isso_ref;
 
         // Called when Facebook SDK has loaded
         window.fbAsyncInit = function() {
@@ -66,19 +68,11 @@ define(["app/dom", "app/api"], function($, api) {
                 $(".isso-postbox .avatar", el).setAttribute("src", "//graph.facebook.com/" + authorData.uid + "/picture");
                 $(".isso-postbox .avatar", el).show();
             } else {
-                $(".auth-not-loggedin", el).showInline();
                 $(".auth-loggedin-facebook", el).hide();
                 $(".social-login-link-facebook", el).showInline();
                 $(".social-login-link-facebook > img", el).setAttribute("src", api.endpoint + "/images/facebook-color.png");
-                $(".isso-postbox .avatar", el).hide();
             }
         }
-    }
-
-    var updateAllPostboxes = function() {
-        $.eachByClass("isso-postbox", function(el) {
-            updatePostbox(el);
-        });
     }
 
     var initPostbox = function(el) {
@@ -119,6 +113,7 @@ define(["app/dom", "app/api"], function($, api) {
     return {
         init: init,
         initPostbox: initPostbox,
+        updatePostbox: updatePostbox,
         isLoggedIn: isLoggedIn,
         getAuthorData: getAuthorData,
         prepareComment: prepareComment
