@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.10.5 (unreleased)
+0.10.5 (2016-09-20)
 -------------------
 
 - add support for different vote levels, #260
