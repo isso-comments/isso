@@ -19,6 +19,7 @@ preferably in the script tag which embeds the JS:
             data-isso-avatar-bg="#f0f0f0"
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             data-isso-vote="true"
+            data-vote-levels=""
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
@@ -109,6 +110,20 @@ data-isso-vote
 --------------
 
 Enable or disable voting feature on the client side.
+
+data-isso-vote-levels
+---------------------
+
+List of vote levels used to customize comment appearance based on score.
+Provide a comma-separated values (eg. `"0,5,10,25,100"`) or a JSON array (eg. `"[-5,5,15]"`).
+
+For example, the value `"-5,5"` will cause each `isso-comment` to be given one of these 3 classes:
+
+- `isso-vote-level-0` for scores lower than `-5`
+- `isso-vote-level-1` for scores between `-5` and `4`
+- `isso-vote-level-2` for scores of `5` and greater
+
+These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
 
 data-isso-id
 ------------
