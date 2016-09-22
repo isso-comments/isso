@@ -4,7 +4,7 @@ Changelog for Isso
 0.10.6 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- fix missing configuration field
 
 
 0.10.5 (2016-09-20)
