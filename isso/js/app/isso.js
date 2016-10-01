@@ -30,6 +30,12 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
               $("[name='email']", this).focus();
               return false;
             }
+            if (config["require-author"] &&
+                $("[name='author']", this).value.length <= 0)
+            {
+              $("[name='author']", this).focus();
+              return false;
+            }
             return true;
         };
 
@@ -37,6 +43,12 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         if (config["require-email"]) {
           $("[name='email']", el).placeholder =
             $("[name='email']", el).placeholder.replace(/ \(.*\)/, "");
+        }
+
+        // author is not optional if this config parameter is set
+        if (config["require-author"]) {
+          $("[name='author']", el).placeholder =
+            $("[name='author']", el).placeholder.replace(/ \(.*\)/, "");
         }
 
         // submit form, initialize optional fields with `null` and reset form.
@@ -57,7 +69,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
                 author: author, email: email, website: website,
                 text: utils.text($(".textarea", el).innerHTML),
-                parent: parent || null
+                parent: parent || null,
+                title: $("#isso-thread").getAttribute("data-title") || null
             }).then(function(comment) {
                 $(".textarea", el).innerHTML = "";
                 $(".textarea", el).blur();
@@ -165,18 +178,34 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         );
 
         if (config.vote) {
-            // update vote counter, but hide if votes sum to 0
+            var voteLevels = config['vote-levels'];
+            if (typeof voteLevels === 'string') {
+                // Eg. -5,5,15
+                voteLevels = voteLevels.split(',');
+            }
+            
+            // update vote counter
             var votes = function (value) {
                 var span = $("span.votes", footer);
                 if (span === null) {
-                    if (value !== 0) {
-                        footer.prepend($.new("span.votes", value));
-                    }
+                    footer.prepend($.new("span.votes", value));
                 } else {
-                    if (value === 0) {
-                        span.remove();
-                    } else {
-                        span.textContent = value;
+                    span.textContent = value;
+                }
+                if (value) {
+                    el.classList.remove('isso-no-votes');
+                } else {
+                    el.classList.add('isso-no-votes');
+                }
+                if (voteLevels) {
+                    var before = true;
+                    for (var index = 0; index <= voteLevels.length; index++) {
+                        if (before && (index >= voteLevels.length || value < voteLevels[index])) {
+                            el.classList.add('isso-vote-level-' + index);
+                            before = false;
+                        } else {
+                            el.classList.remove('isso-vote-level-' + index);
+                        }
                     }
                 }
             };
@@ -192,6 +221,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     votes(rv.likes - rv.dislikes);
                 });
             });
+            
+            votes(comment.likes - comment.dislikes);
         }
 
         $("a.edit", footer).toggle("click",
