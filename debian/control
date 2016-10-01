@@ -13,7 +13,7 @@ Build-Depends:
  python-setuptools,
  python-sphinx,
  ruby-sass
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/
 Vcs-Git: git://anonscm.debian.org/collab-maint/isso.git -b experimental
