@@ -66,6 +66,10 @@ class Guard:
         if self.conf.getboolean("require-email") and not comment.get("email"):
             return False, "email address required but not provided"
 
+        # require author if :param:`require-author` is enabled
+        if self.conf.getboolean("require-author") and not comment.get("author"):
+            return False, "author address required but not provided"
+
         return True, ""
 
     def _spam(self, uri, comment):

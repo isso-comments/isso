@@ -75,7 +75,7 @@ class API(object):
                   'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title'])
 
     VIEWS = [
         ('fetch',   ('GET', '/')),
@@ -89,7 +89,8 @@ class API(object):
         ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('demo',    ('GET', '/demo'))
+        ('demo',    ('GET', '/demo')),
+        ('preview', ('POST', '/preview'))
     ]
 
     def __init__(self, isso, hasher):
@@ -168,11 +169,14 @@ class API(object):
 
         with self.isso.lock:
             if uri not in self.threads:
-                with http.curl('GET', local("origin"), uri) as resp:
-                    if resp and resp.status == 200:
-                        uri, title = parse.thread(resp.read(), id=uri)
-                    else:
-                        return NotFound('URI does not exist')
+                if 'title' not in data:
+                    with http.curl('GET', local("origin"), uri) as resp:
+                        if resp and resp.status == 200:
+                            uri, title = parse.thread(resp.read(), id=uri)
+                        else:
+                            return NotFound('URI does not exist %s')
+                else:
+                    title = data['title']
 
                 thread = self.threads.new(uri, title)
                 self.signal("comments.new:new-thread", thread)
@@ -475,6 +479,14 @@ class API(object):
             raise BadRequest("JSON must be a list of URLs")
 
         return JSON(self.comments.count(*data), 200)
+
+    def preview(self, environment, request):
+        data = request.get_json()
+
+        if "text" not in data or data["text"] is None:
+            raise BadRequest("no text given")
+
+        return JSON({'text': self.isso.render(data["text"])}, 200)
 
     def demo(self, env, req):
         return redirect(get_current_url(env) + '/index.html')

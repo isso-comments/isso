@@ -1,6 +1,47 @@
 Changelog for Isso
 ==================
 
+0.10.6 (2016-09-22)
+-------------------
+
+- fix missing configuration field
+
+
+0.10.5 (2016-09-20)
+-------------------
+
+- add support for different vote levels, #260
+
+  List of vote levels used to customize comment appearance based on score.
+  Provide a comma-separated values (eg. `"0,5,10,25,100"`) or a JSON array (eg.
+  `"[-5,5,15]"`).
+
+  For example, the value `"-5,5"` will cause each `isso-comment` to be given
+  one of these 3 classes:
+
+  - `isso-vote-level-0` for scores lower than `-5`
+  - `isso-vote-level-1` for scores between `-5` and `4`
+  - `isso-vote-level-2` for scores of `5` and greater
+
+  These classes can then be used to customize the appearance of comments (eg.
+  put a star on popular comments).
+
+- add new post preview API endpoint, #254
+
+- add an option for mandatory author, #257
+
+- clients can now use `data-title` to get the HTML title for a new page, #252
+
+- add finish translation and other minor bugfixes
+
+
+0.10.4 (2016-04-12)
+-------------------
+
+- fix wrapper attribute when using data-isso-require-mail="true", #238
+- fix reponse for OPTIONS response on Python 3, #242
+
+
 0.10.3 (2016-02-24)
 -------------------
 

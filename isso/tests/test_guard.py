@@ -35,7 +35,8 @@ class TestGuard(unittest.TestCase):
     def setUp(self):
         self.path = tempfile.NamedTemporaryFile().name
 
-    def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False, require_email=False):
+    def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False,
+                   require_email=False, require_author=False):
 
         conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
@@ -45,6 +46,7 @@ class TestGuard(unittest.TestCase):
         conf.set("guard", "direct-reply", str(direct_reply))
         conf.set("guard", "reply-to-self", "1" if self_reply else "0")
         conf.set("guard", "require-email", "1" if require_email else "0")
+        conf.set("guard", "require-author", "1" if require_author else "0")
 
         class App(Isso, core.Mixin):
             pass
@@ -120,8 +122,8 @@ class TestGuard(unittest.TestCase):
 
         payload = lambda email: json.dumps({"text": "...", "email": email})
 
-        client = self.makeClient("127.0.0.1", ratelimit=4, require_email=False) 
-        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_email=True) 
+        client = self.makeClient("127.0.0.1", ratelimit=4, require_email=False)
+        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_email=True)
 
         # if we don't require email
         self.assertEqual(client.post("/new?uri=test", data=payload("")).status_code, 201)
@@ -130,3 +132,18 @@ class TestGuard(unittest.TestCase):
         # if we do require email
         self.assertEqual(client_strict.post("/new?uri=test", data=payload("")).status_code, 403)
         self.assertEqual(client_strict.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
+
+    def testRequireAuthor(self):
+
+        payload = lambda author: json.dumps({"text": "...", "author": author})
+
+        client = self.makeClient("127.0.0.1", ratelimit=4, require_author=False)
+        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_author=True)
+
+        # if we don't require author
+        self.assertEqual(client.post("/new?uri=test", data=payload("")).status_code, 201)
+        self.assertEqual(client.post("/new?uri=test", data=payload("pipo author")).status_code, 201)
+
+        # if we do require author
+        self.assertEqual(client_strict.post("/new?uri=test", data=payload("")).status_code, 403)
+        self.assertEqual(client_strict.post("/new?uri=test", data=payload("pipo author")).status_code, 201)

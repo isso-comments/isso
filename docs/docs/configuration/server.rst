@@ -217,6 +217,7 @@ for IPv4, ``/48`` for IPv6).
     ratelimit = 2
     direct-reply = 3
     reply-to-self = false
+    require-author = false
     require-email = false
 
 enabled
@@ -236,6 +237,12 @@ reply-to-self
     their own comments anyways.
 
     Do not forget to configure the client.
+
+require-author
+    force commenters to enter a value into the author field. No validation is
+    performed on the provided value.
+
+    Do not forget to configure the client accordingly.
 
 require-email
     force commenters to enter a value into the email field. No validation is
