@@ -519,9 +519,9 @@ class API(object):
         if not data or not data['logged']:
             return render_template('login.html')
         page_size = 100
-        page = req.args.get('page', 0)
+        page = int(req.args.get('page', 0))
         order_by = req.args.get('order_by', "id")
-        mode = req.args.get('mode', 2)
+        mode = int(req.args.get('mode', 2))
         comments = self.comments.fetchall(mode=mode, page=page,
                                           limit=page_size,
                                           order_by=order_by)
