@@ -61,17 +61,17 @@ function delete_com(com_id, hash) {
     <div class="outer">
       <div class="filters">
         <div class="mode">
-          <a href="?mode=1&page={{page}}">
+          <a href="?mode=1&page={{page}}&order_by={{order_by}}">
             <span class="label label-valid {% if mode == 1 %}active{% endif %}">
               Valid ({{counts.get(1, 0)}})
             </span>
           </a>
-          <a href="?mode=2&page={{page}}">
+          <a href="?mode=2&page={{page}}&order_by={{order_by}}">
             <span class="label label-pending {% if mode == 2 %}active{% endif %}">
               Pending ({{counts.get(2, 0)}})
             </span>
           </a>
-          <a href="?mode=4&page={{page}}">
+          <a href="?mode=4&page={{page}}&order_by={{order_by}}">
             <span class="label label-staled {% if mode == 4 %}active{% endif %}">
               Staled ({{counts.get(4, 0)}})
             </span>
@@ -93,8 +93,24 @@ function delete_com(com_id, hash) {
               »
             </a>
           {% endif %}
+          / {{ max_page }}
         </div>
       </div>
+        <div class="filters order">
+          Order:
+          {% for order in ['id', 'created', 'modified', 'likes', 'dislikes'] %}
+            <a href="?mode={{mode}}&page={{page}}&order_by={{order}}&asc={{1 - asc}}">
+              <span class="label label-valid {% if order == order_by %}active{% endif %}">
+                {{ order }}
+                {% if order == order_by %}
+                  {% if asc %} ↑ {% else %} ↓ {% endif %}
+                {% else %}
+                  ↓
+                {% endif %}
+              </span>
+            </a>
+          {% endfor %}
+        </div>
     </div>
     <main>
     {% set thread_id = "no_id" %}

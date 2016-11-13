@@ -110,7 +110,7 @@ class Comments:
         return dict(comment_count)
 
     def fetchall(self, mode=5, after=0, parent='any', order_by='id',
-                 limit=100, page=0):
+                 limit=100, page=0, asc=1):
         """
         Return comments for admin with :param:`mode`.
         """
@@ -138,10 +138,16 @@ class Comments:
 
         # custom sanitization
         if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'tid']:
-            order_by = 'id'
-        sql.append('ORDER BY ')
-        sql.append('comments.' + order_by + ", comments.created")
-        sql.append(' DESC')
+            sql.append('ORDER BY ')
+            sql.append("comments.created")
+            if not asc:
+                sql.append(' DESC')
+        else:
+            sql.append('ORDER BY ')
+            sql.append('comments.' + order_by)
+            if not asc:
+                sql.append(' DESC')
+            sql.append(", comments.created")
 
         if limit:
             sql.append('LIMIT ?,?')
