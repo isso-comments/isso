@@ -123,3 +123,12 @@ a {
   float: left;
   margin-left: 2em;
 }
+.editable {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 5px;
+}
+.hidden {
+  display: none;
+}

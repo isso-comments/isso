@@ -88,8 +88,8 @@ class API(object):
         ('view',    ('GET', '/id/<int:id>')),
         ('edit',    ('PUT', '/id/<int:id>')),
         ('delete',  ('DELETE', '/id/<int:id>')),
-        ('moderate',('GET',  '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
-        ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
+        ('moderate',('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate',('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('demo',    ('GET', '/demo')),
@@ -318,7 +318,6 @@ class API(object):
         return resp
 
     def moderate(self, environ, request, id, action, key):
-
         try:
             id = self.isso.unsign(key, max_age=2**32)
         except (BadSignature, SignatureExpired):
@@ -348,13 +347,21 @@ class API(object):
             with self.isso.lock:
                 self.comments.activate(id)
             self.signal("comments.activate", id)
+            return Response("Yo", 200)
+        elif action == "edit":
+            data = request.get_json()
+            with self.isso.lock:
+                rv = self.comments.update(id, data)
+            for key in set(rv.keys()) - API.FIELDS:
+                rv.pop(key)
+            self.signal("comments.edit", rv)
+            return JSON(rv, 200)
         else:
             with self.isso.lock:
                 self.comments.delete(id)
             self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
             self.signal("comments.delete", id)
-
-        return Response("Yo", 200)
+            return Response("Yo", 200)
 
     @requires(str, 'uri')
     def fetch(self, environ, request, uri):
