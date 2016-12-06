@@ -178,7 +178,7 @@ function send_edit(com_id, hash) {
       {% if order_by == "tid" %}
         {% if thread_id != comment.tid %}
           {% set thread_id = comment.tid %}
-          <h2 class="thread-title">{{comment.title}}</h2>
+          <h2 class="thread-title">{{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</h2>
         {% endif %}
       {% endif %}
 <div class='isso-comment' id='isso-{{comment.id}}'>
@@ -190,7 +190,7 @@ function send_edit(com_id, hash) {
     <div class='text-wrapper'>
       <div class='isso-comment-header' role='meta'>
         {% if order_by != "tid" %}
-          <div>Thread: {{comment.title}}</div><br />
+          <div>Thread: {{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</div><br />
         {% endif %}
         {% if comment.author %}
           <span class='author' id="isso-author-{{comment.id}}">{{comment.author}}</span>
