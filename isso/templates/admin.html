@@ -54,7 +54,7 @@ function edit(com_id, hash, author, email, website, comment) {
         }});
 }
 function validate_com(com_id, hash) {
-    moderate(com_id, hash, "validate");
+    moderate(com_id, hash, "activate");
 }
 function delete_com(com_id, hash) {
     moderate(com_id, hash, "delete");
