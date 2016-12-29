@@ -216,6 +216,7 @@ don't use FastCGi or uWSGI:
 -  systemd (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
 -  SysVinit (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
 -  OpenBSD: https://gist.github.com/noqqe/7397719
+-  FreeBSD: https://gist.github.com/ckoepp/52f6f0262de04cee1b88ef4a441e276d
 -  Supervisor: https://github.com/posativ/isso/issues/47
 
 If you're writing your own init script, you can utilize ``start-stop-daemon``
