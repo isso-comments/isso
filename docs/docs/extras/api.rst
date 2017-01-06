@@ -23,11 +23,11 @@ Isso:
         "mode": 1,
         "hash": "4505c1eeda98",
         "author": null,
-        "website": null
+        "website": null,
         "created": 1387321261.572392,
         "modified": null,
         "likes": 3,
-        "dislikes": 0,
+        "dislikes": 0
     }
 
 id :
@@ -70,7 +70,7 @@ modified :
 List comments
 -------------
 
-List all publicely visible comments for thread `uri`:
+List all publicly visible comments for thread `uri`:
 
 .. code-block:: text
 
