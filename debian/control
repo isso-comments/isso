@@ -10,6 +10,8 @@ Build-Depends:
  node-uglify (>= 2.4.13-2),
  nodejs,
  python-all,
+ python-html5lib,
+ python-configparser,
  python-setuptools,
  python-sphinx,
  ruby-sass
