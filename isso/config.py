@@ -149,8 +149,21 @@ def load(default, user=None):
             logger.info("Your `session-key` has been stored in the "
                         "database itself, this option is now unused")
 
-    if not parseaddr(parser.get("smtp", "from"))[0]:
-        parser.set("smtp", "from",
-                   formataddr(("Ich schrei sonst!", parser.get("smtp", "from"))))
+    from_address = parser.get("smtp", "from").strip()
+
+    if from_address != '' and parseaddr(from_address) == (None, None):
+        if '@' not in from_address:
+            logger.warn("Your `from` address doesn't contain an @ sign. "
+                        "It is reset to an empty address.")
+            parser.set("smtp", "from", "")
+
+        elif ' ' in from_address:
+            logger.warn("Your `from` address contains a space. "
+                        "It is reset to an empty address.")
+            parser.set("smtp", "from", "")
+
+        else:
+            parser.set("smtp", "from",
+                formataddr(("Ich schrei sonst!", from_address)))
 
     return parser
