@@ -8,14 +8,16 @@ import time
 import functools
 import logging
 import json
-import jwt
 
 from datetime import datetime
 
 from itsdangerous import SignatureExpired, BadSignature
 
+from jose import jwt
+
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 
 from werkzeug.http import dump_cookie
 from werkzeug.wsgi import get_current_url
@@ -149,11 +151,11 @@ class API(object):
     @classmethod
     def validate_jwt(cls, token, certificates, audience, issuers):
         for cert in certificates.values():
-            pubkey = cert.public_key()
+            pubkey = cert.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
             for iss in issuers:
                 try:
-                    return jwt.decode(token, pubkey, audience=audience, issuer=iss)
-                except jwt.JWTError:
+                    return jwt.decode(token, pubkey, audience=audience, issuer=iss, options={'verify_at_hash': False})
+                except:
                     pass
         return False
 
