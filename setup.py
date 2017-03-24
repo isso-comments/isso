@@ -12,7 +12,7 @@ if (3, 0) <= sys.version_info < (3, 3):
 
 setup(
     name='isso',
-    version='0.10.2.dev0',
+    version='0.10.4.dev0',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
@@ -35,8 +35,8 @@ setup(
     install_requires=requires,
     extras_require={
         ':python_version=="2.6"': ['argparse', 'ordereddict'],
-        ':python_version<="2.7"': ['ipaddr>=2.1', 'configparser', 'werkzeug>=0.8'],
-        ':python_version>="3.0"': ['werkzeug>=0.9']
+        ':python_version=="2.6" or python_version=="2.7"': ['ipaddr>=2.1', 'configparser', 'werkzeug>=0.8'],
+        ':python_version!="2.6" and python_version!="2.7"': ['werkzeug>=0.9']
     },
     entry_points={
         'console_scripts':
