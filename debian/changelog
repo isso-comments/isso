@@ -1,6 +1,9 @@
 isso (0.10.6-2) UNRELEASED; urgency=medium
 
   * Add missing dependency on python-configparser.
+  * Add 0001-use-bleach.patch: use bleach for HTML sanitizing, as
+    support for this has been removed in newer versions of htm5lib.
+    Closes: #852208.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Fri, 20 Jan 2017 20:44:30 +0000
 

@@ -1,0 +1,164 @@
+From a2340e32099d80e7dd7309a490b8a9254fd59104 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jelmer=20Vernoo=C4=B3?= <jelmer@google.com>
+Date: Thu, 2 Mar 2017 01:22:58 +0000
+Subject: [PATCH 1/1] Use bleach to sanitize HTML; allows use with newer
+ versions of html5lib.
+
+---
+ isso/tests/test_html.py |  6 ++---
+ isso/utils/html.py      | 60 +++++++++++++++++--------------------------------
+ setup.py                |  2 +-
+ tox.ini                 |  3 ++-
+ 4 files changed, 25 insertions(+), 46 deletions(-)
+
+diff --git a/isso/tests/test_html.py b/isso/tests/test_html.py
+index b1be6dc..9d92615 100644
+--- a/isso/tests/test_html.py
++++ b/isso/tests/test_html.py
+@@ -63,7 +63,6 @@ class TestHTML(unittest.TestCase):
+             print("Hello, World")
+             </code></pre>""")
+ 
+-    @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
+     def test_sanitizer(self):
+         sanitizer = html.Sanitizer(elements=[], attributes=[])
+         examples = [
+@@ -74,9 +73,8 @@ class TestHTML(unittest.TestCase):
+             ('<script>alert("Onoe")</script>', 'alert("Onoe")')]
+ 
+         for (input, expected) in examples:
+-            self.assertEqual(html.sanitize(sanitizer, input), expected)
++            self.assertEqual(sanitizer.sanitize(input), expected)
+ 
+-    @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
+     def test_sanitizer_extensions(self):
+         sanitizer = html.Sanitizer(elements=["img"], attributes=["src"])
+         examples = [
+@@ -84,7 +82,7 @@ class TestHTML(unittest.TestCase):
+             ('<script src="doge.js"></script>', '')]
+ 
+         for (input, expected) in examples:
+-            self.assertEqual(html.sanitize(sanitizer, input), expected)
++            self.assertEqual(sanitizer.sanitize(input), expected)
+ 
+     def test_render(self):
+         conf = config.new({
+diff --git a/isso/utils/html.py b/isso/utils/html.py
+index 294b8d4..c0a20e4 100644
+--- a/isso/utils/html.py
++++ b/isso/utils/html.py
+@@ -7,56 +7,36 @@ import pkg_resources
+ 
+ from distutils.version import LooseVersion as Version
+ 
+-HTML5LIB_VERSION = Version(pkg_resources.get_distribution("html5lib").version)
+-HTML5LIB_SIMPLETREE = Version("0.95")
+-
+ from isso.compat import reduce
+ 
+-import html5lib
+-from html5lib.sanitizer import HTMLSanitizer
+-from html5lib.serializer import HTMLSerializer
++import bleach
+ 
+ import misaka
+ 
+ 
+-def Sanitizer(elements, attributes):
+-
+-    class Inner(HTMLSanitizer):
+-
+-        # attributes found in Sundown's HTML serializer [1] except for <img> tag,
+-        # because images are not generated anyways.
+-        #
+-        # [1] https://github.com/vmg/sundown/blob/master/html/html.c
+-        allowed_elements = ["a", "p", "hr", "br", "ol", "ul", "li",
+-                            "pre", "code", "blockquote",
+-                            "del", "ins", "strong", "em",
+-                            "h1", "h2", "h3", "h4", "h5", "h6",
+-                            "table", "thead", "tbody", "th", "td"] + elements
+-
+-        # href for <a> and align for <table>
+-        allowed_attributes = ["align", "href"] + attributes
+-
+-        # remove disallowed tokens from the output
+-        def disallowed_token(self, token, token_type):
+-            return None
+-
+-    return Inner
+-
++# attributes found in Sundown's HTML serializer [1] except for <img> tag,
++# because images are not generated anyways.
++#
++# [1] https://github.com/vmg/sundown/blob/master/html/html.c
++ALLOWED_ELEMENTS = ["a", "p", "hr", "br", "ol", "ul", "li",
++                    "pre", "code", "blockquote",
++                    "del", "ins", "strong", "em",
++                    "h1", "h2", "h3", "h4", "h5", "h6",
++                    "table", "thead", "tbody", "th", "td"]
+ 
+-def sanitize(tokenizer, document):
++# href for <a> and align for <table>
++ALLOWED_ATTRIBUTES = ["align", "href"]
+ 
+-    parser = html5lib.HTMLParser(tokenizer=tokenizer)
+-    domtree = parser.parseFragment(document)
+ 
+-    if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
+-        builder = "etree"
+-    else:
+-        builder = "simpletree"
++class Sanitizer(object):
+ 
+-    stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
+-    serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
++    def __init__(self, elements, attributes):
++        self.elements = ALLOWED_ELEMENTS + elements
++        self.attributes = ALLOWED_ATTRIBUTES + attributes
+ 
+-    return serializer.render(stream)
++    def sanitize(self, text):
++        return bleach.clean(text, tags=self.elements,
++            attributes=self.attributes, strip=True)
+ 
+ 
+ def Markdown(extensions=("strikethrough", "superscript", "autolink")):
+@@ -96,7 +76,7 @@ class Markup(object):
+             conf.getlist("allowed-elements"),
+             conf.getlist("allowed-attributes"))
+ 
+-        self._render = lambda text: sanitize(sanitizer, parser(text))
++        self._render = lambda text: sanitizer.sanitize(parser(text))
+ 
+     def render(self, text):
+         return self._render(text)
+diff --git a/setup.py b/setup.py
+index e54c110..5679b94 100644
+--- a/setup.py
++++ b/setup.py
+@@ -5,7 +5,7 @@ import sys
+ 
+ from setuptools import setup, find_packages
+ 
+-requires = ['itsdangerous', 'misaka>=1.0,<2.0', 'html5lib==0.9999999']
++requires = ['itsdangerous', 'misaka>=1.0,<2.0', 'html5lib', 'bleach']
+ 
+ if (3, 0) <= sys.version_info < (3, 3):
+     raise SystemExit("Python 3.0, 3.1 and 3.2 are not supported")
+diff --git a/tox.ini b/tox.ini
+index 06d29de..9874dd4 100755
+--- a/tox.ini
++++ b/tox.ini
+@@ -23,7 +23,8 @@ deps =
+ 
+ [testenv:debian]
+ deps=
+-    html5lib==0.95
++    bleach
++    html5lib
+     ipaddr==2.1.10
+     itsdangerous==0.22
+     misaka==1.0.2
+-- 
+2.11.0
+
