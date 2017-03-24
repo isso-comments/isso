@@ -28,6 +28,7 @@ Depends:
  ${misc:Depends},
  ${python:Depends},
  ${sphinxdoc:Depends},
+ lsb-base (>= 3.0-6),
  python-html5lib,
  python-ipaddr,
  python-itsdangerous,
