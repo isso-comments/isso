@@ -126,6 +126,11 @@ class API(object):
         self.conf = isso.conf.section("general")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
 
+        # These configuration records can be read out by client
+        self.public_conf = {}
+        self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
+        self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
+
         self.guard = isso.db.guard
         self.threads = isso.db.threads
         self.comments = isso.db.comments
@@ -492,7 +497,8 @@ class API(object):
             'id'             : root_id,
             'total_replies'  : reply_counts[root_id],
             'hidden_replies' : reply_counts[root_id] - len(root_list),
-            'replies'        : self._process_fetched_list(root_list, plain)
+            'replies'        : self._process_fetched_list(root_list, plain),
+            'config'         : self.public_conf
         }
         # We are only checking for one level deep comments
         if root_id is None:
