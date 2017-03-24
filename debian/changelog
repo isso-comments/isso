@@ -1,4 +1,4 @@
-isso (0.10.6-2) UNRELEASED; urgency=medium
+isso (0.10.6-2) unstable; urgency=medium
 
   * Add missing dependency on python-configparser.
   * Add 0001-use-bleach.patch: use bleach for HTML sanitizing, as
