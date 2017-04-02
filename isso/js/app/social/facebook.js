@@ -1,4 +1,4 @@
-define(["app/dom", "app/api"], function($, api) {
+define(["app/dom", "app/config", "app/api"], function($, config, api) {
 
     "use strict";
 
@@ -30,12 +30,16 @@ define(["app/dom", "app/api"], function($, api) {
     }
 
     var init = function(isso_ref) {
+        if (!config["facebook-enabled"]) {
+            return;
+        }
+
         isso = isso_ref;
 
         // Called when Facebook SDK has loaded
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : "1561583880825335",
+                appId      : config["facebook-app-id"],
                 cookie     : true,  // enable cookies to allow the server to access the session
                 xfbml      : true,  // parse social plugins on this page
                 version    : "v2.5" // use graph api version 2.5
@@ -76,6 +80,9 @@ define(["app/dom", "app/api"], function($, api) {
     }
 
     var initPostbox = function(el) {
+        if (!config["facebook-enabled"]) {
+            return;
+        }
         updatePostbox(el);
         $(".social-logout-link-facebook", el).on("click", function() {
             FB.logout(function(response) {

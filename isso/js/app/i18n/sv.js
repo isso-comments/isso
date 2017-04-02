@@ -27,6 +27,7 @@ define({
     "login": "Logga in",
     "logout": "Logga ut",
     "auth-login": "eller logga in:",
+    "auth-must-login": "Logga in för att kommentera:",
     "auth-openid": "Legitimera dig med OpenID Connect",
     "auth-facebook": "Legitimera dig med Facebook",
     "auth-google": "Legitimera dig med Google+",

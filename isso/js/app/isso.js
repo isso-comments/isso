@@ -104,7 +104,18 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             openid.updatePostbox(el);
             facebook.updatePostbox(el);
             google.updatePostbox(el);
-            if (!isLoggedIn()) {
+            if (isLoggedIn()) {
+                $(".post-action", el).showInline();
+            } else {
+                if (config["allow-unauthorized"]) {
+                    $(".auth-login-optional", el).showInline();
+                    $(".auth-login-mandatory", el).hide();
+                    $(".post-action", el).showInline();
+                } else {
+                    $(".auth-login-optional", el).hide();
+                    $(".auth-login-mandatory", el).showInline();
+                    $(".post-action", el).hide();
+                }
                 $(".auth-not-loggedin", el).showInline();
                 $(".isso-postbox .avatar", el).hide();
             }

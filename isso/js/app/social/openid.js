@@ -1,4 +1,4 @@
-define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i18n) {
+define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($, config, api, jade, i18n) {
 
     "use strict";
 
@@ -8,6 +8,9 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
     var authorData = null;
 
     var init = function(isso_ref) {
+        if (!config["openid-enabled"]) {
+            return;
+        }
         isso = isso_ref;
         window.addEventListener("message", function(event) {
             var origin = event.origin || event.originalEvent.origin;
@@ -26,6 +29,9 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
     }
 
     var updatePostbox = function(el) {
+        if (!config["openid-enabled"]) {
+            return;
+        }
         if (loggedIn) {
             $(".auth-not-loggedin", el).hide();
             $(".auth-loggedin-openid", el).showInline();
@@ -43,6 +49,9 @@ define(["app/dom", "app/api", "app/jade", "app/i18n"], function($, api, jade, i1
     }
 
     var initPostbox = function(el) {
+        if (!config["openid-enabled"]) {
+            return;
+        }
         updatePostbox(el);
         $(".social-logout-link-openid", el).on("click", function() {
             api.openidLogout(sessionID);

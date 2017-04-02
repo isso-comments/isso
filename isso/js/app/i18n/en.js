@@ -32,6 +32,7 @@ define({
     "logout": "Logout",
 
     "auth-login": "or login:",
+    "auth-must-login": "Login to comment:",
     "auth-openid": "Authenticate using OpenID Connect",
     "auth-facebook": "Authenticate using Facebook",
     "auth-google": "Authenticate using Google+",

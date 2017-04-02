@@ -105,13 +105,9 @@ class API(object):
         ('demo',    ('GET', '/demo'))
     ]
 
-    SOCIAL_NETWORKS = set(['openid', 'facebook', 'google'])
     GOOGLE_ISSUERS = ["accounts.google.com", "https://accounts.google.com"]
-    GOOGLE_CLIENT_ID = "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com"
     GOOGLE_CERT_URL = "https://www.googleapis.com/oauth2/v1/certs"
     FACEBOOK_GRAPH_HOST = "https://graph.facebook.com"
-    FACEBOOK_APP_ID = "1561583880825335"
-    FACEBOOK_APP_SECRET = "071fb52133f6fd26113bf20b2428adb7"
 
     google_certs = None
 
@@ -124,12 +120,21 @@ class API(object):
         self.signal = isso.signal
 
         self.conf = isso.conf.section("general")
+        self.openid_conf = isso.conf.section("openid")
+        self.facebook_conf = isso.conf.section("facebook")
+        self.google_conf = isso.conf.section("google")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
 
         # These configuration records can be read out by client
         self.public_conf = {}
         self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
         self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
+        self.public_conf["allow-unauthorized"] = isso.conf.getboolean("general", "allow-unauthorized")
+        self.public_conf["openid-enabled"] = isso.conf.getboolean("openid", "enabled")
+        self.public_conf["facebook-enabled"] = isso.conf.getboolean("facebook", "enabled")
+        self.public_conf["facebook-app-id"] = isso.conf.get("facebook", "app-id")
+        self.public_conf["google-enabled"] = isso.conf.getboolean("google", "enabled")
+        self.public_conf["google-client-id"] = isso.conf.get("google", "client-id")
 
         self.guard = isso.db.guard
         self.threads = isso.db.threads
@@ -164,24 +169,23 @@ class API(object):
                     pass
         return False
 
-    @classmethod
-    def validate_fb_token(cls, token, uid):
-        req_url = "%s/debug_token?input_token=%s&access_token=%s|%s" % (API.FACEBOOK_GRAPH_HOST, token, API.FACEBOOK_APP_ID,
-                                                                        API.FACEBOOK_APP_SECRET)
+    def validate_fb_token(self, token, uid):
+        appid = self.facebook_conf.get("app-id")
+        req_url = "%s/debug_token?input_token=%s&access_token=%s|%s" % (API.FACEBOOK_GRAPH_HOST, token, appid,
+                                                                        self.facebook_conf.get("app-secret"))
         with http.curl('GET', req_url, timeout=5) as resp:
             try:
                 assert resp and resp.getcode() == 200
                 data = json.loads(resp.read())["data"]
                 assert data["is_valid"]
                 assert data["user_id"] == uid
-                assert data["app_id"] == API.FACEBOOK_APP_ID
+                assert data["app_id"] == appid
                 assert datetime.utcnow() <= datetime.utcfromtimestamp(data["expires_at"])
                 return True
             except (AssertionError, ValueError, KeyError):
                 return False
 
-    @classmethod
-    def verify(cls, comment):
+    def verify(self, comment):
 
         if "text" not in comment:
             return False, "text is missing"
@@ -208,35 +212,36 @@ class API(object):
             if not isurl(comment["website"]):
                 return False, "Website not Django-conform"
 
-        if "social_network" in comment:
-            if comment["social_network"] is not None and comment["social_network"] not in API.SOCIAL_NETWORKS:
-                return False, "unknown social network"
-            if comment["social_network"] == "openid":
-                idPattern = re.compile("^[0-9a-zA-Z]+$")
-                if "social_id" not in comment or not idPattern.match(comment["social_id"]):
-                    return False, "invalid session ID"
-                session = cls.isso.db.openid_sessions.get(comment["social_id"])
-                if session is None:
-                    return False, "unknown or expired session ID"
-                comment["social_id"] = session["identifier"]
-            if comment["social_network"] == "facebook":
-                idPattern = re.compile("^[0-9]+$")
-                if "social_id" not in comment or not idPattern.match(comment["social_id"]):
-                    return False, "invalid Facebook UID"
-                if "id_token" not in comment:
-                    return False, "Facebook token missing"
-                if not API.validate_fb_token(comment["id_token"], comment["social_id"]):
-                    return False, "Facebook token validation failed"
-            if comment["social_network"] == "google":
-                idPattern = re.compile("^[0-9]+$")
-                if "social_id" not in comment or not idPattern.match(comment["social_id"]):
-                    return False, "invalid Google UID"
-                if "id_token" not in comment:
-                    return False, "Google ID token missing"
-                API.update_google_certs()
-                token = API.validate_jwt(comment["id_token"], API.google_certs, API.GOOGLE_CLIENT_ID, API.GOOGLE_ISSUERS)
-                if not token or "sub" not in token or token["sub"] != comment["social_id"]:
-                    return False, "Google ID token validation failed"
+        if ("social_network" not in comment or comment["social_network"] is None) and self.conf.getboolean("allow-unauthorized"):
+            pass
+        elif comment["social_network"] == "openid" and self.openid_conf.getboolean("enabled"):
+            idPattern = re.compile("^[0-9a-zA-Z]+$")
+            if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+                return False, "invalid session ID"
+            session = self.isso.db.openid_sessions.get(comment["social_id"])
+            if session is None:
+                return False, "unknown or expired session ID"
+            comment["social_id"] = session["identifier"]
+        elif comment["social_network"] == "facebook" and self.facebook_conf.getboolean("enabled"):
+            idPattern = re.compile("^[0-9]+$")
+            if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+                return False, "invalid Facebook UID"
+            if "id_token" not in comment:
+                return False, "Facebook token missing"
+            if not self.validate_fb_token(comment["id_token"], comment["social_id"]):
+                return False, "Facebook token validation failed"
+        elif comment["social_network"] == "google" and self.google_conf.getboolean("enabled"):
+            idPattern = re.compile("^[0-9]+$")
+            if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+                return False, "invalid Google UID"
+            if "id_token" not in comment:
+                return False, "Google ID token missing"
+            API.update_google_certs()
+            token = API.validate_jwt(comment["id_token"], API.google_certs, self.google_conf.get("client-id"), API.GOOGLE_ISSUERS)
+            if not token or "sub" not in token or token["sub"] != comment["social_id"]:
+                return False, "Google ID token validation failed"
+        else:
+            return False, "unsupported authorization method"
 
         return True, ""
 
@@ -252,7 +257,7 @@ class API(object):
         for key in ("author", "email", "website", "parent"):
             data.setdefault(key, None)
 
-        valid, reason = API.verify(data)
+        valid, reason = self.verify(data)
         if not valid:
             return BadRequest(reason)
 

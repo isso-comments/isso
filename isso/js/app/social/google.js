@@ -1,4 +1,4 @@
-define(["app/dom", "app/api"], function($, api) {
+define(["app/dom", "app/config", "app/api"], function($, config, api) {
 
     "use strict";
 
@@ -9,6 +9,10 @@ define(["app/dom", "app/api"], function($, api) {
     var gAuth = null;
 
     var init = function(isso_ref) {
+        if (!config["google-enabled"]) {
+            return;
+        }
+
         isso = isso_ref;
 
         // Load Google API
@@ -45,6 +49,9 @@ define(["app/dom", "app/api"], function($, api) {
     }
 
     var initPostbox = function(el) {
+        if (!config["google-enabled"]) {
+            return;
+        }
         updatePostbox(el);
         $(".social-logout-link-google", el).on("click", function() {
             gAuth.signOut().then(function() {
