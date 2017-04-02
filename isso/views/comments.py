@@ -22,6 +22,7 @@ from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON
 from isso.views import requires
 from isso.utils.hash import sha1
+from isso.utils.hash import md5
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
@@ -72,7 +73,7 @@ def xhr(func):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
-                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
+                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image'])
 
     # comment fields, that can be submitted
     ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title'])
@@ -205,6 +206,8 @@ class API(object):
         rv["hash"] = self.hash(rv['email'] or rv['remote_addr'])
 
         self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
+
+        rv = self._add_gravatar_image(rv)
 
         for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
@@ -426,7 +429,17 @@ class API(object):
                 comment['replies'] = self._process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
+    def _add_gravatar_image(self, item):
+        if not self.conf.getboolean('gravatar'):
+            return item
 
+        email = item['email'] or ""
+        email_md5_hash = md5(email)
+
+        gravatar_url = self.conf.get('gravatar-url')
+        item['gravatar_image'] = gravatar_url.format(email_md5_hash)
+
+        return item
     def _process_fetched_list(self, fetched_list, plain=False):
         for item in fetched_list:
 
@@ -438,6 +451,8 @@ class API(object):
                 self.cache.set('hash', key.encode('utf-8'), val)
 
             item['hash'] = val
+
+            item = self._add_gravatar_image(item)
 
             for key in set(item.keys()) - API.FIELDS:
                 item.pop(key)

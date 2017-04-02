@@ -91,6 +91,18 @@ notify
 log-file
     Log console messages to file instead of standard out.
 
+gravatar
+    When set to ``true`` this will add the property "gravatar_image"
+    containing the link to a gravatar image to every comment. If a comment
+    does not contain an email address, gravatar will render a random icon.
+    This is only true when using the default value for "gravatar-url"
+    which contains the query string param ``d=identicon`` ...
+
+gravatar-url
+    Url for gravatar images. The "{}" is where the email hash will be placed.
+    Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
+
+
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 

@@ -110,3 +110,4 @@ def new(conf):
 
 
 sha1 = Hash(func="sha1").uhash
+md5 = Hash(func="md5").uhash
