@@ -9,7 +9,20 @@ wrote the comment.
 
 Brief setup instructions for the additional features of this fork
 follows below. For all other questions, see the
-[web site of the main Isso project](https://posativ.org/isso/).
+[web site of the mainline Isso project](https://posativ.org/isso/).
+
+OpenID
+------
+
+To enable OpenID support, just enable it in the configuration file:
+
+    [openid]
+    enabled = false
+
+Users authenticate by clicking the OpenID button and typing in their
+OpenID identifier. To do so the user must have an OpenID provider that
+supports OpenID Connect 1.0 (earlier versions OpenID 1.0 and OpenID
+2.0 are not supported).
 
 Facebook
 --------
