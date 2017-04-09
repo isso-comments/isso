@@ -196,6 +196,13 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
             function(rv) {});
     };
 
+    var openidStatus = function(sessionID) {
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/openid/status?state=" + sessionID, null,
+            function(rv) { deferred.resolve(JSON.parse(rv.body)); });
+        return deferred.promise;
+    };
+
     return {
         endpoint: endpoint,
         salt: salt,
@@ -208,6 +215,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         count: count,
         like: like,
         dislike: dislike,
-        openidLogout: openidLogout
+        openidLogout: openidLogout,
+        openidStatus: openidStatus
     };
 });

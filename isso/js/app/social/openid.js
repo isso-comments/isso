@@ -12,6 +12,19 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
             return;
         }
         isso = isso_ref;
+        var method = JSON.parse(localStorage.getItem("login_method"));
+        var sid = JSON.parse(localStorage.getItem("openid_session_id"));
+        var ad = JSON.parse(localStorage.getItem("author_data"));
+        if (method == "openid" && sid) {
+            api.openidStatus(sid).then(function (rv) {
+                if (rv.loggedin) {
+                    loggedIn = true;
+                    sessionID = sid;
+                    authorData = ad;
+                }
+                isso.updateAllPostboxes();
+            });
+        }
         window.addEventListener("message", function(event) {
             var origin = event.origin || event.originalEvent.origin;
             if (origin != api.endpoint)
@@ -24,6 +37,9 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
                 pictureURL: event.data.picture,
                 website: event.data.website,
             };
+            localStorage.setItem("login_method", JSON.stringify("openid"));
+            localStorage.setItem("openid_session_id", JSON.stringify(sessionID));
+            localStorage.setItem("author_data", JSON.stringify(authorData));
             isso.updateAllPostboxes();
         }, false);
     }
@@ -58,6 +74,9 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
             loggedIn = false;
             sessionID = null;
             authorData = null;
+            localStorage.removeItem("login_method");
+            localStorage.removeItem("openid_session_id");
+            localStorage.removeItem("author_data");
             isso.updateAllPostboxes();
         });
         $(".social-login-link-openid", el).on("click", function() {

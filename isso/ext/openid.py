@@ -24,6 +24,7 @@ class OpenID(object):
         ('login',       ('GET',  '/openid/login')),
         ('finalize',    ('GET',  '/openid/finalize')),
         ('logout',      ('GET',  '/openid/logout')),
+        ('status',      ('GET',  '/openid/status')),
     ]
 
     SESSION_LIFETIME = 4 * 3600
@@ -215,3 +216,16 @@ class OpenID(object):
         session_id = request.args.get('state', '')
         self.isso.db.openid_sessions.delete(session_id);
         return Response("", 200)
+
+    def status(self, environ, request):
+        session_id = request.args.get('state', '')
+        self.isso.db.openid_sessions.purge(self.SESSION_LIFETIME)
+        session = self.isso.db.openid_sessions.get(session_id)
+        status = {
+            'loggedin': False,
+        }
+        if session is not None and session["authorized"]:
+            status = {
+                'loggedin': True,
+            }
+        return Response(json.dumps(status), 200, content_type="application/json")
