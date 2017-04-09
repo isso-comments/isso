@@ -25,11 +25,32 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
                     client_id: "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com",
                     cookiepolicy: "single_host_origin",
                 });
+                gAuth.isSignedIn.listen(signedinChanged)
                 loadedSDK = true;
                 isso.updateAllPostboxes();
             });
         });
 
+    }
+
+    var signedinChanged = function(signedin) {
+        if (signedin) {
+            var user = gAuth.currentUser.get();
+            var profile = user.getBasicProfile();
+            loggedIn = true;
+            authorData = {
+                uid: profile.getId(),
+                name: profile.getName(),
+                email: profile.getEmail() || "",
+                pictureURL: profile.getImageUrl(),
+                idToken: user.getAuthResponse().id_token,
+            };
+            isso.updateAllPostboxes();
+        } else {
+            loggedIn = false;
+            authorData = null;
+            isso.updateAllPostboxes();
+        }
     }
 
     var updatePostbox = function(el) {
@@ -54,25 +75,10 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
         }
         updatePostbox(el);
         $(".social-logout-link-google", el).on("click", function() {
-            gAuth.signOut().then(function() {
-                loggedIn = false;
-                authorData = null;
-                isso.updateAllPostboxes();
-            });
+            gAuth.signOut();
         });
         $(".social-login-link-google", el).on("click", function() {
-            gAuth.signIn().then(function(googleUser) {
-                var profile = googleUser.getBasicProfile();
-                loggedIn = true;
-                authorData = {
-                    uid: profile.getId(),
-                    name: profile.getName(),
-                    email: profile.getEmail() || "",
-                    pictureURL: profile.getImageUrl(),
-                    idToken: googleUser.getAuthResponse().id_token,
-                };
-                isso.updateAllPostboxes();
-            });
+            gAuth.signIn();
         });
     }
 
