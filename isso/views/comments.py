@@ -219,7 +219,7 @@ class API(object):
             if "social_id" not in comment or not idPattern.match(comment["social_id"]):
                 return False, "invalid session ID"
             session = self.isso.db.openid_sessions.get(comment["social_id"])
-            if session is None:
+            if session is None or not session["authorized"]:
                 return False, "unknown or expired session ID"
             comment["social_id"] = session["identifier"]
         elif comment["social_network"] == "facebook" and self.facebook_conf.getboolean("enabled"):
