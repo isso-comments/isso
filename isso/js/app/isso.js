@@ -5,6 +5,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     "use strict";
 
+    api.author().then(function(rv) { config["blogauthor"] = rv; });
+
     var Postbox = function(parent) {
 
         var localStorage = utils.localStorageImpl,

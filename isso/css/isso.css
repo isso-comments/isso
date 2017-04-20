@@ -23,6 +23,11 @@
     color: #AAA;
 }
 
+.isso-highlight {
+    padding: 0em 0em 0.5em 0.5em;
+    background-color: rgba(200, 200, 200, 0.4);
+}
+
 .isso-comment {
     max-width: 68em;
     padding-top: 0.95em;

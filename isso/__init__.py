@@ -90,6 +90,7 @@ class Isso(object):
         self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
         self.markup = html.Markup(conf.section('markup'))
         self.hasher = hash.new(conf.section("hash"))
+        self.author = self.hasher.uhash(conf.get('general', 'author'));
 
         super(Isso, self).__init__(conf)
 

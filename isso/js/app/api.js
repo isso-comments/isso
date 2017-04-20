@@ -177,6 +177,20 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
+    var author = function() {
+        var deferred = Q.defer();
+        curl("GET", endpoint + "/author", null, function(rv) {
+                if (rv.status === 200) {
+                    deferred.resolve(JSON.parse(rv.body));
+                } else if (rv.status === 404) {
+                    deferred.resolve({author: ""});
+                } else {
+                    deferred.reject(rv.body);
+                }
+            });
+        return deferred.promise;
+    };
+
     var like = function(id) {
         var deferred = Q.defer();
         curl("POST", endpoint + "/id/" + id + "/like", null,
@@ -201,6 +215,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         view: view,
         fetch: fetch,
         count: count,
+        author: author,
         like: like,
         dislike: dislike
     };
