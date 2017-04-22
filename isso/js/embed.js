@@ -63,6 +63,12 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
 
                 var lastcreated = 0;
                 var count = rv.total_replies;
+
+                // Correct sorting of comments
+                if (config["sorting"] === "newest") {
+                    rv.replies.reverse();
+                }
+
                 rv.replies.forEach(function(comment) {
                     isso.insert(comment, false);
                     if (comment.created > lastcreated) {
