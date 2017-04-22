@@ -154,7 +154,24 @@ These classes can then be used to customize the appearance of comments (eg. put 
 data-isso-sorting
 -----------------
 
-This can be set either to `oldest` (the default) or `newest`.
+A comma-separated list of thread sorting methods that are applied in the
+specified order.
+
+Possible sorting methods:
+
+- `newest`: Bring newest comments to the top
+- `oldest`: Bring oldest comments to the top
+- `upvotes`: Bring most liked comments to the top
+
+You can combine sorting methods. If you specify `upvotes,newest`, then comments
+will be sorted by upvotes, and comments with the same number of upvotes will be
+sorted by date (newest first).
+
+Note that only the top level threads are sorted according to this
+configuration. The thread replies are still sorted in chronological order
+(oldest first), so that they can be read from top to bottom.
+
+Default sorting is `oldest`.
 
 data-isso-feed
 --------------

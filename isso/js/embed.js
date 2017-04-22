@@ -64,9 +64,37 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
                 var lastcreated = 0;
                 var count = rv.total_replies;
 
-                // Correct sorting of comments
-                if (config["sorting"] === "newest") {
-                    rv.replies.reverse();
+                // Sorting functions
+                var sortfuncs = {
+                    oldest: function(a, b) { return a.created - b.created; },
+                    newest: function(a, b) { return b.created - a.created; },
+                    upvotes: function(a, b) { return b.likes - a.likes; },
+                };
+
+                // Handle sorting configuration
+                var sort_by = config["sorting"].split(",")
+                                               .map(function(x) { return x.trim(); })
+                                               .filter(function(x) { return x; });
+                function sortfunc(a, b) {
+                    var i = 0;
+                    while (true) {
+                        var func = sortfuncs[sort_by[i]];
+                        if (func === undefined) {
+                            console.warn("Invalid sorting mode:", sort_by[i]);
+                            return sortfuncs.oldest(a, b);
+                        }
+                        var compared = func(a, b);
+                        if (compared == 0 && sort_by[i + 1] !== undefined) {
+                            i++;
+                        } else {
+                            return compared;
+                        }
+                    }
+                }
+                if (sort_by.length === 0) {
+                    console.warn("Invalid sorting config:", config["sorting"]);
+                } else {
+                    rv.replies.sort(sortfunc);
                 }
 
                 rv.replies.forEach(function(comment) {
