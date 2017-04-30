@@ -35,7 +35,7 @@ class OpenID(object):
             <head>
                 <title>Login complete</title>
                 <script>
-                    var userinfo = {state: "%s", name: "%s", email: "%s", picture: "%s", website: "%s"};
+                    var userinfo = {state: "%s", identifier: "%s", name: "%s", email: "%s", picture: "%s", website: "%s"};
                     window.opener.postMessage(userinfo, "%s");
                     window.close();
                 </script>
@@ -205,6 +205,7 @@ class OpenID(object):
         self.isso.db.openid_sessions.authorize(session_id)
 
         html = self.FINAL_LOGIN_RESPONSE % (session['id'],
+                                            session['identifier'],
                                             session['userinfo'].get('name', ""),
                                             session['userinfo'].get('email', ""),
                                             session['userinfo'].get('picture', ""),

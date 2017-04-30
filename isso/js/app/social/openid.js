@@ -32,6 +32,7 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
             loggedIn = true;
             sessionID = event.data.state;
             authorData = {
+                identifier: event.data.identifier,
                 name: event.data.name,
                 email: event.data.email,
                 pictureURL: event.data.picture,
@@ -98,8 +99,8 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
     var getAuthorData = function() {
         return {
             network: "openid",
-            id: sessionID,
-            idToken: null,
+            id: authorData.identifier,
+            idToken: sessionID,
             pictureURL: authorData.pictureURL,
             name: authorData.name,
             email: authorData.email,

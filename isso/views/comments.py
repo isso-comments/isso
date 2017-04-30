@@ -216,12 +216,11 @@ class API(object):
             pass
         elif comment["social_network"] == "openid" and self.openid_conf.getboolean("enabled"):
             idPattern = re.compile("^[0-9a-zA-Z]+$")
-            if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+            if "id_token" not in comment or not idPattern.match(comment["id_token"]):
                 return False, "invalid session ID"
-            session = self.isso.db.openid_sessions.get(comment["social_id"])
+            session = self.isso.db.openid_sessions.get(comment["id_token"])
             if session is None or not session["authorized"]:
                 return False, "unknown or expired session ID"
-            comment["social_id"] = session["identifier"]
         elif comment["social_network"] == "facebook" and self.facebook_conf.getboolean("enabled"):
             idPattern = re.compile("^[0-9]+$")
             if "social_id" not in comment or not idPattern.match(comment["social_id"]):
