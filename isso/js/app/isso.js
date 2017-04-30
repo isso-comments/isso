@@ -48,22 +48,11 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 return;
             }
 
-            if (openid.isLoggedIn()) {
-                authorData = openid.getAuthorData();
-            } else if (facebook.isLoggedIn()) {
-                authorData = facebook.getAuthorData();
-            } else if (google.isLoggedIn()) {
-                authorData = google.getAuthorData();
-            } else {
-                authorData = {
-                    network: null,
-                    id: null,
-                    idToken: null,
-                    pictureURL: null,
-                    name: $("[name=author]", el).value || null,
-                    email: $("[name=email]", el).value || null,
-                    website: $("[name=website]", el).value || null,
-                };
+            authorData = getAuthorData();
+            if (authorData.network === null) {
+                authorData.name = $("[name=author]", el).value || null;
+                authorData.email = $("[name=email]", el).value || null;
+                authorData.website = $("[name=website]", el).value || null;
                 localStorage.setItem("author", JSON.stringify(authorData.name));
                 localStorage.setItem("email", JSON.stringify(authorData.email));
                 localStorage.setItem("website", JSON.stringify(authorData.website));
@@ -96,6 +85,25 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         return el;
     };
 
+    var getAuthorData = function() {
+        if (openid.isLoggedIn()) {
+            return openid.getAuthorData();
+        } else if (facebook.isLoggedIn()) {
+            return facebook.getAuthorData();
+        } else if (google.isLoggedIn()) {
+            return google.getAuthorData();
+        }
+        return {
+            network: null,
+            id: null,
+            idToken: null,
+            pictureURL: null,
+            name: null,
+            email: null,
+            website: null,
+        };
+    }
+
     var updateLogin = function(el) {
         if (isLoggedIn()) {
             $(".post-action", el).showInline();
@@ -124,6 +132,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             facebook.updatePostbox(el);
             google.updatePostbox(el);
             updateLogin(el);
+        });
+        $.eachByClass("isso-comment", function(el) {
+            updateEditability(el);
         });
     }
 
@@ -169,6 +180,30 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         });
     };
 
+    var updateEditability = function(el) {
+        var id = el.getAttribute("data-comment-id");
+        var social_network = el.getAttribute("data-social-network");
+        var social_id = el.getAttribute("data-social-id");
+        var authorData = getAuthorData();
+        if (social_network !== null) {
+            if (social_network == authorData.network
+                && social_id == authorData.id) {
+                $("a.edit", el, false)[0].showInline();
+                $("a.delete", el, false)[0].showInline();
+            } else {
+                $("a.edit", el, false)[0].hide();
+                $("a.delete", el, false)[0].hide();
+            }
+        } else {
+            if (! utils.cookie("isso-" + id)) {
+                $("a.edit", el, false)[0].hide();
+                $("a.delete", el, false)[0].hide();
+            } else {
+                setTimeout(function() { updateEditability(el); }, 15*1000);
+            }
+        }
+    };
+
     var insert = function(comment, scrollIntoView) {
 
         if (comment.social_network === "openid") {
@@ -182,6 +217,9 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         }
 
         var el = $.htmlify(jade.render("comment", {"comment": comment}));
+        el.setAttribute("data-comment-id", comment.id);
+        el.setAttribute("data-social-network", comment.social_network);
+        el.setAttribute("data-social-id", comment.social_id);
 
         // update datetime every 60 seconds
         var refresh = function() {
@@ -297,7 +335,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                         toggler.wait();
                         return;
                     } else {
-                        api.modify(comment.id, {"text": utils.text(textarea.innerHTML)}).then(function(rv) {
+                        var authorData = getAuthorData();
+                        api.modify(comment.id, {social_network: authorData.network, social_id: authorData.id, id_token: authorData.idToken, text: utils.text(textarea.innerHTML)}).then(function(rv) {
                             text.innerHTML = rv.text;
                             comment.text = rv.text;
                         });
@@ -346,19 +385,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
         );
 
-        // remove edit and delete buttons when cookie is gone
-        var clear = function(button) {
-            if (! utils.cookie("isso-" + comment.id)) {
-                if ($(button, footer) !== null) {
-                    $(button, footer).remove();
-                }
-            } else {
-                setTimeout(function() { clear(button); }, 15*1000);
-            }
-        };
-
-        clear("a.edit");
-        clear("a.delete");
+        updateEditability(el);
 
         // show direct reply to own comment when cookie is max aged
         var show = function(el) {

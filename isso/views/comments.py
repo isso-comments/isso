@@ -334,27 +334,40 @@ class API(object):
     @xhr
     def edit(self, environ, request, id):
 
-        try:
-            rv = self.isso.unsign(request.cookies.get(str(id), ''))
-        except (SignatureExpired, BadSignature):
-            raise Forbidden
-
-        if rv[0] != id:
-            raise Forbidden
-
-        # verify checksum, mallory might skip cookie deletion when he deletes a comment
-        if rv[1] != sha1(self.comments.get(id)["text"]):
-            raise Forbidden
-
         data = request.get_json()
 
-        if "text" not in data or data["text"] is None or len(data["text"]) < 3:
-            raise BadRequest("no text given")
+        for field in set(data.keys()) - API.ACCEPT:
+            data.pop(field)
 
-        for key in set(data.keys()) - set(["text", "author", "website"]):
-            data.pop(key)
+        valid, reason = self.verify(data)
+        if not valid:
+            return BadRequest(reason)
+
+        comment = self.comments.get(id)
+
+        if comment.get('social_network') is None:
+            # Comment is not authenticated, accept edit if done by
+            # same browser session (by inspecting a cookie)
+            try:
+                rv = self.isso.unsign(request.cookies.get(str(id), ''))
+            except (SignatureExpired, BadSignature):
+                raise Forbidden
+
+            if rv[0] != id:
+                raise Forbidden
+
+            # verify checksum, mallory might skip cookie deletion when he deletes a comment
+            if rv[1] != sha1(comment["text"]):
+                raise Forbidden
+        else:
+            if (data.get('social_network') != comment['social_network']
+                or data.get('social_id') != comment.get('social_id')):
+                raise Forbidden
 
         data['modified'] = time.time()
+
+        for key in set(data.keys()) - API.FIELDS:
+            data.pop(key)
 
         with self.isso.lock:
             rv = self.comments.update(id, data)
