@@ -127,6 +127,7 @@ class API(object):
 
         # These configuration records can be read out by client
         self.public_conf = {}
+        self.public_conf["max-age"] = isso.conf.getint("general", "max-age")
         self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
         self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
         self.public_conf["allow-unauthorized"] = isso.conf.getboolean("general", "allow-unauthorized")
@@ -344,6 +345,9 @@ class API(object):
             return BadRequest(reason)
 
         comment = self.comments.get(id)
+
+        if time.time() > comment.get('created') + self.conf.getint('max-age'):
+            raise Forbidden
 
         if comment.get('social_network') is None:
             # Comment is not authenticated, accept edit if done by

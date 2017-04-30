@@ -180,28 +180,43 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         });
     };
 
+    var setEditability = function(el, editable) {
+        if (editable) {
+            $("a.edit", el, false)[0].showInline();
+            $("a.delete", el, false)[0].showInline();
+        } else {
+            $("a.edit", el, false)[0].hide();
+            $("a.delete", el, false)[0].hide();
+        }
+    };
+
     var updateEditability = function(el) {
+        var created = parseInt(el.getAttribute("data-created"), 10);
+        var maxAge = config["max-age"];
+        var now = (new Date()).getTime() / 1000;
+        if (now > created + maxAge) {
+            setEditability(el, false);
+            return;
+        }
         var id = el.getAttribute("data-comment-id");
         var social_network = el.getAttribute("data-social-network");
         var social_id = el.getAttribute("data-social-id");
         var authorData = getAuthorData();
-        if (social_network !== null) {
-            if (social_network == authorData.network
-                && social_id == authorData.id) {
-                $("a.edit", el, false)[0].showInline();
-                $("a.delete", el, false)[0].showInline();
-            } else {
-                $("a.edit", el, false)[0].hide();
-                $("a.delete", el, false)[0].hide();
+        if (social_network != "null") {
+            if (social_network != authorData.network
+                || social_id != authorData.id) {
+                setEditability(el, false);
+                return;
             }
         } else {
             if (! utils.cookie("isso-" + id)) {
-                $("a.edit", el, false)[0].hide();
-                $("a.delete", el, false)[0].hide();
-            } else {
-                setTimeout(function() { updateEditability(el); }, 15*1000);
+                setEditability(el, false);
+                return;
             }
         }
+
+        setEditability(el, true);
+        setTimeout(function() { setEditability(el, false); }, 1000 * (created + maxAge - now));
     };
 
     var insert = function(comment, scrollIntoView) {
@@ -220,6 +235,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         el.setAttribute("data-comment-id", comment.id);
         el.setAttribute("data-social-network", comment.social_network);
         el.setAttribute("data-social-id", comment.social_id);
+        el.setAttribute("data-created", comment.created);
 
         // update datetime every 60 seconds
         var refresh = function() {
