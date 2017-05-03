@@ -116,9 +116,9 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    var remove = function(id) {
+    var remove = function(id, data) {
         var deferred = Q.defer();
-        curl("DELETE", endpoint + "/id/" + id, null, function(rv) {
+        curl("DELETE", endpoint + "/id/" + id, JSON.stringify(data), function(rv) {
             if (rv.status === 403) {
                 deferred.reject("Not authorized to remove this comment!");
             } else if (rv.status === 200) {

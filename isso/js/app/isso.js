@@ -387,7 +387,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             },
             function() {
                 var del = $("a.delete", footer);
-                api.remove(comment.id).then(function(rv) {
+                var authorData = getAuthorData();
+                api.remove(comment.id, {social_network: authorData.network, social_id: authorData.id, id_token: authorData.idToken}).then(function(rv) {
                     if (rv) {
                         el.remove();
                     } else {

@@ -213,6 +213,10 @@ class API(object):
             if not isurl(comment["website"]):
                 return False, "Website not Django-conform"
 
+        return True, ""
+
+    def authenticate(self, comment):
+
         if ("social_network" not in comment or comment["social_network"] is None) and self.conf.getboolean("allow-unauthorized"):
             pass
         elif comment["social_network"] == "openid" and self.openid_conf.getboolean("enabled"):
@@ -245,6 +249,27 @@ class API(object):
 
         return True, ""
 
+    def authorize(self, id, data, comment, cookie):
+
+        if comment.get('social_network') is None:
+            # Comment is not authenticated, accept edit if done by
+            # same browser session (by inspecting a cookie)
+            try:
+                rv = self.isso.unsign(cookie)
+            except (SignatureExpired, BadSignature):
+                raise Forbidden
+
+            if rv[0] != id:
+                raise Forbidden
+
+            # verify checksum, mallory might skip cookie deletion when he deletes a comment
+            if rv[1] != sha1(comment["text"]):
+                raise Forbidden
+        else:
+            if (data.get('social_network') != comment['social_network']
+                or data.get('social_id') != comment.get('social_id')):
+                raise Forbidden
+
     @xhr
     @requires(str, 'uri')
     def new(self, environ, request, uri):
@@ -256,6 +281,10 @@ class API(object):
 
         for key in ("author", "email", "website", "parent"):
             data.setdefault(key, None)
+
+        valid, reason = self.authenticate(data)
+        if not valid:
+            return BadRequest(reason)
 
         valid, reason = self.verify(data)
         if not valid:
@@ -340,6 +369,10 @@ class API(object):
         for field in set(data.keys()) - API.ACCEPT:
             data.pop(field)
 
+        valid, reason = self.authenticate(data)
+        if not valid:
+            return BadRequest(reason)
+
         valid, reason = self.verify(data)
         if not valid:
             return BadRequest(reason)
@@ -349,24 +382,7 @@ class API(object):
         if time.time() > comment.get('created') + self.conf.getint('max-age'):
             raise Forbidden
 
-        if comment.get('social_network') is None:
-            # Comment is not authenticated, accept edit if done by
-            # same browser session (by inspecting a cookie)
-            try:
-                rv = self.isso.unsign(request.cookies.get(str(id), ''))
-            except (SignatureExpired, BadSignature):
-                raise Forbidden
-
-            if rv[0] != id:
-                raise Forbidden
-
-            # verify checksum, mallory might skip cookie deletion when he deletes a comment
-            if rv[1] != sha1(comment["text"]):
-                raise Forbidden
-        else:
-            if (data.get('social_network') != comment['social_network']
-                or data.get('social_id') != comment.get('social_id')):
-                raise Forbidden
+        self.authorize(id, data, comment, request.cookies.get(str(id), ''))
 
         data['modified'] = time.time()
 
@@ -395,22 +411,20 @@ class API(object):
     @xhr
     def delete(self, environ, request, id, key=None):
 
-        try:
-            rv = self.isso.unsign(request.cookies.get(str(id), ""))
-        except (SignatureExpired, BadSignature):
-            raise Forbidden
-        else:
-            if rv[0] != id:
-                raise Forbidden
+        data = request.get_json()
 
-            # verify checksum, mallory might skip cookie deletion when he deletes a comment
-            if rv[1] != sha1(self.comments.get(id)["text"]):
-                raise Forbidden
+        for field in set(data.keys()) - API.ACCEPT:
+            data.pop(field)
+
+        valid, reason = self.authenticate(data)
+        if not valid:
+            return BadRequest(reason)
 
         item = self.comments.get(id)
-
         if item is None:
             raise NotFound
+
+        self.authorize(id, data, item, request.cookies.get(str(id), ''))
 
         self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
 
