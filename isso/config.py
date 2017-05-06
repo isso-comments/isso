@@ -140,6 +140,9 @@ def load(default, user=None):
         parser.read(user)
 
     for item in setify(parser).difference(a):
+        if item[0] == "roles":
+            # we allow entries with any name in this section
+            continue
         logger.warn("no such option: [%s] %s", *item)
         if item in (("server", "host"), ("server", "port")):
             logger.warn("use `listen = http://$host:$port` instead")

@@ -15,7 +15,10 @@ div(class='isso-comment' id='isso-#{comment.id}')
                 span(class='author')
                     = bool(comment.author) ? comment.author : i18n('comment-anonymous')
             span(class="spacer") &bull;
-            if comment.social_network == 'openid'
+            if bool(comment.role_name)
+                span(class="role #{comment.role_name}") #{comment.role_string}
+                span(class="spacer") &bull;
+            else if comment.social_network == 'openid'
                 span(class='identifier-heading')
                     = i18n('openid-identifier')
                 span(class='identifier-value')

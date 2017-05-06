@@ -84,7 +84,8 @@ def xhr(func):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'social_network', 'social_id', 'author', 'website',
-                  'pictureURL', 'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
+                  'pictureURL', 'mode', 'created', 'modified', 'likes', 'dislikes', 'hash',
+                  'role_name', 'role_string'])
 
     # comment fields, that can be submitted
     ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'social_network', 'social_id',
@@ -124,6 +125,7 @@ class API(object):
         self.facebook_conf = isso.conf.section("facebook")
         self.google_conf = isso.conf.section("google")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
+        self.parse_users(isso.conf)
 
         # These configuration records can be read out by client
         self.public_conf = {}
@@ -269,6 +271,15 @@ class API(object):
             if (data.get('social_network') != comment['social_network']
                 or data.get('social_id') != comment.get('social_id')):
                 raise Forbidden
+
+    def parse_users(self, conf):
+
+        self.users = {}
+        for role in conf.items("roles"):
+            role_name, value = role
+            role_string, users = value.split(",")
+            for user in filter(None, users.split(" ")):
+                self.users[tuple(user.split(":", 1))] = {'role_name': role_name, 'role_string': role_string}
 
     @xhr
     @requires(str, 'uri')
@@ -559,6 +570,15 @@ class API(object):
 
         return JSON(rv, 200)
 
+    def _establish_role(self, item):
+        try:
+            user = self.users[(item['social_network'], item['social_id'])]
+        except KeyError:
+            item['role_name'] = item['role_string'] = None
+            return
+        item['role_name'] = user['role_name']
+        item['role_string'] = user['role_string']
+
     def _process_fetched_list(self, fetched_list, plain=False):
         for item in fetched_list:
 
@@ -570,6 +590,8 @@ class API(object):
                 self.cache.set('hash', key.encode('utf-8'), val)
 
             item['hash'] = val
+
+            self._establish_role(item)
 
             for key in set(item.keys()) - API.FIELDS:
                 item.pop(key)

@@ -41,7 +41,7 @@ your Isso configuration file:
     app-secret = <Your App Secret>
 
 Google
---------
+------
 
 To enable Google login, you must first create a Google App by visiting
 the [Google API Console](https://console.developers.google.com/) and
@@ -53,3 +53,22 @@ Isso configuration file:
     [google]
     enabled = true
     client-id = <Your Client ID>
+
+Roles
+-----
+
+It may be desirable to show that some users have a special role on the
+site, such as moderators. Such roles are defined in the Isso
+configuration file like this:
+
+    [roles]
+    web-master = Web master, google:107686722757000000000
+    moderator = Moderator, facebook:10208666300000000 openid:acct:joe@example.com
+
+The name of each "setting" in the role section can be chosen
+arbitrarily. The first line in the example ensures that all comments
+made by the person who authenticates with Google and has Google ID
+107686722757000000000 gets a label saying "Web master" next to
+them. Two users are then defined as Moderators. The label uses the
+name of the setting ("web-master" in the first example) as its CSS
+class in case you want to control the appearance of each of them.
