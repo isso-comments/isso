@@ -33,6 +33,12 @@ class Comments:
             '    text VARCHAR, author VARCHAR, email VARCHAR, website VARCHAR,',
             '    likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL,',
             '    auth_method VARCHAR, auth_id VARCHAR, pictureURL VARCHAR);'])
+        try:
+            self.db.execute(['ALTER TABLE comments ADD COLUMN auth_method VARCHAR;'])
+            self.db.execute(['ALTER TABLE comments ADD COLUMN auth_id VARCHAR;'])
+            self.db.execute(['ALTER TABLE comments ADD COLUMN pictureURL VARCHAR;'])
+        except:
+            pass
 
     def add(self, uri, c):
         """
