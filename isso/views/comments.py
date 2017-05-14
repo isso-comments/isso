@@ -83,12 +83,12 @@ def xhr(func):
 
 class API(object):
 
-    FIELDS = set(['id', 'parent', 'text', 'social_network', 'social_id', 'author', 'website',
+    FIELDS = set(['id', 'parent', 'text', 'auth_method', 'auth_id', 'author', 'website',
                   'pictureURL', 'mode', 'created', 'modified', 'likes', 'dislikes', 'hash',
                   'role_name', 'role_string'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'social_network', 'social_id',
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'auth_method', 'auth_id',
                   'id_token', 'pictureURL'])
 
     VIEWS = [
@@ -219,32 +219,32 @@ class API(object):
 
     def authenticate(self, comment):
 
-        if ("social_network" not in comment or comment["social_network"] is None) and self.conf.getboolean("allow-unauthorized"):
+        if ("auth_method" not in comment or comment["auth_method"] is None) and self.conf.getboolean("allow-unauthorized"):
             pass
-        elif comment["social_network"] == "openid" and self.openid_conf.getboolean("enabled"):
+        elif comment["auth_method"] == "openid" and self.openid_conf.getboolean("enabled"):
             idPattern = re.compile("^[0-9a-zA-Z]+$")
             if "id_token" not in comment or not idPattern.match(comment["id_token"]):
                 return False, "invalid session ID"
             session = self.isso.db.openid_sessions.get(comment["id_token"])
             if session is None or not session["authorized"]:
                 return False, "unknown or expired session ID"
-        elif comment["social_network"] == "facebook" and self.facebook_conf.getboolean("enabled"):
+        elif comment["auth_method"] == "facebook" and self.facebook_conf.getboolean("enabled"):
             idPattern = re.compile("^[0-9]+$")
-            if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+            if "auth_id" not in comment or not idPattern.match(comment["auth_id"]):
                 return False, "invalid Facebook UID"
             if "id_token" not in comment:
                 return False, "Facebook token missing"
-            if not self.validate_fb_token(comment["id_token"], comment["social_id"]):
+            if not self.validate_fb_token(comment["id_token"], comment["auth_id"]):
                 return False, "Facebook token validation failed"
-        elif comment["social_network"] == "google" and self.google_conf.getboolean("enabled"):
+        elif comment["auth_method"] == "google" and self.google_conf.getboolean("enabled"):
             idPattern = re.compile("^[0-9]+$")
-            if "social_id" not in comment or not idPattern.match(comment["social_id"]):
+            if "auth_id" not in comment or not idPattern.match(comment["auth_id"]):
                 return False, "invalid Google UID"
             if "id_token" not in comment:
                 return False, "Google ID token missing"
             API.update_google_certs()
             token = API.validate_jwt(comment["id_token"], API.google_certs, self.google_conf.get("client-id"), API.GOOGLE_ISSUERS)
-            if not token or "sub" not in token or token["sub"] != comment["social_id"]:
+            if not token or "sub" not in token or token["sub"] != comment["auth_id"]:
                 return False, "Google ID token validation failed"
         else:
             return False, "unsupported authorization method"
@@ -253,7 +253,7 @@ class API(object):
 
     def authorize(self, id, data, comment, cookie):
 
-        if comment.get('social_network') is None:
+        if comment.get('auth_method') is None:
             # Comment is not authenticated, accept edit if done by
             # same browser session (by inspecting a cookie)
             try:
@@ -268,8 +268,8 @@ class API(object):
             if rv[1] != sha1(comment["text"]):
                 raise Forbidden
         else:
-            if (data.get('social_network') != comment['social_network']
-                or data.get('social_id') != comment.get('social_id')):
+            if (data.get('auth_method') != comment['auth_method']
+                or data.get('auth_id') != comment.get('auth_id')):
                 raise Forbidden
 
     def parse_users(self, conf):
@@ -572,7 +572,7 @@ class API(object):
 
     def _establish_role(self, item):
         try:
-            user = self.users[(item['social_network'], item['social_id'])]
+            user = self.users[(item['auth_method'], item['auth_id'])]
         except KeyError:
             item['role_name'] = item['role_string'] = None
             return

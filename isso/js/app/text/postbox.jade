@@ -16,27 +16,27 @@ div(class='isso-postbox')
                     p(class='input-wrapper')
                         input(type='text' name='website' placeholder=i18n('postbox-website')
                               value=website != null ? '#{website}' : '')
-                    p(class='social-login-separator') #{i18n('auth-login')}
+                    p(class='login-separator') #{i18n('auth-login')}
                 div(class='auth-login-mandatory')
-                    p(class='social-login-separator') #{i18n('auth-must-login')}
-                p(class='social-login-wrapper')
-                    a(class='social-login-link-openid' href='#')
+                    p(class='login-separator') #{i18n('auth-must-login')}
+                p(class='login-wrapper')
+                    a(class='login-link-openid' href='#')
                         img(alt=i18n('auth-openid'))
-                    a(class='social-login-link-facebook' href='#')
+                    a(class='login-link-facebook' href='#')
                         img(alt=i18n('auth-facebook'))
-                    a(class='social-login-link-google' href='#')
+                    a(class='login-link-google' href='#')
                         img(alt=i18n('auth-google'))
             div(class='auth-loggedin-openid')
                 p(class='auth-openid-name')
-                p(class='social-logout-wrapper')
-                    a(class='social-logout-link-openid' href='#') #{i18n('logout')}
+                p(class='logout-wrapper')
+                    a(class='logout-link-openid' href='#') #{i18n('logout')}
             div(class='auth-loggedin-facebook')
                 p(class='auth-facebook-name')
-                p(class='social-logout-wrapper')
-                    a(class='social-logout-link-facebook' href='#') #{i18n('logout')}
+                p(class='logout-wrapper')
+                    a(class='logout-link-facebook' href='#') #{i18n('logout')}
             div(class='auth-loggedin-google')
                 p(class='auth-google-name')
-                p(class='social-logout-wrapper')
-                    a(class='social-logout-link-google' href='#') #{i18n('logout')}
+                p(class='logout-wrapper')
+                    a(class='logout-link-google' href='#') #{i18n('logout')}
             p(class='post-action')
                 input(type='submit' value=i18n('postbox-submit'))

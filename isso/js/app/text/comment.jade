@@ -18,11 +18,11 @@ div(class='isso-comment' id='isso-#{comment.id}')
             if bool(comment.role_name)
                 span(class="role #{comment.role_name}") #{comment.role_string}
                 span(class="spacer") &bull;
-            else if comment.social_network == 'openid'
+            else if comment.auth_method == 'openid'
                 span(class='identifier-heading')
                     = i18n('openid-identifier')
                 span(class='identifier-value')
-                    = comment.social_id
+                    = comment.auth_id
                 span(class="spacer") &bull;
             a(class='permalink' href='#isso-#{comment.id}')
                 time(title='#{humanize(comment.created)}' datetime='#{datetime(comment.created)}')

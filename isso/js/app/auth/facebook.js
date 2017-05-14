@@ -73,8 +73,8 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
                 $(".isso-postbox .avatar", el).show();
             } else {
                 $(".auth-loggedin-facebook", el).hide();
-                $(".social-login-link-facebook", el).showInline();
-                $(".social-login-link-facebook > img", el).setAttribute("src", api.endpoint + "/images/facebook-color.png");
+                $(".login-link-facebook", el).showInline();
+                $(".login-link-facebook > img", el).setAttribute("src", api.endpoint + "/images/facebook-color.png");
             }
         }
     }
@@ -84,12 +84,12 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
             return;
         }
         updatePostbox(el);
-        $(".social-logout-link-facebook", el).on("click", function() {
+        $(".logout-link-facebook", el).on("click", function() {
             FB.logout(function(response) {
                 statusChangeCallback(response);
             });
         });
-        $(".social-login-link-facebook", el).on("click", function() {
+        $(".login-link-facebook", el).on("click", function() {
             FB.login(function(response) {
                 statusChangeCallback(response);
             }, {scope: 'public_profile,email'});
@@ -113,8 +113,8 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
     }
 
     var prepareComment = function(comment) {
-        comment.website = "//www.facebook.com/" + comment.social_id;
-        comment.pictureURL = "//graph.facebook.com/" + comment.social_id + "/picture";
+        comment.website = "//www.facebook.com/" + comment.auth_id;
+        comment.pictureURL = "//graph.facebook.com/" + comment.auth_id + "/picture";
     }
 
     return {

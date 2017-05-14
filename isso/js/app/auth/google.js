@@ -63,8 +63,8 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
                 $(".isso-postbox .avatar", el).show();
             } else {
                 $(".auth-loggedin-google", el).hide();
-                $(".social-login-link-google", el).showInline();
-                $(".social-login-link-google > img", el).setAttribute("src", api.endpoint + "/images/googleplus-color.png");
+                $(".login-link-google", el).showInline();
+                $(".login-link-google > img", el).setAttribute("src", api.endpoint + "/images/googleplus-color.png");
             }
         }
     }
@@ -74,10 +74,10 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
             return;
         }
         updatePostbox(el);
-        $(".social-logout-link-google", el).on("click", function() {
+        $(".logout-link-google", el).on("click", function() {
             gAuth.signOut();
         });
-        $(".social-login-link-google", el).on("click", function() {
+        $(".login-link-google", el).on("click", function() {
             gAuth.signIn();
         });
     }
@@ -99,7 +99,7 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
     }
 
     var prepareComment = function(comment) {
-        comment.website = "//plus.google.com/" + comment.social_id + "/posts";
+        comment.website = "//plus.google.com/" + comment.auth_id + "/posts";
     }
 
     return {

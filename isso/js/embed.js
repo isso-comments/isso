@@ -3,7 +3,7 @@
  * Distributed under the MIT license
  */
 
-require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade", "app/social/openid", "app/social/facebook", "app/social/google"], function(domready, config, i18n, api, isso, count, $, css, svg, jade, openid, facebook, google) {
+require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade", "app/auth/openid", "app/auth/facebook", "app/auth/google"], function(domready, config, i18n, api, isso, count, $, css, svg, jade, openid, facebook, google) {
 
     "use strict";
 

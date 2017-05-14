@@ -1,7 +1,7 @@
 /* Isso – Ich schrei sonst!
  */
 define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals",
-        "app/social/openid", "app/social/facebook", "app/social/google"],
+        "app/auth/openid", "app/auth/facebook", "app/auth/google"],
     function($, utils, config, api, jade, i18n, lib, globals, openid, facebook, google) {
 
     "use strict";
@@ -59,7 +59,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             }
 
             api.create($("#isso-thread").getAttribute("data-isso-id"), {
-                social_network: authorData.network, social_id: authorData.id, id_token: authorData.idToken,
+                auth_method: authorData.network, auth_id: authorData.id, id_token: authorData.idToken,
                 pictureURL: authorData.pictureURL, author: authorData.name,
                 email: authorData.email, website: authorData.website,
                 text: utils.text($(".textarea", el).innerHTML),
@@ -199,12 +199,12 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             return;
         }
         var id = el.getAttribute("data-comment-id");
-        var social_network = el.getAttribute("data-social-network");
-        var social_id = el.getAttribute("data-social-id");
+        var auth_method = el.getAttribute("data-auth-method");
+        var auth_id = el.getAttribute("data-auth-id");
         var authorData = getAuthorData();
-        if (social_network != "null") {
-            if (social_network != authorData.network
-                || social_id != authorData.id) {
+        if (auth_method != "null") {
+            if (auth_method != authorData.network
+                || auth_id != authorData.id) {
                 setEditability(el, false);
                 return;
             }
@@ -221,11 +221,11 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     var insert = function(comment, scrollIntoView) {
 
-        if (comment.social_network === "openid") {
+        if (comment.auth_method === "openid") {
             openid.prepareComment(comment);
-        } else if (comment.social_network === "facebook") {
+        } else if (comment.auth_method === "facebook") {
             facebook.prepareComment(comment);
-        } else if (comment.social_network === "google") {
+        } else if (comment.auth_method === "google") {
             google.prepareComment(comment);
         } else {
             comment.pictureURL = false;
@@ -233,8 +233,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         var el = $.htmlify(jade.render("comment", {"comment": comment}));
         el.setAttribute("data-comment-id", comment.id);
-        el.setAttribute("data-social-network", comment.social_network);
-        el.setAttribute("data-social-id", comment.social_id);
+        el.setAttribute("data-auth-method", comment.auth_method);
+        el.setAttribute("data-auth-id", comment.auth_id);
         el.setAttribute("data-created", comment.created);
 
         // update datetime every 60 seconds
@@ -352,7 +352,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                         return;
                     } else {
                         var authorData = getAuthorData();
-                        api.modify(comment.id, {social_network: authorData.network, social_id: authorData.id, id_token: authorData.idToken, text: utils.text(textarea.innerHTML)}).then(function(rv) {
+                        api.modify(comment.id, {auth_method: authorData.network, auth_id: authorData.id, id_token: authorData.idToken, text: utils.text(textarea.innerHTML)}).then(function(rv) {
                             text.innerHTML = rv.text;
                             comment.text = rv.text;
                         });
@@ -388,7 +388,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             function() {
                 var del = $("a.delete", footer);
                 var authorData = getAuthorData();
-                api.remove(comment.id, {social_network: authorData.network, social_id: authorData.id, id_token: authorData.idToken}).then(function(rv) {
+                api.remove(comment.id, {auth_method: authorData.network, auth_id: authorData.id, id_token: authorData.idToken}).then(function(rv) {
                     if (rv) {
                         el.remove();
                     } else {

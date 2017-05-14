@@ -60,8 +60,8 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
             $(".isso-postbox .avatar", el).show();
         } else {
             $(".auth-loggedin-openid", el).hide();
-            $(".social-login-link-openid", el).showInline();
-            $(".social-login-link-openid > img", el).setAttribute("src", api.endpoint + "/images/openid-icon-32x32.png");
+            $(".login-link-openid", el).showInline();
+            $(".login-link-openid > img", el).setAttribute("src", api.endpoint + "/images/openid-icon-32x32.png");
         }
     }
 
@@ -70,7 +70,7 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
             return;
         }
         updatePostbox(el);
-        $(".social-logout-link-openid", el).on("click", function() {
+        $(".logout-link-openid", el).on("click", function() {
             api.openidLogout(sessionID);
             loggedIn = false;
             sessionID = null;
@@ -80,7 +80,7 @@ define(["app/dom", "app/config", "app/api", "app/jade", "app/i18n"], function($,
             localStorage.removeItem("author_data");
             isso.updateAllPostboxes();
         });
-        $(".social-login-link-openid", el).on("click", function() {
+        $(".login-link-openid", el).on("click", function() {
             var win = window.open("", "OpenID Connect login",
                                   "width=500, height=500, menubar=no, location=yes, toolbar=no, status=yes");
             win.document.head.innerHTML = "<title>" + i18n.translate("openid-title") + "</title>"
