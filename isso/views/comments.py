@@ -275,11 +275,12 @@ class API(object):
     def parse_users(self, conf):
 
         self.users = {}
-        for role in conf.items("roles"):
-            role_name, value = role
-            role_string, users = value.split(",")
-            for user in filter(None, users.split(" ")):
-                self.users[tuple(user.split(":", 1))] = {'role_name': role_name, 'role_string': role_string}
+        if conf.has_section("roles"):
+            for role in conf.items("roles"):
+                role_name, value = role
+                role_string, users = value.split(",")
+                for user in filter(None, users.split(" ")):
+                    self.users[tuple(user.split(":", 1))] = {'role_name': role_name, 'role_string': role_string}
 
     @xhr
     @requires(str, 'uri')
