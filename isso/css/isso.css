@@ -3,7 +3,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
-#isso-thread a {
+#isso-thread .isso-comment-header a {
     text-decoration: none;
 }
 
@@ -159,6 +159,9 @@
 }
 .isso-comment .isso-postbox {
     margin-top: 0.8em;
+}
+.isso-comment.isso-no-votes span.votes {
+    display: none;
 }
 
 .isso-postbox {

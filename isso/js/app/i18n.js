@@ -1,19 +1,23 @@
-define(["app/config", "app/i18n/cs", "app/i18n/de", "app/i18n/en",
-        "app/i18n/fr", "app/i18n/hr", "app/i18n/ru", "app/i18n/it",
-        "app/i18n/eo", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR",
-        "app/i18n/es", "app/i18n/vi", "app/i18n/zh_CN"],
-        function(config, cs, de, en, fr, hr, ru, it, eo, sv, nl, el, es, vi, zh) {
+define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
+        "app/i18n/en", "app/i18n/fa", "app/i18n/fi", "app/i18n/fr",
+        "app/i18n/hr", "app/i18n/ru", "app/i18n/it", "app/i18n/eo",
+        "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR", "app/i18n/es",
+        "app/i18n/vi", "app/i18n/zh_CN"],
+        function(config, bg, cs, de, en, fa, fi, fr, hr, ru, it, eo, sv, nl, el, es, vi, zh) {
 
     "use strict";
 
     var pluralforms = function(lang) {
         switch (lang) {
+        case "bg":
         case "cs":
         case "de":
         case "el":
         case "en":
         case "es":
         case "eo":
+        case "fa":
+        case "fi":
         case "hr":
         case "it":
         case "sv":
@@ -57,6 +61,8 @@ define(["app/config", "app/i18n/cs", "app/i18n/de", "app/i18n/en",
         en: en,
         eo: eo,
         es: es,
+        fa: fa,
+        fi: fi,
         fr: fr,
         it: it,
         hr: hr,

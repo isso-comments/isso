@@ -111,6 +111,10 @@ define(function() {
             "value": {
                 get: function() { return node.value; },
                 set: function(value) { node.value = value; }
+            },
+            "placeholder": {
+                get: function() { return node.placeholder; },
+                set: function(placeholder) { node.placeholder = placeholder; }
             }
         });
     }
@@ -205,10 +209,13 @@ define(function() {
             el.href = "#";
         }
 
+        if (!content && content !== 0) {
+            content = "";
+        }
         if (["TEXTAREA", "INPUT"].indexOf(el.nodeName) > -1) {
-            el.value = content || "";
+            el.value = content;
         } else {
-            el.textContent = content || "";
+            el.textContent = content;
         }
         return el;
     };

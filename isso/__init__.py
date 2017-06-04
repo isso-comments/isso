@@ -197,7 +197,7 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
         allowed=("Origin", "Referer", "Content-Type"),
         exposed=("X-Set-Cookie", "Date")))
 
-    wrapper.extend([wsgi.SubURI, ProxyFix, wsgi.LegacyWerkzeugMiddleware])
+    wrapper.extend([wsgi.SubURI, ProxyFix])
 
     if werkzeug.version.startswith("0.8"):
         wrapper.append(wsgi.LegacyWerkzeugMiddleware)
