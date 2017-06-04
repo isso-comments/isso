@@ -531,8 +531,6 @@ class API(object):
             root_list = []
         else:
             root_list = list(self.comments.fetch(**args))
-            if not root_list:
-                raise NotFound
 
         if root_id not in reply_counts:
             reply_counts[root_id] = 0
