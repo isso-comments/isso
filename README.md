@@ -17,7 +17,7 @@ OpenID
 To enable OpenID support, just enable it in the configuration file:
 
     [openid]
-    enabled = false
+    enabled = true
 
 Users authenticate by clicking the OpenID button and typing in their
 OpenID identifier. To do so the user must have an OpenID provider that
