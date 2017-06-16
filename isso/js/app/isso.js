@@ -125,6 +125,11 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".auth-login-optional", el).showInline();
                 $(".auth-login-mandatory", el).hide();
                 $(".post-action", el).showInline();
+                if (config["openid-enabled"] || config["facebook-enabled"] || config["google-enabled"]) {
+                    $(".auth-login-optional .login-separator", el).showInline();
+                } else {
+                    $(".auth-login-optional .login-separator", el).hide();
+                }
             } else {
                 $(".auth-login-optional", el).hide();
                 $(".auth-login-mandatory", el).showInline();
