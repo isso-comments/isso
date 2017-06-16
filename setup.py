@@ -16,6 +16,7 @@ setup(
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
+    package_data={'': ['images/*']},
     include_package_data=True,
     zip_safe=False,
     url='https://github.com/posativ/isso/',
