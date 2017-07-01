@@ -28,12 +28,15 @@ Facebook
 --------
 
 To enable Facebook login, you must first create a Facebook App by
-visiting [Facebook for Developer](https://developers.facebook.com/)
-and choosing `My Apps->Add a New App`. Set `Site URL` to the URL of
-your web site where Isso is embedded (not the URL or port where Isso
-itself listens). Then take note of the `App ID` and `App Secret` that
-Facebook has generated for your app, and add the following settings to
-your Isso configuration file:
+visiting [Facebook for Developers](https://developers.facebook.com/)
+and choosing `My Apps->Add a New App`. On the `Product Setup` screen,
+add `Facebook Login`. Make sure `Client OAuth Login` and `Web OAuth
+Login` are enabled and fill in your site's URL under `Valid OAuth
+redirect URIs`. Next, go to your app's general settings
+(`Settings->Basic`) and fill in your site's URL also under `Site URL`
+(you may have to add `Web` as a platform first). Then take note of the
+`App ID` and `App Secret` that Facebook has generated for your app,
+and add the following settings to your Isso configuration file:
 
     [facebook]
     enabled = true
@@ -46,9 +49,9 @@ Google
 To enable Google login, you must first create a Google App by visiting
 the [Google API Console](https://console.developers.google.com/) and
 choosing `Create Project`. Under `Credentials`, choose `Create
-Credentials->OAuth client ID`. Then take note of the `Client ID` that
-Google has generated for you, and add the following settings to your
-Isso configuration file:
+Credentials->OAuth client ID`, and then choose `Web application`. Then
+take note of the `Client ID` that Google has generated for you, and
+add the following settings to your Isso configuration file:
 
     [google]
     enabled = true
