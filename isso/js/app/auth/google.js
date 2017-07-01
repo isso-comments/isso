@@ -22,7 +22,7 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
         gScriptEl.addEventListener('load', function (e) {
             gapi.load('auth2', function() {
                 gAuth = gapi.auth2.init({
-                    client_id: "41900040914-qfuks55vr812m25vtpkrq6lbahfgg151.apps.googleusercontent.com",
+                    client_id: config["google-client-id"],
                     cookiepolicy: "single_host_origin",
                 });
                 gAuth.isSignedIn.listen(signedinChanged)
