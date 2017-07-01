@@ -57,6 +57,17 @@ add the following settings to your Isso configuration file:
     enabled = true
     client-id = <Your Client ID>
 
+Requiring authentication
+------------------------
+
+If you want to require users to authenticate in order to post
+comments, disable the `allow-unauthorized` setting in the `general`
+section. You must obviously also enable at least one authentication
+method.
+
+    [general]
+    allow-unauthorized = false
+
 Roles
 -----
 
