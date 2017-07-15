@@ -15,7 +15,6 @@
 /lib
 /lib64
 /man
-/share
 /isso.egg-info/
 /isso/js/components
 /isso/js/embed.min.js
