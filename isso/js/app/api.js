@@ -144,10 +144,10 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
 
         var query_dict = {uri: tid || location, after: lastcreated, parent: parent};
 
-        if(limit !== "inf") {
+        if (limit !== null) {
             query_dict['limit'] = limit;
         }
-        if(nested_limit !== "inf"){
+        if (nested_limit !== null) {
             query_dict['nested_limit'] = nested_limit;
         }
 

@@ -14,13 +14,6 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
 
     domready(function() {
 
-        if (config["css"]) {
-            var style = $.new("style");
-            style.type = "text/css";
-            style.textContent = css.inline;
-            $("head").append(style);
-        }
-
         count();
 
         if ($("#isso-thread") === null) {
@@ -29,11 +22,15 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
 
 
         api.fetch($("#isso-thread").getAttribute("data-isso-id"),
-            config["max-comments-top"],
-            config["max-comments-nested"]).then(
+            null, null).then(
             function(rv) {
-                for (var setting in rv.config) {
-                    config[setting] = rv.config[setting]
+                config.init(rv.config);
+
+                if (config["css"]) {
+                    var style = $.new("style");
+                    style.type = "text/css";
+                    style.textContent = css.inline;
+                    $("head").append(style);
                 }
 
                 $("#isso-thread").append($.new('h4'));

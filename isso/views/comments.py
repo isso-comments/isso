@@ -128,12 +128,31 @@ class API(object):
         self.moderated = isso.conf.getboolean("moderation", "enabled")
         self.parse_users(isso.conf)
 
+        if isso.conf.get("gui", "max-comments-top") == "inf":
+            self.max_comments_top = None
+        else:
+            self.max_comments_top = isso.conf.getint("gui", "max-comments-top")
+        if isso.conf.get("gui", "max-comments-nested") == "inf":
+            self.max_comments_nested = None
+        else:
+            self.max_comments_nested = isso.conf.getint("gui", "max-comments-nested")
+
         # These configuration records can be read out by client
         self.public_conf = {}
         self.public_conf["max-age"] = isso.conf.getint("general", "max-age")
+        self.public_conf["allow-unauthorized"] = isso.conf.getboolean("general", "allow-unauthorized")
         self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
         self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
-        self.public_conf["allow-unauthorized"] = isso.conf.getboolean("general", "allow-unauthorized")
+        self.public_conf["css"] = isso.conf.getboolean("gui", "css")
+        self.public_conf["lang"] = isso.conf.get("gui", "lang")
+        self.public_conf["max-comments-top"] = isso.conf.get("gui", "max-comments-top")
+        self.public_conf["max-comments-nested"] = isso.conf.get("gui", "max-comments-nested")
+        self.public_conf["reveal-on-click"] = isso.conf.getint("gui", "reveal-on-click")
+        self.public_conf["avatar"] = isso.conf.getboolean("avatar", "enabled")
+        self.public_conf["avatar-bg"] = isso.conf.get("avatar", "background")
+        self.public_conf["avatar-fg"] = isso.conf.get("avatar", "foreground")
+        self.public_conf["vote"] = isso.conf.getboolean("vote", "enabled")
+        self.public_conf["vote-levels"] = isso.conf.get("vote", "levels")
         self.public_conf["openid-enabled"] = isso.conf.getboolean("openid", "enabled")
         self.public_conf["facebook-enabled"] = isso.conf.getboolean("facebook", "enabled")
         self.public_conf["facebook-app-id"] = isso.conf.get("facebook", "app-id")
@@ -506,12 +525,15 @@ class API(object):
             'after': request.args.get('after', 0)
         }
 
-        try:
-            args['limit'] = int(request.args.get('limit'))
-        except TypeError:
+        if request.args.get('limit') is None:
+            args['limit'] = self.max_comments_top
+        elif request.args.get('limit')== "inf":
             args['limit'] = None
-        except ValueError:
-            return BadRequest("limit should be integer")
+        else:
+            try:
+                args['limit'] = int(request.args.get('limit'))
+            except ValueError:
+                return BadRequest("limit should be integer or 'inf'")
 
         if request.args.get('parent') is not None:
             try:
@@ -535,12 +557,15 @@ class API(object):
         if root_id not in reply_counts:
             reply_counts[root_id] = 0
 
-        try:
-            nested_limit = int(request.args.get('nested_limit'))
-        except TypeError:
+        if request.args.get('nested_limit') is None:
+            nested_limit = self.max_comments_nested
+        elif request.args.get('nested_limit')== "inf":
             nested_limit = None
-        except ValueError:
-            return BadRequest("nested_limit should be integer")
+        else:
+            try:
+                nested_limit = int(request.args.get('nested_limit'))
+            except ValueError:
+                return BadRequest("limit should be integer or 'inf'")
 
         rv = {
             'id'             : root_id,
