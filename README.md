@@ -86,3 +86,29 @@ made by the person who authenticates with Google and has Google ID
 them. Two users are then defined as Moderators. The label uses the
 name of the setting ("web-master" in the first example) as its CSS
 class in case you want to control the appearance of each of them.
+
+Client-side configuration
+-------------------------
+
+In order to centralize all configuration, the client-side
+configuration has been moved to the server-side configuration
+file. The following table maps the client-side settings in upstream
+Isso to their new location in the configuration file in this fork:
+
+| Old setting name              | New setting section | New setting name    |
+| ----------------------------- | ------------------- | ------------------- |
+| data-isso-css                 | gui                 | css                 |
+| data-isso-max-comments-top    | gui                 | max-comments-top    |
+| data-isso-max-comments-nested | gui                 | max-comments-nested |
+| data-isso-reveal-on-click     | gui                 | reveal-on-click     |
+| data-isso-lang                | gui                 | lang                |
+| data-isso-reply-to-self       | guard               | reply-to-self       |
+| data-isso-require-email       | guard               | require-email       |
+| data-isso-avatar              | avatar              | enabled             |
+| data-isso-avatar-bg           | avatar              | background          |
+| data-isso-avatar-fg           | avatar              | foreground          |
+| data-isso-vote                | vote                | enabled             |
+| data-isso-vote-levels         | vote                | levels              |
+
+The syntax of some settings have changed slightly, see the comments in
+the bundled configuration file for details.
