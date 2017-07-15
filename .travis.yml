@@ -11,6 +11,10 @@ matrix:
       env: TOX_ENV=py33
     - python: 3.4
       env: TOX_ENV=py34
+    - python: 3.5
+      env: TOX_ENV=py35
+    - python: 3.6
+      env: TOX_ENV=py36
     - python: 2.6
       env: TOX_ENV=squeeze
     - python: 2.7
