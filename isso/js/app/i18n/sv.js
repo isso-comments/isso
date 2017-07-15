@@ -17,6 +17,7 @@ define({
     "comment-queued": "Kommentaren inväntar granskning.",
     "comment-anonymous": "Anonym",
     "comment-hidden": "{{ n }} Gömd",
+    "markdown-note": " stöds.",
     "date-now": "just nu",
     "date-minute": "en minut sedan\n{{ n }} minuter sedan",
     "date-hour": "en timme sedan\n{{ n }} timmar sedan",

@@ -20,6 +20,8 @@ define({
     "comment-anonymous": "Anonymous",
     "comment-hidden": "{{ n }} Hidden",
 
+    "markdown-note": " is supported.",
+
     "date-now": "right now",
     "date-minute": "a minute ago\n{{ n }} minutes ago",
     "date-hour": "an hour ago\n{{ n }} hours ago",
