@@ -188,37 +188,24 @@
 #isso-thread input:focus {
     border-color: rgba(0, 0, 0, 0.8);
 }
-.isso-postbox > .form-wrapper > .auth-section .auth-not-loggedin {
-    display: inline;
-}
-.isso-postbox > .form-wrapper > .auth-section .auth-loggedin-openid {
-    display: none;
+.isso-postbox > .form-wrapper > .auth-section * {
+    display: inline-block;
+    vertical-align: middle;
 }
 .isso-postbox > .form-wrapper > .auth-section .auth-openid-name {
-    display: inline-block;
-    position: relative;
+    margin: 0;
     font-weight: bold;
-}
-.isso-postbox > .form-wrapper > .auth-section .auth-loggedin-facebook {
-    display: none;
 }
 .isso-postbox > .form-wrapper > .auth-section .auth-facebook-name {
-    display: inline-block;
-    position: relative;
+    margin: 0;
     font-weight: bold;
 }
-.isso-postbox > .form-wrapper > .auth-section .auth-loggedin-google {
-    display: none;
-}
 .isso-postbox > .form-wrapper > .auth-section .auth-google-name {
-    display: inline-block;
-    position: relative;
+    margin: 0;
     font-weight: bold;
 }
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper {
-    display: inline-block;
-    position: relative;
-    max-width: 25%;
+    max-width: 20%;
     margin: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .input-wrapper input {
@@ -231,32 +218,21 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 .isso-postbox > .form-wrapper > .auth-section .login-separator {
-    display: inline-block;
-    position: relative;
     margin-left: 1em;
     margin-right: 1em;
 }
 .isso-postbox > .form-wrapper > .auth-section .login-wrapper {
-    display: inline-block;
-    position: relative;
     margin: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .login-wrapper > a {
-    display: none;
-    margin-left: 0;
     margin-right: .3em;
-    margin-top: 0;
-    margin-bottom: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .login-wrapper > a > img {
     width: 28px;
     height: 28px;
-    margin-top: -.3em;
     border-radius: 3px;
 }
 .isso-postbox > .form-wrapper > .auth-section .logout-wrapper {
-    display: inline-block;
-    position: relative;
     margin: 0;
 }
 .isso-postbox > .form-wrapper > .auth-section .logout-wrapper > a {
@@ -280,12 +256,8 @@
     color: #FFF;
     background-color: #dd4b39;
 }
-.isso-postbox > .form-wrapper > .auth-section .post-action {
-    display: inline-block;
-    float: right;
-    margin: 0;
-}
 .isso-postbox > .form-wrapper > .auth-section .post-action > input {
+    float: right;
     padding: calc(.3em - 1px);
     border-radius: 2px;
     border: 1px solid #CCC;
