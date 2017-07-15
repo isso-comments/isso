@@ -55,6 +55,7 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
     }
 
     var catalogue = {
+        bg: bg,
         cs: cs,
         de: de,
         el: el,
