@@ -19,8 +19,8 @@ Build-Depends:
 Standards-Version: 3.9.8
 X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/
-Vcs-Git: git://anonscm.debian.org/collab-maint/isso.git -b experimental
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/isso.git;a=log;h=refs/heads/experimental
+Vcs-Git: git://anonscm.debian.org/collab-maint/isso.git -b unstable
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/isso.git;a=log;h=refs/heads/unstable
 
 Package: isso
 Architecture: all
