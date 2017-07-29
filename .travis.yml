@@ -22,7 +22,7 @@ install:
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
   - tox -e $TOX_ENV
-  - python -m pyflakes.__main__ $(git ls-files | grep -E "^isso/.+.py$")
+  - python -m pyflakes.__main__ $(git ls-files | grep -E "^isso/.+.py$" | grep -v "^isso/compat.py")
 notifications:
   irc:
     channels:
