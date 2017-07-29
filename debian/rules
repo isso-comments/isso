@@ -3,18 +3,15 @@
 export DH_VERBOSE=1
 export PYBUILD_NAME=isso
 
-RJS = /usr/bin/nodejs /usr/lib/nodejs/r.js
-
 %:
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild
 
-rm_js_symlinks:
-	echo "Removing built JS libraries"
-	rm -f ./isso/js/count.min.js
-	rm -f ./isso/js/embed.min.js
-
 override_dh_auto_build:
-	RJS="$(RJS)" dh_auto_build
+	dh_auto_build
+	uglifyjs -c -o $(CURDIR)/isso/js/count.min.js \
+	               $(CURDIR)/isso/js/count.dev.js
+	uglifyjs -c -o $(CURDIR)/isso/js/embed.min.js \
+	               $(CURDIR)/isso/js/embed.dev.js
 	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml docs build/html
 
 override_dh_sphinxdoc:
@@ -29,5 +26,7 @@ override_dh_auto_install:
 	dh_auto_install
 	pybuild --install -i python{version} -p 2.7 --dir . --verbose --test-nose
 
-override_dh_auto_clean: rm_js_symlinks
+override_dh_auto_clean:
 	dh_auto_clean
+	rm -f ./isso/js/count.min.js ./isso/js/count.dev.js
+	rm -f ./isso/js/embed.min.js ./isso/js/embed.dev.js
