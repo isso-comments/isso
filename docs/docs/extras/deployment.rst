@@ -213,7 +213,7 @@ Next, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
     WSGIServer(application).run()
 
 `Openshift <http://openshift.com>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 With `Isso Openshift Deployment Kit`_, Isso can be installed on Open
 Shift with just one click. Make sure you already have installed ``rhc``
 (`instructions`_) and completed the setup.
