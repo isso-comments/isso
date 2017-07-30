@@ -10,7 +10,7 @@ Debian/Ubuntu, Gentoo, Archlinux or Fedora, you can use
     :local:
     :depth: 1
 
- .. _install-interludium:
+.. _install-interludium:
 
 Interludium: Python is not PHP
 ------------------------------
