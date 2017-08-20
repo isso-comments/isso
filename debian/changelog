@@ -1,6 +1,7 @@
 isso (0.10.6-3) UNRELEASED; urgency=medium
 
   * Fix minification.
+  * Add missing dependency on python-configobj. Closes: #872713
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 29 Jul 2017 16:35:48 +0000
 
