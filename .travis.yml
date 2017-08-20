@@ -1,24 +1,12 @@
-language: python
-python: 2.7
-env:
-  - TOX_ENV=py26
-  - TOX_ENV=py27
-  - TOX_ENV=py33
-  - TOX_ENV=py34
-  - TOX_ENV=squeeze
-  - TOX_ENV=wheezy
-matrix:
-  allow_failures:
-    - env: TOX_ENV=squeeze
-install:
-  - pip install -U pip
-  - pip install tox
-  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
+sudo: required
+language: generic
+
+services:
+  - docker
+
 script:
-  - tox -e $TOX_ENV
-notifications:
-  irc:
-    channels:
-      - "chat.freenode.net#isso"
-    on_success: change
-    on_failure: always
+  - wget -O- http://travis.debian.net/script.sh | sh -
+
+branches:
+  except:
+    - /^debian\/\d/
