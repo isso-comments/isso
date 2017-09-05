@@ -249,11 +249,9 @@ def main():
         logger.propagate = False
         logging.getLogger("werkzeug").propagate = False
 
-    fmt = conf.get("general", "log-format")
-    if fmt:
-        formatter = logging.Formatter(fmt)
-        for handler in logger.handlers:
-            handler.setFormatter(formatter)
+    formatter = logging.Formatter(conf.get("general", "log-format"))
+    for handler in logger.handlers:
+        handler.setFormatter(formatter)
 
     if not any(conf.getiter("general", "host")):
         logger.error("No website(s) configured, Isso won't work.")
