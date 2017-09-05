@@ -45,6 +45,7 @@ session key and hostname. Here are the default values for this section:
     max-age = 15m
     notify = stdout
     log-file =
+    log-format = %%(asctime)s %%(levelname)s: %%(message)s
 
 dbpath
     file location to the SQLite3 database, highly recommended to change this
@@ -91,8 +92,12 @@ notify
 log-file
     Log console messages to file instead of standard out.
 
+log-format
+    Log format to use. Available keys are described in LOGRECORD_
+
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
+.. _LOGRECORD: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
 
 Moderation
