@@ -65,6 +65,7 @@ class TestDBMigration(unittest.TestCase):
                          "supersecretkey")
 
     def test_limit_nested_comments(self):
+        """Transform previously A -> B -> C comment nesting to A -> B, A -> C"""
 
         tree = {
             1: None,
@@ -97,7 +98,7 @@ class TestDBMigration(unittest.TestCase):
             con.execute("INSERT INTO threads (uri, title) VALUES (?, ?)", ("/", "Test"))
             for (id, parent) in iteritems(tree):
                 con.execute("INSERT INTO comments ("
-                            "   tid, parent, created)"
+                            "   id, parent, created)"
                             "VALUEs (?, ?, ?)", (id, parent, id))
 
         conf = config.new({
@@ -108,15 +109,15 @@ class TestDBMigration(unittest.TestCase):
         })
         SQLite3(self.path, conf)
 
-        flattened = [
-            (1, None),
-            (2, None),
-            (3, 2),
-            (4, 2),
-            (5, 2),
-            (6, None),
-            (7, 2)
-        ]
+        flattened = list(iteritems({
+            1: None,
+            2: None,
+                3: 2,
+                4: 2,
+                5: 2,
+            6: None,
+            7: 2
+        }))
 
         with sqlite3.connect(self.path) as con:
             rv = con.execute("SELECT id, parent FROM comments ORDER BY created").fetchall()

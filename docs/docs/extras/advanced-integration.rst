@@ -21,5 +21,5 @@ Now, either include `count.min.js` if you want to show only the comment count
 (e.g. on an index page) or `embed.min.js` for the full comment client (see
 :doc:`../quickstart`); do not mix both.
 
-You can have as many comments counters as you want in a page but be aware that it
-implies one `GET` request per comment anchor.
+You can have as many comments counters as you want in a page, and they will be
+merged into a single `GET` request.

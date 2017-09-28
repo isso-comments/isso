@@ -220,7 +220,8 @@ def main():
     imprt.add_argument("--empty-id", dest="empty_id", action="store_true",
                        help="workaround for weird Disqus XML exports, #135")
 
-    serve = subparser.add_parser("run", help="run server")
+    # run Isso as stand-alone server
+    subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
     conf = config.load(join(dist.location, dist.project_name, "defaults.ini"), args.conf)
