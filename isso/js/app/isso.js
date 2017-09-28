@@ -41,8 +41,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         // email is not optional if this config parameter is set
         if (config["require-email"]) {
-          $("[name='email']", el).placeholder =
-            $("[name='email']", el).placeholder.replace(/ \(.*\)/, "");
+            $("[name='email']", el).setAttribute("placeholder",
+                $("[name='email']", el).getAttribute("placeholder").replace(/ \(.*\)/, ""));
         }
 
         // author is not optional if this config parameter is set

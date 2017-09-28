@@ -34,9 +34,9 @@ init:
 
 check:
 	@echo "Python 2.x"
-	-@python2 -m pyflakes $(ISSO_PY_SRC)
+	@python2 -m pyflakes $(filter-out isso/compat.py,$(ISSO_PY_SRC))
 	@echo "Python 3.x"
-	-@python3 -m pyflakes $(ISSO_PY_SRC)
+	@python3 -m pyflakes $(filter-out isso/compat.py,$(ISSO_PY_SRC))
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	$(RJS) -o isso/js/build.$*.js out=$@

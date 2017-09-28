@@ -1,9 +1,9 @@
-define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
-        "app/i18n/en", "app/i18n/fi", "app/i18n/fr", "app/i18n/hr",
-        "app/i18n/ru", "app/i18n/it", "app/i18n/eo", "app/i18n/sv",
-        "app/i18n/nl", "app/i18n/el_GR", "app/i18n/es", "app/i18n/vi",
-        "app/i18n/zh_CN"],
-        function(config, bg, cs, de, en, fi, fr, hr, ru, it, eo, sv, nl, el, es, vi, zh) {
+define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
+        "app/i18n/de", "app/i18n/en", "app/i18n/fa", "app/i18n/fi",
+        "app/i18n/fr", "app/i18n/hr", "app/i18n/ru", "app/i18n/it",
+        "app/i18n/eo", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR",
+        "app/i18n/es", "app/i18n/vi", "app/i18n/zh_CN", "app/i18n/zh_CN", "app/i18n/zh_TW"],
+        function(config, bg, cs, da, de, en, fa, fi, fr, hr, ru, it, eo, sv, nl, el, es, vi, zh, zh_CN, zh_TW) {
 
     "use strict";
 
@@ -11,11 +11,13 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
         switch (lang) {
         case "bg":
         case "cs":
+        case "da":
         case "de":
         case "el":
         case "en":
         case "es":
         case "eo":
+        case "fa":
         case "fi":
         case "hr":
         case "it":
@@ -23,6 +25,8 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
         case "nl":
         case "vi":
         case "zh":
+        case "zh_CN":
+        case "zh_TW":
             return function(msgs, n) {
                 return msgs[n === 1 ? 0 : 1];
             };
@@ -54,12 +58,15 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
     }
 
     var catalogue = {
+        bg: bg,
         cs: cs,
+        da: da,
         de: de,
         el: el,
         en: en,
         eo: eo,
         es: es,
+        fa: fa,
         fi: fi,
         fr: fr,
         it: it,
@@ -68,7 +75,9 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/de",
         sv: sv,
         nl: nl,
         vi: vi,
-        zh: zh
+        zh: zh_CN,
+        zh_CN: zh_CN,
+        zh_TW: zh_TW
     };
 
     var plural = pluralforms(lang);

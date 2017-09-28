@@ -1,0 +1,11 @@
+{
+		"name": "isso",
+		"description": "a Disqus alternative",
+		"title": "isso API",
+		"order": ["Thread",  "Comment"],
+		"template": {
+			"withCompare": false
+		}
+
+}
+

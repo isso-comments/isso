@@ -44,7 +44,7 @@ class curl(object):
             self.con = http(host, port, timeout=self.timeout)
             try:
                 self.con.request(self.method, self.path, headers=self.headers)
-            except (httplib.HTTPException, socket.error) as e:
+            except (httplib.HTTPException, socket.error):
                 return None
 
             try:

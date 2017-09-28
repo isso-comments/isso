@@ -7,36 +7,56 @@ import pkg_resources
 
 from distutils.version import LooseVersion as Version
 
+HTML5LIB_VERSION = Version(pkg_resources.get_distribution("html5lib").version)
+HTML5LIB_SIMPLETREE = Version("0.95")
+
 from isso.compat import reduce
 
-import bleach
+import html5lib
+from html5lib.sanitizer import HTMLSanitizer
+from html5lib.serializer import HTMLSerializer
 
 import misaka
 
 
-# attributes found in Sundown's HTML serializer [1] except for <img> tag,
-# because images are not generated anyways.
-#
-# [1] https://github.com/vmg/sundown/blob/master/html/html.c
-ALLOWED_ELEMENTS = ["a", "p", "hr", "br", "ol", "ul", "li",
-                    "pre", "code", "blockquote",
-                    "del", "ins", "strong", "em",
-                    "h1", "h2", "h3", "h4", "h5", "h6",
-                    "table", "thead", "tbody", "th", "td"]
+def Sanitizer(elements, attributes):
 
-# href for <a> and align for <table>
-ALLOWED_ATTRIBUTES = ["align", "href"]
+    class Inner(HTMLSanitizer):
+
+        # attributes found in Sundown's HTML serializer [1] except for <img> tag,
+        # because images are not generated anyways.
+        #
+        # [1] https://github.com/vmg/sundown/blob/master/html/html.c
+        allowed_elements = ["a", "p", "hr", "br", "ol", "ul", "li",
+                            "pre", "code", "blockquote",
+                            "del", "ins", "strong", "em",
+                            "h1", "h2", "h3", "h4", "h5", "h6",
+                            "table", "thead", "tbody", "th", "td"] + elements
+
+        # href for <a> and align for <table>
+        allowed_attributes = ["align", "href"] + attributes
+
+        # remove disallowed tokens from the output
+        def disallowed_token(self, token, token_type):
+            return None
+
+    return Inner
 
 
-class Sanitizer(object):
+def sanitize(tokenizer, document):
 
-    def __init__(self, elements, attributes):
-        self.elements = ALLOWED_ELEMENTS + elements
-        self.attributes = ALLOWED_ATTRIBUTES + attributes
+    parser = html5lib.HTMLParser(tokenizer=tokenizer)
+    domtree = parser.parseFragment(document)
 
-    def sanitize(self, text):
-        return bleach.clean(text, tags=self.elements,
-            attributes=self.attributes, strip=True)
+    if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
+        builder = "etree"
+    else:
+        builder = "simpletree"
+
+    stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
+    serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
+
+    return serializer.render(stream)
 
 
 def Markdown(extensions=("strikethrough", "superscript", "autolink")):
@@ -76,7 +96,7 @@ class Markup(object):
             conf.getlist("allowed-elements"),
             conf.getlist("allowed-attributes"))
 
-        self._render = lambda text: sanitizer.sanitize(parser(text))
+        self._render = lambda text: sanitize(sanitizer, parser(text))
 
     def render(self, text):
         return self._render(text)

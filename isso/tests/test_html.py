@@ -63,6 +63,7 @@ class TestHTML(unittest.TestCase):
             print("Hello, World")
             </code></pre>""")
 
+    @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
     def test_sanitizer(self):
         sanitizer = html.Sanitizer(elements=[], attributes=[])
         examples = [
@@ -73,8 +74,9 @@ class TestHTML(unittest.TestCase):
             ('<script>alert("Onoe")</script>', 'alert("Onoe")')]
 
         for (input, expected) in examples:
-            self.assertEqual(sanitizer.sanitize(input), expected)
+            self.assertEqual(html.sanitize(sanitizer, input), expected)
 
+    @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
     def test_sanitizer_extensions(self):
         sanitizer = html.Sanitizer(elements=["img"], attributes=["src"])
         examples = [
@@ -82,7 +84,7 @@ class TestHTML(unittest.TestCase):
             ('<script src="doge.js"></script>', '')]
 
         for (input, expected) in examples:
-            self.assertEqual(sanitizer.sanitize(input), expected)
+            self.assertEqual(html.sanitize(sanitizer, input), expected)
 
     def test_render(self):
         conf = config.new({
