@@ -7,7 +7,8 @@ export PYBUILD_NAME=isso
 	dh $@ --with python2,sphinxdoc --buildsystem=pybuild
 
 override_dh_auto_build:
-	dh_auto_build RJS="node /usr/lib/nodejs/requirejs/r.js"
+	$(MAKE) RJS="node /usr/lib/nodejs/requirejs/r.js"
+	dh_auto_build
 	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -q -E -bhtml docs build/html
 
 override_dh_sphinxdoc:
