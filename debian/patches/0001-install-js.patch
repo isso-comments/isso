@@ -2,13 +2,12 @@ diff --git a/setup.py b/setup.py
 index e54c110..1239e46 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -41,5 +41,13 @@ setup(
+@@ -41,5 +41,12 @@ setup(
      entry_points={
          'console_scripts':
              ['isso = isso:main'],
 -    }
 +    },
-+    package_dir={'isso': 'isso'},
 +    package_data={'isso': [
 +        'js/embed.min.js',
 +        'js/embed.dev.js',
