@@ -1,4 +1,4 @@
-isso (0.10.6+git20170928+dfsg-1) UNRELEASED; urgency=medium
+isso (0.10.6+git20170928+dfsg-1) unstable; urgency=medium
 
   * New upstream snapshot.
   * Fix minification.
