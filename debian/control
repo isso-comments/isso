@@ -6,17 +6,17 @@ Uploaders: Federico Ceratto <federico.ceratto@gmail.com>
 Build-Depends:
  debhelper (>= 9~),
  dh-python,
- libjs-dojo-core,
  node-uglify (>= 2.4.13-2),
+ node-jade,
+ node-requirejs,
  nodejs,
  python-all,
- python-bleach,
  python-html5lib,
  python-configparser,
  python-setuptools,
  python-sphinx,
  ruby-sass
-Standards-Version: 3.9.8
+Standards-Version: 4.1.1
 X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/
 Vcs-Git: git://anonscm.debian.org/collab-maint/isso.git -b unstable
@@ -29,7 +29,6 @@ Depends:
  ${python:Depends},
  ${sphinxdoc:Depends},
  lsb-base (>= 3.0-6),
- python-bleach,
  python-configparser,
  python-html5lib,
  python-ipaddr,

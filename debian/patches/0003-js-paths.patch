@@ -1,0 +1,42 @@
+diff --git a/isso/js/build.count.js b/isso/js/build.count.js
+index 1c5d266..a894f07 100644
+--- a/isso/js/build.count.js
++++ b/isso/js/build.count.js
+@@ -6,7 +6,7 @@
+         "app/text/css": "app/text/dummy"
+     },
+ 
+-    name: "components/almond/almond",
++    name: "/usr/lib/nodejs/almond.js",
+     include: ['count'],
+     out: "count.min.js",
+     wrap: true
+diff --git a/isso/js/build.embed.js b/isso/js/build.embed.js
+index 0eae344..7155e11 100644
+--- a/isso/js/build.embed.js
++++ b/isso/js/build.embed.js
+@@ -3,7 +3,7 @@
+     mainConfigFile: 'config.js',
+     stubModules: ['text', 'jade'],
+ 
+-    name: "components/almond/almond",
++    name: "/usr/lib/nodejs/almond.js",
+     include: ['embed'],
+     out: "embed.min.js",
+ 
+diff --git a/isso/js/config.js b/isso/js/config.js
+index ab496ce..18a8cba 100644
+--- a/isso/js/config.js
++++ b/isso/js/config.js
+@@ -1,9 +1,9 @@
+ var requirejs = {
+     paths: {
+-        "text": "components/text/text",
++        "text": "/usr/lib/nodejs/requirejs/text",
+         "jade": "lib/requirejs-jade/jade",
+         "libjs-jade": "components/jade/jade",
+-        "libjs-jade-runtime": "components/jade/runtime"
++        "libjs-jade-runtime": "/usr/lib/nodejs/jade/lib/runtime"
+     },
+ 
+     config: {

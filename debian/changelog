@@ -3,6 +3,8 @@ isso (0.10.6+git20170928-1) UNRELEASED; urgency=medium
   * New upstream snapshot.
   * Fix minification.
   * Add missing dependency on python-configobj. Closes: #872713
+  * Drop use of bleach.
+  * Bump standards version to 4.1.1 (no changes).
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 29 Jul 2017 16:35:48 +0000
 
