@@ -1,0 +1,13 @@
+diff --git a/docs/index.html b/docs/index.html
+index 172fbb5..8c25243 100644
+--- a/docs/index.html
++++ b/docs/index.html
+@@ -2,7 +2,7 @@
+ {% set title = "Isso – a commenting server similar to Disqus" %}
+ {% block extrahead %}
+     <script data-isso="//posativ.org/isso/api/"
+-            src="//posativ.org/isso/api/js/embed.min.js"></script>
++            src="/usr/lib/python2.7/dist-packages/isso/js/embed.min.js"></script>
+ {% endblock %}
+ {% block header %}
+ <div class="index">
