@@ -2,7 +2,7 @@ isso (0.10.6+git20170928+dfsg-1) UNRELEASED; urgency=medium
 
   * New upstream snapshot.
   * Fix minification.
-  * Add missing dependency on python-configobj. Closes: #872713
+  * Add missing dependency on python-configobj. Closes: #872713, #876823
   * Drop use of bleach.
   * Bump standards version to 4.1.1 (no changes).
   * Add patch 0004-local-js.patch: Use local copy of embed.min.js
