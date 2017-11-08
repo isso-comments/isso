@@ -1,2 +1,3 @@
 version=3
-https://github.com/posativ/isso/tags .*/v?(\d\S*)\.tar\.gz
+opts=dversionmangle=s/\+(debian|dfsg|ds|deb)(\.?\d+)?$// \
+     https://github.com/posativ/isso/tags .*/v?(\d\S*)\.tar\.gz
