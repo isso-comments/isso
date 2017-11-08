@@ -1,35 +1,12 @@
-language: python
-matrix:
-  allow_failures:
-    - env: TOX_ENV=squeeze
-  include:
-    - python: 2.6
-      env: TOX_ENV=py26
-    - python: 2.7
-      env: TOX_ENV=py27
-    - python: 3.3
-      env: TOX_ENV=py33
-    - python: 3.4
-      env: TOX_ENV=py34
-    - python: 3.5
-      env: TOX_ENV=py35
-    - python: 3.6
-      env: TOX_ENV=py36
-    - python: 2.6
-      env: TOX_ENV=squeeze
-    - python: 2.7
-      env: TOX_ENV=wheezy
-install:
-  - pip install -U pip
-  - pip install tox
-  - pip install pyflakes
-  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
+sudo: required
+language: generic
+
+services:
+  - docker
+
 script:
-  - tox -e $TOX_ENV
-  - python -m pyflakes.__main__ $(git ls-files | grep -E "^isso/.+.py$" | grep -v "^isso/compat.py")
-notifications:
-  irc:
-    channels:
-      - "chat.freenode.net#isso"
-    on_success: change
-    on_failure: always
+  - wget -O- http://travis.debian.net/script.sh | sh -
+
+branches:
+  except:
+    - /^debian\/\d/
