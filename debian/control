@@ -6,9 +6,11 @@ Uploaders: Federico Ceratto <federico.ceratto@gmail.com>
 Build-Depends:
  debhelper (>= 9~),
  dh-python,
+ node-almond,
  node-uglify (>= 2.4.13-2),
  node-jade,
  node-requirejs,
+ node-requirejs-text,
  nodejs,
  python-all,
  python-html5lib,
