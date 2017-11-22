@@ -3,7 +3,7 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         "app/i18n/fr", "app/i18n/hr", "app/i18n/ru", "app/i18n/it",
         "app/i18n/eo", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR",
         "app/i18n/es", "app/i18n/vi", "app/i18n/zh_CN", "app/i18n/zh_CN", "app/i18n/zh_TW", "app/i18n/hu"],
-        function(config, bg, cs, da, de, en, fa, fi, fr, hr, ru, it, eo, sv, nl, el, es, vi, zh, zh_CN, zh_TW) {
+        function(config, bg, cs, da, de, en, fa, fi, fr, hr, hu, ru, it, eo, sv, nl, el, es, vi, zh, zh_CN, zh_TW) {
 
     "use strict";
 
