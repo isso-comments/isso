@@ -7,6 +7,7 @@ import cgi
 import time
 import functools
 
+from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
 
 from werkzeug.http import dump_cookie
@@ -15,11 +16,13 @@ from werkzeug.utils import redirect
 from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
+from werkzeug.contrib.securecookie import SecureCookie
 
 from isso.compat import text_type as str
 
 from isso import utils, local
-from isso.utils import http, parse, JSONResponse as JSON
+from isso.utils import (http, parse, JSONResponse as JSON,
+                        render_template)
 from isso.views import requires
 from isso.utils.hash import sha1
 
@@ -91,12 +94,14 @@ class API(object):
         ('view',    ('GET', '/id/<int:id>')),
         ('edit',    ('PUT', '/id/<int:id>')),
         ('delete',  ('DELETE', '/id/<int:id>')),
-        ('moderate',('GET',  '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
-        ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
+        ('moderate',('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate',('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('demo',    ('GET', '/demo')),
-        ('preview', ('POST', '/preview'))
+        ('preview', ('POST', '/preview')),
+        ('login',   ('POST', '/login')),
+        ('admin',   ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):
@@ -502,7 +507,6 @@ class API(object):
         Yo
     """
     def moderate(self, environ, request, id, action, key):
-
         try:
             id = self.isso.unsign(key, max_age=2**32)
         except (BadSignature, SignatureExpired):
@@ -532,13 +536,21 @@ class API(object):
             with self.isso.lock:
                 self.comments.activate(id)
             self.signal("comments.activate", id)
+            return Response("Yo", 200)
+        elif action == "edit":
+            data = request.get_json()
+            with self.isso.lock:
+                rv = self.comments.update(id, data)
+            for key in set(rv.keys()) - API.FIELDS:
+                rv.pop(key)
+            self.signal("comments.edit", rv)
+            return JSON(rv, 200)
         else:
             with self.isso.lock:
                 self.comments.delete(id)
             self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
             self.signal("comments.delete", id)
-
-        return Response("Yo", 200)
+            return Response("Yo", 200)
 
 
         """
@@ -822,3 +834,46 @@ class API(object):
 
     def demo(self, env, req):
         return redirect(get_current_url(env) + '/index.html')
+
+    def login(self, env, req):
+        data = req.form
+        password = self.isso.conf.get("general", "admin_password")
+        if data['password'] and data['password'] == password:
+            response = redirect(get_current_url(env, host_only=True) + '/admin')
+            cookie = functools.partial(dump_cookie,
+                value=self.isso.sign({"logged": True}),
+                expires=datetime.now() + timedelta(1))
+            response.headers.add("Set-Cookie", cookie("admin-session"))
+            response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
+            return response
+        else:
+            return render_template('login.html')
+
+    def admin(self, env, req):
+        try:
+            data = self.isso.unsign(req.cookies.get('admin-session', ''),
+                                    max_age=60 * 60 * 24)
+        except BadSignature:
+            return render_template('login.html')
+        if not data or not data['logged']:
+            return render_template('login.html')
+        page_size = 100
+        page = int(req.args.get('page', 0))
+        order_by = req.args.get('order_by', None)
+        asc = int(req.args.get('asc', 1))
+        mode = int(req.args.get('mode', 2))
+        comments = self.comments.fetchall(mode=mode, page=page,
+                                          limit=page_size,
+                                          order_by=order_by,
+                                          asc=asc)
+        comments_enriched = []
+        for comment in list(comments):
+            comment['hash'] = self.isso.sign(comment['id'])
+            comments_enriched.append(comment)
+        comment_mode_count = self.comments.count_modes()
+        max_page = int(sum(comment_mode_count.values()) / 100)
+        return render_template('admin.html', comments=comments_enriched,
+                               page=int(page), mode=int(mode),
+                               conf=self.conf, max_page=max_page,
+                               counts=comment_mode_count,
+                               order_by=order_by, asc=asc)

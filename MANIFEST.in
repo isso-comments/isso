@@ -9,3 +9,9 @@ include isso/js/count.min.js
 include isso/js/count.dev.js
 
 include isso/defaults.ini
+
+include isso/templates/admin.html
+include isso/templates/login.html
+include isso/css/admin.css
+include isso/css/isso.css
+include isso/img/isso.svg
