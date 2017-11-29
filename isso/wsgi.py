@@ -19,6 +19,7 @@ except ImportError:
 
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.wrappers import Request as _Request
+from werkzeug.wrappers import BaseResponse as Response
 from werkzeug.datastructures import Headers
 
 from isso.compat import string_types
@@ -144,8 +145,8 @@ class CORSMiddleware(object):
             return start_response(status, headers.to_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":
-            add_cors_headers("200 Ok", [("Content-Type", "text/plain")])
-            return []
+            response = Response()
+            return response(environ, add_cors_headers)
 
         return self.app(environ, add_cors_headers)
 
