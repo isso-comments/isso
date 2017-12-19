@@ -8,4 +8,8 @@ include isso/js/embed.dev.js
 include isso/js/count.min.js
 include isso/js/count.dev.js
 
+include isso/images/facebook-color.png
+include isso/images/googleplus-color.png
+include isso/images/openid-icon-32x32.png
+
 include isso/defaults.ini
