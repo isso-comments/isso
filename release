@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+rm -rf dist venv
+
+virtualenv -p /usr/bin/python2 venv
+source venv/bin/activate
+
+pip install twine
+pip install sphinx
+
+npm install bower requirejs uglify-js jade
+
+(
+    NODE="$(pwd)/node_modules"
+    export PATH="$NODE/bower/bin:$NODE/requirejs/bin:$NODE/jade/bin:$NODE/uglify-js/bin:$PATH"
+    make init
+    make js
+    make man
+)
+
+python setup.py sdist
+
+gpg --detach-sign -a dist/*.tar.gz
+
+echo
+echo "Check output and upload with the following command:"
+echo
+echo venv/bin/twine upload dist/*.tar.gz dist/*.asc

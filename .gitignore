@@ -113,6 +113,9 @@ celerybeat-schedule
 venv/
 ENV/
 
+# bower
+node_modules/
+
 # Spyder project settings
 .spyderproject
 
