@@ -11,15 +11,15 @@ if (3, 0) <= sys.version_info < (3, 3):
     raise SystemExit("Python 3.0, 3.1 and 3.2 are not supported")
 
 setup(
-    name='isso',
-    version='0.10.7.dev0',
-    author='Martin Zimmermann',
-    author_email='info@posativ.org',
+    name='isso-social',
+    version='0.10.7.social0',
+    author='Pelle Nilsson',
+    author_email='pellenilsson@fastmail.fm',
     packages=find_packages(),
     package_data={'': ['images/*']},
     include_package_data=True,
     zip_safe=False,
-    url='https://github.com/posativ/isso/',
+    url='https://github.com/pellenilsson/isso',
     license='MIT',
     description='lightweight Disqus alternative',
     classifiers=[
