@@ -12,7 +12,7 @@ if (3, 0) <= sys.version_info < (3, 3):
 
 setup(
     name='isso-social',
-    version='0.10.7.social0',
+    version='0.10.7.3',
     author='Pelle Nilsson',
     author_email='pellenilsson@fastmail.fm',
     packages=find_packages(),
