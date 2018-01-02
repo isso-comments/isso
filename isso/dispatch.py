@@ -25,7 +25,7 @@ class Dispatcher(DispatcherMiddleware):
     def __init__(self, *confs):
         self.isso = {}
 
-        default = os.path.join(dist.location, dist.project_name, "defaults.ini")
+        default = os.path.join(dist.location, "isso", "defaults.ini")
         for i, path in enumerate(confs):
             conf = config.load(default, path)
 

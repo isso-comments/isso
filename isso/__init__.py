@@ -28,7 +28,7 @@
 from __future__ import print_function, unicode_literals
 
 import pkg_resources
-dist = pkg_resources.get_distribution("isso")
+dist = pkg_resources.get_distribution("isso-social")
 
 # check if exectuable is `isso` and gevent is available
 import sys
@@ -226,7 +226,7 @@ def main():
     serve = subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = config.load(join(dist.location, dist.project_name, "defaults.ini"), args.conf)
+    conf = config.load(join(dist.location, "isso", "defaults.ini"), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

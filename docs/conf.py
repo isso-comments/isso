@@ -21,7 +21,7 @@ from os.path import join, dirname
 sys.path.insert(0, join(dirname(__file__), "_isso/"))
 
 try:
-    dist = pkg_resources.get_distribution("isso")
+    dist = pkg_resources.get_distribution("isso-social")
 except pkg_resources.DistributionNotFound:
     dist = type("I'm a Version", (object, ), {})
     with io.open(join(dirname(__file__), "../setup.py")) as fp:
