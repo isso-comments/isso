@@ -186,6 +186,7 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
     wrapper.append(partial(SharedDataMiddleware, exports={
         '/js': join(dirname(__file__), 'js/'),
         '/css': join(dirname(__file__), 'css/'),
+        '/img': join(dirname(__file__), 'img/'),
         '/demo': join(dirname(__file__), 'demo/')
         }))
 
@@ -220,7 +221,8 @@ def main():
     imprt.add_argument("--empty-id", dest="empty_id", action="store_true",
                        help="workaround for weird Disqus XML exports, #135")
 
-    serve = subparser.add_parser("run", help="run server")
+    # run Isso as stand-alone server
+    subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
     conf = config.load(join(dist.location, dist.project_name, "defaults.ini"), args.conf)

@@ -20,8 +20,8 @@ define(["app/i18n"], function(i18n) {
             secs = 0;
         }
 
-        var mins = Math.ceil(secs / 60), hours = Math.ceil(mins / 60),
-            days = Math.ceil(hours / 24);
+        var mins = Math.floor(secs / 60), hours = Math.floor(mins / 60),
+            days = Math.floor(hours / 24);
 
         return secs  <=  45 && i18n.translate("date-now")  ||
                secs  <=  90 && i18n.pluralize("date-minute", 1) ||
@@ -31,11 +31,11 @@ define(["app/i18n"], function(i18n) {
                hours <=  36 && i18n.pluralize("date-day", 1) ||
                days  <=   5 && i18n.pluralize("date-day", days) ||
                days  <=   8 && i18n.pluralize("date-week", 1) ||
-               days  <=  21 && i18n.pluralize("date-week", Math.ceil(days / 7)) ||
+               days  <=  21 && i18n.pluralize("date-week", Math.floor(days / 7)) ||
                days  <=  45 && i18n.pluralize("date-month", 1) ||
-               days  <= 345 && i18n.pluralize("date-month", Math.ceil(days / 30)) ||
+               days  <= 345 && i18n.pluralize("date-month", Math.floor(days / 30)) ||
                days  <= 547 && i18n.pluralize("date-year", 1) ||
-                               i18n.pluralize("date-year", Math.ceil(days / 365.25));
+                               i18n.pluralize("date-year", Math.floor(days / 365.25));
     };
 
     var HTMLEntity = {
