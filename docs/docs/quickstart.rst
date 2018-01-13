@@ -148,9 +148,8 @@ quickstart, check out :doc:`configuration/server` and
 :doc:`configuration/client` for more information. For further website
 integration, see :doc:`extras/advanced-integration`.
 
-To launch Isso automatically, check the :ref:`init-scripts` section from the
-installation guide. A different approach to deploy a web application is
-written here: :doc:`Deployment of Isso <extras/deployment>`.
+A different approach to deploy a web application is written here: 
+:doc:`Deployment of Isso <extras/deployment>`.
 
 .. _here: https://posativ.org/isso/docs/install/#init-scripts
 .. _Nginx: http://nginx.org/
