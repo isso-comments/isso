@@ -213,7 +213,8 @@ Init scripts to run Isso as a service (check your distribution's documentation
 for your init-system; e.g. Debian uses SysVinit, Fedora uses systemd) if you
 don't use FastCGi or uWSGI:
 
--  systemd (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
+-  Systemd (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
+-  Systemd (Isso): https://snorl.ax/try/2016/07/12/start-to-use-isso/#systemd-init
 -  SysVinit (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
 -  OpenBSD: https://gist.github.com/noqqe/7397719
 -  FreeBSD: https://gist.github.com/ckoepp/52f6f0262de04cee1b88ef4a441e276d
