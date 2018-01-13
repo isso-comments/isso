@@ -90,6 +90,11 @@ To run Isso, simply execute:
     $ isso -c /path/to/isso.cfg run
     2013-11-25 15:31:34,773 INFO: connected to HTTP server
 
+When you see the log with no error, simply quit the process and make an init 
+script for it, you can refer to some examples here_. Then, be sure to start it 
+and check the status. After seeing the same log like the above, you can enable
+the service so it'll automatically start every time you reboot into the server.
+
 Next, we configure Nginx_ to proxy Isso. Do not run Isso on a public interface!
 A popular but often error-prone (because of CORS_) setup to host Isso uses a
 dedicated domain such as ``comments.example.tld``.
@@ -147,5 +152,6 @@ To launch Isso automatically, check the :ref:`init-scripts` section from the
 installation guide. A different approach to deploy a web application is
 written here: :doc:`Deployment of Isso <extras/deployment>`.
 
+.. _here: https://posativ.org/isso/docs/install/#init-scripts
 .. _Nginx: http://nginx.org/
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
