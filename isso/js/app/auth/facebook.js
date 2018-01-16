@@ -3,8 +3,17 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
     "use strict";
 
     var isso = null;
-    var loadedSDK = false;
-    var loggedIn = false;
+
+    var states = {
+        inactive: 0,
+        loadingSDK: 1,
+        loggedOut: 2,
+        loggedIn: 3,
+    };
+
+    var state = states.inactive;
+    var manuallyLoadedSDK = false;
+
     var authorData = null;
     var token = null;
 
@@ -12,21 +21,38 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
         if (response.status === "connected") {
             token = response.authResponse.accessToken;
             FB.api("/me", {fields: ["name", "email"]}, function(response) {
-                loggedIn = true;
+                state = states.loggedIn;
                 authorData = {
                     uid: response["id"],
                     name: response["name"],
                     email: response["email"] || "",
                 };
+                localStorage.setItem("login_method", JSON.stringify("facebook"));
                 isso.updateAllPostboxes();
+                isso.clearPostboxNote();
             });
         } else {
-            loggedIn = false;
+            if (state === states.loadingSDK && manuallyLoadedSDK) {
+                isso.showPostboxNote("Facebook");
+            } else if (state === states.loggedIn) {
+                localStorage.removeItem("login_method");
+            }
+            state = states.loggedOut;
             authorData = null;
             token = null;
             isso.updateAllPostboxes();
         }
+    }
 
+    var loadSDK = function() {
+        state = states.loadingSDK;
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, "script", "facebook-jssdk"));
     }
 
     var init = function(isso_ref) {
@@ -45,37 +71,28 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
                 version    : "v2.5" // use graph api version 2.5
             });
 
-            loadedSDK = true;
-
             FB.getLoginStatus(function(response) {
                 statusChangeCallback(response);
             });
         };
 
-        // Load Facebook SDK
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, "script", "facebook-jssdk"));
-
+        var method = JSON.parse(localStorage.getItem("login_method"));
+        if (method == "facebook") {
+            loadSDK();
+        }
     }
 
     var updatePostbox = function(el) {
-        if (loadedSDK) {
-            if (loggedIn) {
-                $(".auth-not-loggedin", el).hide();
-                $(".auth-loggedin-facebook", el).showInline();
-                $(".auth-facebook-name", el).innerHTML = authorData.name;
-                $(".isso-postbox .avatar", el).setAttribute("src", "//graph.facebook.com/" + authorData.uid + "/picture");
-                $(".isso-postbox .avatar", el).show();
-            } else {
-                $(".auth-loggedin-facebook", el).hide();
-                $(".login-link-facebook", el).showInline();
-                $(".login-link-facebook > img", el).setAttribute("src", api.endpoint + "/images/facebook-color.png");
-            }
+        if (state === states.loggedIn) {
+            $(".auth-not-loggedin", el).hide();
+            $(".auth-loggedin-facebook", el).showInline();
+            $(".auth-facebook-name", el).innerHTML = authorData.name;
+            $(".isso-postbox .avatar", el).setAttribute("src", "//graph.facebook.com/" + authorData.uid + "/picture");
+            $(".isso-postbox .avatar", el).show();
+        } else {
+            $(".auth-loggedin-facebook", el).hide();
+            $(".login-link-facebook", el).showInline();
+            $(".login-link-facebook > img", el).setAttribute("src", api.endpoint + "/images/facebook-color.png");
         }
     }
 
@@ -90,14 +107,19 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
             });
         });
         $(".login-link-facebook", el).on("click", function() {
-            FB.login(function(response) {
-                statusChangeCallback(response);
-            }, {scope: 'public_profile,email'});
+            if (state === states.inactive) {
+                manuallyLoadedSDK = true;
+                loadSDK();
+            } else if (state === states.loggedOut)  {
+                FB.login(function(response) {
+                    statusChangeCallback(response);
+                }, {scope: 'public_profile,email'});
+            }
         });
     }
 
     var isLoggedIn = function() {
-        return loggedIn;
+        return state === states.loggedIn;
     }
 
     var getAuthorData = function() {

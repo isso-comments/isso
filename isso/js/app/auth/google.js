@@ -3,8 +3,17 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
     "use strict";
 
     var isso = null;
-    var loadedSDK = false;
-    var loggedIn = false;
+
+    var states = {
+        inactive: 0,
+        loadingSDK: 1,
+        loggedOut: 2,
+        loggedIn: 3,
+    };
+
+    var state = states.inactive;
+    var manuallyLoadedSDK = false;
+
     var authorData = null;
     var gAuth = null;
 
@@ -15,7 +24,38 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
 
         isso = isso_ref;
 
-        // Load Google API
+        var method = JSON.parse(localStorage.getItem("login_method"));
+        if (method == "google") {
+            loadSDK();
+        }
+    }
+
+    var signedinChanged = function(signedin) {
+        if (signedin) {
+            var user = gAuth.currentUser.get();
+            var profile = user.getBasicProfile();
+            state = states.loggedIn;
+            authorData = {
+                uid: profile.getId(),
+                name: profile.getName(),
+                email: profile.getEmail() || "",
+                pictureURL: profile.getImageUrl(),
+                idToken: user.getAuthResponse().id_token,
+            };
+            localStorage.setItem("login_method", JSON.stringify("google"));
+            isso.updateAllPostboxes();
+            isso.clearPostboxNote();
+        } else {
+            if (state === states.loggedIn) {
+                localStorage.removeItem("login_method");
+            }
+            state = states.loggedOut;
+            authorData = null;
+            isso.updateAllPostboxes();
+        }
+    }
+
+    var loadSDK = function() {
         var gScriptEl = document.createElement("script");
         gScriptEl.src = "https://apis.google.com/js/platform.js";
         document.head.appendChild(gScriptEl);
@@ -26,46 +66,26 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
                     cookiepolicy: "single_host_origin",
                 });
                 gAuth.isSignedIn.listen(signedinChanged)
-                loadedSDK = true;
+                state = states.loggedOut;
+                if (manuallyLoadedSDK) {
+                    isso.showPostboxNote("Google+");
+                }
                 isso.updateAllPostboxes();
             });
         });
-
-    }
-
-    var signedinChanged = function(signedin) {
-        if (signedin) {
-            var user = gAuth.currentUser.get();
-            var profile = user.getBasicProfile();
-            loggedIn = true;
-            authorData = {
-                uid: profile.getId(),
-                name: profile.getName(),
-                email: profile.getEmail() || "",
-                pictureURL: profile.getImageUrl(),
-                idToken: user.getAuthResponse().id_token,
-            };
-            isso.updateAllPostboxes();
-        } else {
-            loggedIn = false;
-            authorData = null;
-            isso.updateAllPostboxes();
-        }
     }
 
     var updatePostbox = function(el) {
-        if (loadedSDK) {
-            if (loggedIn) {
-                $(".auth-not-loggedin", el).hide();
-                $(".auth-loggedin-google", el).showInline();
-                $(".auth-google-name", el).innerHTML = authorData.name;
-                $(".isso-postbox .avatar", el).setAttribute("src", authorData.pictureURL);
-                $(".isso-postbox .avatar", el).show();
-            } else {
-                $(".auth-loggedin-google", el).hide();
-                $(".login-link-google", el).showInline();
-                $(".login-link-google > img", el).setAttribute("src", api.endpoint + "/images/googleplus-color.png");
-            }
+        if (state === states.loggedIn) {
+            $(".auth-not-loggedin", el).hide();
+            $(".auth-loggedin-google", el).showInline();
+            $(".auth-google-name", el).innerHTML = authorData.name;
+            $(".isso-postbox .avatar", el).setAttribute("src", authorData.pictureURL);
+            $(".isso-postbox .avatar", el).show();
+        } else {
+            $(".auth-loggedin-google", el).hide();
+            $(".login-link-google", el).showInline();
+            $(".login-link-google > img", el).setAttribute("src", api.endpoint + "/images/googleplus-color.png");
         }
     }
 
@@ -78,12 +98,17 @@ define(["app/dom", "app/config", "app/api"], function($, config, api) {
             gAuth.signOut();
         });
         $(".login-link-google", el).on("click", function() {
-            gAuth.signIn();
+            if (state === states.inactive) {
+                manuallyLoadedSDK = true;
+                loadSDK();
+            } else if (state === states.loggedOut) {
+                gAuth.signIn();
+            }
         });
     }
 
     var isLoggedIn = function() {
-        return loggedIn;
+        return state === states.loggedIn;
     }
 
     var getAuthorData = function() {

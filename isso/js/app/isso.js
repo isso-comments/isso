@@ -156,6 +156,19 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         });
     }
 
+    var showPostboxNote = function(msg) {
+        $.eachByClass("isso-postbox", function(el) {
+            $(".login-note-service", el).innerHTML = msg;
+            $(".login-note", el).visible();
+        });
+    }
+
+    var clearPostboxNote = function() {
+        $.eachByClass("isso-postbox", function(el) {
+            $(".login-note", el).invisible();
+        });
+    }
+
     var insert_loader = function(comment, lastcreated) {
         var entrypoint;
         if (comment.id === null) {
@@ -474,6 +487,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         insert: insert,
         insert_loader: insert_loader,
         updateAllPostboxes: updateAllPostboxes,
+        showPostboxNote: showPostboxNote,
+        clearPostboxNote: clearPostboxNote,
         Postbox: Postbox
     };
 });

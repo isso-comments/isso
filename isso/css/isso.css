@@ -278,6 +278,12 @@
     font-size: 0.6em;
     color: gray;
 }
+.isso-postbox > .form-wrapper > .login-note {
+    visibility: hidden;
+    margin-top: 0px;
+    color: #008;
+    font-weight: bold;
+}
 .isso-openid-popup {
     font-family: sans-serif;
     background-color: #777;
@@ -305,7 +311,6 @@
 .isso-openid-intro-line {
     font-size: 0.90em;
     font-weight: bold;
-
 }
 .isso-openid-login-line {
     clear: both;
