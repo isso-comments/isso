@@ -16,7 +16,6 @@ from werkzeug.utils import redirect
 from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
-from werkzeug.contrib.securecookie import SecureCookie
 
 from isso.compat import text_type as str
 
