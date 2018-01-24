@@ -79,7 +79,7 @@ Install from PyPi
 Requirements
 ^^^^^^^^^^^^
 
-- Python 2.6, 2.7 or 3.3+ (+ devel headers)
+- Python 2.7 or 3.4+ (+ devel headers)
 - SQLite 3.3.8 or later
 - a working C compiler
 
@@ -157,7 +157,7 @@ Install from Source
 If you want to hack on Isso or track down issues, there's an alternate
 way to set up Isso. It requires a lot more dependencies and effort:
 
-- Python 2.6, 2.7 or 3.3+ (+ devel headers)
+- Python 2.7 or 3.4+ (+ devel headers)
 - Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
