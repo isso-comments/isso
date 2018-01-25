@@ -3,7 +3,7 @@
 import time
 
 from isso.utils import Bloomfilter
-from isso.compat import memoryview  # required for Python 2.6
+# from isso.compat import memoryview  # required for Python 2.6
 
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
