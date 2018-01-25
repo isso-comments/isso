@@ -10,7 +10,7 @@ except NameError:        # Python 3
     string_types = (str, )
 
 if not PY2K:
-    buffer = memoryview
+    buffer = memoryview  # noqa: F821 undefined name 'memoryview' in Python 2.6
     filter, map, zip = filter, map, zip
     iteritems = lambda dikt: iter(dikt.items())  # noqa: E731
     from functools import reduce
