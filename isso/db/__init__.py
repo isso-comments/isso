@@ -9,7 +9,7 @@ from collections import defaultdict
 
 logger = logging.getLogger("isso")
 
-from isso.compat import memoryview  # required for Python 2.6
+# from isso.compat import memoryview  # required for Python 2.6
 
 from isso.db.comments import Comments
 from isso.db.threads import Threads
