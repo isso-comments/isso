@@ -10,9 +10,9 @@ except NameError:        # Python 3
     string_types = (str, )
 
 try:
-    memoryview           # Python 2.7 and Python 3
+    memoryview = memoryview  # Python 2.7 and Python 3
 except NameError:
-    memoryview = buffer  # Python 2.6
+    memoryview = buffer      # Python 2.6
 
 if not PY2K:
     filter, map, zip = filter, map, zip
