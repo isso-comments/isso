@@ -5,6 +5,7 @@ import time
 from isso.utils import Bloomfilter
 from isso.compat import buffer
 
+
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
     comment-related actions.  Here's a short scheme overview:
