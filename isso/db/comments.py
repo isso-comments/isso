@@ -3,8 +3,7 @@
 import time
 
 from isso.utils import Bloomfilter
-from isso.compat import buffer
-
+from isso.compat import memoryview  # required for Python 2.6
 
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
@@ -58,7 +57,7 @@ class Comments:
             'FROM threads WHERE threads.uri = ?;'], (
             c.get('parent'),
             c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
-            c['text'], c.get('author'), c.get('email'), c.get('website'), buffer(
+            c['text'], c.get('author'), c.get('email'), c.get('website'), memoryview(
                 Bloomfilter(iterable=[c['remote_addr']]).array),
             uri)
         )
@@ -256,7 +255,7 @@ class Comments:
             'UPDATE comments SET',
             '    likes = likes + 1,' if upvote else 'dislikes = dislikes + 1,',
             '    voters = ?'
-            'WHERE id=?;'], (buffer(bf.array), id))
+            'WHERE id=?;'], (memoryview(bf.array), id))
 
         if upvote:
             return {'likes': likes + 1, 'dislikes': dislikes}
