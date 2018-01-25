@@ -18,6 +18,7 @@ define({
     "comment-anonymous": "Anonym",
     "comment-hidden": "{{ n }} Gömd",
     "markdown-note": " stöds.",
+    "login-note": "-motorn laddad, klick på ikonen igen för att logga in.",
     "date-now": "just nu",
     "date-minute": "en minut sedan\n{{ n }} minuter sedan",
     "date-hour": "en timme sedan\n{{ n }} timmar sedan",

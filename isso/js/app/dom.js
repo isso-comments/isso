@@ -82,6 +82,14 @@ define(function() {
             node.style.display = "none";
         };
 
+        this.visible = function() {
+            node.style.visibility = "visible";
+        };
+
+        this.invisible = function() {
+            node.style.visibility = "hidden";
+        };
+
         this.setText = function(text) {
             node.textContent = text;
         };

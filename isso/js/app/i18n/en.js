@@ -21,6 +21,7 @@ define({
     "comment-hidden": "{{ n }} Hidden",
 
     "markdown-note": " is supported.",
+    "login-note": " engine loaded, click icon again to log in.",
 
     "date-now": "right now",
     "date-minute": "a minute ago\n{{ n }} minutes ago",
