@@ -9,7 +9,7 @@ from collections import defaultdict
 
 logger = logging.getLogger("isso")
 
-from isso.compat import buffer
+from isso.compat import memoryview  # required for Python 2.6
 
 from isso.db.comments import Comments
 from isso.db.threads import Threads
@@ -77,7 +77,7 @@ class SQLite3:
         if self.version == 0:
 
             from isso.utils import Bloomfilter
-            bf = buffer(Bloomfilter(iterable=["127.0.0.0"]).array)
+            bf = memoryview(Bloomfilter(iterable=["127.0.0.0"]).array)
 
             with sqlite3.connect(self.path) as con:
                 con.execute('UPDATE comments SET voters=?', (bf, ))
