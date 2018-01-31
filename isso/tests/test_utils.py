@@ -12,7 +12,8 @@ class TestUtils(unittest.TestCase):
 
         examples = [
             (u'12.34.56.78', u'12.34.56.0'),
-            (u'1234:5678:90ab:cdef:fedc:ba09:8765:4321', u'1234:5678:90ab:0000:0000:0000:0000:0000'),
+            (u'1234:5678:90ab:cdef:fedc:ba09:8765:4321',
+             u'1234:5678:90ab:0000:0000:0000:0000:0000'),
             (u'::ffff:127.0.0.1', u'127.0.0.0')]
 
         for (addr, anonymized) in examples:
@@ -56,4 +57,4 @@ class TestParse(unittest.TestCase):
             """), ('test', 'Test'))
 
         self.assertEqual(parse.thread('<section id="isso-thread" data-isso-id="Fuu.">'),
-                                      ('Fuu.', 'Untitled.'))
+                         ('Fuu.', 'Untitled.'))

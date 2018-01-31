@@ -66,10 +66,10 @@ class TestDBMigration(unittest.TestCase):
         tree = {
             1: None,
             2: None,
-               3: 2,
-                  4: 3,
-                  7: 3,
-               5: 2,
+            3: 2,
+            4: 3,
+            7: 3,
+            5: 2,
             6: None
         }
 
@@ -91,7 +91,8 @@ class TestDBMigration(unittest.TestCase):
                         "    dislikes INTEGER DEFAULT 0,"
                         "    voters BLOB)")
 
-            con.execute("INSERT INTO threads (uri, title) VALUES (?, ?)", ("/", "Test"))
+            con.execute(
+                "INSERT INTO threads (uri, title) VALUES (?, ?)", ("/", "Test"))
             for (id, parent) in iteritems(tree):
                 con.execute("INSERT INTO comments ("
                             "   id, parent, created)"
@@ -108,13 +109,14 @@ class TestDBMigration(unittest.TestCase):
         flattened = list(iteritems({
             1: None,
             2: None,
-                3: 2,
-                4: 2,
-                5: 2,
+            3: 2,
+            4: 2,
+            5: 2,
             6: None,
             7: 2
         }))
 
         with sqlite3.connect(self.path) as con:
-            rv = con.execute("SELECT id, parent FROM comments ORDER BY created").fetchall()
+            rv = con.execute(
+                "SELECT id, parent FROM comments ORDER BY created").fetchall()
             self.assertEqual(flattened, rv)

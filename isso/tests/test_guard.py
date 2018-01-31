@@ -68,7 +68,8 @@ class TestGuard(unittest.TestCase):
 
         alice = self.makeClient("1.2.3.4", 2)
         for i in range(2):
-            self.assertEqual(alice.post("/new?uri=test", data=self.data).status_code, 201)
+            self.assertEqual(alice.post(
+                "/new?uri=test", data=self.data).status_code, 201)
 
         bob.application.db.execute([
             "UPDATE comments SET",
@@ -76,7 +77,8 @@ class TestGuard(unittest.TestCase):
             "WHERE remote_addr = '127.0.0.0'"
         ])
 
-        self.assertEqual(bob.post("/new?uri=test", data=self.data).status_code, 201)
+        self.assertEqual(
+            bob.post("/new?uri=test", data=self.data).status_code, 201)
 
     def testDirectReply(self):
 
@@ -95,11 +97,13 @@ class TestGuard(unittest.TestCase):
 
     def testSelfReply(self):
 
-        payload = lambda id: json.dumps({"text": "...", "parent": id})
+        def payload(id): return json.dumps({"text": "...", "parent": id})
 
         client = self.makeClient("127.0.0.1", self_reply=False)
-        self.assertEqual(client.post("/new?uri=test", data=self.data).status_code, 201)
-        self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 403)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=self.data).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload(1)).status_code, 403)
 
         client.application.db.execute([
             "UPDATE comments SET",
@@ -107,39 +111,55 @@ class TestGuard(unittest.TestCase):
             "WHERE id = 1"
         ], (client.application.conf.getint("general", "max-age"), ))
 
-        self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload(1)).status_code, 201)
 
         client = self.makeClient("128.0.0.1", ratelimit=3, self_reply=False)
-        self.assertEqual(client.post("/new?uri=test", data=self.data).status_code, 201)
-        self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 201)
-        self.assertEqual(client.post("/new?uri=test", data=payload(2)).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=self.data).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload(1)).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload(2)).status_code, 201)
 
     def testRequireEmail(self):
 
-        payload = lambda email: json.dumps({"text": "...", "email": email})
+        def payload(email): return json.dumps({"text": "...", "email": email})
 
         client = self.makeClient("127.0.0.1", ratelimit=4, require_email=False)
-        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_email=True)
+        client_strict = self.makeClient(
+            "127.0.0.2", ratelimit=4, require_email=True)
 
         # if we don't require email
-        self.assertEqual(client.post("/new?uri=test", data=payload("")).status_code, 201)
-        self.assertEqual(client.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload("")).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload("test@me.more")).status_code, 201)
 
         # if we do require email
-        self.assertEqual(client_strict.post("/new?uri=test", data=payload("")).status_code, 403)
-        self.assertEqual(client_strict.post("/new?uri=test", data=payload("test@me.more")).status_code, 201)
+        self.assertEqual(client_strict.post(
+            "/new?uri=test", data=payload("")).status_code, 403)
+        self.assertEqual(client_strict.post(
+            "/new?uri=test", data=payload("test@me.more")).status_code, 201)
 
     def testRequireAuthor(self):
 
-        payload = lambda author: json.dumps({"text": "...", "author": author})
+        def payload(author): return json.dumps(
+            {"text": "...", "author": author})
 
-        client = self.makeClient("127.0.0.1", ratelimit=4, require_author=False)
-        client_strict = self.makeClient("127.0.0.2", ratelimit=4, require_author=True)
+        client = self.makeClient(
+            "127.0.0.1", ratelimit=4, require_author=False)
+        client_strict = self.makeClient(
+            "127.0.0.2", ratelimit=4, require_author=True)
 
         # if we don't require author
-        self.assertEqual(client.post("/new?uri=test", data=payload("")).status_code, 201)
-        self.assertEqual(client.post("/new?uri=test", data=payload("pipo author")).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload("")).status_code, 201)
+        self.assertEqual(client.post(
+            "/new?uri=test", data=payload("pipo author")).status_code, 201)
 
         # if we do require author
-        self.assertEqual(client_strict.post("/new?uri=test", data=payload("")).status_code, 403)
-        self.assertEqual(client_strict.post("/new?uri=test", data=payload("pipo author")).status_code, 201)
+        self.assertEqual(client_strict.post(
+            "/new?uri=test", data=payload("")).status_code, 403)
+        self.assertEqual(client_strict.post(
+            "/new?uri=test", data=payload("pipo author")).status_code, 201)

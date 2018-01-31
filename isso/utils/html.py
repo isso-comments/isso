@@ -54,7 +54,8 @@ def sanitize(tokenizer, document):
         builder = "simpletree"
 
     stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
-    serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
+    serializer = HTMLSerializer(
+        quote_attr_values=True, omit_optional_tags=False)
 
     return serializer.render(stream)
 

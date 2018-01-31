@@ -12,11 +12,13 @@ except NameError:        # Python 3
 if not PY2K:
     buffer = memoryview
     filter, map, zip = filter, map, zip
-    iteritems = lambda dikt: iter(dikt.items())  # noqa: E731
+
+    def iteritems(dikt): return iter(dikt.items())  # noqa: E731
     from functools import reduce
 else:
     buffer = buffer
     from itertools import ifilter, imap, izip
     filter, map, zip = ifilter, imap, izip
-    iteritems = lambda dikt: dikt.iteritems()   # noqa: E731
+
+    def iteritems(dikt): return dikt.iteritems()   # noqa: E731
     reduce = reduce

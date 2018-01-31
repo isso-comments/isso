@@ -37,5 +37,7 @@ class Dummy:
         pass
 
 
-curl = lambda method, host, path: Dummy()
-loads = lambda data: json.loads(data.decode('utf-8'))
+def curl(method, host, path): return Dummy()
+
+
+def loads(data): return json.loads(data.decode('utf-8'))

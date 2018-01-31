@@ -13,11 +13,12 @@ matrix:
       env: TOX_ENV=wheezy
 install:
   - pip install -U pip
-  - pip install pyflakes tox
+  - pip install flake8 tox
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
   - tox -e $TOX_ENV
-  - python -m pyflakes.__main__ $(git ls-files | grep -E "^isso/.+.py$" | grep -v "^isso/compat.py")
+  - IGNORE=E226,E241,E265,E402,E501,E704
+  - flake8 . --count --ignore=${IGNORE} --max-line-length=127 --show-source --statistics
 notifications:
   irc:
     channels:

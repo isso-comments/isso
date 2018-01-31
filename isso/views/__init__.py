@@ -40,7 +40,8 @@ class requires:
             try:
                 kwargs[self.param] = self.type(req.args[self.param])
             except TypeError:
-                raise BadRequest("invalid type for %s, expected %s" % (self.param, self.type))
+                raise BadRequest("invalid type for %s, expected %s" %
+                                 (self.param, self.type))
 
             return func(cls, env, req, *args, **kwargs)
 

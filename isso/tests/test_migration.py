@@ -29,7 +29,8 @@ class TestMigration(unittest.TestCase):
         db = SQLite3(xxx.name, conf)
         Disqus(db, xml).migrate()
 
-        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 2)
+        self.assertEqual(
+            len(db.execute("SELECT id FROM comments").fetchall()), 2)
 
         self.assertEqual(db.threads["/"]["title"], "Hello, World!")
         self.assertEqual(db.threads["/"]["id"], 1)
@@ -57,8 +58,10 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(db.threads["/?p=4"]["title"], "...")
         self.assertEqual(db.threads["/?p=4"]["id"], 2)
 
-        self.assertEqual(len(db.execute("SELECT id FROM threads").fetchall()), 2)
-        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 7)
+        self.assertEqual(
+            len(db.execute("SELECT id FROM threads").fetchall()), 2)
+        self.assertEqual(
+            len(db.execute("SELECT id FROM comments").fetchall()), 7)
 
         first = db.comments.get(1)
         self.assertEqual(first["author"], "Ohai")
