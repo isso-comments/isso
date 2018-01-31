@@ -89,11 +89,11 @@ class Bloomfilter:
 
     def add(self, key):
         for i in self.get_probes(key):
-            self.array[i//8] |= 2 ** (i%8)
+            self.array[i//8] |= 2 ** (i % 8)
         self.elements += 1
 
     def __contains__(self, key):
-        return all(self.array[i//8] & (2 ** (i%8)) for i in self.get_probes(key))
+        return all(self.array[i//8] & (2 ** (i % 8)) for i in self.get_probes(key))
 
     def __len__(self):
         return self.elements
@@ -117,6 +117,7 @@ def render_template(template_name, **context):
                                  '..', 'templates')
     jinja_env = Environment(loader=FileSystemLoader(template_path),
                             autoescape=True)
+
     def datetimeformat(value):
         return datetime.fromtimestamp(value).strftime('%H:%M / %d-%m-%Y')
 

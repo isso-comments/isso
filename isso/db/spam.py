@@ -50,7 +50,7 @@ class Guard:
                 return False, "%i direct responses to %s" % (len(rv), uri)
 
         # block replies to self unless :param:`reply-to-self` is enabled
-        elif self.conf.getboolean("reply-to-self") == False:
+        elif self.conf.getboolean("reply-to-self") is False:
             rv = self.db.execute([
                 'SELECT id FROM comments WHERE'
                 '    remote_addr = ?',

@@ -35,7 +35,8 @@ import sys
 
 if sys.argv[0].startswith("isso"):
     try:
-        import gevent.monkey; gevent.monkey.patch_all()
+        import gevent.monkey
+        gevent.monkey.patch_all()
     except ImportError:
         pass
 
@@ -87,7 +88,8 @@ class Isso(object):
 
         self.conf = conf
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
-        self.signer = URLSafeTimedSerializer(self.db.preferences.get("session-key"))
+        self.signer = URLSafeTimedSerializer(
+            self.db.preferences.get("session-key"))
         self.markup = html.Markup(conf.section('markup'))
         self.hasher = hash.new(conf.section("hash"))
 
@@ -122,7 +124,8 @@ class Isso(object):
         local.request = request
 
         local.host = wsgi.host(request.environ)
-        local.origin = origin(self.conf.getiter("general", "host"))(request.environ)
+        local.origin = origin(self.conf.getiter(
+            "general", "host"))(request.environ)
 
         adapter = self.urls.bind_to_environ(request.environ)
 
@@ -136,7 +139,8 @@ class Isso(object):
             except HTTPException as e:
                 return e
             except Exception:
-                logger.exception("%s %s", request.method, request.environ["PATH_INFO"])
+                logger.exception("%s %s", request.method,
+                                 request.environ["PATH_INFO"])
                 return InternalServerError()
             else:
                 return response
@@ -181,19 +185,19 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     if isso.conf.getboolean("server", "profile"):
         wrapper.append(partial(ProfilerMiddleware,
-            sort_by=("cumulative", ), restrictions=("isso/(?!lib)", 10)))
+                               sort_by=("cumulative", ), restrictions=("isso/(?!lib)", 10)))
 
     wrapper.append(partial(SharedDataMiddleware, exports={
         '/js': join(dirname(__file__), 'js/'),
         '/css': join(dirname(__file__), 'css/'),
         '/img': join(dirname(__file__), 'img/'),
         '/demo': join(dirname(__file__), 'demo/')
-        }))
+    }))
 
     wrapper.append(partial(wsgi.CORSMiddleware,
-        origin=origin(isso.conf.getiter("general", "host")),
-        allowed=("Origin", "Referer", "Content-Type"),
-        exposed=("X-Set-Cookie", "Date")))
+                           origin=origin(isso.conf.getiter("general", "host")),
+                           allowed=("Origin", "Referer", "Content-Type"),
+                           exposed=("X-Set-Cookie", "Date")))
 
     wrapper.extend([wsgi.SubURI, ProxyFix])
 
@@ -208,9 +212,10 @@ def main():
     parser = ArgumentParser(description="a blog comment hosting service")
     subparser = parser.add_subparsers(help="commands", dest="command")
 
-    parser.add_argument('--version', action='version', version='%(prog)s ' + dist.version)
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s ' + dist.version)
     parser.add_argument("-c", dest="conf", default="/etc/isso.conf",
-            metavar="/etc/isso.conf", help="set configuration file")
+                        metavar="/etc/isso.conf", help="set configuration file")
 
     imprt = subparser.add_parser('import', help="import Disqus XML export")
     imprt.add_argument("dump", metavar="FILE")
@@ -225,7 +230,8 @@ def main():
     subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = config.load(join(dist.location, dist.project_name, "defaults.ini"), args.conf)
+    conf = config.load(
+        join(dist.location, dist.project_name, "defaults.ini"), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

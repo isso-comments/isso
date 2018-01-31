@@ -24,7 +24,7 @@ class Preferences:
 
     def get(self, key, default=None):
         rv = self.db.execute(
-                'SELECT value FROM preferences WHERE key=?', (key, )).fetchone()
+            'SELECT value FROM preferences WHERE key=?', (key, )).fetchone()
 
         if rv is None:
             return default

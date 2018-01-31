@@ -58,7 +58,8 @@ class SMTP(object):
             uwsgi.spooler = spooler
 
     def __enter__(self):
-        klass = (smtplib.SMTP_SSL if self.conf.get('security') == 'ssl' else smtplib.SMTP)
+        klass = (smtplib.SMTP_SSL if self.conf.get(
+            'security') == 'ssl' else smtplib.SMTP)
         self.client = klass(host=self.conf.get('host'),
                             port=self.conf.getint('port'),
                             timeout=self.conf.getint('timeout'))
@@ -104,7 +105,8 @@ class SMTP(object):
             rv.write("User's URL: %s\n" % comment["website"])
 
         rv.write("IP address: %s\n" % comment["remote_addr"])
-        rv.write("Link to comment: %s\n" % (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+        rv.write("Link to comment: %s\n" %
+                 (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
         rv.write("\n")
 
         uri = local("host") + "/id/%i" % comment["id"]
@@ -173,7 +175,8 @@ class Stdout(object):
         logger.info("comment created: %s", json.dumps(comment))
 
     def _edit_comment(self, comment):
-        logger.info('comment %i edited: %s', comment["id"], json.dumps(comment))
+        logger.info('comment %i edited: %s',
+                    comment["id"], json.dumps(comment))
 
     def _delete_comment(self, id):
         logger.info('comment %i deleted', id)

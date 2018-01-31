@@ -73,7 +73,7 @@ class Hash(object):
 
 
 class PBKDF2(Hash):
-    
+
     def __init__(self, salt=None, iterations=1000, dklen=6, func="sha1"):
         super(PBKDF2, self).__init__(salt)
 

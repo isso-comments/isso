@@ -30,6 +30,7 @@ from xml.etree import ElementTree
 
 logger = logging.getLogger("isso")
 
+
 def strip(val):
     if isinstance(val, string_types):
         return val.strip()
@@ -82,7 +83,8 @@ class Disqus(object):
         remap = dict()
 
         if path not in self.db.threads:
-            self.db.threads.new(path, thread.find(Disqus.ns + 'title').text.strip())
+            self.db.threads.new(path, thread.find(
+                Disqus.ns + 'title').text.strip())
 
         for item in sorted(posts, key=lambda k: k['created']):
 
@@ -112,9 +114,11 @@ class Disqus(object):
             }
 
             if post.find(Disqus.ns + 'parent') is not None:
-                item['dsq:parent'] = post.find(Disqus.ns + 'parent').attrib.get(Disqus.internals + 'id')
+                item['dsq:parent'] = post.find(
+                    Disqus.ns + 'parent').attrib.get(Disqus.internals + 'id')
 
-            res[post.find('%sthread' % Disqus.ns).attrib.get(Disqus.internals + 'id')].append(item)
+            res[post.find('%sthread' % Disqus.ns).attrib.get(
+                Disqus.internals + 'id')].append(item)
 
         progress = Progress(len(tree.findall(Disqus.ns + 'thread')))
         for i, thread in enumerate(tree.findall(Disqus.ns + 'thread')):
@@ -135,7 +139,8 @@ class Disqus(object):
         progress.finish("{0} threads, {1} comments".format(
             len(self.threads), len(self.comments)))
 
-        orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"), tree.findall(Disqus.ns + "post"))) - self.comments
+        orphans = set(map(lambda e: e.attrib.get(Disqus.internals + "id"),
+                          tree.findall(Disqus.ns + "post"))) - self.comments
         if orphans and not self.threads:
             print("Isso couldn't import any thread, try again with --empty-id")
         elif orphans:
@@ -258,22 +263,22 @@ def autodetect(peek):
 
 
 def dispatch(type, db, dump, empty_id=False):
-        if db.execute("SELECT * FROM comments").fetchone():
-            if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
-                raise SystemExit("Abort.")
+    if db.execute("SELECT * FROM comments").fetchone():
+        if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
+            raise SystemExit("Abort.")
 
-        if type == "disqus":
-            cls = Disqus
-        elif type == "wordpress":
-            cls = WordPress
-        else:
-            with io.open(dump, encoding="utf-8") as fp:
-                cls = autodetect(fp.read(io.DEFAULT_BUFFER_SIZE))
+    if type == "disqus":
+        cls = Disqus
+    elif type == "wordpress":
+        cls = WordPress
+    else:
+        with io.open(dump, encoding="utf-8") as fp:
+            cls = autodetect(fp.read(io.DEFAULT_BUFFER_SIZE))
 
-        if cls is None:
-            raise SystemExit("Unknown format, abort.")
+    if cls is None:
+        raise SystemExit("Unknown format, abort.")
 
-        if cls is Disqus:
-            cls = functools.partial(cls, empty_id=empty_id)
+    if cls is Disqus:
+        cls = functools.partial(cls, empty_id=empty_id)
 
-        cls(db, dump).migrate()
+    cls(db, dump).migrate()

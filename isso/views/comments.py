@@ -29,7 +29,8 @@ from isso.utils.hash import sha1
 __url_re = re.compile(
     r'^'
     r'(https?://)?'
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+    # domain...
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
     r'localhost|'  # localhost...
     r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
     r'(?::\d+)?'  # optional port
@@ -62,12 +63,12 @@ def xhr(func):
     not forged (XHR is restricted by CORS separately).
     """
 
-
     """
     @apiDefine csrf
     @apiHeader {string="application/json"} Content-Type
         The content type must be set to `application/json` to prevent CSRF attacks.
     """
+
     def dec(self, env, req, *args, **kwargs):
 
         if req.content_type and not req.content_type.startswith("application/json"):
@@ -93,8 +94,8 @@ class API(object):
         ('view',    ('GET', '/id/<int:id>')),
         ('edit',    ('PUT', '/id/<int:id>')),
         ('delete',  ('DELETE', '/id/<int:id>')),
-        ('moderate',('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('moderate',('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate', ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('like',    ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('demo',    ('GET', '/demo')),
@@ -280,13 +281,15 @@ class API(object):
         self.signal("comments.new:after-save", thread, rv)
 
         cookie = functools.partial(dump_cookie,
-            value=self.isso.sign([rv["id"], sha1(rv["text"])]),
-            max_age=self.conf.getint('max-age'))
+                                   value=self.isso.sign(
+                                       [rv["id"], sha1(rv["text"])]),
+                                   max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
         rv["hash"] = self.hash(rv['email'] or rv['remote_addr'])
 
-        self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
+        self.cache.set(
+            'hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
 
         for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
@@ -326,6 +329,7 @@ class API(object):
             "likes": 1
         }
     """
+
     def view(self, environ, request, id):
 
         rv = self.comments.get(id)
@@ -409,8 +413,9 @@ class API(object):
         self.signal("comments.edit", rv)
 
         cookie = functools.partial(dump_cookie,
-                value=self.isso.sign([rv["id"], sha1(rv["text"])]),
-                max_age=self.conf.getint('max-age'))
+                                   value=self.isso.sign(
+                                       [rv["id"], sha1(rv["text"])]),
+                                   max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
 
@@ -454,7 +459,8 @@ class API(object):
         if item is None:
             raise NotFound
 
-        self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+        self.cache.delete(
+            'hash', (item['email'] or item['remote_addr']).encode('utf-8'))
 
         with self.isso.lock:
             rv = self.comments.delete(id)
@@ -505,6 +511,7 @@ class API(object):
     @apiSuccessExample Using POST:
         Yo
     """
+
     def moderate(self, environ, request, id, action, key):
         try:
             id = self.isso.unsign(key, max_age=2**32)
@@ -547,10 +554,10 @@ class API(object):
         else:
             with self.isso.lock:
                 self.comments.delete(id)
-            self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+            self.cache.delete(
+                'hash', (item['email'] or item['remote_addr']).encode('utf-8'))
             self.signal("comments.delete", id)
             return Response("Yo", 200)
-
 
         """
         @api {get} / get comments
@@ -681,10 +688,10 @@ class API(object):
             return BadRequest("nested_limit should be integer")
 
         rv = {
-            'id'             : root_id,
-            'total_replies'  : reply_counts[root_id],
-            'hidden_replies' : reply_counts[root_id] - len(root_list),
-            'replies'        : self._process_fetched_list(root_list, plain)
+            'id': root_id,
+            'total_replies': reply_counts[root_id],
+            'hidden_replies': reply_counts[root_id] - len(root_list),
+            'replies': self._process_fetched_list(root_list, plain)
         }
         # We are only checking for one level deep comments
         if root_id is None:
@@ -705,7 +712,8 @@ class API(object):
                     comment['total_replies'] = 0
                     replies = []
 
-                comment['hidden_replies'] = comment['total_replies'] - len(replies)
+                comment['hidden_replies'] = comment['total_replies'] - \
+                    len(replies)
                 comment['replies'] = self._process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
@@ -762,7 +770,8 @@ class API(object):
     @xhr
     def like(self, environ, request, id):
 
-        nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(
+            True, id, utils.anonymize(str(request.remote_addr)))
         return JSON(nv, 200)
 
     """
@@ -788,7 +797,8 @@ class API(object):
     @xhr
     def dislike(self, environ, request, id):
 
-        nv = self.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(
+            False, id, utils.anonymize(str(request.remote_addr)))
         return JSON(nv, 200)
 
     # TODO: remove someday (replaced by :func:`counts`)
@@ -814,6 +824,7 @@ class API(object):
     @apiSuccessExample Counts of 5 threads:
         [2, 18, 4, 0, 3]
     """
+
     def counts(self, environ, request):
 
         data = request.get_json()
@@ -838,10 +849,11 @@ class API(object):
         data = req.form
         password = self.isso.conf.get("general", "admin_password")
         if data['password'] and data['password'] == password:
-            response = redirect(get_current_url(env, host_only=True) + '/admin')
+            response = redirect(get_current_url(
+                env, host_only=True) + '/admin')
             cookie = functools.partial(dump_cookie,
-                value=self.isso.sign({"logged": True}),
-                expires=datetime.now() + timedelta(1))
+                                       value=self.isso.sign({"logged": True}),
+                                       expires=datetime.now() + timedelta(1))
             response.headers.add("Set-Cookie", cookie("admin-session"))
             response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
             return response

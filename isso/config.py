@@ -123,8 +123,8 @@ def new(options=None):
 def load(default, user=None):
 
     # return set of (section, option)
-    setify = lambda cp: set((section, option) for section in cp.sections()
-                            for option in cp.options(section))
+    def setify(cp): return set((section, option) for section in cp.sections()
+                               for option in cp.options(section))
 
     parser = new()
     parser.read(default)
