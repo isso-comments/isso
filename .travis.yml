@@ -21,12 +21,14 @@ matrix:
       env: TOX_ENV=wheezy
 install:
   - pip install -U pip
-  - pip install tox
-  - pip install pyflakes
+  - pip install flake8 tox
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
   - tox -e $TOX_ENV
-  - python -m pyflakes.__main__ $(git ls-files | grep -E "^isso/.+.py$" | grep -v "^isso/compat.py")
+  # stop the build if there are Python syntax errors or undefined names
+  - flake8 . --count --select=E901,E999,F821,F822,F823 --show-source --statistics
+  # exit-zero treats all errors as warnings.  The GitHub editor is 127 chars wide
+  - flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 notifications:
   irc:
     channels:
