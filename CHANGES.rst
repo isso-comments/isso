@@ -4,7 +4,15 @@ Changelog for Isso
 0.10.7 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix Chinese translation
+- Add Danish translation
+- Add Hungarian translation
+- Add Persian translation
+- Add admin interface
+- Add links highlighting in comments
+- Add apidoc
+- Add rc.d script for FreeBSD
+- Some tests/travis/documentation improvements and fixes
 
 
 0.10.6 (2016-09-22)
