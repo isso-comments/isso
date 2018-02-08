@@ -9,8 +9,6 @@ matrix:
       env: TOX_ENV=py35
     - python: 3.6
       env: TOX_ENV=py36
-    - python: 2.7
-      env: TOX_ENV=wheezy
 install:
   - pip install -U pip
   - pip install flake8 tox
