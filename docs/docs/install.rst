@@ -39,10 +39,10 @@ package manager.
 .. code-block:: sh
 
     # for Debian/Ubuntu
-    ~> sudo apt-get install python-setuptools python-virtualenv
+    ~> sudo apt-get install python-setuptools python-virtualenv python-dev
 
     # Fedora/Red Hat
-    ~> sudo yum install python-setuptools python-virtualenv
+    ~> sudo yum install python-setuptools python-virtualenv python-devel
 
 The next steps should be done as regular user, not as root (although possible
 but not recommended):
