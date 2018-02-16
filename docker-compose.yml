@@ -1,0 +1,13 @@
+version: '2.0'
+
+services:
+    isso:
+        build: ./
+        environment:
+            - GID=1000
+            - UID=1000
+        volumes:
+            - /mnt/docker/isso/config:/config
+            - /mnt/docker/isso/db:/db
+        ports:
+            - 8081:8081
