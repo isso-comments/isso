@@ -15,3 +15,7 @@ div(class='isso-postbox')
                       value=website != null ? '#{website}' : '')
             p(class='post-action')
                 input(type='submit' value=i18n('postbox-submit'))
+        section(class='notification-section')
+                label
+                    input(type='checkbox' name='notification')
+                    = i18n('postbox-notification')

@@ -4,6 +4,7 @@ define({
     "postbox-email": "E-mail (optional)",
     "postbox-website": "Website (optional)",
     "postbox-submit": "Submit",
+    "postbox-notification": "Subscribe to email notification of replies",
 
     "num-comments": "One Comment\n{{ n }} Comments",
     "no-comments": "No Comments Yet",

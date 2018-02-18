@@ -4,6 +4,7 @@ define({
     "postbox-email": "Courriel (optionnel)",
     "postbox-website": "Site web (optionnel)",
     "postbox-submit": "Soumettre",
+    "postbox-notification": "S'abonner aux notifications de réponses",
     "num-comments": "{{ n }} commentaire\n{{ n }} commentaires",
     "no-comments": "Aucun commentaire pour l'instant",
     "comment-reply": "Répondre",
