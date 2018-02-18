@@ -31,31 +31,10 @@ else:
     from _thread import start_new_thread
 
 
-class SMTP(object):
+class SMTPConnection(object):
 
-    def __init__(self, isso):
-
-        self.isso = isso
-        self.conf = isso.conf.section("smtp")
-
-        # test SMTP connectivity
-        try:
-            with self:
-                logger.info("connected to SMTP server")
-        except (socket.error, smtplib.SMTPException):
-            logger.exception("unable to connect to SMTP server")
-
-        if uwsgi:
-            def spooler(args):
-                try:
-                    self._sendmail(args[b"subject"].decode("utf-8"),
-                                   args["body"].decode("utf-8"))
-                except smtplib.SMTPConnectError:
-                    return uwsgi.SPOOL_RETRY
-                else:
-                    return uwsgi.SPOOL_OK
-
-            uwsgi.spooler = spooler
+    def __init__(self, conf):
+        self.conf = conf
 
     def __enter__(self):
         klass = (smtplib.SMTP_SSL if self.conf.get(
@@ -84,6 +63,32 @@ class SMTP(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.client.quit()
+
+class SMTP(object):
+
+    def __init__(self, isso):
+
+        self.isso = isso
+        self.conf = isso.conf.section("smtp")
+
+        # test SMTP connectivity
+        try:
+            with SMTPConnection(self.conf):
+                logger.info("connected to SMTP server")
+        except (socket.error, smtplib.SMTPException):
+            logger.exception("unable to connect to SMTP server")
+
+        if uwsgi:
+            def spooler(args):
+                try:
+                    self._sendmail(args[b"subject"].decode("utf-8"),
+                                   args["body"].decode("utf-8"))
+                except smtplib.SMTPConnectError:
+                    return uwsgi.SPOOL_RETRY
+                else:
+                    return uwsgi.SPOOL_OK
+
+            uwsgi.spooler = spooler
 
     def __iter__(self):
         yield "comments.new:after-save", self.notify
@@ -153,7 +158,7 @@ class SMTP(object):
         msg['Date'] = formatdate(localtime=True)
         msg['Subject'] = Header(subject, 'utf-8')
 
-        with self as con:
+        with SMTPConnection(self.conf) as con:
             con.sendmail(from_addr, to_addr, msg.as_string())
 
     def _retry(self, subject, body, to):
