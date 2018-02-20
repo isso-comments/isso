@@ -111,10 +111,12 @@ class SMTP(object):
                 rv.write("User's URL: %s\n" % comment["website"])
 
             rv.write("IP address: %s\n" % comment["remote_addr"])
-            rv.write("Link to comment: %s\n" %
-                     (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
-            rv.write("\n")
 
+        rv.write("Link to comment: %s\n" %
+                 (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+        rv.write("\n")
+
+        if admin:
             uri = local("host") + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
 
