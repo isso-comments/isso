@@ -81,6 +81,15 @@ class Comments:
             '    mode=1',
             'WHERE id=? AND mode=2'], (id, ))
 
+    def unsubscribe(self, id):
+        """
+        Turn off email notifications for replies to this comment.
+        """
+        self.db.execute([
+            'UPDATE comments SET',
+            '    notification=0',
+            'WHERE id=?'], (id, ))
+
     def update(self, id, data):
         """
         Update comment :param:`id` with values from :param:`data` and return

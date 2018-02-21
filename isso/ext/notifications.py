@@ -93,7 +93,7 @@ class SMTP(object):
     def __iter__(self):
         yield "comments.new:after-save", self.notify
 
-    def format(self, thread, comment, admin=False):
+    def format(self, thread, comment, comment_parent, admin=False):
 
         rv = io.StringIO()
 
@@ -115,16 +115,22 @@ class SMTP(object):
         rv.write("Link to comment: %s\n" %
                  (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
         rv.write("\n")
+        rv.write("---\n")
 
         if admin:
             uri = local("host") + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
 
-            rv.write("---\n")
             rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
 
             if comment["mode"] == 2:
                 rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
+
+        else:
+            uri = local("host") + "/id/%i" % comment_parent["id"]
+            key = self.isso.sign(('unsubscribe', comment_parent["id"]))
+
+            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + key))
 
         rv.seek(0)
         return rv.read()
@@ -134,11 +140,11 @@ class SMTP(object):
             comment_parent = self.isso.db.comments.get(comment["parent"])
             # Notify the author that a new comment is posted if requested
             if comment_parent and "email" in comment_parent and comment_parent["notification"]:
-                body = self.format(thread, comment, admin=False)
+                body = self.format(thread, comment, comment_parent, admin=False)
                 subject = "Re: New comment posted on %s" % thread["title"]
                 self.sendmail(subject, body, thread, comment, to=comment_parent["email"])
 
-        body = self.format(thread, comment, admin=True)
+        body = self.format(thread, comment, None, admin=True)
         self.sendmail(thread["title"], body, thread, comment)
 
     def sendmail(self, subject, body, thread, comment, to=None):
