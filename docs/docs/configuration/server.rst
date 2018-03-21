@@ -108,7 +108,7 @@ Enable moderation queue and handling of comments still in moderation queue
 
 enabled
     enable comment moderation queue. This option only affects new comments.
-    Comments in modertion queue are not visible to other users until you
+    Comments in moderation queue are not visible to other users until you
     activate them.
 
 purge-after
