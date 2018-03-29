@@ -1,7 +1,7 @@
 /* Isso – Ich schrei sonst!
  */
-define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals"],
-    function($, utils, config, api, jade, i18n, lib, globals) {
+define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals", "app/showdown"],
+    function($, utils, config, api, jade, i18n, lib, globals, showdown) {
 
     "use strict";
 
@@ -50,6 +50,33 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
           $("[name='author']", el).placeholder =
             $("[name='author']", el).placeholder.replace(/ \(.*\)/, "");
         }
+
+        showdown.setOption('strikethrough', 'true');
+        var converter = new showdown.Converter();
+
+        $("[name=toggle-preview]", el).on("click", function() {
+            if (! el.validate()) {
+                return;
+            }
+            var avatar = config["avatar"] ? $(".avatar", el, false)[0] : null;
+
+            if ($("[name=toggle-preview]", el).innerHTML === "Preview") {
+                $("[name=toggle-preview]", el).innerHTML = "Edit";
+                if (avatar !== null) {
+                    avatar.show();
+                }
+                var author = $("[name=author]", el).value || null;
+                $(".author", el).innerHTML =  author;
+                var text = utils.text($(".textarea", el).innerHTML);
+                var htmlResult = converter.makeHtml(text);
+                $("[name='preview']", el).innerHTML = htmlResult;
+                $(".textarea-wrapper", el).classList.add("preview");
+            } else {
+                $("[name=toggle-preview]", el).innerHTML = "Preview";
+                $(".textarea-wrapper", el).classList.remove("preview");
+            }
+            return el;
+        });
 
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
