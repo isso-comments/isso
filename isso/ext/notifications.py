@@ -44,7 +44,6 @@ class SMTP(object):
         else:
             self.general_host = gh[0]
 
-
         # test SMTP connectivity
         try:
             with self:
