@@ -38,7 +38,7 @@ class SMTP(object):
         self.isso = isso
         self.conf = isso.conf.section("smtp")
         gh = isso.conf.get("general", "host")
-        if type(gh) == str:                                                                                                                                             
+        if type(gh) == str:
             self.general_host = gh
         #if gh is not a string then gh is a list
         else:
