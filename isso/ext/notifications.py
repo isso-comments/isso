@@ -37,7 +37,12 @@ class SMTP(object):
 
         self.isso = isso
         self.conf = isso.conf.section("smtp")
-        self.general_host = isso.conf.get("general", "host")
+        gh = isso.conf.get("general", "host")
+        if type(gh) == str:                                                                                                                                             
+            self.general_host = gh
+        else:                       #gh is a list
+            self.general_host = gh[0]
+
 
         # test SMTP connectivity
         try:
