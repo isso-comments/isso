@@ -843,14 +843,19 @@ class API(object):
         return JSON({'text': self.isso.render(data["text"])}, 200)
 
     def demo(self, env, req):
-        return redirect(get_current_url(env) + '/index.html')
+        return redirect(
+            get_current_url(env, strip_querystring=True) + '/index.html'
+        )
 
     def login(self, env, req):
         data = req.form
         password = self.isso.conf.get("general", "admin_password")
         if data['password'] and data['password'] == password:
-            response = redirect(get_current_url(
-                env, host_only=True) + '/admin')
+            response = redirect(re.sub(
+                r'/login$',
+                '/admin',
+                get_current_url(env, strip_querystring=True)
+            ))
             cookie = functools.partial(dump_cookie,
                                        value=self.isso.sign({"logged": True}),
                                        expires=datetime.now() + timedelta(1))
