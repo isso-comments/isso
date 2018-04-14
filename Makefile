@@ -72,7 +72,7 @@ clean:
 	
 web:
 	python setup.py develop  # or `install`
-	isso run
+	isso -c config/comments.comment.sh.cfg run
 
 
 .PHONY: clean site man init js coverage test web
