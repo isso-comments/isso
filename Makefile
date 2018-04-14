@@ -73,7 +73,8 @@ clean:
 web:
 	python setup.py develop  # or `install`
 	python update-settings.py
-	isso run
+	gunicorn --preload -w 4 isso.dispatch --log-file=- --access-logfile=-
+
 
 .PHONY: clean site man init js coverage test web
 
