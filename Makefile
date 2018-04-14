@@ -72,6 +72,7 @@ clean:
 	
 web:
 	python setup.py develop  # or `install`
+	python update-settings.py
 	isso run
 
 .PHONY: clean site man init js coverage test web
