@@ -73,7 +73,7 @@ clean:
 web:
 	python setup.py develop  # or `install`
 	# isso -c config/comments.comment.sh.cfg run
-	gunicorn -b localhost:8080 -w 4 --preload isso.run
+	gunicorn -b 0.0.0.0:8080 -w 4 --preload isso.run
 
 
 .PHONY: clean site man init js coverage test web
