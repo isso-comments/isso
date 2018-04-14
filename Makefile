@@ -72,7 +72,6 @@ clean:
 	
 web:
 	python setup.py develop  # or `install`
-	python update-settings.py
 	isso run
 
 
