@@ -69,6 +69,10 @@ test: $($ISSO_PY_SRC)
 clean:
 	rm -f $(DOCS_MAN_DST) $(DOCS_CSS_DST) $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
+	
+web:
+	python setup.py develop  # or `install`
+	isso run
 
-.PHONY: clean site man init js coverage test
+.PHONY: clean site man init js coverage test web
 
