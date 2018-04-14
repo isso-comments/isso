@@ -73,7 +73,7 @@ clean:
 web:
 	python setup.py develop  # or `install`
 	# isso -c config/comments.comment.sh.cfg run
-	gunicorn -p /tmp/gunicorn.pid -w 4 -b 0.0.0.0:5000  isso.dispatch
+	gunicorn --pid=/tmp/gunicorn.pid -w 4 -b 0.0.0.0:5000  isso.dispatch
 
 
 .PHONY: clean site man init js coverage test web
