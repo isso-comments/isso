@@ -38,7 +38,7 @@ Vagrant.configure(2) do |config|
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
-  config.vm.box = "ubuntu/trusty32"
+  config.vm.box = "ubuntu/xenial32"
 
   config.vm.hostname = 'isso-dev.local'
   config.vm.network "private_network", type: "dhcp"
