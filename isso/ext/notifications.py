@@ -137,12 +137,19 @@ class SMTP(object):
 
     def notify(self, thread, comment):
         if "parent" in comment and comment["parent"] is not None:
-            comment_parent = self.isso.db.comments.get(comment["parent"])
-            # Notify the author that a new comment is posted if requested
-            if comment_parent and "email" in comment_parent and comment_parent["notification"]:
-                body = self.format(thread, comment, comment_parent, admin=False)
-                subject = "Re: New comment posted on %s" % thread["title"]
-                self.sendmail(subject, body, thread, comment, to=comment_parent["email"])
+            # Notify interested authors that a new comment is posted
+            notified = []
+            parent_comment = self.isso.db.comments.get(comment["parent"])
+            comments_to_notify = [parent_comment] if parent_comment is not None else []
+            comments_to_notify += self.isso.db.comments.fetch(thread["uri"], mode=1, parent=comment["parent"])
+            for comment_to_notify in comments_to_notify:
+                email = comment_to_notify["email"]
+                if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
+                    and comment_to_notify["id"] != comment["id"]:
+                    body = self.format(thread, comment, comment_to_notify, admin=False)
+                    subject = "Re: New comment posted on %s" % thread["title"]
+                    self.sendmail(subject, body, thread, comment, to=email)
+                    notified += email
 
         body = self.format(thread, comment, None, admin=True)
         self.sendmail(thread["title"], body, thread, comment)
