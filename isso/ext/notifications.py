@@ -136,7 +136,7 @@ class SMTP(object):
         return rv.read()
 
     def notify(self, thread, comment):
-        if "parent" in comment:
+        if "parent" in comment and comment["parent"] is not None:
             comment_parent = self.isso.db.comments.get(comment["parent"])
             # Notify the author that a new comment is posted if requested
             if comment_parent and "email" in comment_parent and comment_parent["notification"]:
