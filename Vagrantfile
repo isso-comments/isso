@@ -59,7 +59,6 @@ Vagrant.configure(2) do |config|
     ansible.playbook = "ansible/site.yml"
     ansible.limit = "all"
     ansible.verbose = "v"
-    ansible.validate_certs=false
   end
 
   config.vm.post_up_message = "Browse to http://isso-dev.local/demo/index.html to start."
