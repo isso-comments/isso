@@ -74,7 +74,7 @@ web:
 	python setup.py develop  # or `install`
 	# isso -c config/comments.comment.sh.cfg run
 	# gunicorn --pid=/app/storage/gunicorn.pid -w 4 -b 0.0.0.0:5000  isso.dispatch
-	uswgi uswgi2.ini
+	/usr/local/bin/uwsgi uswgi2.ini
 
 .PHONY: clean site man init js coverage test web
 
