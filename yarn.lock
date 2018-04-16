@@ -36,10 +36,6 @@ asap@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/asap/-/asap-1.0.0.tgz#b2a45da5fdfa20b0496fc3768cc27c12fa916a7d"
 
-bower@^1.8.4:
-  version "1.8.4"
-  resolved "https://registry.yarnpkg.com/bower/-/bower-1.8.4.tgz#e7876a076deb8137f7d06525dc5e8c66db82f28a"
-
 camelcase@^1.0.2:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-1.2.1.tgz#9bb5304d2e0b56698b2c758b08a3eaa9daa58a39"

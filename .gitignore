@@ -9,7 +9,8 @@
 .Python
 .sass-cache
 .vagrant
-
+package.json
+yarn.lock
 /bin
 /include
 /lib
