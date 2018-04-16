@@ -120,4 +120,4 @@ ENV/
 # Rope project settings
 .ropeproject
 
-node_modules/
+node_modules
