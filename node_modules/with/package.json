@@ -1,0 +1,23 @@
+{
+  "name": "with",
+  "version": "4.0.3",
+  "description": "Compile time `with` for strict mode JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/index.js -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ForbesLindesay/with.git"
+  },
+  "author": "ForbesLindesay",
+  "license": "MIT",
+  "dependencies": {
+    "acorn": "^1.0.1",
+    "acorn-globals": "^1.0.3"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "uglify-js": "^2.4.15"
+  }
+}

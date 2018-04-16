@@ -1,0 +1,25 @@
+{
+  "name": "promise",
+  "version": "6.1.0",
+  "description": "Bare bones Promises/A+ implementation",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --timeout 200 --slow 99999",
+    "test-resolve": "mocha test/resolver-tests.js -R spec --timeout 200 --slow 999999",
+    "test-extensions": "mocha test/extensions-tests.js -R spec --timeout 200 --slow 999999"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/then/promise.git"
+  },
+  "author": "ForbesLindesay",
+  "license": "MIT",
+  "devDependencies": {
+    "promises-aplus-tests": "*",
+    "better-assert": "*",
+    "mocha": "*"
+  },
+  "dependencies": {
+    "asap": "~1.0.0"
+  }
+}

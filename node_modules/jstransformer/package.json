@@ -1,0 +1,32 @@
+{
+  "name": "jstransformer",
+  "version": "0.0.2",
+  "description": "Normalize the API of any jstransformer",
+  "keywords": [
+    "jstransformer"
+  ],
+  "dependencies": {
+    "is-promise": "^2.0.0",
+    "promise": "^6.0.1"
+  },
+  "devDependencies": {
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.5",
+    "testit": "^1.2.0"
+  },
+  "scripts": {
+    "test": "node test",
+    "coverage": "istanbul cover test",
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls"
+  },
+  "files": [
+    "index.js",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jstransformers/jstransformer.git"
+  },
+  "author": "ForbesLindesay",
+  "license": "MIT"
+}

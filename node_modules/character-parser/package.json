@@ -1,0 +1,29 @@
+{
+  "name": "character-parser",
+  "version": "1.2.1",
+  "description": "Parse JavaScript one character at a time to look for snippets in Templates.  This is not a validator, it's just designed to allow you to have sections of JavaScript delimited by brackets robustly.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ForbesLindesay/character-parser.git"
+  },
+  "keywords": [
+    "parser",
+    "JavaScript",
+    "bracket",
+    "nesting",
+    "comment",
+    "string",
+    "escape",
+    "escaping"
+  ],
+  "author": "ForbesLindesay",
+  "license": "MIT",
+  "devDependencies": {
+    "better-assert": "~1.0.0",
+    "mocha": "~1.9.0"
+  }
+}
