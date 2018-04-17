@@ -7,6 +7,7 @@ preferably in the script tag which embeds the JS:
 .. code-block:: html
 
     <script data-isso="/prefix/"
+            data-isso-id="thread-id"
             data-isso-css="true"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
@@ -23,11 +24,11 @@ preferably in the script tag which embeds the JS:
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
-the embed tag, e.g.:
+the embed tag, as well as the thread ID, e.g.:
 
 .. code-block:: html
 
-    <section id="isso-thread" data-title="Foo!"></section>
+    <section id="isso-thread" data-title="Foo!" data-isso-id="/path/to/resource"></section>
 
 data-isso
 ---------
