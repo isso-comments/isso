@@ -291,7 +291,7 @@ class Generic(object):
 
     def migrate(self):
         """Process the input file and fill the DB."""
-        with open(self.json_file, 'rt', encoding='utf8') as fh:
+        with io.open(self.json_file, 'rt', encoding='utf8') as fh:
             threads = json.load(fh)
         progress = Progress(len(threads))
 

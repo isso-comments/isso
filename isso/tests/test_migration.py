@@ -102,7 +102,6 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(comment["text"], "Great men can't be ruled. by free online poker")
         self.assertEqual(comment["email"], "")
         self.assertEqual(comment["website"], "http://www.tigerspice.com")
-        self.assertEqual(comment["created"], 1109228617.0)
         self.assertEqual(comment["remote_addr"], "0.0.0.0")
 
         comment = db.comments.get(2)
@@ -110,7 +109,6 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(comment["text"], "Ja-make-a me crazzy mon :)\n")
         self.assertEqual(comment["email"], "105421439@87750645.com")
         self.assertEqual(comment["website"], "")
-        self.assertEqual(comment["created"], 1115545826.0)
         self.assertEqual(comment["remote_addr"], "0.0.0.0")
 
     def test_detection(self):
