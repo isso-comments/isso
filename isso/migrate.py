@@ -321,7 +321,6 @@ class Generic(object):
         Note that we can not check the JSON properly as we only receive here
         the original file truncated.
         """
-        print("===== peek", repr(peek))
         return peek.startswith("[{")
 
 
