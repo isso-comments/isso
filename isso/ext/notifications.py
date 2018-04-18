@@ -37,6 +37,12 @@ class SMTP(object):
 
         self.isso = isso
         self.conf = isso.conf.section("smtp")
+        gh = isso.conf.get("general", "host")
+        if type(gh) == str:
+            self.general_host = gh
+        #if gh is not a string then gh is a list
+        else:
+            self.general_host = gh[0]
 
         # test SMTP connectivity
         try:
@@ -109,7 +115,7 @@ class SMTP(object):
                  (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
         rv.write("\n")
 
-        uri = local("host") + "/id/%i" % comment["id"]
+        uri = self.general_host + "/id/%i" % comment["id"]
         key = self.isso.sign(comment["id"])
 
         rv.write("---\n")
