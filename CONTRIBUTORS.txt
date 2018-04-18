@@ -79,5 +79,8 @@ In chronological order:
   * Added documentation about data-isso-id attribute (overriding the standard isso-thread-id)
   * Added multi-staged Dockerfile
 
+* @p-vitt & @M4a1x
+  * Documentation on troubleshooting for uberspace users
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
