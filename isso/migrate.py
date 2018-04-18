@@ -2,13 +2,14 @@
 
 from __future__ import division, print_function, unicode_literals
 
-import sys
-import os
-import io
-import re
-import logging
-import textwrap
 import functools
+import io
+import json
+import logging
+import os
+import re
+import sys
+import textwrap
 
 from time import mktime, strptime, time
 from collections import defaultdict
@@ -55,7 +56,7 @@ class Progress(object):
 
         if time() - self.last > 0.2:
             sys.stdout.write("\r{0}".format(" " * cols))
-            sys.stdout.write("\r[{0:.0%}]  {1}".format(i/self.end, message))
+            sys.stdout.write("\r[{0:.0%}]  {1}".format(i / self.end, message))
             sys.stdout.flush()
             self.last = time()
 
@@ -250,6 +251,80 @@ class WordPress(object):
         return re.compile("http://wordpress.org/export/(1\.\d)/").search(peek)
 
 
+class Generic(object):
+    """A generic importer.
+
+    The source format is a json with the following format:
+
+    A list of threads, each item being a dict with the following data:
+
+        - id: a text representing the unique thread id
+        - title: the title of the thread
+        - comments: the list of comments
+
+    Each item in that list of comments is a dict with the following data:
+
+        - id: an integer with the unique id of the comment inside the thread (it can be repeated
+          among different threads); this will be used to order the comment inside the thread
+        - author: the author name
+        - email: the author email
+        - website: the authot's website
+        - created: a timestamp, in the format "%Y-%m-%d %H:%M:%S"
+    """
+
+    def __init__(self, db, json_file):
+        self.db = db
+        self.json_file = json_file
+        self.count = 0
+
+    def insert(self, thread):
+        """Process a thread and insert its comments in the DB."""
+        thread_id = thread['id']
+        title = thread['title']
+        self.db.threads.new(thread_id, title)
+
+        comments = list(map(self._build_comment, thread['comments']))
+        comments.sort(key=lambda comment: comment['id'])
+        self.count += len(comments)
+        for comment in comments:
+            self.db.comments.add(thread_id, comment)
+
+    def migrate(self):
+        """Process the input file and fill the DB."""
+        with open(self.json_file, 'rt', encoding='utf8') as fh:
+            threads = json.load(fh)
+        progress = Progress(len(threads))
+
+        for i, thread in enumerate(threads):
+            progress.update(i, str(i))
+            self.insert(thread)
+
+        progress.finish("{0} threads, {1} comments".format(len(threads), self.count))
+
+    def _build_comment(self, raw_comment):
+        return {
+            "text": raw_comment['text'],
+            "author": raw_comment['author'],
+            "email": raw_comment['email'],
+            "website": raw_comment['website'],
+            "created": mktime(strptime(raw_comment['created'], "%Y-%m-%d %H:%M:%S")),
+            "mode": 1,
+            "id": int(raw_comment['id']),
+            "parent": None,
+            "remote_addr": raw_comment["remote_addr"],
+        }
+
+    @classmethod
+    def detect(cls, peek):
+        """Return if peek looks like the beginning of a JSON file.
+
+        Note that we can not check the JSON properly as we only receive here
+        the original file truncated.
+        """
+        print("===== peek", repr(peek))
+        return peek.startswith("[{")
+
+
 def autodetect(peek):
 
     if 'xmlns="http://disqus.com' in peek:
@@ -258,6 +333,9 @@ def autodetect(peek):
     m = WordPress.detect(peek)
     if m:
         return WordPress
+
+    if Generic.detect(peek):
+        return Generic
 
     return None
 

@@ -58,5 +58,8 @@ In chronological order:
 * Ivan Pantic <ivanpantic82@gmail.com>
   * Added vote levels
 
+* Facundo Batista <facundo@taniquetil.com.ar>
+  * Added a generic way to migrate from a json file
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
