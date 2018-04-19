@@ -145,7 +145,7 @@ class SMTP(object):
             for comment_to_notify in comments_to_notify:
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
-                    and comment_to_notify["id"] != comment["id"]:
+                    and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, comment_to_notify, admin=False)
                     subject = "Re: New comment posted on %s" % thread["title"]
                     self.sendmail(subject, body, thread, comment, to=email)
