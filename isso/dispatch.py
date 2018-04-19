@@ -48,7 +48,7 @@ class Dispatcher(DispatcherMiddleware):
     def default(self, environ, start_response):
         #resp = Response("\n".join(self.sso.keys()),
         #               404, content_type="text/plain")
-        Response("Up and running", 404, content_type="text/plain")
+        resp = Response("Up and running", 404, content_type="text/plain")
         return resp(environ, start_response)
 
 
