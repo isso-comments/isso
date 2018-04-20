@@ -130,9 +130,10 @@ class SMTP(object):
     def notify(self, thread, comment):
 
         body = self.format(thread, comment)
-
+        
+        no_title_str = 'New comment'
         if uwsgi:
-            uwsgi.spool({b"subject": thread['title'].encode("utf-8") if not thread['title'] is None else 'New comment',
+            uwsgi.spool({b"subject": thread['title'].encode("utf-8") if not thread['title'] is None else no_title_str.encode("utf-8"),
                          b"body": body.encode("utf-8")})
         else:
             start_new_thread(self._retry, (thread["title"], body))
