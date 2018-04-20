@@ -132,7 +132,7 @@ class SMTP(object):
         body = self.format(thread, comment)
 
         if uwsgi:
-            uwsgi.spool({b"subject": thread["title"].encode("utf-8"),
+            uwsgi.spool({b"subject": thread['title'].encode("utf-8") if 'title' in thread else 'New comment',
                          b"body": body.encode("utf-8")})
         else:
             start_new_thread(self._retry, (thread["title"], body))
