@@ -1,0 +1,31 @@
+
+
+version: 2
+jobs:
+  build:
+    docker: 
+      - image: buildpack-deps:trusty
+      # specify the version you desire here
+      # - image: circleci/node:7.10
+      
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:3.4.4
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - deploy:
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              echo -e "Host 159.89.243.114\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+              git config --global user.email "chris88@gmail.com"
+              git config --global user.name "Chris Hutchison"
+              git config --global merge.defaultToUpstream true
+              git remote add dokku dokku@159.89.243.114:isso
+              git fetch dokku master
+              git merge dokku/master --no-edit --commit
+              git push dokku master
+            fi
