@@ -149,18 +149,7 @@ Prebuilt Packages
 * Fedora: https://copr.fedoraproject.org/coprs/jujens/isso/ — copr
   repository. Built from Pypi, includes a systemctl unit script.
 
-Build a Docker image
---------------------
-
-You can get a Docker image by running ``docker build . -t
-isso``. Assuming you have your configuration in ``/opt/isso``, you can
-use the following command to spawn the Docker container:
-
-.. code-block:: sh
-
-    ~> docker run -d --rm --name isso -p 127.0.0.1:8080:8080 -v /opt/isso:/config -v /opt/isso:/db isso
-
-Then, you can use a reverse proxy to expose port 8080.
+* Docker Image: https://registry.hub.docker.com/u/bl4n/isso/
 
 Install from Source
 -------------------
