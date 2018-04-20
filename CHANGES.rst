@@ -4,8 +4,7 @@ Changelog for Isso
 0.10.7 (unreleased)
 -------------------
 
-- Fix Chinese translation & typo in CJK
-- Fix link in moderation mails if isso is setup on a sub-url (e.g. domain.tld/comments/)
+- Fix Chinese translation
 - Add Danish translation
 - Add Hungarian translation
 - Add Persian translation
@@ -13,9 +12,7 @@ Changelog for Isso
 - Add links highlighting in comments
 - Add apidoc
 - Add rc.d script for FreeBSD
-- Add the possibility to set CORS Origin through ISSO_CORS_ORIGIN environ variable
-- Some tests/travis/documentation improvements and fixes + pep8
-- Improvement on german translation
+- Some tests/travis/documentation improvements and fixes
 
 
 0.10.6 (2016-09-22)
