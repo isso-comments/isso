@@ -11,7 +11,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             el = $.htmlify(jade.render("postbox", {
             "author":  JSON.parse(localStorage.getItem("author")),
             "email":   JSON.parse(localStorage.getItem("email")),
-            "website": JSON.parse(localStorage.getItem("website"))
+            "website": JSON.parse(localStorage.getItem("website")),
+            "preview": ''
         }));
 
         // callback on success (e.g. to toggle the reply button)
@@ -51,9 +52,27 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             $("[name='author']", el).placeholder.replace(/ \(.*\)/, "");
         }
 
+        // preview function
+        $("[name='preview']", el).on("click", function() {
+            api.preview(utils.text($(".textarea", el).innerHTML)).then(
+                function(html) {
+                    $(".preview .text", el).innerHTML = html;
+                    el.classList.add('preview-mode');
+                });
+        });
+
+        // edit function
+        var edit = function() {
+            $(".preview .text", el).innerHTML = '';
+            el.classList.remove('preview-mode');
+        };
+        $("[name='edit']", el).on("click", edit);
+        $(".preview", el).on("click", edit);
+
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
         $("[type=submit]", el).on("click", function() {
+            edit();
             if (! el.validate()) {
                 return;
             }

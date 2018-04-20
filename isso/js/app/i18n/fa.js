@@ -3,6 +3,8 @@ define({
     "postbox-author": "اسم (اختیاری)",
     "postbox-email": "ایمیل (اختیاری)",
     "postbox-website": "سایت (اختیاری)",
+    "postbox-preview": "پیشنمایش",
+    "postbox-edit": "ویرایش",
     "postbox-submit": "ارسال",
 
     "num-comments": "یک نظر\n{{ n }} نظر",

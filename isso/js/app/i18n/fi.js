@@ -3,6 +3,8 @@ define({
     "postbox-author": "Nimi (valinnainen)",
     "postbox-email": "Sähköposti (valinnainen)",
     "postbox-website": "Web-sivu (valinnainen)",
+    "postbox-preview": "Esikatselu",
+    "postbox-edit": "Muokkaa",
     "postbox-submit": "Lähetä",
 
     "num-comments": "Yksi kommentti\n{{ n }} kommenttia",

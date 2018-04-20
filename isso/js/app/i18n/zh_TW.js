@@ -3,6 +3,8 @@ define({
     "postbox-author": "名稱 (非必填)",
     "postbox-email": "電子信箱 (非必填)",
     "postbox-website": "個人網站 (非必填)",
+    "postbox-preview": "預習",
+    "postbox-edit": "編輯",
     "postbox-submit": "送出",
 
     "num-comments": "1 則留言\n{{ n }} 則留言",
