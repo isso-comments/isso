@@ -116,7 +116,7 @@ class SMTP(object):
         rv.write("\n")
 
         # uri = self.general_host + "/id/%i" % comment["id"]
-        name = isso.conf.get("general", "name")
+        name = self.conf.get("general", "name")
         uri = os.environ['ISSO_DOMAIN'] + "/" + name
         
         key = self.isso.sign(comment["id"])
