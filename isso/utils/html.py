@@ -50,6 +50,11 @@ def sanitize(tokenizer, document):
 
     if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
         builder = "etree"
+
+        for link in domtree.findall(".//{http://www.w3.org/1999/xhtml}a"):
+            if link.get('href', None):
+                link.set("rel", "nofollow noopener")
+
     else:
         builder = "simpletree"
 

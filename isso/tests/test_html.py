@@ -65,7 +65,7 @@ class TestHTML(unittest.TestCase):
         examples = [
             ('Look: <img src="..." />', 'Look: '),
             ('<a href="http://example.org/">Ha</a>',
-             '<a href="http://example.org/">Ha</a>'),
+             '<a href="http://example.org/" rel="nofollow noopener">Ha</a>'),
             ('<a href="sms:+1234567890">Ha</a>', '<a>Ha</a>'),
             ('<p style="visibility: hidden;">Test</p>', '<p>Test</p>'),
             ('<script>alert("Onoe")</script>', 'alert("Onoe")')]
@@ -93,4 +93,4 @@ class TestHTML(unittest.TestCase):
         })
         renderer = html.Markup(conf.section("markup")).render
         self.assertEqual(renderer("http://example.org/ and sms:+1234567890"),
-                         '<p><a href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>')
+                         '<p><a href="http://example.org/" rel="nofollow noopener">http://example.org/</a> and sms:+1234567890</p>')
