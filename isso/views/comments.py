@@ -9,6 +9,7 @@ import functools
 
 from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
+from xml.etree import ElementTree as ET
 
 from werkzeug.http import dump_cookie
 from werkzeug.wsgi import get_current_url
@@ -20,10 +21,20 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from isso.compat import text_type as str
 
 from isso import utils, local
-from isso.utils import (http, parse, JSONResponse as JSON,
+from isso.utils import (http, parse,
+                        JSONResponse as JSON, XMLResponse as XML,
                         render_template)
 from isso.views import requires
 from isso.utils.hash import sha1
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
@@ -91,6 +102,7 @@ class API(object):
         ('new',     ('POST', '/new')),
         ('count',   ('GET', '/count')),
         ('counts',  ('POST', '/count')),
+        ('feed',    ('GET', '/feed')),
         ('view',    ('GET', '/id/<int:id>')),
         ('edit',    ('PUT', '/id/<int:id>')),
         ('delete',  ('DELETE', '/id/<int:id>')),
@@ -833,6 +845,112 @@ class API(object):
             raise BadRequest("JSON must be a list of URLs")
 
         return JSON(self.comments.count(*data), 200)
+
+    """
+    @api {get} /feed Atom feed for comments
+    @apiGroup Thread
+    @apiDescription
+        Provide an Atom feed for the given thread.
+    """
+    @requires(str, 'uri')
+    def feed(self, environ, request, uri):
+        args = {
+            'uri': uri,
+            'order_by': 'id',
+            'asc': 0,
+            'limit': 100
+        }
+        try:
+            args['limit'] = max(int(request.args.get('limit')), args['limit'])
+        except TypeError:
+            pass
+        except ValueError:
+            return BadRequest("limit should be integer")
+        comments = self.comments.fetch(**args)
+        base = self.conf.get('host').split()[0]
+        hostname = urlparse(base).netloc
+
+        # Let's build an Atom feed.
+        #  RFC 4287: https://tools.ietf.org/html/rfc4287
+        #  RFC 4685: https://tools.ietf.org/html/rfc4685 (threading extensions)
+        #  For IDs: http://web.archive.org/web/20110514113830/http://diveintomark.org/archives/2004/05/28/howto-atom-id
+        feed = ET.Element('feed', {
+            'xmlns': 'http://www.w3.org/2005/Atom',
+            'xmlns:thr': 'http://purl.org/syndication/thread/1.0'
+        })
+
+        # For feed ID, we would use thread ID, but we may not have
+        # one. Therefore, we use the URI. We don't have a year
+        # either...
+        id = ET.SubElement(feed, 'id')
+        id.text = 'tag:{hostname},2018:/isso/thread{uri}'.format(
+            hostname=hostname, uri=uri)
+
+        # For title, we don't have much either. Be pretty generic.
+        title = ET.SubElement(feed, 'title')
+        title.text = 'Comments for {hostname}{uri}'.format(
+            hostname=hostname, uri=uri)
+
+        comment0 = None
+
+        for comment in comments:
+            if comment0 is None:
+                comment0 = comment
+
+            entry = ET.SubElement(feed, 'entry')
+            # We don't use a real date in ID either to help with
+            # threading.
+            id = ET.SubElement(entry, 'id')
+            id.text = 'tag:{hostname},2018:/isso/{tid}/{id}'.format(
+                hostname=hostname,
+                tid=comment['tid'],
+                id=comment['id'])
+            title = ET.SubElement(entry, 'title')
+            title.text = 'Comment #{}'.format(comment['id'])
+            updated = ET.SubElement(entry, 'updated')
+            updated.text = '{}Z'.format(datetime.fromtimestamp(
+                comment['modified'] or comment['created']).isoformat())
+            author = ET.SubElement(entry, 'author')
+            name = ET.SubElement(author, 'name')
+            name.text = comment['author']
+            ET.SubElement(entry, 'link', {
+                'href': '{base}{uri}#isso-{id}'.format(
+                    base=base,
+                    uri=uri, id=comment['id'])
+            })
+            content = ET.SubElement(entry, 'content', {
+                'type': 'html',
+            })
+            content.text = comment['text']
+
+            if comment['parent']:
+                ET.SubElement(entry, 'thr:in-reply-to', {
+                    'ref': 'tag:{hostname},2018:/isso/{tid}/{id}'.format(
+                        hostname=hostname,
+                        tid=comment['tid'],
+                        id=comment['parent']),
+                    'href': '{base}{uri}#isso-{id}'.format(
+                        base=base,
+                        uri=uri, id=comment['parent'])
+                })
+
+        # Updated is mandatory. If we have comments, we use the date
+        # of last modification of the first one (which is the last
+        # one). Otherwise, we use a fixed date.
+        updated = ET.Element('updated')
+        if comment0 is None:
+            updated.text = '1970-01-01T01:00:00Z'
+        else:
+            updated.text = datetime.fromtimestamp(
+                comment0['modified'] or comment0['created']).isoformat()
+            updated.text += 'Z'
+        feed.insert(0, updated)
+
+        output = StringIO()
+        ET.ElementTree(feed).write(output,
+                                   encoding='utf-8',
+                                   xml_declaration=True)
+        return XML(output.getvalue(), 200)
 
     def preview(self, environment, request):
         data = request.get_json()
