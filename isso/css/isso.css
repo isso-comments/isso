@@ -15,6 +15,14 @@
     color: #555;
     font-weight: bold;
 }
+#isso-thread > .isso-feedlink {
+    float: right;
+    padding-left: 1em;
+}
+#isso-thread > .isso-feedlink > a {
+    font-size: 0.8em;
+    vertical-align: bottom;
+}
 #isso-thread .textarea {
     min-height: 58px;
     outline: 0;
@@ -119,10 +127,12 @@
     color: gray !important;
     clear: left;
 }
+.isso-feedlink,
 .isso-comment > div.text-wrapper > .isso-comment-footer a {
     font-weight: bold;
     text-decoration: none;
 }
+.isso-feedlink:hover,
 .isso-comment > div.text-wrapper > .isso-comment-footer a:hover {
     color: #111111 !important;
     text-shadow: #aaaaaa 0 0 1px !important;
@@ -152,6 +162,7 @@
 .isso-postbox {
     max-width: 68em;
     margin: 0 auto 2em;
+    clear: right;
 }
 .isso-postbox > .form-wrapper {
     display: block;

@@ -191,6 +191,10 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
+    var feed = function(tid) {
+        return endpoint + "/feed?" + qs({uri: tid || location});
+    }
+
     return {
         endpoint: endpoint,
         salt: salt,
@@ -202,6 +206,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         fetch: fetch,
         count: count,
         like: like,
-        dislike: dislike
+        dislike: dislike,
+        feed: feed
     };
 });
