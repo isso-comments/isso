@@ -950,7 +950,16 @@ class API(object):
         ET.ElementTree(feed).write(output,
                                    encoding='utf-8',
                                    xml_declaration=True)
-        return XML(output.getvalue(), 200)
+        response = XML(output.getvalue(), 200)
+
+        # Add an etag/last-modified value for caching purpose
+        if comment0 is None:
+            response.set_etag('empty')
+            response.last_modified = 0
+        else:
+            response.set_etag('{tid}-{id}'.format(**comment0))
+            response.last_modified = comment0['modified'] or comment0['created']
+        return response.make_conditional(request)
 
     def preview(self, environment, request):
         data = request.get_json()
