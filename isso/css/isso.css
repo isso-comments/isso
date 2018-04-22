@@ -32,22 +32,13 @@
 .isso-follow-up .isso-comment {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
-.isso-comment > div.avatar,
-.isso-postbox > .avatar {
+.isso-comment > div.avatar {
     display: block;
     float: left;
     width: 7%;
     margin: 3px 15px 0 0;
 }
-.isso-postbox > .avatar {
-    float: left;
-    margin: 5px 10px 0 5px;
-    width: 48px;
-    height: 48px;
-    overflow: hidden;
-}
-.isso-comment > div.avatar > svg,
-.isso-postbox > .avatar > svg {
+.isso-comment > div.avatar > svg {
     max-width: 48px;
     max-height: 48px;
     border: 1px solid rgba(0, 0, 0, 0.2);
