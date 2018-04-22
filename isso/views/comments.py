@@ -261,6 +261,9 @@ class API(object):
                 else:
                     title = data['title']
 
+                if title is None:
+                    title = "New comment"
+                    
                 thread = self.threads.new(uri, title)
                 self.signal("comments.new:new-thread", thread)
             else:
