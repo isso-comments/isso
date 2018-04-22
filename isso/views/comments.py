@@ -854,11 +854,15 @@ class API(object):
     """
     @requires(str, 'uri')
     def feed(self, environ, request, uri):
+        conf = self.isso.conf.section("rss")
+        if not conf.get('base'):
+            raise NotFound
+
         args = {
             'uri': uri,
             'order_by': 'id',
             'asc': 0,
-            'limit': 100
+            'limit': conf.getint('limit')
         }
         try:
             args['limit'] = max(int(request.args.get('limit')), args['limit'])
@@ -867,7 +871,7 @@ class API(object):
         except ValueError:
             return BadRequest("limit should be integer")
         comments = self.comments.fetch(**args)
-        base = self.conf.get('host').split()[0]
+        base = conf.get('base')
         hostname = urlparse(base).netloc
 
         # Let's build an Atom feed.

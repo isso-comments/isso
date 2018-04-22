@@ -31,9 +31,9 @@ class TestComments(unittest.TestCase):
         fd, self.path = tempfile.mkstemp()
         conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         conf.set("general", "dbpath", self.path)
-        conf.set("general", "host", "https://example.org")
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
+        self.conf = conf
 
         class App(Isso, core.Mixin):
             pass
@@ -326,7 +326,13 @@ class TestComments(unittest.TestCase):
 
         self.assertListEqual(list(rv.keys()), [])
 
+    def testNoFeed(self):
+        rv = self.get('/feed?uri=%2Fpath%2Fnothing')
+        self.assertEqual(rv.status_code, 404)
+
     def testFeedEmpty(self):
+        self.conf.set("rss", "base", "https://example.org")
+
         rv = self.get('/feed?uri=%2Fpath%2Fnothing')
         self.assertEqual(rv.status_code, 200)
         self.assertEqual(rv.headers['ETag'], '"empty"')
@@ -335,6 +341,8 @@ class TestComments(unittest.TestCase):
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0"><updated>1970-01-01T01:00:00Z</updated><id>tag:example.org,2018:/isso/thread/path/nothing</id><title>Comments for example.org/path/nothing</title></feed>""")
 
     def testFeed(self):
+        self.conf.set("rss", "base", "https://example.org")
+
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
         self.post('/new?uri=%2Fpath%2F',
                   data=json.dumps({'text': 'First', 'parent': 1}))

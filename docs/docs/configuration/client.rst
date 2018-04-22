@@ -20,7 +20,8 @@ preferably in the script tag which embeds the JS:
             data-isso-avatar-bg="#f0f0f0"
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             data-isso-vote="true"
-            data-vote-levels=""
+            data-isso-vote-levels=""
+            data-isso-feed="false"
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
@@ -125,3 +126,10 @@ For example, the value `"-5,5"` will cause each `isso-comment` to be given one o
 - `isso-vote-level-2` for scores of `5` and greater
 
 These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
+
+data-isso-feed
+--------------
+
+Enable or disable the addition of a link to the feed for the comment
+thread. The link will only be valid if the appropriate setting, in
+``[rss]`` section, is also enabled server-side.
