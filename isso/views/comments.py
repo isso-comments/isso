@@ -925,7 +925,7 @@ class API(object):
             content = ET.SubElement(entry, 'content', {
                 'type': 'html',
             })
-            content.text = comment['text']
+            content.text = self.isso.render(comment['text'])
 
             if comment['parent']:
                 ET.SubElement(entry, 'thr:in-reply-to', {
