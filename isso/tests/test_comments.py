@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import os
 import json
+import re
 import tempfile
 import unittest
 
@@ -32,6 +33,7 @@ class TestComments(unittest.TestCase):
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
+        self.conf = conf
 
         class App(Isso, core.Mixin):
             pass
@@ -323,6 +325,36 @@ class TestComments(unittest.TestCase):
             rv.pop(key)
 
         self.assertListEqual(list(rv.keys()), [])
+
+    def testNoFeed(self):
+        rv = self.get('/feed?uri=%2Fpath%2Fnothing')
+        self.assertEqual(rv.status_code, 404)
+
+    def testFeedEmpty(self):
+        self.conf.set("rss", "base", "https://example.org")
+
+        rv = self.get('/feed?uri=%2Fpath%2Fnothing')
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.headers['ETag'], '"empty"')
+        data = rv.data.decode('utf-8')
+        self.assertEqual(data, """<?xml version=\'1.0\' encoding=\'utf-8\'?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0"><updated>1970-01-01T01:00:00Z</updated><id>tag:example.org,2018:/isso/thread/path/nothing</id><title>Comments for example.org/path/nothing</title></feed>""")
+
+    def testFeed(self):
+        self.conf.set("rss", "base", "https://example.org")
+
+        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': '*Second*', 'parent': 1}))
+
+        rv = self.get('/feed?uri=%2Fpath%2F')
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.headers['ETag'], '"1-2"')
+        data = rv.data.decode('utf-8')
+        data = re.sub('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+Z',
+                      '2018-04-01T10:00:00Z', data)
+        self.assertEqual(data, """<?xml version=\'1.0\' encoding=\'utf-8\'?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0"><updated>2018-04-01T10:00:00Z</updated><id>tag:example.org,2018:/isso/thread/path/</id><title>Comments for example.org/path/</title><entry><id>tag:example.org,2018:/isso/1/2</id><title>Comment #2</title><updated>2018-04-01T10:00:00Z</updated><author><name /></author><link href="https://example.org/path/#isso-2" /><content type="html">&lt;p&gt;&lt;em&gt;Second&lt;/em&gt;&lt;/p&gt;</content><thr:in-reply-to href="https://example.org/path/#isso-1" ref="tag:example.org,2018:/isso/1/1" /></entry><entry><id>tag:example.org,2018:/isso/1/1</id><title>Comment #1</title><updated>2018-04-01T10:00:00Z</updated><author><name /></author><link href="https://example.org/path/#isso-1" /><content type="html">&lt;p&gt;First&lt;/p&gt;</content></entry></feed>""")
 
     def testCounts(self):
 

@@ -308,6 +308,27 @@ algorithm
     Arguments have to be in that order, but can be reduced to `pbkdf2:4096`
     for example to override the iterations only.
 
+.. _configure-rss:
+
+RSS
+---
+
+Isso can provide an Atom feed for each comment thread. Users can use
+them to subscribe to comments and be notified of changes. Atom feeds
+are enabled as soon as there is a base URL defined in this section.
+
+.. code-block:: ini
+
+    [rss]
+    base =
+    limit = 100
+
+base
+    base URL to use to build complete URI to pages (by appending the URI from Isso)
+
+limit
+    number of most recent comments to return for a thread
+
 Appendum
 --------
 
