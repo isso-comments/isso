@@ -14,6 +14,11 @@ Changelog for Isso
 - Add apidoc
 - Add rc.d script for FreeBSD
 - Add the possibility to set CORS Origin through ISSO_CORS_ORIGIN environ variable
+- Add preview button
+- Add Atom feed at /feed?uri={thread-id}
+- Add optionnal gravatar support
+- Add nofollow noopener on links inside comments
+- Add Dockerfile
 - Some tests/travis/documentation improvements and fixes + pep8
 - Improvement on german translation
 
