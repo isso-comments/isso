@@ -7,6 +7,7 @@ preferably in the script tag which embeds the JS:
 .. code-block:: html
 
     <script data-isso="/prefix/"
+            data-isso-id="thread-id"
             data-isso-css="true"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
@@ -19,15 +20,16 @@ preferably in the script tag which embeds the JS:
             data-isso-avatar-bg="#f0f0f0"
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             data-isso-vote="true"
-            data-vote-levels=""
+            data-isso-vote-levels=""
+            data-isso-feed="false"
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
-the embed tag, e.g.:
+the embed tag, as well as the thread ID, e.g.:
 
 .. code-block:: html
 
-    <section id="isso-thread" data-title="Foo!"></section>
+    <section id="isso-thread" data-title="Foo!" data-isso-id="/path/to/resource"></section>
 
 data-isso
 ---------
@@ -133,13 +135,9 @@ For example, the value `"-5,5"` will cause each `isso-comment` to be given one o
 
 These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
 
-data-isso-id
-------------
+data-isso-feed
+--------------
 
-Set a custom thread id, defaults to current URI. This attribute needs
-to be used with the data-title attribute in order to work.
-If you use a comment counter, add this attribute to the link tag, too.
-
-.. code-block:: html
-
-    <section data-title="Yay!" data-isso-id="test.abc" id="isso-thread"></section>
+Enable or disable the addition of a link to the feed for the comment
+thread. The link will only be valid if the appropriate setting, in
+``[rss]`` section, is also enabled server-side.

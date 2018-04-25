@@ -84,6 +84,8 @@ def origin(hosts):
     hosts = [urlsplit(h) for h in hosts]
 
     def func(environ):
+        if 'ISSO_CORS_ORIGIN' in environ:
+            return environ['ISSO_CORS_ORIGIN']
 
         if not hosts:
             return "http://invalid.local"
@@ -136,11 +138,14 @@ class CORSMiddleware(object):
             headers = Headers(headers)
             headers.add("Access-Control-Allow-Origin", self.origin(environ))
             headers.add("Access-Control-Allow-Credentials", "true")
-            headers.add("Access-Control-Allow-Methods", ", ".join(self.methods))
+            headers.add("Access-Control-Allow-Methods",
+                        ", ".join(self.methods))
             if self.allowed:
-                headers.add("Access-Control-Allow-Headers", ", ".join(self.allowed))
+                headers.add("Access-Control-Allow-Headers",
+                            ", ".join(self.allowed))
             if self.exposed:
-                headers.add("Access-Control-Expose-Headers", ", ".join(self.exposed))
+                headers.add("Access-Control-Expose-Headers",
+                            ", ".join(self.exposed))
             return start_response(status, headers.to_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":

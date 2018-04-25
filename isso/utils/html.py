@@ -50,11 +50,17 @@ def sanitize(tokenizer, document):
 
     if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
         builder = "etree"
+
+        for link in domtree.findall(".//{http://www.w3.org/1999/xhtml}a"):
+            if link.get('href', None):
+                link.set("rel", "nofollow noopener")
+
     else:
         builder = "simpletree"
 
     stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
-    serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
+    serializer = HTMLSerializer(
+        quote_attr_values=True, omit_optional_tags=False)
 
     return serializer.render(stream)
 

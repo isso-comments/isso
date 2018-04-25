@@ -1,10 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
-
+import unittest
 import textwrap
 
 from isso import config
@@ -68,13 +64,18 @@ class TestHTML(unittest.TestCase):
         sanitizer = html.Sanitizer(elements=[], attributes=[])
         examples = [
             ('Look: <img src="..." />', 'Look: '),
-            ('<a href="http://example.org/">Ha</a>', '<a href="http://example.org/">Ha</a>'),
+            ('<a href="http://example.org/">Ha</a>',
+             ['<a href="http://example.org/" rel="nofollow noopener">Ha</a>',
+              '<a rel="nofollow noopener" href="http://example.org/">Ha</a>']),
             ('<a href="sms:+1234567890">Ha</a>', '<a>Ha</a>'),
             ('<p style="visibility: hidden;">Test</p>', '<p>Test</p>'),
             ('<script>alert("Onoe")</script>', 'alert("Onoe")')]
 
         for (input, expected) in examples:
-            self.assertEqual(html.sanitize(sanitizer, input), expected)
+            if isinstance(expected, list):
+                self.assertIn(html.sanitize(sanitizer, input), expected)
+            else:
+                self.assertEqual(html.sanitize(sanitizer, input), expected)
 
     @unittest.skipIf(html.HTML5LIB_VERSION <= html.HTML5LIB_SIMPLETREE, "backport")
     def test_sanitizer_extensions(self):
@@ -95,5 +96,6 @@ class TestHTML(unittest.TestCase):
             }
         })
         renderer = html.Markup(conf.section("markup")).render
-        self.assertEqual(renderer("http://example.org/ and sms:+1234567890"),
-                         '<p><a href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>')
+        self.assertIn(renderer("http://example.org/ and sms:+1234567890"),
+                      ['<p><a href="http://example.org/" rel="nofollow noopener">http://example.org/</a> and sms:+1234567890</p>',
+                       '<p><a rel="nofollow noopener" href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>'])

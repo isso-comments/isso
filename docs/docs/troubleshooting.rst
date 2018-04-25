@@ -1,6 +1,12 @@
 Troubleshooting
 ===============
 
+For uberspace users
+-------------------
+Some uberspace users experienced problems with isso and they solved their
+issue by adding `DirectoryIndex disabled` as the first line in the `.htaccess`
+file for the domain the isso server is running on.
+
 pkg_ressources.DistributionNotFound
 -----------------------------------
 

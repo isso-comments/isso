@@ -5,9 +5,12 @@ from __future__ import division, unicode_literals
 import pkg_resources
 werkzeug = pkg_resources.get_distribution("werkzeug")
 
-import json
 import hashlib
+import json
+import os
 
+from datetime import datetime
+from jinja2 import Environment, FileSystemLoader
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest
 
@@ -86,11 +89,11 @@ class Bloomfilter:
 
     def add(self, key):
         for i in self.get_probes(key):
-            self.array[i//8] |= 2 ** (i%8)
+            self.array[i//8] |= 2 ** (i % 8)
         self.elements += 1
 
     def __contains__(self, key):
-        return all(self.array[i//8] & (2 ** (i%8)) for i in self.get_probes(key))
+        return all(self.array[i//8] & (2 ** (i % 8)) for i in self.get_probes(key))
 
     def __len__(self):
         return self.elements
@@ -109,9 +112,30 @@ class JSONRequest(Request):
             raise BadRequest('Unable to read JSON request')
 
 
+def render_template(template_name, **context):
+    template_path = os.path.join(os.path.dirname(__file__),
+                                 '..', 'templates')
+    jinja_env = Environment(loader=FileSystemLoader(template_path),
+                            autoescape=True)
+
+    def datetimeformat(value):
+        return datetime.fromtimestamp(value).strftime('%H:%M / %d-%m-%Y')
+
+    jinja_env.filters['datetimeformat'] = datetimeformat
+    t = jinja_env.get_template(template_name)
+    return Response(t.render(context), mimetype='text/html')
+
+
 class JSONResponse(Response):
 
     def __init__(self, obj, *args, **kwargs):
         kwargs["content_type"] = "application/json"
         super(JSONResponse, self).__init__(
             json.dumps(obj).encode("utf-8"), *args, **kwargs)
+
+
+class XMLResponse(Response):
+    def __init__(self, obj, *args, **kwargs):
+        kwargs["content_type"] = "text/xml"
+        super(XMLResponse, self).__init__(
+            obj, *args, **kwargs)

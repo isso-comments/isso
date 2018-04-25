@@ -19,8 +19,11 @@ class Comments:
     The tuple (tid, id) is unique and thus primary key.
     """
 
-    fields = ['tid', 'id', 'parent', 'created', 'modified', 'mode', 'remote_addr',
-              'text', 'author', 'email', 'website', 'likes', 'dislikes', 'voters']
+    fields = ['tid', 'id', 'parent', 'created', 'modified',
+              'mode',  # status of the comment 1 = valid, 2 = pending,
+                       # 4 = soft-deleted (cannot hard delete because of replies)
+              'remote_addr', 'text', 'author', 'email', 'website',
+              'likes', 'dislikes', 'voters']
 
     def __init__(self, db):
 
@@ -80,7 +83,7 @@ class Comments:
         """
         self.db.execute([
             'UPDATE comments SET',
-                ','.join(key + '=' + '?' for key in data),
+            ','.join(key + '=' + '?' for key in data),
             'WHERE id=?;'],
             list(data.values()) + [id])
 
@@ -91,19 +94,79 @@ class Comments:
         Search for comment :param:`id` and return a mapping of :attr:`fields`
         and values.
         """
-        rv = self.db.execute('SELECT * FROM comments WHERE id=?', (id, )).fetchone()
+        rv = self.db.execute(
+            'SELECT * FROM comments WHERE id=?', (id, )).fetchone()
         if rv:
             return dict(zip(Comments.fields, rv))
 
         return None
 
-    def fetch(self, uri, mode=5, after=0, parent='any', order_by='id', limit=None):
+    def count_modes(self):
+        """
+        Return comment mode counts for admin
+        """
+        comment_count = self.db.execute(
+            'SELECT mode, COUNT(comments.id) FROM comments '
+            'GROUP BY comments.mode').fetchall()
+        return dict(comment_count)
+
+    def fetchall(self, mode=5, after=0, parent='any', order_by='id',
+                 limit=100, page=0, asc=1):
+        """
+        Return comments for admin with :param:`mode`.
+        """
+        fields_comments = ['tid', 'id', 'parent', 'created', 'modified',
+                           'mode', 'remote_addr', 'text', 'author',
+                           'email', 'website', 'likes', 'dislikes']
+        fields_threads = ['uri', 'title']
+        sql_comments_fields = ', '.join(['comments.' + f
+                                         for f in fields_comments])
+        sql_threads_fields = ', '.join(['threads.' + f
+                                        for f in fields_threads])
+        sql = ['SELECT ' + sql_comments_fields + ', ' +
+               sql_threads_fields + ' '
+               'FROM comments INNER JOIN threads '
+               'ON comments.tid=threads.id '
+               'WHERE comments.mode = ? ']
+        sql_args = [mode]
+
+        if parent != 'any':
+            if parent is None:
+                sql.append('AND comments.parent IS NULL')
+            else:
+                sql.append('AND comments.parent=?')
+                sql_args.append(parent)
+
+        # custom sanitization
+        if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'tid']:
+            sql.append('ORDER BY ')
+            sql.append("comments.created")
+            if not asc:
+                sql.append(' DESC')
+        else:
+            sql.append('ORDER BY ')
+            sql.append('comments.' + order_by)
+            if not asc:
+                sql.append(' DESC')
+            sql.append(", comments.created")
+
+        if limit:
+            sql.append('LIMIT ?,?')
+            sql_args.append(page * limit)
+            sql_args.append(limit)
+
+        rv = self.db.execute(sql, sql_args).fetchall()
+        for item in rv:
+            yield dict(zip(fields_comments + fields_threads, item))
+
+    def fetch(self, uri, mode=5, after=0, parent='any',
+              order_by='id', asc=1, limit=None):
         """
         Return comments for :param:`uri` with :param:`mode`.
         """
-        sql = [ 'SELECT comments.* FROM comments INNER JOIN threads ON',
-                '    threads.uri=? AND comments.tid=threads.id AND (? | comments.mode) = ?',
-                '    AND comments.created>?']
+        sql = ['SELECT comments.* FROM comments INNER JOIN threads ON',
+               '    threads.uri=? AND comments.tid=threads.id AND (? | comments.mode) = ?',
+               '    AND comments.created>?']
 
         sql_args = [uri, mode, mode, after]
 
@@ -119,7 +182,8 @@ class Comments:
             order_by = 'id'
         sql.append('ORDER BY ')
         sql.append(order_by)
-        sql.append(' ASC')
+        if not asc:
+            sql.append(' DESC')
 
         if limit:
             sql.append('LIMIT ?')
@@ -155,7 +219,8 @@ class Comments:
         In the second case this comment can be safely removed without any side
         effects."""
 
-        refs = self.db.execute('SELECT * FROM comments WHERE parent=?', (id, )).fetchone()
+        refs = self.db.execute(
+            'SELECT * FROM comments WHERE parent=?', (id, )).fetchone()
 
         if refs is None:
             self.db.execute('DELETE FROM comments WHERE id=?', (id, ))
@@ -165,7 +230,8 @@ class Comments:
         self.db.execute('UPDATE comments SET text=? WHERE id=?', ('', id))
         self.db.execute('UPDATE comments SET mode=? WHERE id=?', (4, id))
         for field in ('author', 'website'):
-            self.db.execute('UPDATE comments SET %s=? WHERE id=?' % field, (None, id))
+            self.db.execute('UPDATE comments SET %s=? WHERE id=?' %
+                            field, (None, id))
 
         self._remove_stale()
         return self.get(id)

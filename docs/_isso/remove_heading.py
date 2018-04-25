@@ -9,4 +9,3 @@ class IssoTranslator(HTMLTranslator):
         if self.section_level == 1:
             raise nodes.SkipNode
         HTMLTranslator.visit_title(self, node)
-

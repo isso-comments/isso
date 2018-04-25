@@ -2,10 +2,7 @@
 
 from __future__ import unicode_literals
 
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 from isso import config
 
@@ -36,7 +33,8 @@ class TestHasher(unittest.TestCase):
 class TestPBKDF2(unittest.TestCase):
 
     def test_default(self):
-        pbkdf2 = PBKDF2(iterations=1000)  # original setting (and still default)
+        # original setting (and still default)
+        pbkdf2 = PBKDF2(iterations=1000)
         self.assertEqual(pbkdf2.uhash(""), "42476aafe2e4")
 
     def test_different_salt(self):

@@ -122,7 +122,8 @@ class uWSGIMixin(Mixin):
         self.cache = uWSGICache
 
         timedelta = conf.getint("moderation", "purge-after")
-        purge = lambda signum: self.db.comments.purge(timedelta)
+
+        def purge(signum): return self.db.comments.purge(timedelta)
         uwsgi.register_signal(1, "", purge)
         uwsgi.add_timer(1, timedelta)
 

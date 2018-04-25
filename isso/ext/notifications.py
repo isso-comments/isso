@@ -37,6 +37,12 @@ class SMTP(object):
 
         self.isso = isso
         self.conf = isso.conf.section("smtp")
+        gh = isso.conf.get("general", "host")
+        if type(gh) == str:
+            self.general_host = gh
+        #if gh is not a string then gh is a list
+        else:
+            self.general_host = gh[0]
 
         # test SMTP connectivity
         try:
@@ -58,7 +64,8 @@ class SMTP(object):
             uwsgi.spooler = spooler
 
     def __enter__(self):
-        klass = (smtplib.SMTP_SSL if self.conf.get('security') == 'ssl' else smtplib.SMTP)
+        klass = (smtplib.SMTP_SSL if self.conf.get(
+            'security') == 'ssl' else smtplib.SMTP)
         self.client = klass(host=self.conf.get('host'),
                             port=self.conf.getint('port'),
                             timeout=self.conf.getint('timeout'))
@@ -104,10 +111,11 @@ class SMTP(object):
             rv.write("User's URL: %s\n" % comment["website"])
 
         rv.write("IP address: %s\n" % comment["remote_addr"])
-        rv.write("Link to comment: %s\n" % (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+        rv.write("Link to comment: %s\n" %
+                 (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
         rv.write("\n")
 
-        uri = local("host") + "/id/%i" % comment["id"]
+        uri = self.general_host + "/id/%i" % comment["id"]
         key = self.isso.sign(comment["id"])
 
         rv.write("---\n")
@@ -173,7 +181,8 @@ class Stdout(object):
         logger.info("comment created: %s", json.dumps(comment))
 
     def _edit_comment(self, comment):
-        logger.info('comment %i edited: %s', comment["id"], json.dumps(comment))
+        logger.info('comment %i edited: %s',
+                    comment["id"], json.dumps(comment))
 
     def _delete_comment(self, id):
         logger.info('comment %i deleted', id)

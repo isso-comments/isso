@@ -1,0 +1,134 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-style: normal;
+    font-weight: normal;
+}
+input {
+  text-align: center;
+}
+.header::before, .header::after {
+    content: " ";
+    display: table;
+}
+.header::after {
+    clear: both;
+}
+.header::before, .header::after {
+    content: " ";
+    display: table;
+}
+.header {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 68em;
+    padding-bottom: 1em;
+    padding-top: 1em;
+}
+.header header {
+    display: block;
+    float: left;
+    font-weight: normal;
+    margin-right: 16.0363%;
+    width: 41.9818%;
+}
+.header header .logo {
+    float: left;
+    max-height: 60px;
+    padding-right: 12px;
+}
+.header header h1 {
+    font-size: 1.55em;
+    margin-bottom: 0.3em;
+}
+.header header h2 {
+    font-size: 1.05em;
+}
+.header a, .header a:visited {
+    color: #4d4c4c;
+    text-decoration: none;
+}
+.outer {
+    background-color: #eeeeee;
+    box-shadow: 0 0 0.5em #c0c0c0 inset;
+}
+.outer .filters::before, .outer .filters::after {
+    content: " ";
+    display: table;
+}
+.outer .filters::after {
+    clear: both;
+}
+.outer .filters::before, .outer .filters::after {
+    content: " ";
+    display: table;
+}
+.outer .filters {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 68em;
+    padding: 1em;
+}
+
+a {
+  text-decoration: none;
+  color: #4d4c4c;
+}
+.label {
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    line-height: 1.4em;
+    outline: 0 none;
+    padding: calc(0.6em - 1px);
+}
+.active {
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.6) inset;
+}
+.label-valid {
+  background-color: #cfc;
+  border-color: #cfc;
+}
+.label-pending {
+  background-color: #ffc;
+  border-color: #ffc;
+}
+.mode {
+  float: left;
+}
+.pagination {
+  float: right;
+}
+.note .label {
+  margin: 9px;
+  padding: 3px;
+}
+#login {
+  margin-top: 40px;
+  text-align: center;
+  width: 100%;
+}
+.isso-comment-footer a {
+  cursor: pointer;
+}
+.thread-title {
+  margin-left: 3em;
+}
+.group {
+  float: left;
+  margin-left: 2em;
+}
+.editable {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 5px;
+}
+.hidden {
+  display: none;
+}

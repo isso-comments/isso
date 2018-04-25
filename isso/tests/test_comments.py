@@ -4,12 +4,9 @@ from __future__ import unicode_literals
 
 import os
 import json
+import re
 import tempfile
-
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 try:
     from urllib.parse import urlencode
@@ -36,6 +33,7 @@ class TestComments(unittest.TestCase):
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
+        self.conf = conf
 
         class App(Isso, core.Mixin):
             pass
@@ -54,7 +52,8 @@ class TestComments(unittest.TestCase):
 
     def testGet(self):
 
-        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': 'Lorem ipsum ...'}))
         r = self.get('/id/1')
         self.assertEqual(r.status_code, 200)
 
@@ -65,7 +64,8 @@ class TestComments(unittest.TestCase):
 
     def testCreate(self):
 
-        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({'text': 'Lorem ipsum ...'}))
 
         self.assertEqual(rv.status_code, 201)
         self.assertIn("Set-Cookie", rv.headers)
@@ -77,7 +77,8 @@ class TestComments(unittest.TestCase):
 
     def textCreateWithNonAsciiText(self):
 
-        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Здравствуй, мир!'}))
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({'text': 'Здравствуй, мир!'}))
 
         self.assertEqual(rv.status_code, 201)
         rv = loads(rv.data)
@@ -109,14 +110,16 @@ class TestComments(unittest.TestCase):
     def testCreateInvalidParent(self):
 
         self.post('/new?uri=test', data=json.dumps({'text': '...'}))
-        self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 1}))
-        invalid = self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 2}))
+        self.post('/new?uri=test',
+                  data=json.dumps({'text': '...', 'parent': 1}))
+        invalid = self.post(
+            '/new?uri=test', data=json.dumps({'text': '...', 'parent': 2}))
 
         self.assertEqual(loads(invalid.data)["parent"], 1)
 
     def testVerifyFields(self):
 
-        verify = lambda comment: comments.API.verify(comment)[0]
+        def verify(comment): return comments.API.verify(comment)[0]
 
         # text is missing
         self.assertFalse(verify({}))
@@ -132,10 +135,12 @@ class TestComments(unittest.TestCase):
 
         # email/website length
         self.assertTrue(verify({"text": "...", "email": "*"*254}))
-        self.assertTrue(verify({"text": "...", "website": "google.de/" + "a"*128}))
+        self.assertTrue(
+            verify({"text": "...", "website": "google.de/" + "a"*128}))
 
         self.assertFalse(verify({"text": "...", "email": "*"*1024}))
-        self.assertFalse(verify({"text": "...", "website": "google.de/" + "*"*1024}))
+        self.assertFalse(
+            verify({"text": "...", "website": "google.de/" + "*"*1024}))
 
         # valid website url
         self.assertTrue(comments.isurl("example.tld"))
@@ -143,7 +148,8 @@ class TestComments(unittest.TestCase):
         self.assertTrue(comments.isurl("https://example.tld"))
         self.assertTrue(comments.isurl("https://example.tld:1337/"))
         self.assertTrue(comments.isurl("https://example.tld:1337/foobar"))
-        self.assertTrue(comments.isurl("https://example.tld:1337/foobar?p=1#isso-thread"))
+        self.assertTrue(comments.isurl(
+            "https://example.tld:1337/foobar?p=1#isso-thread"))
 
         self.assertFalse(comments.isurl("ftp://example.tld/"))
         self.assertFalse(comments.isurl("tel:+1234567890"))
@@ -153,7 +159,8 @@ class TestComments(unittest.TestCase):
     def testGetInvalid(self):
 
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=123').status_code, 404)
-        self.assertEqual(self.get('/?uri=%2Fpath%2Fspam%2F&id=123').status_code, 404)
+        self.assertEqual(
+            self.get('/?uri=%2Fpath%2Fspam%2F&id=123').status_code, 404)
         self.assertEqual(self.get('/?uri=?uri=%foo%2F').status_code, 404)
 
     def testGetLimited(self):
@@ -170,7 +177,8 @@ class TestComments(unittest.TestCase):
     def testGetNested(self):
 
         self.post('/new?uri=test', data=json.dumps({'text': '...'}))
-        self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 1}))
+        self.post('/new?uri=test',
+                  data=json.dumps({'text': '...', 'parent': 1}))
 
         r = self.get('/?uri=test&parent=1')
         self.assertEqual(r.status_code, 200)
@@ -182,7 +190,8 @@ class TestComments(unittest.TestCase):
 
         self.post('/new?uri=test', data=json.dumps({'text': '...'}))
         for i in range(20):
-            self.post('/new?uri=test', data=json.dumps({'text': '...', 'parent': 1}))
+            self.post('/new?uri=test',
+                      data=json.dumps({'text': '...', 'parent': 1}))
 
         r = self.get('/?uri=test&parent=1&limit=10')
         self.assertEqual(r.status_code, 200)
@@ -192,7 +201,8 @@ class TestComments(unittest.TestCase):
 
     def testUpdate(self):
 
-        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': 'Lorem ipsum ...'}))
         self.put('/id/1', data=json.dumps({
             'text': 'Hello World', 'author': 'me', 'website': 'http://example.com/'}))
 
@@ -207,7 +217,8 @@ class TestComments(unittest.TestCase):
 
     def testDelete(self):
 
-        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Lorem ipsum ...'}))
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': 'Lorem ipsum ...'}))
         r = self.delete('/id/1')
         self.assertEqual(r.status_code, 200)
         self.assertEqual(loads(r.data), None)
@@ -217,7 +228,8 @@ class TestComments(unittest.TestCase):
 
         client = JSONClient(self.app, Response)
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
-        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First', 'parent': 1}))
+        client.post('/new?uri=%2Fpath%2F',
+                    data=json.dumps({'text': 'First', 'parent': 1}))
 
         r = client.delete('/id/1')
         self.assertEqual(r.status_code, 200)
@@ -246,8 +258,10 @@ class TestComments(unittest.TestCase):
         client = JSONClient(self.app, Response)
 
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
-        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Second', 'parent': 1}))
-        client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Third', 'parent': 1}))
+        client.post('/new?uri=%2Fpath%2F',
+                    data=json.dumps({'text': 'Second', 'parent': 1}))
+        client.post('/new?uri=%2Fpath%2F',
+                    data=json.dumps({'text': 'Third', 'parent': 1}))
         client.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'Last'}))
 
         client.delete('/id/1')
@@ -265,10 +279,11 @@ class TestComments(unittest.TestCase):
 
         for path in paths:
             self.assertEqual(self.post('/new?' + urlencode({'uri': path}),
-                             data=json.dumps({'text': '...'})).status_code, 201)
+                                       data=json.dumps({'text': '...'})).status_code, 201)
 
         for i, path in enumerate(paths):
-            self.assertEqual(self.get('/?' + urlencode({'uri': path})).status_code, 200)
+            self.assertEqual(
+                self.get('/?' + urlencode({'uri': path})).status_code, 200)
             self.assertEqual(self.get('/id/%i' % (i + 1)).status_code, 200)
 
     def testDeleteAndCreateByDifferentUsersButSamePostId(self):
@@ -287,7 +302,8 @@ class TestComments(unittest.TestCase):
 
         a = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Aaa"}))
         b = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Bbb"}))
-        c = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "Ccc", "email": "..."}))
+        c = self.post('/new?uri=%2Fpath%2F',
+                      data=json.dumps({"text": "Ccc", "email": "..."}))
 
         a = loads(a.data)
         b = loads(b.data)
@@ -299,7 +315,8 @@ class TestComments(unittest.TestCase):
 
     def testVisibleFields(self):
 
-        rv = self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "...", "invalid": "field"}))
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({"text": "...", "invalid": "field"}))
         self.assertEqual(rv.status_code, 201)
 
         rv = loads(rv.data)
@@ -309,6 +326,36 @@ class TestComments(unittest.TestCase):
                 rv.pop(key)
 
         self.assertListEqual(list(rv.keys()), [])
+
+    def testNoFeed(self):
+        rv = self.get('/feed?uri=%2Fpath%2Fnothing')
+        self.assertEqual(rv.status_code, 404)
+
+    def testFeedEmpty(self):
+        self.conf.set("rss", "base", "https://example.org")
+
+        rv = self.get('/feed?uri=%2Fpath%2Fnothing')
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.headers['ETag'], '"empty"')
+        data = rv.data.decode('utf-8')
+        self.assertEqual(data, """<?xml version=\'1.0\' encoding=\'utf-8\'?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0"><updated>1970-01-01T01:00:00Z</updated><id>tag:example.org,2018:/isso/thread/path/nothing</id><title>Comments for example.org/path/nothing</title></feed>""")
+
+    def testFeed(self):
+        self.conf.set("rss", "base", "https://example.org")
+
+        self.post('/new?uri=%2Fpath%2F', data=json.dumps({'text': 'First'}))
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': '*Second*', 'parent': 1}))
+
+        rv = self.get('/feed?uri=%2Fpath%2F')
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(rv.headers['ETag'], '"1-2"')
+        data = rv.data.decode('utf-8')
+        data = re.sub('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+Z',
+                      '2018-04-01T10:00:00Z', data)
+        self.assertEqual(data, """<?xml version=\'1.0\' encoding=\'utf-8\'?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0"><updated>2018-04-01T10:00:00Z</updated><id>tag:example.org,2018:/isso/thread/path/</id><title>Comments for example.org/path/</title><entry><id>tag:example.org,2018:/isso/1/2</id><title>Comment #2</title><updated>2018-04-01T10:00:00Z</updated><author><name /></author><link href="https://example.org/path/#isso-2" /><content type="html">&lt;p&gt;&lt;em&gt;Second&lt;/em&gt;&lt;/p&gt;</content><thr:in-reply-to href="https://example.org/path/#isso-1" ref="tag:example.org,2018:/isso/1/1" /></entry><entry><id>tag:example.org,2018:/isso/1/1</id><title>Comment #1</title><updated>2018-04-01T10:00:00Z</updated><author><name /></author><link href="https://example.org/path/#isso-1" /><content type="html">&lt;p&gt;First&lt;/p&gt;</content></entry></feed>""")
 
     def testCounts(self):
 
@@ -338,7 +385,8 @@ class TestComments(unittest.TestCase):
 
         for uri, count in iteritems(expected):
             for _ in range(count):
-                self.post('/new?uri=%s' % uri, data=json.dumps({"text": "..."}))
+                self.post('/new?uri=%s' %
+                          uri, data=json.dumps({"text": "..."}))
 
         rv = self.post('/count', data=json.dumps(list(expected.keys())))
         self.assertEqual(loads(rv.data), list(expected.values()))
@@ -367,22 +415,26 @@ class TestComments(unittest.TestCase):
         self.post('/new?uri=%2F', data=json.dumps({"text": "..."}))
 
         # no header is fine (default for XHR)
-        self.assertEqual(self.post('/id/1/dislike', content_type="").status_code, 200)
+        self.assertEqual(
+            self.post('/id/1/dislike', content_type="").status_code, 200)
 
         # x-www-form-urlencoded is definitely not RESTful
-        self.assertEqual(self.post('/id/1/dislike', content_type=form).status_code, 403)
+        self.assertEqual(
+            self.post('/id/1/dislike', content_type=form).status_code, 403)
         self.assertEqual(self.post('/new?uri=%2F', data=json.dumps({"text": "..."}),
-                                         content_type=form).status_code, 403)
+                                   content_type=form).status_code, 403)
         # just for the record
-        self.assertEqual(self.post('/id/1/dislike', content_type=js).status_code, 200)
+        self.assertEqual(
+            self.post('/id/1/dislike', content_type=js).status_code, 200)
 
     def testPreview(self):
-        response = self.post('/preview', data=json.dumps({'text': 'This is **mark***down*'}))
+        response = self.post(
+            '/preview', data=json.dumps({'text': 'This is **mark***down*'}))
         self.assertEqual(response.status_code, 200)
 
         rv = loads(response.data)
-        self.assertEqual(rv["text"], '<p>This is <strong>mark</strong><em>down</em></p>')
-
+        self.assertEqual(
+            rv["text"], '<p>This is <strong>mark</strong><em>down</em></p>')
 
 
 class TestModeratedComments(unittest.TestCase):
@@ -407,7 +459,8 @@ class TestModeratedComments(unittest.TestCase):
 
     def testAddComment(self):
 
-        rv = self.client.post('/new?uri=test', data=json.dumps({"text": "..."}))
+        rv = self.client.post(
+            '/new?uri=test', data=json.dumps({"text": "..."}))
         self.assertEqual(rv.status_code, 202)
 
         self.assertEqual(self.client.get('/id/1').status_code, 200)

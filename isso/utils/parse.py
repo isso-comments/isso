@@ -15,7 +15,7 @@ from isso.compat import map, filter, PY2K
 
 if PY2K:  # http://bugs.python.org/issue12984
     from xml.dom.minidom import NamedNodeMap
-    NamedNodeMap.__contains__ = lambda self, key: self.has_key(key)
+    NamedNodeMap.__contains__ = lambda self, key: self.has_key(key)  # noqa
 
 
 def thread(data, default=u"Untitled.", id=None):
@@ -31,8 +31,8 @@ def thread(data, default=u"Untitled.", id=None):
 
     # aka getElementById, but limited to div and section tags
     el = list(filter(lambda i: i.attributes["id"].value == "isso-thread",
-              filter(lambda i: "id" in i.attributes,
-                     chain(*map(html.getElementsByTagName, ("div", "section"))))))
+                     filter(lambda i: "id" in i.attributes,
+                            chain(*map(html.getElementsByTagName, ("div", "section"))))))
 
     if not el:
         return id, default

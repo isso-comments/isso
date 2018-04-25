@@ -3,6 +3,8 @@ define({
     "postbox-author": "Име/псевдоним (незадължително)",
     "postbox-email": "Ел. поща (незадължително)",
     "postbox-website": "Уебсайт (незадължително)",
+    "postbox-preview": "преглед",
+    "postbox-edit": "Редактиране",
     "postbox-submit": "Публикуване",
     "num-comments": "1 коментар\n{{ n }} коментара",
     "no-comments": "Все още няма коментари",
