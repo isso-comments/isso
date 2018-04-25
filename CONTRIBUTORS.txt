@@ -78,6 +78,9 @@ In chronological order:
 * @vincentbernat
   * Added documentation about data-isso-id attribute (overriding the standard isso-thread-id)
   * Added multi-staged Dockerfile
+  * Added atom feed
+  * Added a nofollow/noopener on links inside comments to protect against bots
+  * Added a preview using the existing preview endpoint
 
 * @p-vitt & @M4a1x
   * Documentation on troubleshooting for uberspace users
