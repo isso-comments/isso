@@ -4,7 +4,7 @@ define(["app/api", "app/dom", "app/i18n"], function(api, $, i18n) {
         var objs = {};
 
         $.each("a", function(el) {
-            if (! el.href.match(/#isso-thread$/)) {
+            if (! el.href.match || ! el.href.match(/#isso-thread$/)) {
                 return;
             }
 
