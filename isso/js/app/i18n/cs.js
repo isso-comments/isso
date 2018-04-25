@@ -3,6 +3,8 @@ define({
     "postbox-author": "Jméno (nepovinné)",
     "postbox-email": "E-mail (nepovinný)",
     "postbox-website": "Web (nepovinný)",
+    "postbox-preview": "Náhled",
+    "postbox-edit": "Upravit",
     "postbox-submit": "Publikovat",
     "num-comments": "Jeden komentář\n{{ n }} Komentářů",
     "no-comments": "Zatím bez komentářů",

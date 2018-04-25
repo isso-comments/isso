@@ -31,12 +31,16 @@
     color: #757575;
 }
 
-.isso-comment {
+#isso-root .isso-comment {
     max-width: 68em;
     padding-top: 0.95em;
     margin: 0.95em auto;
 }
-.isso-comment:not(:first-of-type),
+#isso-root .preview .isso-comment {
+    padding-top: 0;
+    margin: 0;
+}
+#isso-root .isso-comment:not(:first-of-type),
 .isso-follow-up .isso-comment {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -89,7 +93,8 @@
     font-weight: bold;
     color: #555;
 }
-.isso-comment > div.text-wrapper > .textarea-wrapper .textarea {
+.isso-comment > div.text-wrapper > .textarea-wrapper .textarea,
+.isso-comment > div.text-wrapper > .textarea-wrapper .preview {
     margin-top: 0.2em;
 }
 .isso-comment > div.text-wrapper > div.text p {
@@ -107,7 +112,8 @@
     font-size: 130%;
     font-weight: bold;
 }
-.isso-comment > div.text-wrapper > div.textarea-wrapper .textarea {
+.isso-comment > div.text-wrapper > div.textarea-wrapper .textarea,
+.isso-comment > div.text-wrapper > div.textarea-wrapper .preview {
     width: 100%;
     border: 1px solid #f0f0f0;
     border-radius: 2px;
@@ -163,7 +169,8 @@
 .isso-postbox > .form-wrapper > .auth-section .post-action {
     display: block;
 }
-.isso-postbox > .form-wrapper .textarea {
+.isso-postbox > .form-wrapper .textarea,
+.isso-postbox > .form-wrapper .preview {
     margin: 0 0 .3em;
     padding: .4em .8em;
     border-radius: 3px;
@@ -193,7 +200,7 @@
 .isso-postbox > .form-wrapper > .auth-section .post-action {
     display: inline-block;
     float: right;
-    margin: 0;
+    margin: 0 0 0 5px;
 }
 .isso-postbox > .form-wrapper > .auth-section .post-action > input {
     padding: calc(.3em - 1px);
@@ -211,6 +218,28 @@
 .isso-postbox > .form-wrapper > .auth-section .post-action > input:active {
     background-color: #BBB;
 }
+.isso-postbox > .form-wrapper .preview,
+.isso-postbox > .form-wrapper input[name="edit"],
+.isso-postbox.preview-mode > .form-wrapper input[name="preview"],
+.isso-postbox.preview-mode > .form-wrapper .textarea {
+    display: none;
+}
+.isso-postbox.preview-mode > .form-wrapper .preview {
+    display: block;
+}
+.isso-postbox.preview-mode > .form-wrapper input[name="edit"] {
+    display: inline;
+}
+.isso-postbox > .form-wrapper .preview {
+    background-color: #f8f8f8;
+    background: repeating-linear-gradient(
+        -45deg,
+        #f8f8f8,
+        #f8f8f8 10px,
+        #fff 10px,
+        #fff 20px
+    );
+}
 @media screen and (max-width:600px) {
     .isso-postbox > .form-wrapper > .auth-section .input-wrapper {
         display: block;
@@ -219,10 +248,5 @@
     }
     .isso-postbox > .form-wrapper > .auth-section .input-wrapper input {
         width: 100%;
-    }
-    .isso-postbox > .form-wrapper > .auth-section .post-action {
-        display: block;
-        float: none;
-        text-align: right;
     }
 }
