@@ -1,4 +1,7 @@
 div(class='isso-comment' id='isso-#{comment.id}')
+    if conf.gravatar
+        div(class='avatar')
+            img(src='#{comment.gravatar_image}')
     if conf.avatar
         div(class='avatar')
             svg(data-hash='#{comment.hash}')

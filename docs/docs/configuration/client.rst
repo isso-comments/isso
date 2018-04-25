@@ -108,6 +108,14 @@ scheme is based in `this color palette <http://colrd.com/palette/19308/>`_.
 Multiple colors must be separated by space. If you use less than eight colors
 and not a multiple of 2, the color distribution is not even.
 
+data-isso-gravatar
+------------------
+
+Uses gravatar images instead of generating svg images. You have to set 
+"data-isso-avatar" to **false** when you want to use this. Otherwise
+both the gravatar and avatar svg image will show up. Please also set
+option "gravatar" to **true** in the server configuration...
+
 data-isso-vote
 --------------
 
