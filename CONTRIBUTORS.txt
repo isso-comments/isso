@@ -89,5 +89,8 @@ In chronological order:
 * @benjhess
   * Optionnal gravatar support
 
+* Steffen Prince @sprin
+  * Upgrade to Misaka 2
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
