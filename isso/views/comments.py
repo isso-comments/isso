@@ -732,6 +732,7 @@ class API(object):
                 comment['replies'] = self._process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
+
     def _add_gravatar_image(self, item):
         if not self.conf.getboolean('gravatar'):
             return item
@@ -743,6 +744,7 @@ class API(object):
         item['gravatar_image'] = gravatar_url.format(email_md5_hash)
 
         return item
+
     def _process_fetched_list(self, fetched_list, plain=False):
         for item in fetched_list:
 
@@ -851,7 +853,6 @@ class API(object):
     @apiSuccessExample Counts of 5 threads:
         [2, 18, 4, 0, 3]
     """
-
     def counts(self, environ, request):
 
         data = request.get_json()

@@ -86,5 +86,8 @@ In chronological order:
 * @p-vitt & @M4a1x
   * Documentation on troubleshooting for uberspace users
 
+* @benjhess
+  * Optionnal gravatar support
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]

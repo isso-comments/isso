@@ -134,13 +134,13 @@ class TestComments(unittest.TestCase):
             self.assertFalse(verify({"text": text}))
 
         # email/website length
-        self.assertTrue(verify({"text": "...", "email": "*"*254}))
+        self.assertTrue(verify({"text": "...", "email": "*" * 254}))
         self.assertTrue(
-            verify({"text": "...", "website": "google.de/" + "a"*128}))
+            verify({"text": "...", "website": "google.de/" + "a" * 128}))
 
-        self.assertFalse(verify({"text": "...", "email": "*"*1024}))
+        self.assertFalse(verify({"text": "...", "email": "*" * 1024}))
         self.assertFalse(
-            verify({"text": "...", "website": "google.de/" + "*"*1024}))
+            verify({"text": "...", "website": "google.de/" + "*" * 1024}))
 
         # valid website url
         self.assertTrue(comments.isurl("example.tld"))
