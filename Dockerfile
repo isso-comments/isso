@@ -12,8 +12,8 @@ COPY --from=0 /src .
 RUN apt-get -qqy update && apt-get -qqy install python3-dev sqlite3
 RUN python3 -m venv /isso \
  && . /isso/bin/activate \
- && python setup.py install \
- && pip install gunicorn
+ && pip install gunicorn cffi \
+ && python setup.py install
 
 # Third, create final repository
 FROM python:3-slim-stretch
