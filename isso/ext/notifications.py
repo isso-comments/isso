@@ -56,7 +56,7 @@ class SMTP(object):
             def spooler(args):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
-                                   args["body"].decode("utf-8"))
+                                   args["body"].decode("utf-8"), args[b"to"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -137,18 +137,22 @@ class SMTP(object):
         
         if thread["title"] is None:
             thread["title"] = "New comment"
+
+        if self.conf.get("to") is not None:
+            to_addr = self.conf.get("to")
             
         if uwsgi:
             uwsgi.spool({b"subject": thread["title"].encode("utf-8"),
-                b"body": body.encode("utf-8")})
+                b"body": body.encode("utf-8"), b"to":to_addr.encode("utf-8")})
         else:
-            start_new_thread(self._retry, (thread["title"], body))
+            start_new_thread(self._retry, (thread["title"], body, to_addr))
 
-    def _sendmail(self, subject, body):
+    def _sendmail(self, subject, body, to):
 
         from_addr = self.conf.get("from")
-        to_addr = self.conf.get("to")
-
+        # to_addr = self.conf.get("to")
+        to_addr = to
+        
         msg = MIMEText(body, 'plain', 'utf-8')
         msg['From'] = from_addr
         msg['To'] = to_addr
@@ -158,10 +162,10 @@ class SMTP(object):
         with self as con:
             con.sendmail(from_addr, to_addr, msg.as_string())
 
-    def _retry(self, subject, body):
+    def _retry(self, subject, body, to):
         for x in range(5):
             try:
-                self._sendmail(subject, body)
+                self._sendmail(subject, body, to)
             except smtplib.SMTPConnectError:
                 time.sleep(60)
             else:
