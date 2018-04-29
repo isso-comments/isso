@@ -30,7 +30,7 @@ def host(environ):  # pragma: no cover
     of http://www.python.org/dev/peps/pep-0333/#url-reconstruction
     """
 
-    url = environ['wsgi.url_scheme']+'://'
+    url = environ['wsgi.url_scheme'] + '://'
 
     if environ.get('HTTP_HOST'):
         url += environ['HTTP_HOST']
@@ -84,6 +84,8 @@ def origin(hosts):
     hosts = [urlsplit(h) for h in hosts]
 
     def func(environ):
+        if 'ISSO_CORS_ORIGIN' in environ:
+            return environ['ISSO_CORS_ORIGIN']
 
         if not hosts:
             return "http://invalid.local"

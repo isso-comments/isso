@@ -70,6 +70,12 @@ class SMTP(object):
 
         self.isso = isso
         self.conf = isso.conf.section("smtp")
+        gh = isso.conf.get("general", "host")
+        if type(gh) == str:
+            self.general_host = gh
+        #if gh is not a string then gh is a list
+        else:
+            self.general_host = gh[0]
 
         # test SMTP connectivity
         try:
@@ -118,7 +124,7 @@ class SMTP(object):
         rv.write("---\n")
 
         if admin:
-            uri = local("host") + "/id/%i" % comment["id"]
+            uri = self.general_host + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
 
             rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
@@ -127,7 +133,7 @@ class SMTP(object):
                 rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
 
         else:
-            uri = local("host") + "/id/%i" % comment_parent["id"]
+            uri = self.general_host + "/id/%i" % comment_parent["id"]
             key = self.isso.sign(('unsubscribe', comment_parent["id"]))
 
             rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + key))

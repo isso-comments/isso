@@ -3,6 +3,8 @@ define({
     "postbox-author": "Név (nem kötelező)",
     "postbox-email": "Email (nem kötelező)",
     "postbox-website": "Website (nem kötelező)",
+    "postbox-preview": "Előnézet",
+    "postbox-edit": "Szerekesztés",
     "postbox-submit": "Elküld",
     "num-comments": "Egy hozzászólás\n{{ n }} hozzászólás",
     "no-comments": "Eddig nincs hozzászólás",

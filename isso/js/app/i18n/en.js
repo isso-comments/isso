@@ -3,11 +3,14 @@ define({
     "postbox-author": "Name (optional)",
     "postbox-email": "E-mail (optional)",
     "postbox-website": "Website (optional)",
+    "postbox-preview": "Preview",
+    "postbox-edit": "Edit",
     "postbox-submit": "Submit",
     "postbox-notification": "Subscribe to email notification of replies",
 
     "num-comments": "One Comment\n{{ n }} Comments",
     "no-comments": "No Comments Yet",
+    "atom-feed": "Atom feed",
 
     "comment-reply": "Reply",
     "comment-edit": "Edit",

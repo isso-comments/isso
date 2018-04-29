@@ -36,7 +36,7 @@ def anonymize(remote_addr):
             ipv6 = ipaddress.IPv6Address(remote_addr)
             if ipv6.ipv4_mapped is not None:
                 return anonymize(ipv6.ipv4_mapped)
-            return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000']*5)
+            return u'' + ipv6.exploded.rsplit(':', 5)[0] + ':' + ':'.join(['0000'] * 5)
         except ipaddress.AddressValueError:
             return u'0.0.0.0'
 
@@ -89,11 +89,11 @@ class Bloomfilter:
 
     def add(self, key):
         for i in self.get_probes(key):
-            self.array[i//8] |= 2 ** (i % 8)
+            self.array[i // 8] |= 2 ** (i % 8)
         self.elements += 1
 
     def __contains__(self, key):
-        return all(self.array[i//8] & (2 ** (i % 8)) for i in self.get_probes(key))
+        return all(self.array[i // 8] & (2 ** (i % 8)) for i in self.get_probes(key))
 
     def __len__(self):
         return self.elements
@@ -132,3 +132,10 @@ class JSONResponse(Response):
         kwargs["content_type"] = "application/json"
         super(JSONResponse, self).__init__(
             json.dumps(obj).encode("utf-8"), *args, **kwargs)
+
+
+class XMLResponse(Response):
+    def __init__(self, obj, *args, **kwargs):
+        kwargs["content_type"] = "text/xml"
+        super(XMLResponse, self).__init__(
+            obj, *args, **kwargs)

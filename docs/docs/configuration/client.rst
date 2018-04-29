@@ -7,6 +7,7 @@ preferably in the script tag which embeds the JS:
 .. code-block:: html
 
     <script data-isso="/prefix/"
+            data-isso-id="thread-id"
             data-isso-css="true"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
@@ -19,15 +20,16 @@ preferably in the script tag which embeds the JS:
             data-isso-avatar-bg="#f0f0f0"
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             data-isso-vote="true"
-            data-vote-levels=""
+            data-isso-vote-levels=""
+            data-isso-feed="false"
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
-the embed tag, e.g.:
+the embed tag, as well as the thread ID, e.g.:
 
 .. code-block:: html
 
-    <section id="isso-thread" data-title="Foo!"></section>
+    <section id="isso-thread" data-title="Foo!" data-isso-id="/path/to/resource"></section>
 
 data-isso
 ---------
@@ -106,6 +108,14 @@ scheme is based in `this color palette <http://colrd.com/palette/19308/>`_.
 Multiple colors must be separated by space. If you use less than eight colors
 and not a multiple of 2, the color distribution is not even.
 
+data-isso-gravatar
+------------------
+
+Uses gravatar images instead of generating svg images. You have to set 
+"data-isso-avatar" to **false** when you want to use this. Otherwise
+both the gravatar and avatar svg image will show up. Please also set
+option "gravatar" to **true** in the server configuration...
+
 data-isso-vote
 --------------
 
@@ -124,3 +134,10 @@ For example, the value `"-5,5"` will cause each `isso-comment` to be given one o
 - `isso-vote-level-2` for scores of `5` and greater
 
 These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
+
+data-isso-feed
+--------------
+
+Enable or disable the addition of a link to the feed for the comment
+thread. The link will only be valid if the appropriate setting, in
+``[rss]`` section, is also enabled server-side.
