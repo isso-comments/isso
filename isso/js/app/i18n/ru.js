@@ -3,7 +3,7 @@ define({
     "postbox-author": "Имя (необязательно)",
     "postbox-email": "Email (необязательно)",
     "postbox-website": "Сайт (необязательно)",
-    "postbox-preview": "анонс",
+    "postbox-preview": "Предпросмотр",
     "postbox-edit": "Правка",
     "postbox-submit": "Отправить",
     "num-comments": "{{ n }} комментарий\n{{ n }} комментария\n{{ n }} комментариев",
