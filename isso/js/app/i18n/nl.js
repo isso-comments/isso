@@ -3,6 +3,8 @@ define({
     "postbox-author": "Naam (optioneel)",
     "postbox-email": "E-mail (optioneel)",
     "postbox-website": "Website (optioneel)",
+    "postbox-preview": "Voorbeeld",
+    "postbox-edit": "Bewerken",
     "postbox-submit": "Versturen",
     "num-comments": "Één reactie\n{{ n }} reacties",
     "no-comments": "Nog geen reacties",

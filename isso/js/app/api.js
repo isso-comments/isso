@@ -191,6 +191,24 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
+
+    var feed = function(tid) {
+        return endpoint + "/feed?" + qs({uri: tid || location});
+    };
+
+    var preview = function(text) {
+        var deferred = Q.defer();
+        curl("POST", endpoint + "/preview", JSON.stringify({text: text}),
+             function(rv) {
+                 if (rv.status === 200) {
+                     deferred.resolve(JSON.parse(rv.body).text);
+                 } else {
+                     deferred.reject(rv.body);
+                 }
+             });
+        return deferred.promise;
+    };
+
     return {
         endpoint: endpoint,
         salt: salt,
@@ -202,6 +220,8 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         fetch: fetch,
         count: count,
         like: like,
-        dislike: dislike
+        dislike: dislike,
+        feed: feed,
+        preview: preview
     };
 });

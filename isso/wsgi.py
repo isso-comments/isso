@@ -30,7 +30,7 @@ def host(environ):  # pragma: no cover
     of http://www.python.org/dev/peps/pep-0333/#url-reconstruction
     """
 
-    url = environ['wsgi.url_scheme']+'://'
+    url = environ['wsgi.url_scheme'] + '://'
 
     if environ.get('HTTP_HOST'):
         url += environ['HTTP_HOST']

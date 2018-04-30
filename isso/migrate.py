@@ -55,7 +55,7 @@ class Progress(object):
 
         if time() - self.last > 0.2:
             sys.stdout.write("\r{0}".format(" " * cols))
-            sys.stdout.write("\r[{0:.0%}]  {1}".format(i/self.end, message))
+            sys.stdout.write("\r[{0:.0%}]  {1}".format(i / self.end, message))
             sys.stdout.flush()
             self.last = time()
 
