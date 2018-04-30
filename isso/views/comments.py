@@ -274,6 +274,7 @@ class API(object):
                 else:
                     title = data['title']
 
+                    
                 thread = self.threads.new(uri, title)
                 self.signal("comments.new:new-thread", thread)
             else:

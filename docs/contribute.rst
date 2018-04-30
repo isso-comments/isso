@@ -59,3 +59,5 @@ definitely need help:
   - delete or activate comments matching a filter (e.g. name, email, ip address)
 
   - close threads and remove threads completely
+
+  - edit comments

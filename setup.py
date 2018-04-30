@@ -5,8 +5,13 @@ import sys
 
 from setuptools import setup, find_packages
 
+<<<<<<< HEAD
+requires = ['html5lib==0.9999999', 'itsdangerous', 'Jinja2',
+            'misaka>=1.0,<2.0', 'werkzeug>=0.9', 'uwsgi']
+=======
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib<0.9999999',
             'werkzeug>=0.9']
+>>>>>>> e745f326db2ec1c39a4aae9094ef4891c9687e4a
 
 if sys.version_info < (2, 7):
     raise SystemExit("Python 2 versions < 2.7 are not supported.")

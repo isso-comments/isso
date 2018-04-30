@@ -9,7 +9,8 @@
 .Python
 .sass-cache
 .vagrant
-
+package.json
+yarn.lock
 /bin
 /include
 /lib
@@ -17,11 +18,11 @@
 /man
 /share
 /isso.egg-info/
-/isso/js/components
-/isso/js/embed.min.js
-/isso/js/embed.dev.js
-/isso/js/count.min.js
-/isso/js/count.dev.js
+#/isso/js/components
+#/isso/js/embed.min.js
+#/isso/js/embed.dev.js
+#/isso/js/count.min.js
+#/isso/js/count.dev.js
 
 /docs/_build
 /docs/_static/css/site.css
@@ -119,3 +120,5 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+node_modules

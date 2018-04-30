@@ -69,6 +69,15 @@ test: $($ISSO_PY_SRC)
 clean:
 	rm -f $(DOCS_MAN_DST) $(DOCS_CSS_DST) $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
+	
+web:
+	python setup.py develop  # or `install`
+	# isso -c config/comments.comment.sh.cfg run
+	# gunicorn --pid=/app/storage/gunicorn.pid -w 4 -b 0.0.0.0:5000  isso.dispatch
+	uwsgi uswgi2.ini
+	cd isso/js; bower --allow-root install almond requirejs requirejs-text jade
+	make js
 
-.PHONY: clean site man init js coverage test
+
+.PHONY: clean site man init js coverage test web
 
