@@ -12,9 +12,6 @@ Changelog for Isso
 - Add links highlighting in comments
 - Add apidoc
 - Add rc.d script for FreeBSD
-<<<<<<< HEAD
-- Some tests/travis/documentation improvements and fixes
-=======
 - Add the possibility to set CORS Origin through ISSO_CORS_ORIGIN environ variable
 - Add preview button
 - Add Atom feed at /feed?uri={thread-id}
@@ -24,7 +21,6 @@ Changelog for Isso
 - Upgraded to Misaka 2
 - Some tests/travis/documentation improvements and fixes + pep8
 - Improvement on german translation
->>>>>>> e745f326db2ec1c39a4aae9094ef4891c9687e4a
 
 
 0.10.6 (2016-09-22)

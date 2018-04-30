@@ -58,8 +58,6 @@ In chronological order:
 * Ivan Pantic <ivanpantic82@gmail.com>
   * Added vote levels
 
-<<<<<<< HEAD
-=======
 * Martin Schenck @schemar
   * Improvement in the german translation
 
@@ -93,6 +91,5 @@ In chronological order:
 * Steffen Prince @sprin
   * Upgrade to Misaka 2
 
->>>>>>> e745f326db2ec1c39a4aae9094ef4891c9687e4a
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
