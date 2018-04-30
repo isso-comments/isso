@@ -4,8 +4,7 @@ Changelog for Isso
 0.10.7 (unreleased)
 -------------------
 
-- Fix Chinese translation & typo in CJK
-- Fix link in moderation mails if isso is setup on a sub-url (e.g. domain.tld/comments/)
+- Fix Chinese translation
 - Add Danish translation
 - Add Hungarian translation
 - Add Persian translation

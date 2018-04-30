@@ -51,10 +51,9 @@ In chronological order:
   * Added configuration to require email addresses (no validation)
   * Fix Vagrantfile
 
-* Benoît Latinier @blatinier <benoit@latinier.fr>
+* Benoît Latinier <benoit@latinier.fr>
   * Fix thread discovery
   * Added mandatory author
-  * Added admin interface
 
 * Ivan Pantic <ivanpantic82@gmail.com>
   * Added vote levels
