@@ -353,3 +353,18 @@ Timedelta
 
     You can add different types: `1m30s` equals to 90 seconds, `3h45m12s`
     equals to 3 hours, 45 minutes and 12 seconds (12512 seconds).
+
+Environment variables
+---------------------
+
+.. _environment-variables:
+
+Isso also support configuration through some environment variables:
+
+ISSO_CORS_ORIGIN
+    By default, `isso` will use the `Host` or else the `Referrer` HTTP header
+    of the request to defines a CORS `Access-Control-Allow-Origin` HTTP header
+    in the response.
+    This environent variable allows you to define a broader fixed value,
+    in order for example to share a single Isso instance among serveral of your
+    subdomains : `ISSO_CORS_ORIGIN=*.example.test`
