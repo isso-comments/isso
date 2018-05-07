@@ -86,6 +86,9 @@ In chronological order:
 * @p-vitt & @M4a1x
   * Documentation on troubleshooting for uberspace users
 
+* Facundo Batista <facundo@taniquetil.com.ar>
+  * Added a generic way to migrate from a json file
+
 * @benjhess
   * Optionnal gravatar support
 
