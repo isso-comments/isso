@@ -91,6 +91,18 @@ notify
 log-file
     Log console messages to file instead of standard out.
 
+gravatar
+    When set to ``true`` this will add the property "gravatar_image"
+    containing the link to a gravatar image to every comment. If a comment
+    does not contain an email address, gravatar will render a random icon.
+    This is only true when using the default value for "gravatar-url"
+    which contains the query string param ``d=identicon`` ...
+
+gravatar-url
+    Url for gravatar images. The "{}" is where the email hash will be placed.
+    Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
+
+
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
@@ -308,6 +320,27 @@ algorithm
     Arguments have to be in that order, but can be reduced to `pbkdf2:4096`
     for example to override the iterations only.
 
+.. _configure-rss:
+
+RSS
+---
+
+Isso can provide an Atom feed for each comment thread. Users can use
+them to subscribe to comments and be notified of changes. Atom feeds
+are enabled as soon as there is a base URL defined in this section.
+
+.. code-block:: ini
+
+    [rss]
+    base =
+    limit = 100
+
+base
+    base URL to use to build complete URI to pages (by appending the URI from Isso)
+
+limit
+    number of most recent comments to return for a thread
+
 Appendum
 --------
 
@@ -320,3 +353,18 @@ Timedelta
 
     You can add different types: `1m30s` equals to 90 seconds, `3h45m12s`
     equals to 3 hours, 45 minutes and 12 seconds (12512 seconds).
+
+Environment variables
+---------------------
+
+.. _environment-variables:
+
+Isso also support configuration through some environment variables:
+
+ISSO_CORS_ORIGIN
+    By default, `isso` will use the `Host` or else the `Referrer` HTTP header
+    of the request to defines a CORS `Access-Control-Allow-Origin` HTTP header
+    in the response.
+    This environent variable allows you to define a broader fixed value,
+    in order for example to share a single Isso instance among serveral of your
+    subdomains : `ISSO_CORS_ORIGIN=*.example.test`

@@ -68,6 +68,7 @@ In chronological order:
 
 * Lucas Cimon @Lucas-C
   * Added the possibility to define CORS origins through ISSO_CORS_ORIGIN environment variable
+  * Fix a bug with <a> in <svg>
 
 * Yuchen Pei @ycpei
   * Fix link in moderation emails when isso is installed in a sub URL
@@ -78,12 +79,21 @@ In chronological order:
 * @vincentbernat
   * Added documentation about data-isso-id attribute (overriding the standard isso-thread-id)
   * Added multi-staged Dockerfile
+  * Added atom feed
+  * Added a nofollow/noopener on links inside comments to protect against bots
+  * Added a preview using the existing preview endpoint
 
 * @p-vitt & @M4a1x
   * Documentation on troubleshooting for uberspace users
 
 * Facundo Batista <facundo@taniquetil.com.ar>
   * Added a generic way to migrate from a json file
+
+* @benjhess
+  * Optionnal gravatar support
+
+* Steffen Prince @sprin
+  * Upgrade to Misaka 2
 
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
