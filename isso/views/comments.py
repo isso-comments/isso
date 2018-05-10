@@ -511,7 +511,7 @@ class API(object):
         The key to authenticate the subscriber.
 
     @apiExample {curl} Unsubscribe Alice from replies to comment with id 13:
-        curl -X GET 'https://comments.example.com/id/13/unsubscribe/alice@example.com/TODO-COMPUTE-HASH'
+        curl -X GET 'https://comments.example.com/id/13/unsubscribe/alice@example.com/WyJ1bnN1YnNjcmliZSIsImFsaWNlQGV4YW1wbGUuY29tIl0.DdcH9w.Wxou-l22ySLFkKUs7RUHnoM8Kos'
 
     @apiSuccessExample {html} Using GET:
         &lt;!DOCTYPE html&gt;
