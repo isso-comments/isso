@@ -14,6 +14,11 @@ from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
+try:
+    from urllib.parse import quote
+except ImportError:
+    from urllib import quote
+
 import logging
 logger = logging.getLogger("isso")
 
@@ -99,7 +104,7 @@ class SMTP(object):
     def __iter__(self):
         yield "comments.new:after-save", self.notify
 
-    def format(self, thread, comment, comment_parent, admin=False):
+    def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
         rv = io.StringIO()
 
@@ -133,10 +138,10 @@ class SMTP(object):
                 rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
 
         else:
-            uri = self.general_host + "/id/%i" % comment_parent["id"]
-            key = self.isso.sign(('unsubscribe', comment_parent["id"]))
+            uri = self.general_host + "/id/%i" % parent_comment["id"]
+            key = self.isso.sign(('unsubscribe', recipient))
 
-            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + key))
+            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + quote(recipient) + "/" + key))
 
         rv.seek(0)
         return rv.read()
@@ -152,10 +157,10 @@ class SMTP(object):
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                     and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
-                    body = self.format(thread, comment, comment_to_notify, admin=False)
+                    body = self.format(thread, comment, parent_comment, email, admin=False)
                     subject = "Re: New comment posted on %s" % thread["title"]
                     self.sendmail(subject, body, thread, comment, to=email)
-                    notified += email
+                    notified.append(email)
 
         body = self.format(thread, comment, None, admin=True)
         self.sendmail(thread["title"], body, thread, comment)

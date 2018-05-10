@@ -33,6 +33,10 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
+try:
     from StringIO import StringIO
 except ImportError:
     from io import BytesIO as StringIO
@@ -107,7 +111,7 @@ class API(object):
         ('view',        ('GET', '/id/<int:id>')),
         ('edit',        ('PUT', '/id/<int:id>')),
         ('delete',      ('DELETE', '/id/<int:id>')),
-        ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:key>')),
+        ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:email>/<string:key>')),
         ('moderate',    ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('moderate',    ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('like',        ('POST', '/id/<int:id>/like')),
@@ -494,18 +498,20 @@ class API(object):
         return resp
 
     """
-    @api {get} /id/:id/key unsubscribe
+    @api {get} /id/:id/:email/key unsubscribe
     @apiGroup Comment
     @apiDescription
         Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
 
     @apiParam {number} id
         The id of the comment to unsubscribe from replies to.
+    @apiParam {string} email
+        The email address of the subscriber.
     @apiParam {string} key
         The key to authenticate the subscriber.
 
-    @apiExample {curl} Unsubscribe from replies to comment with id 13:
-        curl -X GET 'https://comments.example.com/id/13/unsubscribe/TODO-COMPUTE-HASH'
+    @apiExample {curl} Unsubscribe Alice from replies to comment with id 13:
+        curl -X GET 'https://comments.example.com/id/13/unsubscribe/alice@example.com/TODO-COMPUTE-HASH'
 
     @apiSuccessExample {html} Using GET:
         &lt;!DOCTYPE html&gt;
@@ -523,13 +529,15 @@ class API(object):
         Yo
     """
 
-    def unsubscribe(self, environ, request, id, key):
+    def unsubscribe(self, environ, request, id, email, key):
+        email = unquote(email)
+
         try:
             rv = self.isso.unsign(key, max_age=2**32)
         except (BadSignature, SignatureExpired):
             raise Forbidden
 
-        if rv[0] != 'unsubscribe' or rv[1] != id:
+        if rv[0] != 'unsubscribe' or rv[1] != email:
             raise Forbidden
 
         item = self.comments.get(id)
@@ -538,7 +546,7 @@ class API(object):
             raise NotFound
 
         with self.isso.lock:
-            self.comments.unsubscribe(id)
+            self.comments.unsubscribe(email, id)
 
         modal = (
             "<!DOCTYPE html>"
