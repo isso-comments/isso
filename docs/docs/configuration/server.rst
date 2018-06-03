@@ -156,6 +156,12 @@ listen
 
     Does not apply for `uWSGI`.
 
+public-endpoint
+    public URL that Isso is accessed from by end users. Should always be
+    a http:// or https:// absolute address. If left blank, automatic
+    detection is attempted. Normally only needs to be specified if
+    different than the `listen` setting.
+
 reload
     reload application, when the source code has changed. Useful for
     development. Only works with the internal webserver.
