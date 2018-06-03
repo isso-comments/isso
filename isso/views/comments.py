@@ -100,7 +100,7 @@ class API(object):
                   'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image', 'notification'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent',  'title', 'notification'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
 
     VIEWS = [
         ('fetch',       ('GET', '/')),
