@@ -51,9 +51,11 @@ function validate_com(com_id, hash, isso_host_script) {
 function delete_com(com_id, hash, isso_host_script) {
     moderate(com_id, hash, "delete", isso_host_script);
 }
-function unset_editable(elt_id) {
+function unset_editable(elt_id, save_changes) {
     var elt = document.getElementById(elt_id);
     if (elt) {
+      elt.innerHTML = save_changes ? elt.textContent : elt.dataset['originContent'];
+      delete elt.dataset['originContent'];
       elt.contentEditable = false;
       elt.classList.remove("editable");
     }
@@ -61,6 +63,8 @@ function unset_editable(elt_id) {
 function set_editable(elt_id) {
     var elt = document.getElementById(elt_id);
     if (elt) {
+      elt.dataset['originContent'] = elt.innerHTML;
+      elt.textContent = elt.innerHTML;
       elt.contentEditable = true;
       elt.classList.add("editable");
     }
@@ -77,13 +81,13 @@ function start_edit(com_id) {
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('send-edit-btn-' + com_id).classList.toggle('hidden');
 }
-function stop_edit(com_id) {
+function stop_edit(com_id, save_changes) {
     var editable_elements = ['isso-author-' + com_id,
                              'isso-email-' + com_id,
                              'isso-website-' + com_id,
                              'isso-text-' + com_id];
     for (var idx=0; idx <= editable_elements.length; idx++) {
-        unset_editable(editable_elements[idx]);
+      unset_editable(editable_elements[idx], save_changes);
     }
     document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
@@ -95,6 +99,6 @@ function send_edit(com_id, hash, isso_host_script) {
     var website = document.getElementById('isso-website-' + com_id).textContent;
     var comment = document.getElementById('isso-text-' + com_id).textContent;
     edit(com_id, hash, author, email, website, comment, isso_host_script);
-    stop_edit(com_id);
+    stop_edit(com_id, true);
 }
 
