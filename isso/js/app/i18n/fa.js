@@ -1,14 +1,14 @@
 define({
-    "postbox-text": "نظر خود را اینجا بنویسید (حداقل سه کرکتر)",
+    "postbox-text": "نظر خود را اینجا بنویسید (حداقل سه نویسه)",
     "postbox-author": "اسم (اختیاری)",
     "postbox-email": "ایمیل (اختیاری)",
     "postbox-website": "سایت (اختیاری)",
-    "postbox-preview": "پیشنمایش",
+    "postbox-preview": "پیش‌نمایش",
     "postbox-edit": "ویرایش",
     "postbox-submit": "ارسال",
 
     "num-comments": "یک نظر\n{{ n }} نظر",
-    "no-comments": "هنوز نظری نوشته نشده",
+    "no-comments": "هنوز نظری نوشته نشده است",
 
     "comment-reply": "پاسخ",
     "comment-edit": "ویرایش",
@@ -17,8 +17,8 @@ define({
     "comment-confirm": "تایید",
     "comment-close": "بستن",
     "comment-cancel": "انصراف",
-    "comment-deleted": "کامنت حذف شد.",
-    "comment-queued": "کامنت در صف بررسی مدیر قرار دارد.",
+    "comment-deleted": "نظر حذف شد.",
+    "comment-queued": "نظر در صف بررسی مدیر قرار دارد.",
     "comment-anonymous": "ناشناس",
     "comment-hidden": "{{ n }} مخفی",
 
