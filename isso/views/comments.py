@@ -1035,8 +1035,9 @@ class API(object):
             comments_enriched.append(comment)
         comment_mode_count = self.comments.count_modes()
         max_page = int(sum(comment_mode_count.values()) / 100)
+        host = self.isso.conf.get("general", "host")
         return render_template('admin.html', comments=comments_enriched,
                                page=int(page), mode=int(mode),
                                conf=self.conf, max_page=max_page,
                                counts=comment_mode_count,
-                               order_by=order_by, asc=asc)
+                               order_by=order_by, asc=asc, host=host)
