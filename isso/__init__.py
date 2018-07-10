@@ -101,7 +101,7 @@ class Isso(object):
                 subscribers.append(Stdout(None))
             elif backend in ("smtp", "SMTP"):
                 subscribers.append(SMTP(self))
-            elif backend == ("syssendmail"):
+            elif backend == ("syscall"):
                 subscribers.append(Syscall(self))
             else:
                 logger.warn("unknown notification backend '%s'", backend)

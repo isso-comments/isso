@@ -247,7 +247,7 @@ class Syscall(object):
 
     def __init__(self, isso):
         self.isso = isso
-        self.conf = isso.conf.section("syssendmail")
+        self.conf = isso.conf.section("syscall")
         gh = isso.conf.get("general", "host")
         if type(gh) == str:
             self.general_host = gh
