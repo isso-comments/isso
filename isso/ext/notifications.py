@@ -6,6 +6,7 @@ import sys
 import io
 import time
 import json
+import copy
 
 import socket
 import smtplib
@@ -13,6 +14,7 @@ import smtplib
 from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
+from email import encoders
 
 import logging
 logger = logging.getLogger("isso")
@@ -31,6 +33,39 @@ else:
     from _thread import start_new_thread
 
 
+def _format(thread, comment, general_host, key):
+    rv = io.StringIO()
+
+    author = comment["author"] or "Anonymous"
+    if comment["email"]:
+        author += " <%s>" % comment["email"]
+
+    rv.write(author + " wrote:\n")
+    rv.write("\n")
+    rv.write(comment["text"] + "\n")
+    rv.write("\n")
+
+    if comment["website"]:
+        rv.write("User's URL: %s\n" % comment["website"])
+
+    rv.write("IP address: %s\n" % comment["remote_addr"])
+    rv.write("Link to comment: %s\n" %
+             (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+    rv.write("\n")
+
+    uri = general_host + "/id/%i" % comment["id"]
+#    key = self.isso.sign(comment["id"])
+
+    rv.write("---\n")
+    rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
+
+    if comment["mode"] == 2:
+        rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
+
+    rv.seek(0)
+    return rv.read()
+    
+    
 class SMTP(object):
 
     def __init__(self, isso):
@@ -95,7 +130,6 @@ class SMTP(object):
         yield "comments.new:after-save", self.notify
 
     def format(self, thread, comment):
-
         rv = io.StringIO()
 
         author = comment["author"] or "Anonymous"
@@ -168,24 +202,92 @@ class Stdout(object):
 
     def __iter__(self):
 
-        yield "comments.new:new-thread", self._new_thread
-        yield "comments.new:finish", self._new_comment
+        yield "comments.new:after-save", self._new_comment_after_save
         yield "comments.edit", self._edit_comment
+        yield "comments.new:new-thread", self._new_thread
+        yield "comments.new:finish", self._new_comment_finish
         yield "comments.delete", self._delete_comment
         yield "comments.activate", self._activate_comment
 
-    def _new_thread(self, thread):
-        logger.info("new thread %(id)s: %(title)s" % thread)
-
-    def _new_comment(self, thread, comment):
-        logger.info("comment created: %s", json.dumps(comment))
+    def _new_comment_after_save(self, thread, comment):
+        c = copy.copy(comment)
+        if 'voters' in c:
+            del c['voters']
+        logger.info("comments.new:after-save: %s, %s",
+                    json.dumps(thread), json.dumps(c))
 
     def _edit_comment(self, comment):
-        logger.info('comment %i edited: %s',
-                    comment["id"], json.dumps(comment))
+        c = copy.copy(comment)
+        if 'voters' in c:
+            del c['voters']
+        logger.info('comments,edit: %s, %s',
+                    json.dumps(thread), json.dumps(c))
+
+
+    def _new_thread(self, thread):
+        logger.info("comments.new:new-thread %(id)s: %(title)s" % thread)
+
+    def _new_comment_finish(self, thread, comment):
+        c = copy.copy(comment)
+        if 'voters' in c:
+            del c['voters']
+        logger.info("comments.new:finish: %s, %s",
+                    json.dumps(thread), json.dumps(c))
 
     def _delete_comment(self, id):
-        logger.info('comment %i deleted', id)
+        logger.info("comments.delete %i ", id)
 
     def _activate_comment(self, id):
-        logger.info("comment %s activated" % id)
+        logger.info("comments.activate %s" % id)
+
+
+import subprocess
+
+class Syscall(object):
+
+    def __init__(self, isso):
+        self.isso = isso
+        self.conf = isso.conf.section("syssendmail")
+        gh = isso.conf.get("general", "host")
+        if type(gh) == str:
+            self.general_host = gh
+        #if gh is not a string then gh is a list
+        else:
+            self.general_host = gh[0]
+
+    def __iter__(self):
+        yield "comments.new:after-save", self._new_comment_after_save
+        yield "comments.edit", self._edit_comment
+
+            
+    def _new_comment_after_save(self, thread, comment):
+        key=self.isso.sign(comment["id"])
+        msgbody=_format(thread,comment,self.general_host,key)
+
+        cmdlist=[]
+        nargs=self.conf.getint("nargs")
+        for i in range(0, nargs):
+            for s in self.conf.getlist(str(i)):
+                cmdlist.append(s)
+
+#        import pdb; pdb.set_trace() # iwozere
+
+        p=subprocess.run(cmdlist,
+                         input=str(msgbody).encode(),
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
+
+        s = "Syscall: return code " + str(p.returncode) + "\n" \
+        + "stdout:\n" \
+        + str(p.stdout) + "\n" \
+        + "stderr:\n" \
+        + str(p.stderr) + "\n"
+        
+        if p.returncode != 0:
+            logger.error(s)
+        else:
+            logger.info(s)
+
+    def _edit_comment(self, comment):
+        pass
+    

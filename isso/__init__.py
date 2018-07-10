@@ -72,7 +72,7 @@ from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, html, hash
 from isso.views import comments
 
-from isso.ext.notifications import Stdout, SMTP
+from isso.ext.notifications import Stdout, SMTP, Syscall
 
 logging.getLogger('werkzeug').setLevel(logging.WARN)
 logging.basicConfig(
@@ -101,6 +101,8 @@ class Isso(object):
                 subscribers.append(Stdout(None))
             elif backend in ("smtp", "SMTP"):
                 subscribers.append(SMTP(self))
+            elif backend == ("syssendmail"):
+                subscribers.append(Syscall(self))
             else:
                 logger.warn("unknown notification backend '%s'", backend)
 
