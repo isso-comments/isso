@@ -53,7 +53,7 @@ call = /usr/bin/curl
  -F
  from=isso@pindertek.com
  -F
- subject=isso %SUBJECT%
+ subject=isso {{SUBJECT}}
  -F
  text=<-
 ```
@@ -62,10 +62,10 @@ The key `call` appears on the first line followed by equal.  The value is split 
 Often in a shell command line quotation mark must be used to prevent a parser from interpreting spaces as being argument delimiters.  E.g., for the subject 
 
 ```
- subject=isso %SUBJECT%
+ subject=isso {{SUBJECT}}
 ```
 
-a bash script would require quotes placed like `"subject=isso %SUBJECT%"` or  'subject="isso %SUBJECT%" to keep the argument together.  The shell would interpret the quotes for their synactic meaning, and then remove them before passing each argument phrase to the program as, e.g. *argv[11]* or equivalent.
+a bash script would require quotes placed like `"subject=isso {{SUBJECT}}"` or  `subject="isso {{SUBJECT}}` to keep the argument together.  The shell would interpret the quotes for their synactic meaning, and then remove them before passing each argument phrase to the program as, e.g. *argv[11]* or equivalent.
 
 However, for the *isso* configuatation `call` value above, quotes are not required because the grouping is done by lines.  **In fact quotes for the purpose of syntactic grouping must NOT be used.**   The quotes will not be removed before passing to the program, and the input will likely be invalid. Quotes can still be used as part of the content of any argument, as required. 
 
