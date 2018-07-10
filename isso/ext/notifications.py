@@ -264,13 +264,18 @@ class Syscall(object):
         key=self.isso.sign(comment["id"])
         msgbody=_format(thread,comment,self.general_host,key)
 
-        cmdlist=[]
-        nargs=self.conf.getint("nargs")
-        for i in range(0, nargs):
-            for s in self.conf.getlist(str(i)):
-                cmdlist.append(s)
+        # cmdlist=[]
+        # nargs=self.conf.getint("nargs")
+        # for i in range(0, nargs):
+        #     for s in self.conf.getlist(str(i)):
+        #         cmdlist.append(s)
 
-#        import pdb; pdb.set_trace() # iwozere
+        subject = "..." + thread['uri'][-15:] + " :: " + comment['text'][:15] + "..."
+        cmdlist = [ a.replace('{{SUBJECT}}',subject,1) for a in self.conf.getiter('call') ]
+
+        logger.info(cmdlist);
+
+        import pdb; pdb.set_trace() # iwozere
 
         p=subprocess.run(cmdlist,
                          input=str(msgbody).encode(),
@@ -282,7 +287,7 @@ class Syscall(object):
         + str(p.stdout) + "\n" \
         + "stderr:\n" \
         + str(p.stderr) + "\n"
-        
+
         if p.returncode != 0:
             logger.error(s)
         else:

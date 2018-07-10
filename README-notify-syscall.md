@@ -42,26 +42,40 @@ Create a section `[syscall]` and therein specify the program and its arguments. 
 
 ```
 [syscall]
-nargs=8
-0 = /usr/bin/curl
-1 = --trace-ascii, /tmp/mg1.log
-2 = --user, api:<key>
-3 = https://api.mailgun.net/v3/<domain>/messages
-4 = -F, to=user@gmail.com
-5 = -F, from=isso@example.com
-6 = -F, subject=isso notify
-7 = -F, text=<-
+call = /usr/bin/curl
+ --trace-ascii
+ /tmp/mg1.log
+ --user
+ api:key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ https://api.mailgun.net/v3/example.com/messages
+ -F
+ to=risu@gmail.com
+ -F
+ from=isso@pindertek.com
+ -F
+ subject=isso %SUBJECT%
+ -F
+ text=<-
 ```
 
-The arguments are divided up into multiple lists only for convenience.  When more than one argument is used placed the same line, they must be saperated by a comma.  Whitespaces within an argument are preserved, but whitespaces around an argument are removed.
+The key `call` appears on the first line followed by equal.  The value is split brwteen lines with exactly one argument per line.  Each successive value line must have an empty space at the beginning. 
+Often in a shell command line quotation mark must be used to prevent a parser from interpreting spaces as being argument delimiters.  E.g., for the subject 
 
-The argument lines must by numbered in order from zero (0).
+```
+ subject=isso %SUBJECT%
+```
 
-`nargs` must be set to the number of argument lines, which is the maximum line number plus one.
+a bash script would require quotes placed like `"subject=isso %SUBJECT%"` or  'subject="isso %SUBJECT%" to keep the argument together.  The shell would interpret the quotes for their synactic meaning, and then remove them before passing each argument phrase to the program as, e.g. *argv[11]* or equivalent.
 
-The last part of the last `curl` argument:  `<-' , is a curl specific instruction to accept data from standard input.  Because the message body is variable it must be transmitted via standard input to the process.  So any program used must be configured (or hard coded) to accept standard input.
+However, for the *isso* configuatation `call` value above, quotes are not required because the grouping is done by lines.  **In fact quotes for the purpose of syntactic grouping must NOT be used.**   The quotes will not be removed before passing to the program, and the input will likely be invalid. Quotes can still be used as part of the content of any argument, as required. 
 
-Be aware that protocol issues depend on the called program and the site receiving the data. It is not handled by the *isso* code.  For example, although the above example appears to transact via HTTPS, there is some possibilty it might downgrading to HTTP after authentication for the message transaction part.  The log file is still under interpretation.
+Some (but not all) scenarios require the mail subject to be precified as part of the arguments, and not in the standard input data.  The above `curl` example shows such a case.  In order to enable variable subject line content a template parameter `%SUBJECT%` is provided.  The *isso* software will render this template %SUBJECT% as the fixed formula:
+
+> ...<last 15 characters of blog uri> ::: <first 15 characters of comment>...
+
+The last part of the last `curl` argument:  `<-' , is a curl specific instruction to accept data from standard input.  Because the message body is variable it must be transmitted via standard input to the process.  So any program used must be configured (or already be hard coded) to accept standard input.
+
+Be aware that protocol issues depend on the called program and the site receiving the data. It is not handled by the *isso* code.  For example, although the above example appears to transact via HTTPS, there is some possibilty it might downgrading to HTTP after authentication for the message transaction part.  (The log file is still under interpretation.)
 
 **Read the current limitations section at the end of this document.**
 
@@ -92,15 +106,9 @@ The notification backend `Stdout` module was rewritten to fix a bug caused by tr
 
 # IMPORTANT: Current Limitations
 
-## Administration interface
-
-1. Currently the arguments specified in the cofig file cannot contain a comma. This limitation needs to be fixed. 
-2. For many choices of programs the mail subject is only configuarable as a program argument. However the subject is usually variable.  Currently there is no way to add variability to a subject line specified in the configuation file.  A template solution (e.g. `%SUBJECT%` in the argument) could be used to solve this problem.  
-
-
 ## Implementation
 
-3. `subprocess.run` might not be available in *Python2*. It is available in *Python3*.  In the case of Python2, *syscall* should not be enabled ion the configuation file, if it even compiles. 
+1. `subprocess.run` is not available before *Python 3.5*.  Certainly not in *Python2*. In enviroments where the code will not run it should not be enabled in the configuation file, (if it even compiles). 
 
 
 
