@@ -34,14 +34,14 @@ function fade(element) {
 }
 function moderate(com_id, hash, action, isso_host_script) {
   ajax({method: "POST",
-        url: "" + isso_host_script + "/id/" + com_id + "/" + action + "/" + hash,
+        url: isso_host_script + "/id/" + com_id + "/" + action + "/" + hash,
         success: function(){
             fade(document.getElementById("isso-" + com_id));
         }});
 }
 function edit(com_id, hash, author, email, website, comment, isso_host_script) {
   ajax({method: "POST",
-        url: "" + isso_host_script + "/id/" + com_id + "/edit/" + hash,
+        url: isso_host_script + "/id/" + com_id + "/edit/" + hash,
         data: JSON.stringify({text: comment,
                               author: author,
                               email: email,

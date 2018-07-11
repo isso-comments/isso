@@ -1001,7 +1001,7 @@ class API(object):
             response = redirect(re.sub(
                 r'/login$',
                 '/admin',
-                get_current_url(env, strip_querystring=True) #iwozere
+                get_current_url(env, strip_querystring=True)
             ))
             cookie = functools.partial(dump_cookie,
                                        value=self.isso.sign({"logged": True}),
