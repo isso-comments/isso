@@ -1,8 +1,8 @@
 <html>
 <head>
   <title>Isso admin</title>
-  <link type="text/css" href="/css/isso.css" rel="stylesheet">
-  <link type="text/css" href="/css/admin.css" rel="stylesheet">
+  <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
+  <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
 </head>
 <body>
 <script type="text/javascript">
@@ -32,16 +32,16 @@ function fade(element) {
         op -= op * 0.1;
     }, 10);
 }
-function moderate(com_id, hash, action) {
+function moderate(com_id, hash, action, isso_host_script) {
   ajax({method: "POST",
-        url: "/id/" + com_id + "/" + action + "/" + hash,
+        url: "" + isso_host_script + "/id/" + com_id + "/" + action + "/" + hash,
         success: function(){
             fade(document.getElementById("isso-" + com_id));
         }});
 }
-function edit(com_id, hash, author, email, website, comment) {
+function edit(com_id, hash, author, email, website, comment, isso_host_script) {
   ajax({method: "POST",
-        url: "/id/" + com_id + "/edit/" + hash,
+        url: "" + isso_host_script + "/id/" + com_id + "/edit/" + hash,
         data: JSON.stringify({text: comment,
                               author: author,
                               email: email,
@@ -53,11 +53,11 @@ function edit(com_id, hash, author, email, website, comment) {
           console.log("Error: ", ret); // TODO flash msg/notif
         }});
 }
-function validate_com(com_id, hash) {
-    moderate(com_id, hash, "activate");
+function validate_com(com_id, hash, isso_host_script) {
+    moderate(com_id, hash, "activate", isso_host_script);
 }
-function delete_com(com_id, hash) {
-    moderate(com_id, hash, "delete");
+function delete_com(com_id, hash, isso_host_script) {
+    moderate(com_id, hash, "delete", isso_host_script);
 }
 function unset_editable(elt_id) {
     var elt = document.getElementById(elt_id);
@@ -97,19 +97,19 @@ function stop_edit(com_id) {
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('send-edit-btn-' + com_id).classList.toggle('hidden');
 }
-function send_edit(com_id, hash) {
+function send_edit(com_id, hash, isso_host_script) {
     var author = document.getElementById('isso-author-' + com_id).textContent;
     var email = document.getElementById('isso-email-' + com_id).textContent;
     var website = document.getElementById('isso-website-' + com_id).textContent;
     var comment = document.getElementById('isso-text-' + com_id).textContent;
-    edit(com_id, hash, author, email, website, comment);
+    edit(com_id, hash, author, email, website, comment, isso_host_script);
     stop_edit(com_id);
 }
 </script>
   <div class="wrapper">
     <div class="header">
       <header>
-        <img class="logo" src="/img/isso.svg" alt="Wynaut by @veekun"/>
+        <img class="logo" src="{{isso_host_script}}/img/isso.svg" alt="Wynaut by @veekun"/>
         <div class="title">
           <a href="./">
             <h1>Isso</h1>
@@ -232,16 +232,16 @@ function send_edit(com_id, hash) {
         <span class='spacer'></span>
         <a id="edit-btn-{{comment.id}}" class="edit" onClick="javascript:start_edit({{comment.id}})">Edit</a>
         <a id="stop-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:stop_edit({{comment.id}})">Cancel</a>
-        <a id="send-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:send_edit({{comment.id}}, '{{comment.hash}}')">Send</a>
+        <a id="send-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:send_edit({{comment.id}}, '{{comment.hash}}','{{isso_host_script}}')">Send</a>
         {% if comment.mode != 4 %}
           <a class="delete"
-             onClick="javascript:delete_com({{comment.id}}, '{{comment.hash}}')">
+             onClick="javascript:delete_com({{comment.id}}, '{{comment.hash}}', '{{isso_host_script}}')">
             Delete
           </a>
         {% endif %}
         {% if comment.mode == 2 %}
           <a class='validate'
-             onClick="javascript:validate_com({{comment.id}}, '{{comment.hash}}')">Validate</a>
+             onClick="javascript:validate_com({{comment.id}}, '{{comment.hash}}', '{{isso_host_script}}')">Validate</a>
         {% endif %}
       </div>
     </div>

@@ -1001,7 +1001,7 @@ class API(object):
             response = redirect(re.sub(
                 r'/login$',
                 '/admin',
-                get_current_url(env, strip_querystring=True)
+                get_current_url(env, strip_querystring=True) #iwozere
             ))
             cookie = functools.partial(dump_cookie,
                                        value=self.isso.sign({"logged": True}),
@@ -1010,16 +1010,16 @@ class API(object):
             response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
             return response
         else:
-            return render_template('login.html')
+            return render_template('login.html', isso_host_script=local.host)
 
     def admin(self, env, req):
         try:
             data = self.isso.unsign(req.cookies.get('admin-session', ''),
                                     max_age=60 * 60 * 24)
         except BadSignature:
-            return render_template('login.html')
+            return render_template('login.html',isso_host_script=local.host)
         if not data or not data['logged']:
-            return render_template('login.html')
+            return render_template('login.html',isso_host_script=local.host)
         page_size = 100
         page = int(req.args.get('page', 0))
         order_by = req.args.get('order_by', None)
@@ -1039,4 +1039,5 @@ class API(object):
                                page=int(page), mode=int(mode),
                                conf=self.conf, max_page=max_page,
                                counts=comment_mode_count,
-                               order_by=order_by, asc=asc)
+                               order_by=order_by, asc=asc,
+                               isso_host_script=local.host)
