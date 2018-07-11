@@ -53,8 +53,7 @@ def _format(thread, comment, general_host, key):
              (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
     rv.write("\n")
 
-    uri = general_host + "/id/%i" % comment["id"]
-#    key = self.isso.sign(comment["id"])
+    uri = local.host + "/id/%i" % comment["id"]
 
     rv.write("---\n")
     rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
@@ -149,7 +148,7 @@ class SMTP(object):
                  (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
         rv.write("\n")
 
-        uri = self.general_host + "/id/%i" % comment["id"]
+        uri = local.host + "/id/%i" % comment["id"]
         key = self.isso.sign(comment["id"])
 
         rv.write("---\n")
