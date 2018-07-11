@@ -259,35 +259,21 @@ class Syscall(object):
         yield "comments.new:after-save", self._new_comment_after_save
         yield "comments.edit", self._edit_comment
 
-            
     def _new_comment_after_save(self, thread, comment):
         key=self.isso.sign(comment["id"])
         msgbody=_format(thread,comment,self.general_host,key)
-
-        # cmdlist=[]
-        # nargs=self.conf.getint("nargs")
-        # for i in range(0, nargs):
-        #     for s in self.conf.getlist(str(i)):
-        #         cmdlist.append(s)
-
         subject = "..." + thread['uri'][-15:] + " :: " + comment['text'][:15] + "..."
         cmdlist = [ a.replace('{{SUBJECT}}',subject,1) for a in self.conf.getiter('call') ]
-
         logger.info(cmdlist);
-
-        import pdb; pdb.set_trace() # iwozere
-
         p=subprocess.run(cmdlist,
                          input=str(msgbody).encode(),
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-
         s = "Syscall: return code " + str(p.returncode) + "\n" \
         + "stdout:\n" \
         + str(p.stdout) + "\n" \
         + "stderr:\n" \
         + str(p.stderr) + "\n"
-
         if p.returncode != 0:
             logger.error(s)
         else:
