@@ -115,7 +115,7 @@ class SMTP(object):
                  (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
         rv.write("\n")
 
-        uri = self.general_host + "/id/%i" % comment["id"]
+        uri = local.host + "/id/%i" % comment["id"]
         key = self.isso.sign(comment["id"])
 
         rv.write("---\n")
