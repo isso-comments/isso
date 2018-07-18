@@ -97,7 +97,8 @@ class SMTP(object):
             uwsgi.spooler = spooler
 
     def __iter__(self):
-        yield "comments.new:after-save", self.notify
+        yield "comments.new:after-save", self.notify_new
+        yield "comments.activate", self.notify_activated
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
@@ -141,7 +142,17 @@ class SMTP(object):
         rv.seek(0)
         return rv.read()
 
-    def notify(self, thread, comment):
+    def notify_new(self, thread, comment):
+        body = self.format(thread, comment, None, admin=True)
+        self.sendmail(thread["title"], body, thread, comment)
+
+        if comment["mode"] == 1:
+            self.notify_users(thread, comment)
+
+    def notify_activated(self, thread, comment):
+        self.notify_users(thread, comment)
+
+    def notify_users(self, thread, comment):
         if "parent" in comment and comment["parent"] is not None:
             # Notify interested authors that a new comment is posted
             notified = []
@@ -156,9 +167,6 @@ class SMTP(object):
                     subject = "Re: New comment posted on %s" % thread["title"]
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
-
-        body = self.format(thread, comment, None, admin=True)
-        self.sendmail(thread["title"], body, thread, comment)
 
     def sendmail(self, subject, body, thread, comment, to=None):
         if uwsgi:

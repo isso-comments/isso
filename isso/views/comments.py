@@ -623,9 +623,12 @@ class API(object):
             return Response(modal, 200, content_type="text/html")
 
         if action == "activate":
+            if item['mode'] == 1:
+                return Response("Already activated", 200)
             with self.isso.lock:
                 self.comments.activate(id)
-            self.signal("comments.activate", id)
+            thread = self.threads.get(item['tid'])
+            self.signal("comments.activate", thread, item)
             return Response("Yo", 200)
         elif action == "edit":
             data = request.get_json()
