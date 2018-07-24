@@ -76,6 +76,8 @@ class SMTP(object):
         self.isso = isso
         self.conf = isso.conf.section("smtp")
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
+        self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
+        self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
 
         # test SMTP connectivity
         try:
@@ -143,8 +145,9 @@ class SMTP(object):
         return rv.read()
 
     def notify_new(self, thread, comment):
-        body = self.format(thread, comment, None, admin=True)
-        self.sendmail(thread["title"], body, thread, comment)
+        if self.admin_notify:
+            body = self.format(thread, comment, None, admin=True)
+            self.sendmail(thread["title"], body, thread, comment)
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -153,7 +156,7 @@ class SMTP(object):
         self.notify_users(thread, comment)
 
     def notify_users(self, thread, comment):
-        if "parent" in comment and comment["parent"] is not None:
+        if self.reply_notify and "parent" in comment and comment["parent"] is not None:
             # Notify interested authors that a new comment is posted
             notified = []
             parent_comment = self.isso.db.comments.get(comment["parent"])
@@ -226,5 +229,5 @@ class Stdout(object):
     def _delete_comment(self, id):
         logger.info('comment %i deleted', id)
 
-    def _activate_comment(self, id):
-        logger.info("comment %s activated" % id)
+    def _activate_comment(self, thread, comment):
+        logger.info("comment %(id)s activated" % thread)
