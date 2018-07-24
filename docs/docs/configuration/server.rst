@@ -88,6 +88,14 @@ notify
         Send notifications via SMTP on new comments with activation (if
         moderated) and deletion links.
 
+reply-notifications
+    Allow users to request E-mail notifications for replies to their post.
+
+    It is highly recommended to also turn on moderation when enabling this
+    setting, as Isso can otherwise be easily exploited for sending spam.
+
+    Do not forget to configure the client accordingly.
+
 log-file
     Log console messages to file instead of standard out.
 
