@@ -42,7 +42,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         // only display notification checkbox if email is filled in
         var email_edit = function() {
-            if ($("[name='email']", el).value.length > 0) {
+            if (config["reply-notifications"] && $("[name='email']", el).value.length > 0) {
                 $(".notification-section", el).show();
             } else {
                 $(".notification-section", el).hide();

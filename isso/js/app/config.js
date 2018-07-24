@@ -7,6 +7,7 @@ define(function() {
         "reply-to-self": false,
         "require-email": false,
         "require-author": false,
+        "reply-notifications": false,
         "max-comments-top": "inf",
         "max-comments-nested": 5,
         "reveal-on-click": 5,
