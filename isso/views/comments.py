@@ -1066,7 +1066,7 @@ class API(object):
             get_current_url(env, strip_querystring=True) + '/index.html'
         )
 
-    def login(self, env, req):
+    def login(self, env, req):        
         data = req.form
         password = self.isso.conf.get("general", "admin_password")
         if data['password'] and data['password'] == password:
@@ -1082,16 +1082,18 @@ class API(object):
             response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
             return response
         else:
-            return render_template('login.html')
+            isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+            return render_template('login.html', isso_host_script=isso_host_script)
 
     def admin(self, env, req):
+        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
         try:
             data = self.isso.unsign(req.cookies.get('admin-session', ''),
                                     max_age=60 * 60 * 24)
         except BadSignature:
-            return render_template('login.html')
+            return render_template('login.html',isso_host_script=isso_host_script)
         if not data or not data['logged']:
-            return render_template('login.html')
+            return render_template('login.html',isso_host_script=isso_host_script)
         page_size = 100
         page = int(req.args.get('page', 0))
         order_by = req.args.get('order_by', None)
@@ -1111,4 +1113,5 @@ class API(object):
                                page=int(page), mode=int(mode),
                                conf=self.conf, max_page=max_page,
                                counts=comment_mode_count,
-                               order_by=order_by, asc=asc)
+                               order_by=order_by, asc=asc,
+                               isso_host_script=isso_host_script)
