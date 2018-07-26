@@ -6,6 +6,7 @@ define({
     "postbox-preview": "Aperçu",
     "postbox-edit": "Éditer",
     "postbox-submit": "Soumettre",
+    "postbox-notification": "S'abonner aux notifications de réponses",
     "num-comments": "{{ n }} commentaire\n{{ n }} commentaires",
     "no-comments": "Aucun commentaire pour l'instant",
     "atom-feed": "Flux Atom",

@@ -33,6 +33,10 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
+try:
     from StringIO import StringIO
 except ImportError:
     from io import BytesIO as StringIO
@@ -93,28 +97,29 @@ def xhr(func):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
-                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image'])
+                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image', 'notification'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
 
     VIEWS = [
-        ('fetch',   ('GET', '/')),
-        ('new',     ('POST', '/new')),
-        ('count',   ('GET', '/count')),
-        ('counts',  ('POST', '/count')),
-        ('feed',    ('GET', '/feed')),
-        ('view',    ('GET', '/id/<int:id>')),
-        ('edit',    ('PUT', '/id/<int:id>')),
-        ('delete',  ('DELETE', '/id/<int:id>')),
-        ('moderate', ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('like',    ('POST', '/id/<int:id>/like')),
-        ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('demo',    ('GET', '/demo')),
-        ('preview', ('POST', '/preview')),
-        ('login',   ('POST', '/login')),
-        ('admin',   ('GET', '/admin'))
+        ('fetch',       ('GET', '/')),
+        ('new',         ('POST', '/new')),
+        ('count',       ('GET', '/count')),
+        ('counts',      ('POST', '/count')),
+        ('feed',        ('GET', '/feed')),
+        ('view',        ('GET', '/id/<int:id>')),
+        ('edit',        ('PUT', '/id/<int:id>')),
+        ('delete',      ('DELETE', '/id/<int:id>')),
+        ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:email>/<string:key>')),
+        ('moderate',    ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate',    ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('like',        ('POST', '/id/<int:id>/like')),
+        ('dislike',     ('POST', '/id/<int:id>/dislike')),
+        ('demo',        ('GET', '/demo')),
+        ('preview',     ('POST', '/preview')),
+        ('login',       ('POST', '/login')),
+        ('admin',       ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):
@@ -493,6 +498,70 @@ class API(object):
         return resp
 
     """
+    @api {get} /id/:id/:email/key unsubscribe
+    @apiGroup Comment
+    @apiDescription
+        Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
+
+    @apiParam {number} id
+        The id of the comment to unsubscribe from replies to.
+    @apiParam {string} email
+        The email address of the subscriber.
+    @apiParam {string} key
+        The key to authenticate the subscriber.
+
+    @apiExample {curl} Unsubscribe Alice from replies to comment with id 13:
+        curl -X GET 'https://comments.example.com/id/13/unsubscribe/alice@example.com/WyJ1bnN1YnNjcmliZSIsImFsaWNlQGV4YW1wbGUuY29tIl0.DdcH9w.Wxou-l22ySLFkKUs7RUHnoM8Kos'
+
+    @apiSuccessExample {html} Using GET:
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+            &lt;head&gt;
+                &lt;script&gt;
+                    if (confirm('Delete: Are you sure?')) {
+                        xhr = new XMLHttpRequest;
+                        xhr.open('POST', window.location.href);
+                        xhr.send(null);
+                    }
+                &lt;/script&gt;
+
+    @apiSuccessExample Using POST:
+        Yo
+    """
+
+    def unsubscribe(self, environ, request, id, email, key):
+        email = unquote(email)
+
+        try:
+            rv = self.isso.unsign(key, max_age=2**32)
+        except (BadSignature, SignatureExpired):
+            raise Forbidden
+
+        if rv[0] != 'unsubscribe' or rv[1] != email:
+            raise Forbidden
+
+        item = self.comments.get(id)
+
+        if item is None:
+            raise NotFound
+
+        with self.isso.lock:
+            self.comments.unsubscribe(email, id)
+
+        modal = (
+            "<!DOCTYPE html>"
+            "<html>"
+            "<head>"
+            "  <title>Successfully unsubscribed</title>"
+            "</head>"
+            "<body>"
+            "  <p>You have been unsubscribed from replies in the given conversation.</p>"
+            "</body>"
+            "</html>")
+
+        return Response(modal, 200, content_type="text/html")
+
+    """
     @api {post} /id/:id/:action/key moderate
     @apiGroup Comment
     @apiDescription
@@ -554,9 +623,12 @@ class API(object):
             return Response(modal, 200, content_type="text/html")
 
         if action == "activate":
+            if item['mode'] == 1:
+                return Response("Already activated", 200)
             with self.isso.lock:
                 self.comments.activate(id)
-            self.signal("comments.activate", id)
+            thread = self.threads.get(item['tid'])
+            self.signal("comments.activate", thread, item)
             return Response("Yo", 200)
         elif action == "edit":
             data = request.get_json()

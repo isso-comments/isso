@@ -239,6 +239,9 @@
         #fff 10px,
         #fff 20px
     );
+.isso-postbox > .form-wrapper > .notification-section {
+    display: none;
+    padding-bottom: 10px;
 }
 @media screen and (max-width:600px) {
     .isso-postbox > .form-wrapper > .auth-section .input-wrapper {

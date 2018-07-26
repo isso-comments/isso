@@ -23,7 +23,7 @@ class Comments:
               'mode',  # status of the comment 1 = valid, 2 = pending,
                        # 4 = soft-deleted (cannot hard delete because of replies)
               'remote_addr', 'text', 'author', 'email', 'website',
-              'likes', 'dislikes', 'voters']
+              'likes', 'dislikes', 'voters', 'notification']
 
     def __init__(self, db):
 
@@ -33,7 +33,12 @@ class Comments:
             '    tid REFERENCES threads(id), id INTEGER PRIMARY KEY, parent INTEGER,',
             '    created FLOAT NOT NULL, modified FLOAT, mode INTEGER, remote_addr VARCHAR,',
             '    text VARCHAR, author VARCHAR, email VARCHAR, website VARCHAR,',
-            '    likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL);'])
+            '    likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL,',
+            '    notification INTEGER NOT NULL DEFAULT 0);'])
+        try:
+            self.db.execute(['ALTER TABLE comments ADD COLUMN notification INTEGER NOT NULL DEFAULT 0;'])
+        except:
+            pass
 
     def add(self, uri, c):
         """
@@ -50,16 +55,16 @@ class Comments:
             'INSERT INTO comments (',
             '    tid, parent,'
             '    created, modified, mode, remote_addr,',
-            '    text, author, email, website, voters )',
+            '    text, author, email, website, voters, notification)',
             'SELECT',
             '    threads.id, ?,',
             '    ?, ?, ?, ?,',
-            '    ?, ?, ?, ?, ?',
+            '    ?, ?, ?, ?, ?, ?',
             'FROM threads WHERE threads.uri = ?;'], (
             c.get('parent'),
             c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
             c['text'], c.get('author'), c.get('email'), c.get('website'), buffer(
-                Bloomfilter(iterable=[c['remote_addr']]).array),
+                Bloomfilter(iterable=[c['remote_addr']]).array), c.get('notification'),
             uri)
         )
 
@@ -75,6 +80,15 @@ class Comments:
             'UPDATE comments SET',
             '    mode=1',
             'WHERE id=? AND mode=2'], (id, ))
+
+    def unsubscribe(self, email, id):
+        """
+        Turn off email notifications for replies to this comment.
+        """
+        self.db.execute([
+            'UPDATE comments SET',
+            '    notification=0',
+            'WHERE email=? AND (id=? OR parent=?);'], (email, id, id))
 
     def update(self, id, data):
         """

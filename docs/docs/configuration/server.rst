@@ -88,6 +88,14 @@ notify
         Send notifications via SMTP on new comments with activation (if
         moderated) and deletion links.
 
+reply-notifications
+    Allow users to request E-mail notifications for replies to their post.
+
+    It is highly recommended to also turn on moderation when enabling this
+    setting, as Isso can otherwise be easily exploited for sending spam.
+
+    Do not forget to configure the client accordingly.
+
 log-file
     Log console messages to file instead of standard out.
 
@@ -155,6 +163,12 @@ listen
     `#299 <https://github.com/surfly/gevent/issues/299>`_ for details).
 
     Does not apply for `uWSGI`.
+
+public-endpoint
+    public URL that Isso is accessed from by end users. Should always be
+    a http:// or https:// absolute address. If left blank, automatic
+    detection is attempted. Normally only needs to be specified if
+    different than the `listen` setting.
 
 reload
     reload application, when the source code has changed. Useful for

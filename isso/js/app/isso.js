@@ -40,6 +40,17 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             return true;
         };
 
+        // only display notification checkbox if email is filled in
+        var email_edit = function() {
+            if (config["reply-notifications"] && $("[name='email']", el).value.length > 0) {
+                $(".notification-section", el).show();
+            } else {
+                $(".notification-section", el).hide();
+            }
+        };
+        $("[name='email']", el).on("input", email_edit);
+        email_edit();
+
         // email is not optional if this config parameter is set
         if (config["require-email"]) {
             $("[name='email']", el).setAttribute("placeholder",
@@ -89,7 +100,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 author: author, email: email, website: website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null,
-                title: $("#isso-thread").getAttribute("data-title") || null
+                title: $("#isso-thread").getAttribute("data-title") || null,
+                notification: $("[name=notification]", el).checked() ? 1 : 0,
             }).then(function(comment) {
                 $(".textarea", el).innerHTML = "";
                 $(".textarea", el).blur();
