@@ -98,5 +98,11 @@ In chronological order:
 * Rocka <i@rocka.me>
   * Implementation and documentation about async comment loading
 
+* Pelle Nilsson @pellenilsson
+  * Reply notifications
+
+* Craig P Hicks @craigphicks
+  * Fix sub urls configurations on admin interface
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
