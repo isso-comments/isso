@@ -37,10 +37,10 @@ comment thread:
     window.Isso.fetchComments()
 
 It will delete all comments under the thread but not the PostBox, fetch
-comments with `data-isso-id` attribute of element `section#isso-thread` (if that
-attribute not exists, fallback to `window.location.pathname`), then fill
-comments into the thread. In other words, you should change `data-isso-id`
-attribute of element `section#isso-thread` (or modify the pathname with
+comments with `data-isso-id` attribute of the element `section#isso-thread` (if
+that attribute does not exist, fallback to `window.location.pathname`), then
+fill comments into the thread. In other words, you should change `data-isso-id`
+attribute of the element `section#isso-thread` (or modify the pathname with
 `location.pushState`) before you can get new comments. And the thread element
 itself should *NOT* be touched or removed.
 
