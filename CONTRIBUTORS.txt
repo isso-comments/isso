@@ -95,5 +95,8 @@ In chronological order:
 * Steffen Prince @sprin
   * Upgrade to Misaka 2
 
+* Rocka <i@rocka.me>
+  * Implementation and documentation about async comment loading
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]

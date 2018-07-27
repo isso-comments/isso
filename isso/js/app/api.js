@@ -3,7 +3,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
     "use strict";
 
     var salt = "Eech7co8Ohloopo9Ol6baimi",
-        location = window.location.pathname;
+        location = function() { return window.location.pathname };
 
     var script, endpoint,
         js = document.getElementsByTagName("script");
@@ -91,7 +91,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
 
     var create = function(tid, data) {
         var deferred = Q.defer();
-        curl("POST", endpoint + "/new?" + qs({uri: tid || location}), JSON.stringify(data),
+        curl("POST", endpoint + "/new?" + qs({uri: tid || location()}), JSON.stringify(data),
             function (rv) {
                 if (rv.status === 201 || rv.status === 202) {
                     deferred.resolve(JSON.parse(rv.body));
@@ -142,7 +142,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         if (typeof(nested_limit) === 'undefined') { nested_limit = "inf"; }
         if (typeof(parent) === 'undefined') { parent = null; }
 
-        var query_dict = {uri: tid || location, after: lastcreated, parent: parent};
+        var query_dict = {uri: tid || location(), after: lastcreated, parent: parent};
 
         if(limit !== "inf") {
             query_dict['limit'] = limit;
@@ -193,7 +193,7 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
 
 
     var feed = function(tid) {
-        return endpoint + "/feed?" + qs({uri: tid || location});
+        return endpoint + "/feed?" + qs({uri: tid || location()});
     };
 
     var preview = function(text) {
