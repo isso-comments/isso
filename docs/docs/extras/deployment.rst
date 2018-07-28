@@ -98,28 +98,45 @@ To execute Isso, use a command similar to:
 `mod_wsgi <https://code.google.com/p/modwsgi/>`__
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First, create a startup script, called `isso.wsgi`. If Isso is in your system module 
-search path, then the script is quite simple:
+First, create a startup script, called `isso.wsgi`. If Isso is in your system module
+search path, then the script is quite simple. This script is included in the
+isso distribution as `run.py`:
 
 .. code-block:: python
 
-    from isso import make_app
-    from isso.core import Config
+    from __future__ import unicode_literals
 
-    application = make_app(Config.load("/path/to/isso.cfg"))
+    import os
+
+    from isso import make_app
+    from isso import dist, config
+
+    application = make_app(
+    config.load(
+        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        "/path/to/isso.cfg"),
+    multiprocessing=True)
 
 If you have installed Isso in a virtual environment, then you will have to add the path
 of the virtualenv to the site-specific paths of Python:
 
 .. code-block:: python
-    
+
+    from __future__ import unicode_literals
+
     import site
     site.addsitedir("/path/to/isso_virtualenv")
 
-    from isso import make_app
-    from isso.core import Config
+    import os
 
-    application = make_app(Config.load("/path/to/isso.cfg"))
+    from isso import make_app
+    from isso import dist, config
+
+    application = make_app(
+    config.load(
+        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        "/path/to/isso.cfg",
+    multiprocessing=True)
 
 Using the aforementioned script will load system modules when available and modules
 from the virtualenv otherwise. Should you want the opposite behavior, where modules from
@@ -127,32 +144,39 @@ the virtualenv have priority over system modules, the following script does the 
 
 .. code-block:: python
 
-    import site 
-    import sys 
+    from __future__ import unicode_literals
+
+    import os
+    import site
+    import sys
 
     # Remember original sys.path.
-    prev_sys_path = list(sys.path) 
+    prev_sys_path = list(sys.path)
 
     # Add the new site-packages directory.
     site.addsitedir("/path/to/isso_virtualenv")
 
     # Reorder sys.path so new directories at the front.
-    new_sys_path = [] 
-    for item in list(sys.path): 
-        if item not in prev_sys_path: 
-            new_sys_path.append(item) 
-            sys.path.remove(item) 
-    sys.path[:0] = new_sys_path 
-    
+    new_sys_path = []
+    for item in list(sys.path):
+        if item not in prev_sys_path:
+            new_sys_path.append(item)
+            sys.path.remove(item)
+    sys.path[:0] = new_sys_path
+
     from isso import make_app
-    from isso.core import Config
+    from isso import dist, config
 
-    application = make_app(Config.load("/path/to/isso.cfg"))
+    application = make_app(
+    config.load(
+        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        "/path/to/isso.cfg",
+    multiprocessing=True)
 
-The last two scripts are based on those given by 
+The last two scripts are based on those given by
 `mod_wsgi documentation <https://code.google.com/p/modwsgi/wiki/VirtualEnvironments>`_.
 
-The Apache configuration will then be similar to the following: 
+The Apache configuration will then be similar to the following:
 
 .. code-block:: apache
 
@@ -163,9 +187,9 @@ The Apache configuration will then be similar to the following:
         WSGIScriptAlias /mounted_isso_path /path/to/isso.wsgi
     </VirtualHost>
 
-You will need to adjust the user and group according to your Apache installation and 
+You will need to adjust the user and group according to your Apache installation and
 security policy. Be also aware that the directory containing the comments database must
-be writable by the user or group running the WSGI daemon process: having a writable 
+be writable by the user or group running the WSGI daemon process: having a writable
 database only is not enough, since SQLite will need to create a lock file in the same
 directory.
 
