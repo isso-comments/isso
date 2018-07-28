@@ -6,6 +6,7 @@ define({
     "postbox-preview": "Предпросмотр",
     "postbox-edit": "Правка",
     "postbox-submit": "Отправить",
+    "postbox-notification": "Подписаться на уведомление об ответах",
     "num-comments": "{{ n }} комментарий\n{{ n }} комментария\n{{ n }} комментариев",
     "no-comments": "Пока нет комментариев",
     "comment-reply": "Ответить",
