@@ -172,7 +172,7 @@ function send_edit(com_id, hash, isso_host_script) {
           {% endfor %}
         </div>
     </div>
-    <main>
+    <div id="isso-root">
     {% set thread_id = "no_id" %}
     {% for comment in comments %}
       {% if order_by == "tid" %}
@@ -247,7 +247,7 @@ function send_edit(com_id, hash, isso_host_script) {
     </div>
 </div>
     {% endfor %}
-    </main>
+    </div>
   </div>
 </body>
 </html>
