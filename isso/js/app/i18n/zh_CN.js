@@ -1,11 +1,12 @@
 define({
-    "postbox-text": "在此输入评论 (最少 3 个字符)",
-    "postbox-author": "名字 (可选)",
-    "postbox-email": "E-mail (可选)",
-    "postbox-website": "网站 (可选)",
+    "postbox-text": "在此输入评论（最少 3 个字符）",
+    "postbox-author": "名字（可选）",
+    "postbox-email": "电子邮箱（可选）",
+    "postbox-website": "网站（可选）",
     "postbox-preview": "预览",
     "postbox-edit": "编辑",
     "postbox-submit": "提交",
+    "postbox-notification": "有新回复时发送邮件通知",
 
     "num-comments": "1 条评论\n{{ n }} 条评论",
     "no-comments": "还没有评论",
