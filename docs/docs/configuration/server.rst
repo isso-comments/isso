@@ -55,7 +55,7 @@ name
     not used otherwise.
 
 host
-    Your website(s). If Isso is unable to connect to at least on site, you'll
+    Your website(s). If Isso is unable to connect to at least one site, you'll
     get a warning during startup and comments are most likely non-functional.
 
     You'll need at least one host/website to run Isso. This is due to security
@@ -290,7 +290,7 @@ supported, but new languages are relatively easy to add.
     allowed-attributes =
 
 options
-    `Misaka-specific Markdown extensions <http://misaka.61924.nl/api/>`_, all
+    `Misaka-specific Markdown extensions <http://misaka.61924.nl/#api>`_, all
     flags starting with `EXT_` can be used there, separated by comma.
 
 allowed-elements
