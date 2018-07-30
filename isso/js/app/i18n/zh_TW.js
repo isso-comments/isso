@@ -1,11 +1,12 @@
 define({
     "postbox-text": "在此輸入留言（至少 3 個字元）",
-    "postbox-author": "名稱 (非必填)",
-    "postbox-email": "電子信箱 (非必填)",
-    "postbox-website": "個人網站 (非必填)",
+    "postbox-author": "名稱（非必填）",
+    "postbox-email": "電子信箱（非必填）",
+    "postbox-website": "個人網站（非必填）",
     "postbox-preview": "預覽",
     "postbox-edit": "編輯",
     "postbox-submit": "送出",
+    "postbox-notification": "訂閱回复的電子郵件通知",
 
     "num-comments": "1 則留言\n{{ n }} 則留言",
     "no-comments": "尚無留言",
