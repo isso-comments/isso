@@ -290,7 +290,7 @@ supported, but new languages are relatively easy to add.
     allowed-attributes =
 
 options
-    `Misaka-specific Markdown extensions <http://misaka.61924.nl/api/>`_, all
+    `Misaka-specific Markdown extensions <http://misaka.61924.nl/#api>`_, all
     flags starting with `EXT_` can be used there, separated by comma.
 
 allowed-elements
