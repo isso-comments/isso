@@ -959,7 +959,7 @@ class API(object):
         except ValueError:
             return BadRequest("limit should be integer")
         comments = self.comments.fetch(**args)
-        base = conf.get('base')
+        base = conf.get('base').rstrip('/')
         hostname = urlparse(base).netloc
 
         # Let's build an Atom feed.
