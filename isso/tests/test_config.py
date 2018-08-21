@@ -26,3 +26,24 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(parser.getlist("foo", "spam"), ['a', 'b', 'cdef'])
         self.assertEqual(list(parser.getiter("foo", "bla")), ['spam', 'ham'])
         self.assertEqual(list(parser.getiter("foo", "asd")), ['fgh'])
+
+    def test_smtp(self):
+
+        cases = [
+            ('"abc" <def@example.org>',     '"abc" <def@example.org>'),
+            ('abc <def@example.org>',       'abc <def@example.org>'),
+            ('"abc def" <def@example.org>', '"abc def" <def@example.org>'),
+            ('abc def <def@example.org>',   'abc def <def@example.org>'),
+            ('def@example.org',             'Ich schrei sonst! <def@example.org>'),
+            ('"abc" def@example.org',       ''),
+            ('"abc"',                       ''),
+            ('abc',                         ''),
+        ]
+
+        for (config_value, expected) in cases:
+            parser = config.IssoParser(allow_no_value=True)
+            parser.read_file(io.StringIO(u"""
+                [smtp]
+                from = """ + config_value))
+
+            self.assertEqual(parser.get("smtp", "from"), expected)
