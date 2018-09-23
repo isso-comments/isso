@@ -3,7 +3,7 @@ define({
     "postbox-author": "Nombre (opcional)",
     "postbox-email": "E-mail (opcional)",
     "postbox-website": "Sitio web (opcional)",
-    "postbox-preview": "Avance",
+    "postbox-preview": "Vista preliminar",
     "postbox-edit": "Editar",
     "postbox-submit": "Enviar",
     "num-comments": "Un Comentario\n{{ n }} Comentarios",
