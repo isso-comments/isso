@@ -809,7 +809,7 @@ class API(object):
         if not self.conf.getboolean('gravatar'):
             return item
 
-        email = item['email'] or ""
+        email = item['email'] or item['author'] or ''
         email_md5_hash = md5(email)
 
         gravatar_url = self.conf.get('gravatar-url')
@@ -1066,7 +1066,7 @@ class API(object):
             get_current_url(env, strip_querystring=True) + '/index.html'
         )
 
-    def login(self, env, req):        
+    def login(self, env, req):
         data = req.form
         password = self.isso.conf.get("general", "admin_password")
         if data['password'] and data['password'] == password:
