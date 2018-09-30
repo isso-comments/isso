@@ -4,7 +4,7 @@ export DH_VERBOSE=1
 export PYBUILD_NAME=isso
 
 %:
-	dh $@ --with python2,sphinxdoc --buildsystem=pybuild
+	dh $@ --with python2,sphinxdoc --buildsystem=pybuild --test-nose
 
 override_dh_auto_build:
 	$(MAKE) RJS="node /usr/lib/nodejs/requirejs/r.js" LC_ALL=C.UTF-8
@@ -21,7 +21,7 @@ override_dh_installchangelogs:
 
 override_dh_auto_install:
 	dh_auto_install
-	pybuild --install -i python{version} -p 2.7 --dir . --verbose --test-nose
+	pybuild --install -i python{version} -p 2.7 --dir . --verbose
 
 override_dh_auto_clean:
 	dh_auto_clean

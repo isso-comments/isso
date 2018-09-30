@@ -2,6 +2,7 @@ isso (0.10.6+git20170928+dfsg-2) UNRELEASED; urgency=medium
 
   * Remove Federico from uploaders, per his request.
   * Point Vcs-* URLs at salsa.
+  * Actually run nose tests during package build.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 05 Sep 2018 00:31:31 +0100
 
