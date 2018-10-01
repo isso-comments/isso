@@ -90,6 +90,8 @@ define(function() {
         this.focus = function() { node.focus() };
         this.scrollIntoView = function(args) { node.scrollIntoView(args) };
 
+        this.checked = function() { return node.checked; };
+
         this.setAttribute = function(key, value) { node.setAttribute(key, value) };
         this.getAttribute = function(key) { return node.getAttribute(key) };
 

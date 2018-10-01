@@ -13,7 +13,7 @@ ConditionPathIsReadWrite=/var/log/isso
 
 ConditionPathIsDirectory=/etc/isso.d/enabled
 
-ConditionFileIsExecutable=/usr/bin/gunicorn
+ConditionFileIsExecutable=/usr/bin/gunicorn3
 
 # Start only if there are conf files in /etc/isso.d/enabled - otherwise
 # skip this unit quietly.
@@ -22,7 +22,7 @@ ConditionPathExistsGlob=/etc/isso.d/enabled/*.cfg
 [Service]
 
 Environment=ISSO_SETTINGS=/etc/isso.d/enabled
-ExecStart=/usr/bin/gunicorn -n gunicorn-isso --log-file /var/log/isso/isso.log isso.dispatch
+ExecStart=/usr/bin/gunicorn3 -n gunicorn-isso --log-file /var/log/isso/isso.log isso.dispatch
 
 #UMask=0007
 Restart=on-failure

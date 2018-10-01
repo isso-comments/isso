@@ -1,12 +1,25 @@
-sudo: required
-language: generic
-
-services:
-  - docker
-
+language: python
+matrix:
+  include:
+    - python: 2.7
+      env: TOX_ENV=py27
+    - python: 3.4
+      env: TOX_ENV=py34
+    - python: 3.5
+      env: TOX_ENV=py35
+    - python: 3.6
+      env: TOX_ENV=py36
+install:
+  - pip install -U pip
+  - pip install flake8 tox
+  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
-  - wget -O- http://travis.debian.net/script.sh | sh -
-
-branches:
-  except:
-    - /^debian\/\d/
+  - tox -e $TOX_ENV
+  - IGNORE=E226,E241,E265,E402,E501,E704
+  - flake8 . --count --ignore=${IGNORE} --max-line-length=127 --show-source --statistics
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#isso"
+    on_success: change
+    on_failure: always

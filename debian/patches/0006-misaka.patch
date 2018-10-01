@@ -1,0 +1,63 @@
+debian only has misaka 1.0
+Index: isso-0.10.6+git20181001+dfsg/isso/utils/html.py
+===================================================================
+--- isso-0.10.6+git20181001+dfsg.orig/isso/utils/html.py
++++ isso-0.10.6+git20181001+dfsg/isso/utils/html.py
+@@ -55,14 +55,28 @@ class Sanitizer(object):
+         return linker.linkify(clean_html)
+ 
+ 
+-def Markdown(extensions=("strikethrough", "superscript", "autolink",
+-                         "fenced-code")):
++
++ALIAS_EXT = {
++    'autolink': misaka.EXT_AUTOLINK,
++    'fenced_code': misaka.EXT_FENCED_CODE,
++    'no_intra_emphasis': misaka.EXT_NO_INTRA_EMPHASIS,
++    'space_headers': misaka.EXT_SPACE_HEADERS,
++    'strikethrough': misaka.EXT_STRIKETHROUGH,
++    'superscript': misaka.EXT_SUPERSCRIPT,
++    'tables': misaka.EXT_TABLES,
++}
++
++def Markdown(extensions=('strikethrough',
++        'superscript', 'autolink', 'fenced_code')):
++    ext = 0
++    for extension in extensions:
++        ext |= ALIAS_EXT[extension]
+ 
+     renderer = Unofficial()
+-    md = misaka.Markdown(renderer, extensions=extensions)
++    md = misaka.Markdown(renderer, extensions=ext)
+ 
+     def inner(text):
+-        rv = md(text).rstrip("\n")
++        rv = md.render(text).rstrip("\n")
+         if rv.startswith("<p>") or rv.endswith("</p>"):
+             return rv
+         return "<p>" + rv + "</p>"
+Index: isso-0.10.6+git20181001+dfsg/isso/tests/test_html.py
+===================================================================
+--- isso-0.10.6+git20181001+dfsg.orig/isso/tests/test_html.py
++++ isso-0.10.6+git20181001+dfsg/isso/tests/test_html.py
+@@ -29,7 +29,7 @@ class TestHTML(unittest.TestCase):
+             self.assertEqual(convert(input), expected)
+ 
+     def test_github_flavoured_markdown(self):
+-        convert = html.Markdown(extensions=("fenced-code", ))
++        convert = html.Markdown(extensions=("fenced_code", ))
+ 
+         # without lang
+         _in = textwrap.dedent("""\
+@@ -39,9 +39,9 @@ class TestHTML(unittest.TestCase):
+             #!/usr/bin/env python
+             print("Hello, World")""")
+         _out = textwrap.dedent("""\
+-            <p>Hello, World</p>
++            <p>Hello, World</p>\n
+             <pre><code>#!/usr/bin/env python
+-            print("Hello, World")
++            print(&quot;Hello, World&quot;)
+             </code></pre>""")
+ 
+         self.assertEqual(convert(_in), _out)

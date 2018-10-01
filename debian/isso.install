@@ -1,3 +1,2 @@
 debian/isso.service lib/systemd/system
 debian/isso.socket lib/systemd/system
-debian/python-isso/usr/lib /usr

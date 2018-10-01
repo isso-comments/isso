@@ -1,0 +1,23 @@
+node-sass is not available in debian
+--- a/Makefile
++++ b/Makefile
+@@ -49,16 +49,16 @@
+ js: $(ISSO_JS_DST)
+ 
+ man: $(DOCS_RST_SRC)
+-	sphinx-build -b man docs/ man/
++	sphinx-build -b man docs/ -d debian/doctrees man/
+ 	mkdir -p man/man1/ man/man5
+ 	mv man/isso.1 man/man1/isso.1
+ 	mv man/isso.conf.5 man/man5/isso.conf.5
+ 
+ ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
+-	node-sass --no-cache $(DOCS_CSS_SRC) $@
++	sass --no-cache --sourcemap=none $(DOCS_CSS_SRC) $@
+ 
+ ${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
+-	sphinx-build -b dirhtml docs/ $@
++	sphinx-build -b dirhtml docs/ -d debian/doctrees $@
+ 
+ site: $(DOCS_HTML_DST)
+ 

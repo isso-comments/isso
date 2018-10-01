@@ -1,13 +1,25 @@
-diff --git a/docs/index.html b/docs/index.html
-index 172fbb5..8c25243 100644
---- a/docs/index.html
-+++ b/docs/index.html
+Index: isso-0.10.6+git20181001+dfsg/docs/index.html
+===================================================================
+--- isso-0.10.6+git20181001+dfsg.orig/docs/index.html
++++ isso-0.10.6+git20181001+dfsg/docs/index.html
 @@ -2,7 +2,7 @@
  {% set title = "Isso – a commenting server similar to Disqus" %}
  {% block extrahead %}
      <script data-isso="//posativ.org/isso/api/"
 -            src="//posativ.org/isso/api/js/embed.min.js"></script>
-+            src="/usr/lib/python2.7/dist-packages/isso/js/embed.min.js"></script>
++            src="/usr/lib/python3/dist-packages/isso/js/embed.min.js"></script>
  {% endblock %}
  {% block header %}
  <div class="index">
+Index: isso-0.10.6+git20181001+dfsg/docs/_isso/layout.html
+===================================================================
+--- isso-0.10.6+git20181001+dfsg.orig/docs/_isso/layout.html
++++ isso-0.10.6+git20181001+dfsg/docs/_isso/layout.html
+@@ -14,6 +14,7 @@
+         SOURCELINK_SUFFIX:  '{{ sourcelink_suffix }}'
+       };
+     </script>
++    {% set script_files = ["/usr/share/javascript/jquery/jquery.min.js" ,"/usr/share/javascript/underscore/underscore.min.js" , "_static/doctools.js"] %}
+     {%- for scriptfile in script_files %}
+     <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+     {%- endfor %}

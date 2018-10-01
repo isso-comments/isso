@@ -2,71 +2,67 @@
 
 from __future__ import unicode_literals
 
-import operator
 import pkg_resources
 
 from distutils.version import LooseVersion as Version
 
-HTML5LIB_VERSION = Version(pkg_resources.get_distribution("html5lib").version)
-HTML5LIB_SIMPLETREE = Version("0.95")
-
-from isso.compat import reduce
-
-import html5lib
-from html5lib.sanitizer import HTMLSanitizer
-from html5lib.serializer import HTMLSerializer
-
+import bleach
 import misaka
 
 
-def Sanitizer(elements, attributes):
+class Sanitizer(object):
 
-    class Inner(HTMLSanitizer):
-
-        # attributes found in Sundown's HTML serializer [1] except for <img> tag,
+    def __init__(self, elements, attributes):
+        # attributes found in Sundown's HTML serializer [1]
+        # except for <img> tag,
         # because images are not generated anyways.
         #
         # [1] https://github.com/vmg/sundown/blob/master/html/html.c
-        allowed_elements = ["a", "p", "hr", "br", "ol", "ul", "li",
+        self.elements = ["a", "p", "hr", "br", "ol", "ul", "li",
                             "pre", "code", "blockquote",
                             "del", "ins", "strong", "em",
                             "h1", "h2", "h3", "h4", "h5", "h6",
                             "table", "thead", "tbody", "th", "td"] + elements
 
         # href for <a> and align for <table>
-        allowed_attributes = ["align", "href"] + attributes
-
-        # remove disallowed tokens from the output
-        def disallowed_token(self, token, token_type):
-            return None
-
-    return Inner
+        self.attributes = ["align", "href"] + attributes
 
 
-def sanitize(tokenizer, document):
 
-    parser = html5lib.HTMLParser(tokenizer=tokenizer)
-    domtree = parser.parseFragment(document)
+    def sanitize(self, text):
+        clean_html = bleach.clean(text, tags=self.elements,
+            attributes=self.attributes, strip=True)
 
-    if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
-        builder = "etree"
-    else:
-        builder = "simpletree"
+        def set_links(attrs, new=False):
+            href_key = (None, u'href')
 
-    stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
-    serializer = HTMLSerializer(quote_attr_values=True, omit_optional_tags=False)
+            if href_key not in attrs:
+                return attrs
+            if attrs[href_key].startswith(u'mailto:'):
+                return attrs
 
-    return serializer.render(stream)
+            rel_key = (None, u'rel')
+            rel_values = [val for val in attrs.get(rel_key, u'').split(u' ') if val]
+
+            for value in [u'nofollow', u'noopener']:
+                if value not in [rel_val.lower() for rel_val in rel_values]:
+                    rel_values.append(value)
+
+            attrs[rel_key] = u' '.join(rel_values)
+            return attrs
+
+        linker = bleach.linkifier.Linker(callbacks=[set_links])
+        return linker.linkify(clean_html)
 
 
-def Markdown(extensions=("strikethrough", "superscript", "autolink")):
+def Markdown(extensions=("strikethrough", "superscript", "autolink",
+                         "fenced-code")):
 
-    flags = reduce(operator.xor, map(
-        lambda ext: getattr(misaka, 'EXT_' + ext.upper()), extensions), 0)
-    md = misaka.Markdown(Unofficial(), extensions=flags)
+    renderer = Unofficial()
+    md = misaka.Markdown(renderer, extensions=extensions)
 
     def inner(text):
-        rv = md.render(text).rstrip("\n")
+        rv = md(text).rstrip("\n")
         if rv.startswith("<p>") or rv.endswith("</p>"):
             return rv
         return "<p>" + rv + "</p>"
@@ -82,7 +78,7 @@ class Unofficial(misaka.HtmlRenderer):
     to <code class="$lang">, compatible with Highlight.js.
     """
 
-    def block_code(self, text, lang):
+    def blockcode(self, text, lang):
         lang = ' class="{0}"'.format(lang) if lang else ''
         return "<pre><code{1}>{0}</code></pre>\n".format(text, lang)
 
@@ -96,7 +92,7 @@ class Markup(object):
             conf.getlist("allowed-elements"),
             conf.getlist("allowed-attributes"))
 
-        self._render = lambda text: sanitize(sanitizer, parser(text))
+        self._render = lambda text: sanitizer.sanitize(parser(text))
 
     def render(self, text):
         return self._render(text)

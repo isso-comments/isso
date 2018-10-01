@@ -3,6 +3,8 @@ define({
     "postbox-author": "Nomo (malnepra)",
     "postbox-email": "Retadreso (malnepra)",
     "postbox-website": "Retejo (malnepra)",
+    "postbox-preview": "Antaŭrigardo",
+    "postbox-edit": "Redaktu",
     "postbox-submit": "Sendu",
     "num-comments": "{{ n }} komento\n{{ n }} komentoj",
     "no-comments": "Neniu komento ankoraŭ",

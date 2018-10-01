@@ -2,6 +2,7 @@ Source: isso
 Section: python
 Priority: optional
 Maintainer: Jelmer Vernooĳ <jelmer@debian.org>
+Uploaders: ghost <i@ghosts.work>
 Build-Depends:
  debhelper (>= 9~),
  dh-python,
@@ -11,33 +12,30 @@ Build-Depends:
  node-requirejs,
  node-requirejs-text,
  nodejs,
- python-all,
- python-html5lib,
- python-configparser,
- python-setuptools,
- python-sphinx,
+ python3-all,
+ python3-setuptools,
+ python3-sphinx,
+ python3-cffi,
+ python3-nose,
  ruby-sass
 Standards-Version: 4.1.1
-X-Python-Version: >= 2.7
 Homepage: http://posativ.org/isso/
 Vcs-Git: https://salsa.debian.org/jelmer/isso.git -b master
 Vcs-Browser: https://salsa.debian.org/jelmer/isso.git
+
 
 Package: isso
 Architecture: all
 Depends:
  ${misc:Depends},
- ${python:Depends},
+ ${python3:Depends},
  ${sphinxdoc:Depends},
  lsb-base (>= 3.0-6),
- python-configparser,
- python-html5lib,
- python-ipaddr,
- python-itsdangerous,
- python-misaka,
- python-werkzeug (>= 0.9~)
+ python3-bleach,
 Recommends:
- gunicorn
+ libjs-jquery,
+ libjs-underscore,
+ gunicorn3
 Provides: ${python:Provides}
 Description: lightweight web-based commenting system
  A lightweight commenting system written in Python. It supports CRUD comments

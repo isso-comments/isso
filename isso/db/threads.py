@@ -25,6 +25,10 @@ class Threads(object):
     def __getitem__(self, uri):
         return Thread(*self.db.execute("SELECT * FROM threads WHERE uri=?", (uri, )).fetchone())
 
+    def get(self, id):
+        return Thread(*self.db.execute("SELECT * FROM threads WHERE id=?", (id, )).fetchone())
+
     def new(self, uri, title):
-        self.db.execute("INSERT INTO threads (uri, title) VALUES (?, ?)", (uri, title))
+        self.db.execute(
+            "INSERT INTO threads (uri, title) VALUES (?, ?)", (uri, title))
         return self[uri]

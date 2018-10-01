@@ -7,6 +7,9 @@ define(["libjs-jade-runtime", "app/utils", "jade!app/text/postbox", "jade!app/te
     var load = function(name, js) {
         templates[name] = (function(jade) {
                 var fn;
+                if (js.compiled) {
+                    return js(jade);
+                }
                 eval("fn = " + js);
                 return fn;
             })(runtime);
