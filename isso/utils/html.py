@@ -6,61 +6,53 @@ import pkg_resources
 
 from distutils.version import LooseVersion as Version
 
-HTML5LIB_VERSION = Version(pkg_resources.get_distribution("html5lib").version)
-HTML5LIB_SIMPLETREE = Version("0.95")
-
-import html5lib
-from html5lib.sanitizer import HTMLSanitizer
-from html5lib.serializer import HTMLSerializer
-
+import bleach
 import misaka
 
 
-def Sanitizer(elements, attributes):
+class Sanitizer(object):
 
-    class Inner(HTMLSanitizer):
-
+    def __init__(self, elements, attributes):
         # attributes found in Sundown's HTML serializer [1]
         # except for <img> tag,
         # because images are not generated anyways.
         #
         # [1] https://github.com/vmg/sundown/blob/master/html/html.c
-        allowed_elements = ["a", "p", "hr", "br", "ol", "ul", "li",
+        self.elements = ["a", "p", "hr", "br", "ol", "ul", "li",
                             "pre", "code", "blockquote",
                             "del", "ins", "strong", "em",
                             "h1", "h2", "h3", "h4", "h5", "h6",
                             "table", "thead", "tbody", "th", "td"] + elements
 
         # href for <a> and align for <table>
-        allowed_attributes = ["align", "href"] + attributes
-
-        # remove disallowed tokens from the output
-        def disallowed_token(self, token, token_type):
-            return None
-
-    return Inner
+        self.attributes = ["align", "href"] + attributes
 
 
-def sanitize(tokenizer, document):
 
-    parser = html5lib.HTMLParser(tokenizer=tokenizer)
-    domtree = parser.parseFragment(document)
+    def sanitize(self, text):
+        clean_html = bleach.clean(text, tags=self.elements,
+            attributes=self.attributes, strip=True)
 
-    if HTML5LIB_VERSION > HTML5LIB_SIMPLETREE:
-        builder = "etree"
+        def set_links(attrs, new=False):
+            href_key = (None, u'href')
 
-        for link in domtree.findall(".//{http://www.w3.org/1999/xhtml}a"):
-            if link.get('href', None):
-                link.set("rel", "nofollow noopener")
+            if href_key not in attrs:
+                return attrs
+            if attrs[href_key].startswith(u'mailto:'):
+                return attrs
 
-    else:
-        builder = "simpletree"
+            rel_key = (None, u'rel')
+            rel_values = [val for val in attrs.get(rel_key, u'').split(u' ') if val]
 
-    stream = html5lib.treewalkers.getTreeWalker(builder)(domtree)
-    serializer = HTMLSerializer(
-        quote_attr_values=True, omit_optional_tags=False)
+            for value in [u'nofollow', u'noopener']:
+                if value not in [rel_val.lower() for rel_val in rel_values]:
+                    rel_values.append(value)
 
-    return serializer.render(stream)
+            attrs[rel_key] = u' '.join(rel_values)
+            return attrs
+
+        linker = bleach.linkifier.Linker(callbacks=[set_links])
+        return linker.linkify(clean_html)
 
 
 def Markdown(extensions=("strikethrough", "superscript", "autolink",
@@ -100,7 +92,7 @@ class Markup(object):
             conf.getlist("allowed-elements"),
             conf.getlist("allowed-attributes"))
 
-        self._render = lambda text: sanitize(sanitizer, parser(text))
+        self._render = lambda text: sanitizer.sanitize(parser(text))
 
     def render(self, text):
         return self._render(text)
