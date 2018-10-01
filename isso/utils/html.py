@@ -27,9 +27,32 @@ class Sanitizer(object):
         # href for <a> and align for <table>
         self.attributes = ["align", "href"] + attributes
 
+
+
     def sanitize(self, text):
-        return bleach.clean(text, tags=self.elements,
+        clean_html = bleach.clean(text, tags=self.elements,
             attributes=self.attributes, strip=True)
+
+        def set_links(attrs, new=False):
+            href_key = (None, u'href')
+
+            if href_key not in attrs:
+                return attrs
+            if attrs[href_key].startswith(u'mailto:'):
+                return attrs
+
+            rel_key = (None, u'rel')
+            rel_values = [val for val in attrs.get(rel_key, u'').split(u' ') if val]
+
+            for value in [u'nofollow', u'noopener']:
+                if value not in [rel_val.lower() for rel_val in rel_values]:
+                    rel_values.append(value)
+
+            attrs[rel_key] = u' '.join(rel_values)
+            return attrs
+
+        linker = bleach.linkifier.Linker(callbacks=[set_links])
+        return linker.linkify(clean_html)
 
 
 def Markdown(extensions=("strikethrough", "superscript", "autolink",
