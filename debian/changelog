@@ -1,4 +1,4 @@
-isso (0.10.6+git20181001+dfsg-1) UNRELEASED; urgency=high
+isso (0.10.6+git20181001+dfsg-1) unstable; urgency=high
 
   [ ghost ]
   * Fix FTBFS. Closes: #893651
@@ -10,6 +10,7 @@ isso (0.10.6+git20181001+dfsg-1) UNRELEASED; urgency=high
   [ Jelmer Vernooĳ ]
   * Remove Federico from uploaders, per his request.
   * Point Vcs-* URLs at salsa.
+  * Actually run nose tests during package build.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 05 Sep 2018 00:31:31 +0100
 

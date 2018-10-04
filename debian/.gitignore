@@ -1,0 +1,9 @@
+# Debian-specific ignores
+*.debhelper
+*.debhelper.log
+*.substvars
+files
+isso/
+python-isso/
+.pybuild
+debhelper-build-stamp

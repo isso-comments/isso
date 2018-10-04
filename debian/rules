@@ -4,7 +4,7 @@ export DH_VERBOSE=1
 export PYBUILD_NAME=isso
 
 %:
-	dh $@ --with python3,sphinxdoc --buildsystem=pybuild
+	dh $@ --with python3,sphinxdoc --buildsystem=pybuild --test-nose
 
 override_dh_auto_build:
 	nodejs /usr/lib/nodejs/requirejs/r.js -convert /usr/lib/nodejs/jade/lib/ isso/js/components/jade/
