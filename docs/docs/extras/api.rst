@@ -185,3 +185,16 @@ uri :
 
 returns an integer
     
+Get Atom feed
+-------------
+
+Get an Atom feed of comments for thread `uri`:
+
+.. code-block:: text
+
+    GET /feed?uri=%2Fhello-world%2F
+    
+uri :
+    URI to get comments for, required.
+
+Returns an XML document as the Atom feed.

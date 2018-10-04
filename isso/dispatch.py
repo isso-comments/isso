@@ -25,7 +25,8 @@ class Dispatcher(DispatcherMiddleware):
     def __init__(self, *confs):
         self.isso = {}
 
-        default = os.path.join(dist.location, dist.project_name, "defaults.ini")
+        default = os.path.join(
+            dist.location, dist.project_name, "defaults.ini")
         for i, path in enumerate(confs):
             conf = config.load(default, path)
 
@@ -45,7 +46,8 @@ class Dispatcher(DispatcherMiddleware):
         return super(Dispatcher, self).__call__(environ, start_response)
 
     def default(self, environ, start_response):
-        resp = Response("\n".join(self.isso.keys()), 404, content_type="text/plain")
+        resp = Response("\n".join(self.isso.keys()),
+                        404, content_type="text/plain")
         return resp(environ, start_response)
 
 

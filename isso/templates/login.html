@@ -1,0 +1,30 @@
+<html>
+<head>
+  <title>Isso admin</title>
+  <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
+  <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <header>
+        <img class="logo" src="{{isso_host_script}}/img/isso.svg" alt="Wynaut by @veekun"/>
+        <div class="title">
+          <a href="./">
+            <h1>Isso</h1>
+            <h2>Administration</h2>
+          </a>
+        </div>
+      </header>
+    </div>
+    <main>
+      <div id="login">
+        Administration secured by password:
+        <form method="POST" action="{{isso_host_script}}/login">
+          <input type="password" name="password" autofocus />
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

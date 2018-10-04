@@ -7,7 +7,9 @@ import cgi
 import time
 import functools
 
+from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
+from xml.etree import ElementTree as ET
 
 from werkzeug.http import dump_cookie
 from werkzeug.wsgi import get_current_url
@@ -19,15 +21,32 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from isso.compat import text_type as str
 
 from isso import utils, local
-from isso.utils import http, parse, JSONResponse as JSON
+from isso.utils import (http, parse,
+                        JSONResponse as JSON, XMLResponse as XML,
+                        render_template)
 from isso.views import requires
 from isso.utils.hash import sha1
+from isso.utils.hash import md5
+
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
+try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
     r'^'
     r'(https?://)?'
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+    # domain...
+    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
     r'localhost|'  # localhost...
     r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
     r'(?::\d+)?'  # optional port
@@ -60,12 +79,12 @@ def xhr(func):
     not forged (XHR is restricted by CORS separately).
     """
 
-
     """
     @apiDefine csrf
     @apiHeader {string="application/json"} Content-Type
         The content type must be set to `application/json` to prevent CSRF attacks.
     """
+
     def dec(self, env, req, *args, **kwargs):
 
         if req.content_type and not req.content_type.startswith("application/json"):
@@ -78,25 +97,29 @@ def xhr(func):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
-                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash'])
+                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image', 'notification'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
 
     VIEWS = [
-        ('fetch',   ('GET', '/')),
-        ('new',     ('POST', '/new')),
-        ('count',   ('GET', '/count')),
-        ('counts',  ('POST', '/count')),
-        ('view',    ('GET', '/id/<int:id>')),
-        ('edit',    ('PUT', '/id/<int:id>')),
-        ('delete',  ('DELETE', '/id/<int:id>')),
-        ('moderate',('GET',  '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
-        ('moderate',('POST', '/id/<int:id>/<any(activate,delete):action>/<string:key>')),
-        ('like',    ('POST', '/id/<int:id>/like')),
-        ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('demo',    ('GET', '/demo')),
-        ('preview', ('POST', '/preview'))
+        ('fetch',       ('GET', '/')),
+        ('new',         ('POST', '/new')),
+        ('count',       ('GET', '/count')),
+        ('counts',      ('POST', '/count')),
+        ('feed',        ('GET', '/feed')),
+        ('view',        ('GET', '/id/<int:id>')),
+        ('edit',        ('PUT', '/id/<int:id>')),
+        ('delete',      ('DELETE', '/id/<int:id>')),
+        ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:email>/<string:key>')),
+        ('moderate',    ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate',    ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('like',        ('POST', '/id/<int:id>/like')),
+        ('dislike',     ('POST', '/id/<int:id>/dislike')),
+        ('demo',        ('GET', '/demo')),
+        ('preview',     ('POST', '/preview')),
+        ('login',       ('POST', '/login')),
+        ('admin',       ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):
@@ -276,13 +299,17 @@ class API(object):
         self.signal("comments.new:after-save", thread, rv)
 
         cookie = functools.partial(dump_cookie,
-            value=self.isso.sign([rv["id"], sha1(rv["text"])]),
-            max_age=self.conf.getint('max-age'))
+                                   value=self.isso.sign(
+                                       [rv["id"], sha1(rv["text"])]),
+                                   max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
         rv["hash"] = self.hash(rv['email'] or rv['remote_addr'])
 
-        self.cache.set('hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
+        self.cache.set(
+            'hash', (rv['email'] or rv['remote_addr']).encode('utf-8'), rv['hash'])
+
+        rv = self._add_gravatar_image(rv)
 
         for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
@@ -322,6 +349,7 @@ class API(object):
             "likes": 1
         }
     """
+
     def view(self, environ, request, id):
 
         rv = self.comments.get(id)
@@ -405,8 +433,9 @@ class API(object):
         self.signal("comments.edit", rv)
 
         cookie = functools.partial(dump_cookie,
-                value=self.isso.sign([rv["id"], sha1(rv["text"])]),
-                max_age=self.conf.getint('max-age'))
+                                   value=self.isso.sign(
+                                       [rv["id"], sha1(rv["text"])]),
+                                   max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
 
@@ -450,7 +479,8 @@ class API(object):
         if item is None:
             raise NotFound
 
-        self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+        self.cache.delete(
+            'hash', (item['email'] or item['remote_addr']).encode('utf-8'))
 
         with self.isso.lock:
             rv = self.comments.delete(id)
@@ -466,6 +496,70 @@ class API(object):
         resp.headers.add("Set-Cookie", cookie(str(id)))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
+
+    """
+    @api {get} /id/:id/:email/key unsubscribe
+    @apiGroup Comment
+    @apiDescription
+        Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
+
+    @apiParam {number} id
+        The id of the comment to unsubscribe from replies to.
+    @apiParam {string} email
+        The email address of the subscriber.
+    @apiParam {string} key
+        The key to authenticate the subscriber.
+
+    @apiExample {curl} Unsubscribe Alice from replies to comment with id 13:
+        curl -X GET 'https://comments.example.com/id/13/unsubscribe/alice@example.com/WyJ1bnN1YnNjcmliZSIsImFsaWNlQGV4YW1wbGUuY29tIl0.DdcH9w.Wxou-l22ySLFkKUs7RUHnoM8Kos'
+
+    @apiSuccessExample {html} Using GET:
+        &lt;!DOCTYPE html&gt;
+        &lt;html&gt;
+            &lt;head&gt;
+                &lt;script&gt;
+                    if (confirm('Delete: Are you sure?')) {
+                        xhr = new XMLHttpRequest;
+                        xhr.open('POST', window.location.href);
+                        xhr.send(null);
+                    }
+                &lt;/script&gt;
+
+    @apiSuccessExample Using POST:
+        Yo
+    """
+
+    def unsubscribe(self, environ, request, id, email, key):
+        email = unquote(email)
+
+        try:
+            rv = self.isso.unsign(key, max_age=2**32)
+        except (BadSignature, SignatureExpired):
+            raise Forbidden
+
+        if rv[0] != 'unsubscribe' or rv[1] != email:
+            raise Forbidden
+
+        item = self.comments.get(id)
+
+        if item is None:
+            raise NotFound
+
+        with self.isso.lock:
+            self.comments.unsubscribe(email, id)
+
+        modal = (
+            "<!DOCTYPE html>"
+            "<html>"
+            "<head>"
+            "  <title>Successfully unsubscribed</title>"
+            "</head>"
+            "<body>"
+            "  <p>You have been unsubscribed from replies in the given conversation.</p>"
+            "</body>"
+            "</html>")
+
+        return Response(modal, 200, content_type="text/html")
 
     """
     @api {post} /id/:id/:action/key moderate
@@ -501,8 +595,8 @@ class API(object):
     @apiSuccessExample Using POST:
         Yo
     """
-    def moderate(self, environ, request, id, action, key):
 
+    def moderate(self, environ, request, id, action, key):
         try:
             id = self.isso.unsign(key, max_age=2**32)
         except (BadSignature, SignatureExpired):
@@ -529,17 +623,28 @@ class API(object):
             return Response(modal, 200, content_type="text/html")
 
         if action == "activate":
+            if item['mode'] == 1:
+                return Response("Already activated", 200)
             with self.isso.lock:
                 self.comments.activate(id)
-            self.signal("comments.activate", id)
+            thread = self.threads.get(item['tid'])
+            self.signal("comments.activate", thread, item)
+            return Response("Yo", 200)
+        elif action == "edit":
+            data = request.get_json()
+            with self.isso.lock:
+                rv = self.comments.update(id, data)
+            for key in set(rv.keys()) - API.FIELDS:
+                rv.pop(key)
+            self.signal("comments.edit", rv)
+            return JSON(rv, 200)
         else:
             with self.isso.lock:
                 self.comments.delete(id)
-            self.cache.delete('hash', (item['email'] or item['remote_addr']).encode('utf-8'))
+            self.cache.delete(
+                'hash', (item['email'] or item['remote_addr']).encode('utf-8'))
             self.signal("comments.delete", id)
-
-        return Response("Yo", 200)
-
+            return Response("Yo", 200)
 
         """
         @api {get} / get comments
@@ -670,10 +775,10 @@ class API(object):
             return BadRequest("nested_limit should be integer")
 
         rv = {
-            'id'             : root_id,
-            'total_replies'  : reply_counts[root_id],
-            'hidden_replies' : reply_counts[root_id] - len(root_list),
-            'replies'        : self._process_fetched_list(root_list, plain)
+            'id': root_id,
+            'total_replies': reply_counts[root_id],
+            'hidden_replies': reply_counts[root_id] - len(root_list),
+            'replies': self._process_fetched_list(root_list, plain)
         }
         # We are only checking for one level deep comments
         if root_id is None:
@@ -694,10 +799,23 @@ class API(object):
                     comment['total_replies'] = 0
                     replies = []
 
-                comment['hidden_replies'] = comment['total_replies'] - len(replies)
+                comment['hidden_replies'] = comment['total_replies'] - \
+                    len(replies)
                 comment['replies'] = self._process_fetched_list(replies, plain)
 
         return JSON(rv, 200)
+
+    def _add_gravatar_image(self, item):
+        if not self.conf.getboolean('gravatar'):
+            return item
+
+        email = item['email'] or ""
+        email_md5_hash = md5(email)
+
+        gravatar_url = self.conf.get('gravatar-url')
+        item['gravatar_image'] = gravatar_url.format(email_md5_hash)
+
+        return item
 
     def _process_fetched_list(self, fetched_list, plain=False):
         for item in fetched_list:
@@ -710,6 +828,8 @@ class API(object):
                 self.cache.set('hash', key.encode('utf-8'), val)
 
             item['hash'] = val
+
+            item = self._add_gravatar_image(item)
 
             for key in set(item.keys()) - API.FIELDS:
                 item.pop(key)
@@ -751,7 +871,8 @@ class API(object):
     @xhr
     def like(self, environ, request, id):
 
-        nv = self.comments.vote(True, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(
+            True, id, utils.anonymize(str(request.remote_addr)))
         return JSON(nv, 200)
 
     """
@@ -777,7 +898,8 @@ class API(object):
     @xhr
     def dislike(self, environ, request, id):
 
-        nv = self.comments.vote(False, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(
+            False, id, utils.anonymize(str(request.remote_addr)))
         return JSON(nv, 200)
 
     # TODO: remove someday (replaced by :func:`counts`)
@@ -812,6 +934,125 @@ class API(object):
 
         return JSON(self.comments.count(*data), 200)
 
+    """
+    @api {get} /feed Atom feed for comments
+    @apiGroup Thread
+    @apiDescription
+        Provide an Atom feed for the given thread.
+    """
+    @requires(str, 'uri')
+    def feed(self, environ, request, uri):
+        conf = self.isso.conf.section("rss")
+        if not conf.get('base'):
+            raise NotFound
+
+        args = {
+            'uri': uri,
+            'order_by': 'id',
+            'asc': 0,
+            'limit': conf.getint('limit')
+        }
+        try:
+            args['limit'] = max(int(request.args.get('limit')), args['limit'])
+        except TypeError:
+            pass
+        except ValueError:
+            return BadRequest("limit should be integer")
+        comments = self.comments.fetch(**args)
+        base = conf.get('base').rstrip('/')
+        hostname = urlparse(base).netloc
+
+        # Let's build an Atom feed.
+        #  RFC 4287: https://tools.ietf.org/html/rfc4287
+        #  RFC 4685: https://tools.ietf.org/html/rfc4685 (threading extensions)
+        #  For IDs: http://web.archive.org/web/20110514113830/http://diveintomark.org/archives/2004/05/28/howto-atom-id
+        feed = ET.Element('feed', {
+            'xmlns': 'http://www.w3.org/2005/Atom',
+            'xmlns:thr': 'http://purl.org/syndication/thread/1.0'
+        })
+
+        # For feed ID, we would use thread ID, but we may not have
+        # one. Therefore, we use the URI. We don't have a year
+        # either...
+        id = ET.SubElement(feed, 'id')
+        id.text = 'tag:{hostname},2018:/isso/thread{uri}'.format(
+            hostname=hostname, uri=uri)
+
+        # For title, we don't have much either. Be pretty generic.
+        title = ET.SubElement(feed, 'title')
+        title.text = 'Comments for {hostname}{uri}'.format(
+            hostname=hostname, uri=uri)
+
+        comment0 = None
+
+        for comment in comments:
+            if comment0 is None:
+                comment0 = comment
+
+            entry = ET.SubElement(feed, 'entry')
+            # We don't use a real date in ID either to help with
+            # threading.
+            id = ET.SubElement(entry, 'id')
+            id.text = 'tag:{hostname},2018:/isso/{tid}/{id}'.format(
+                hostname=hostname,
+                tid=comment['tid'],
+                id=comment['id'])
+            title = ET.SubElement(entry, 'title')
+            title.text = 'Comment #{}'.format(comment['id'])
+            updated = ET.SubElement(entry, 'updated')
+            updated.text = '{}Z'.format(datetime.fromtimestamp(
+                comment['modified'] or comment['created']).isoformat())
+            author = ET.SubElement(entry, 'author')
+            name = ET.SubElement(author, 'name')
+            name.text = comment['author']
+            ET.SubElement(entry, 'link', {
+                'href': '{base}{uri}#isso-{id}'.format(
+                    base=base,
+                    uri=uri, id=comment['id'])
+            })
+            content = ET.SubElement(entry, 'content', {
+                'type': 'html',
+            })
+            content.text = self.isso.render(comment['text'])
+
+            if comment['parent']:
+                ET.SubElement(entry, 'thr:in-reply-to', {
+                    'ref': 'tag:{hostname},2018:/isso/{tid}/{id}'.format(
+                        hostname=hostname,
+                        tid=comment['tid'],
+                        id=comment['parent']),
+                    'href': '{base}{uri}#isso-{id}'.format(
+                        base=base,
+                        uri=uri, id=comment['parent'])
+                })
+
+        # Updated is mandatory. If we have comments, we use the date
+        # of last modification of the first one (which is the last
+        # one). Otherwise, we use a fixed date.
+        updated = ET.Element('updated')
+        if comment0 is None:
+            updated.text = '1970-01-01T01:00:00Z'
+        else:
+            updated.text = datetime.fromtimestamp(
+                comment0['modified'] or comment0['created']).isoformat()
+            updated.text += 'Z'
+        feed.insert(0, updated)
+
+        output = StringIO()
+        ET.ElementTree(feed).write(output,
+                                   encoding='utf-8',
+                                   xml_declaration=True)
+        response = XML(output.getvalue(), 200)
+
+        # Add an etag/last-modified value for caching purpose
+        if comment0 is None:
+            response.set_etag('empty')
+            response.last_modified = 0
+        else:
+            response.set_etag('{tid}-{id}'.format(**comment0))
+            response.last_modified = comment0['modified'] or comment0['created']
+        return response.make_conditional(request)
+
     def preview(self, environment, request):
         data = request.get_json()
 
@@ -821,4 +1062,56 @@ class API(object):
         return JSON({'text': self.isso.render(data["text"])}, 200)
 
     def demo(self, env, req):
-        return redirect(get_current_url(env) + '/index.html')
+        return redirect(
+            get_current_url(env, strip_querystring=True) + '/index.html'
+        )
+
+    def login(self, env, req):        
+        data = req.form
+        password = self.isso.conf.get("general", "admin_password")
+        if data['password'] and data['password'] == password:
+            response = redirect(re.sub(
+                r'/login$',
+                '/admin',
+                get_current_url(env, strip_querystring=True)
+            ))
+            cookie = functools.partial(dump_cookie,
+                                       value=self.isso.sign({"logged": True}),
+                                       expires=datetime.now() + timedelta(1))
+            response.headers.add("Set-Cookie", cookie("admin-session"))
+            response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
+            return response
+        else:
+            isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+            return render_template('login.html', isso_host_script=isso_host_script)
+
+    def admin(self, env, req):
+        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+        try:
+            data = self.isso.unsign(req.cookies.get('admin-session', ''),
+                                    max_age=60 * 60 * 24)
+        except BadSignature:
+            return render_template('login.html',isso_host_script=isso_host_script)
+        if not data or not data['logged']:
+            return render_template('login.html',isso_host_script=isso_host_script)
+        page_size = 100
+        page = int(req.args.get('page', 0))
+        order_by = req.args.get('order_by', None)
+        asc = int(req.args.get('asc', 1))
+        mode = int(req.args.get('mode', 2))
+        comments = self.comments.fetchall(mode=mode, page=page,
+                                          limit=page_size,
+                                          order_by=order_by,
+                                          asc=asc)
+        comments_enriched = []
+        for comment in list(comments):
+            comment['hash'] = self.isso.sign(comment['id'])
+            comments_enriched.append(comment)
+        comment_mode_count = self.comments.count_modes()
+        max_page = int(sum(comment_mode_count.values()) / 100)
+        return render_template('admin.html', comments=comments_enriched,
+                               page=int(page), mode=int(mode),
+                               conf=self.conf, max_page=max_page,
+                               counts=comment_mode_count,
+                               order_by=order_by, asc=asc,
+                               isso_host_script=isso_host_script)

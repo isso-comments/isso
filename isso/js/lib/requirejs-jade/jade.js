@@ -49,8 +49,12 @@ define(function() {
         write: function(plugin, name, write) {
             if (builds.hasOwnProperty(name)) {
                 write("define('" + plugin + "!" + name  +"', function () {" +
-                      "  var fn = " + builds[name] + ";" +
-                      "  return fn;" +
+                      "  var wfn = function (jade) {" +
+                      "    var fn = " + builds[name] + ";" +
+                      "    return fn;" +
+                      "  };" +
+                      "wfn.compiled = true;" +
+                      "return wfn;" +
                       "});\n");
             }
         }

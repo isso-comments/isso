@@ -4,8 +4,28 @@ Changelog for Isso
 0.10.7 (unreleased)
 -------------------
 
-- Nothing changed yet.
+Bugs & features:
+- Fix link in moderation mails if isso is setup on a sub-url (e.g. domain.tld/comments/)
+- Add reply notifications
+- Add admin interface
+- Add links highlighting in comments
+- Add apidoc
+- Add rc.d script for FreeBSD
+- Add the possibility to set CORS Origin through ISSO_CORS_ORIGIN environ variable
+- Add preview button
+- Add Atom feed at /feed?uri={thread-id}
+- Add optionnal gravatar support
+- Add nofollow noopener on links inside comments
+- Add Dockerfile
+- Upgraded to Misaka 2
+- Some tests/travis/documentation improvements and fixes + pep8
 
+Translations:
+- Fix Chinese translation & typo in CJK
+- Add Danish translation
+- Add Hungarian translation
+- Add Persian translation
+- Improvement on german translation
 
 0.10.6 (2016-09-22)
 -------------------

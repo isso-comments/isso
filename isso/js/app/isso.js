@@ -11,7 +11,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             el = $.htmlify(jade.render("postbox", {
             "author":  JSON.parse(localStorage.getItem("author")),
             "email":   JSON.parse(localStorage.getItem("email")),
-            "website": JSON.parse(localStorage.getItem("website"))
+            "website": JSON.parse(localStorage.getItem("website")),
+            "preview": ''
         }));
 
         // callback on success (e.g. to toggle the reply button)
@@ -39,6 +40,17 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             return true;
         };
 
+        // only display notification checkbox if email is filled in
+        var email_edit = function() {
+            if (config["reply-notifications"] && $("[name='email']", el).value.length > 0) {
+                $(".notification-section", el).show();
+            } else {
+                $(".notification-section", el).hide();
+            }
+        };
+        $("[name='email']", el).on("input", email_edit);
+        email_edit();
+
         // email is not optional if this config parameter is set
         if (config["require-email"]) {
             $("[name='email']", el).setAttribute("placeholder",
@@ -51,9 +63,27 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             $("[name='author']", el).placeholder.replace(/ \(.*\)/, "");
         }
 
+        // preview function
+        $("[name='preview']", el).on("click", function() {
+            api.preview(utils.text($(".textarea", el).innerHTML)).then(
+                function(html) {
+                    $(".preview .text", el).innerHTML = html;
+                    el.classList.add('preview-mode');
+                });
+        });
+
+        // edit function
+        var edit = function() {
+            $(".preview .text", el).innerHTML = '';
+            el.classList.remove('preview-mode');
+        };
+        $("[name='edit']", el).on("click", edit);
+        $(".preview", el).on("click", edit);
+
         // submit form, initialize optional fields with `null` and reset form.
         // If replied to a comment, remove form completely.
         $("[type=submit]", el).on("click", function() {
+            edit();
             if (! el.validate()) {
                 return;
             }
@@ -70,7 +100,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 author: author, email: email, website: website,
                 text: utils.text($(".textarea", el).innerHTML),
                 parent: parent || null,
-                title: $("#isso-thread").getAttribute("data-title") || null
+                title: $("#isso-thread").getAttribute("data-title") || null,
+                notification: $("[name=notification]", el).checked() ? 1 : 0,
             }).then(function(comment) {
                 $(".textarea", el).innerHTML = "";
                 $(".textarea", el).blur();
@@ -228,7 +259,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         $("a.edit", footer).toggle("click",
             function(toggler) {
                 var edit = $("a.edit", footer);
-                var avatar = config["avatar"] ? $(".avatar", el, false)[0] : null;
+                var avatar = config["avatar"] || config["gravatar"] ? $(".avatar", el, false)[0] : null;
 
                 edit.textContent = i18n.translate("comment-save");
                 edit.insertAfter($.new("a.cancel", i18n.translate("comment-cancel"))).on("click", function() {
@@ -256,7 +287,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             },
             function(toggler) {
                 var textarea = $(".textarea", text);
-                var avatar = config["avatar"] ? $(".avatar", el, false)[0] : null;
+                var avatar = config["avatar"] || config["gravatar"] ? $(".avatar", el, false)[0] : null;
 
                 if (! toggler.canceled && textarea !== null) {
                     if (utils.text(textarea.innerHTML).length < 3) {

@@ -4,11 +4,7 @@ from __future__ import unicode_literals
 import os
 import json
 import tempfile
-
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
+import unittest
 
 from werkzeug.wrappers import Response
 
@@ -41,13 +37,15 @@ class TestVote(unittest.TestCase):
 
     def testZeroLikes(self):
 
-        rv = self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
+        rv = self.makeClient("127.0.0.1").post(
+            "/new?uri=test", data=json.dumps({"text": "..."}))
         self.assertEqual(loads(rv.data)['likes'], 0)
         self.assertEqual(loads(rv.data)['dislikes'], 0)
 
     def testSingleLike(self):
 
-        self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
+        self.makeClient("127.0.0.1").post(
+            "/new?uri=test", data=json.dumps({"text": "..."}))
         rv = self.makeClient("0.0.0.0").post("/id/1/like")
 
         self.assertEqual(rv.status_code, 200)
@@ -64,7 +62,8 @@ class TestVote(unittest.TestCase):
 
     def testMultipleLikes(self):
 
-        self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
+        self.makeClient("127.0.0.1").post(
+            "/new?uri=test", data=json.dumps({"text": "..."}))
         for num in range(15):
             rv = self.makeClient("1.2.%i.0" % num).post('/id/1/like')
             self.assertEqual(rv.status_code, 200)
@@ -77,7 +76,8 @@ class TestVote(unittest.TestCase):
 
     def testTooManyLikes(self):
 
-        self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
+        self.makeClient("127.0.0.1").post(
+            "/new?uri=test", data=json.dumps({"text": "..."}))
         for num in range(256):
             rv = self.makeClient("1.2.%i.0" % num).post('/id/1/like')
             self.assertEqual(rv.status_code, 200)
@@ -88,7 +88,8 @@ class TestVote(unittest.TestCase):
                 self.assertEqual(loads(rv.data)["likes"], num + 1)
 
     def testDislike(self):
-        self.makeClient("127.0.0.1").post("/new?uri=test", data=json.dumps({"text": "..."}))
+        self.makeClient("127.0.0.1").post(
+            "/new?uri=test", data=json.dumps({"text": "..."}))
         rv = self.makeClient("1.2.3.4").post('/id/1/dislike')
 
         self.assertEqual(rv.status_code, 200)
