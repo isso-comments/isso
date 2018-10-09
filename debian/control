@@ -1,5 +1,5 @@
 Source: isso
-Section: python
+Section: web
 Priority: optional
 Maintainer: Jelmer Vernooĳ <jelmer@debian.org>
 Build-Depends:
