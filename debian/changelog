@@ -1,6 +1,7 @@
 isso (0.10.6+git20181001+dfsg-2) UNRELEASED; urgency=medium
 
   * Move isso to section web. Closes: #910643
+  * Use secure copyright file specification URI.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Tue, 09 Oct 2018 17:47:23 +0100
 
