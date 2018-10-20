@@ -5,6 +5,7 @@ Changelog for Isso
 -------------------
 
 Bugs & features:
+
 - Fix link in moderation mails if isso is setup on a sub-url (e.g. domain.tld/comments/)
 - Add reply notifications
 - Add admin interface
@@ -21,6 +22,7 @@ Bugs & features:
 - Some tests/travis/documentation improvements and fixes + pep8
 
 Translations:
+
 - Fix Chinese translation & typo in CJK
 - Add Danish translation
 - Add Hungarian translation
