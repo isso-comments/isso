@@ -2,10 +2,6 @@
 
 from __future__ import unicode_literals
 
-import pkg_resources
-
-from distutils.version import LooseVersion as Version
-
 import bleach
 import misaka
 
