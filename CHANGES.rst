@@ -1,10 +1,12 @@
 Changelog for Isso
 ==================
 
-0.11.1 (unreleased)
+0.11.1 (2018-11-03)
 -------------------
 
-0.11.0 (2018-10-03)
+- Include pre-built minified JavaScript and CSS.
+
+0.11.0 (2018-11-03)
 -------------------
 
 Bugs & features:
