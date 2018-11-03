@@ -39,12 +39,6 @@ init:
 flakes:
 	flake8 . --count --ignore=${FLAKE_IGNORE} --max-line-length=127 --show-source --statistics
 
-check:
-	@echo "Python 2.x"
-	@python2 -m pyflakes $(filter-out isso/compat.py,$(ISSO_PY_SRC))
-	@echo "Python 3.x"
-	@python3 -m pyflakes $(filter-out isso/compat.py,$(ISSO_PY_SRC))
-
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	$(RJS) -o isso/js/build.$*.js out=$@
 
