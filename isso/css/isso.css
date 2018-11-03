@@ -185,6 +185,7 @@
     margin-left: 0;
 }
 .isso-postbox > .form-wrapper .notification-section {
+    font-size: 0.90em;
     padding-top: .3em;
 }
 #isso-thread .textarea:focus,
