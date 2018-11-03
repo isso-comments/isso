@@ -5,5 +5,6 @@ Releasing steps
 * Update version number in ``setup.py`` and ``CHANGES.rst``
 * ``git commit -m "Preparing ${VERSION}"``
 * ``git tag -as ${VERSION}``
+* ``make init all``
 * ``./setup.py sdist``
 * ``twine upload dist/isso-${VERSION}.tar.gz``
