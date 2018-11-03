@@ -69,6 +69,7 @@ class SMTPConnection(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.client.quit()
 
+
 class SMTP(object):
 
     def __init__(self, isso):
@@ -165,7 +166,7 @@ class SMTP(object):
             for comment_to_notify in comments_to_notify:
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
-                    and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
+                        and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, parent_comment, email, admin=False)
                     subject = "Re: New comment posted on %s" % thread["title"]
                     self.sendmail(subject, body, thread, comment, to=email)

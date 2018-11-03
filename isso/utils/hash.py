@@ -16,7 +16,7 @@ except ImportError:
         def pbkdf2(val, salt, iterations, dklen, func):
             return _pbkdf2(val, salt, iterations, dklen, ("hmac-" + func).encode("utf-8"))
     except ImportError as ex:
-        raise ImportError("No PBKDF2 implementation found. Either upgrade " +
+        raise ImportError("No PBKDF2 implementation found. Either upgrade "
                           "to `werkzeug` 0.9 or install `passlib`.")
 
 
