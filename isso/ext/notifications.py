@@ -91,7 +91,8 @@ class SMTP(object):
             def spooler(args):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
-                                   args["body"].decode("utf-8"))
+                                   args["body"].decode("utf-8"),
+                                   args[b"to"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -173,17 +174,17 @@ class SMTP(object):
                     notified.append(email)
 
     def sendmail(self, subject, body, thread, comment, to=None):
+        to = to or self.conf.get("to")
         if uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
-                         b"to": to})
+                         b"to": to.encode("utf-8")})
         else:
             start_new_thread(self._retry, (subject, body, to))
 
-    def _sendmail(self, subject, body, to=None):
+    def _sendmail(self, subject, body, to_addr):
 
         from_addr = self.conf.get("from")
-        to_addr = to or self.conf.get("to")
 
         msg = MIMEText(body, 'plain', 'utf-8')
         msg['From'] = from_addr
