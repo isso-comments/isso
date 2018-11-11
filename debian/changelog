@@ -3,6 +3,7 @@ isso (0.11.1-1) UNRELEASED; urgency=medium
   * Move isso to section web. Closes: #910643
   * Use secure copyright file specification URI.
   * New upstream release.
+  * Bump standards version to 4.2.1.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Sun, 11 Nov 2018 14:58:01 +0000
 
