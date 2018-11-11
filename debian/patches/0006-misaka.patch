@@ -1,9 +1,9 @@
 debian only has misaka 1.0
-Index: isso-0.10.6+git20181001+dfsg/isso/utils/html.py
+Index: isso/isso/utils/html.py
 ===================================================================
---- isso-0.10.6+git20181001+dfsg.orig/isso/utils/html.py
-+++ isso-0.10.6+git20181001+dfsg/isso/utils/html.py
-@@ -55,14 +55,28 @@ class Sanitizer(object):
+--- isso.orig/isso/utils/html.py
++++ isso/isso/utils/html.py
+@@ -48,14 +48,28 @@ class Sanitizer(object):
          return linker.linkify(clean_html)
  
  
@@ -36,10 +36,10 @@ Index: isso-0.10.6+git20181001+dfsg/isso/utils/html.py
          if rv.startswith("<p>") or rv.endswith("</p>"):
              return rv
          return "<p>" + rv + "</p>"
-Index: isso-0.10.6+git20181001+dfsg/isso/tests/test_html.py
+Index: isso/isso/tests/test_html.py
 ===================================================================
---- isso-0.10.6+git20181001+dfsg.orig/isso/tests/test_html.py
-+++ isso-0.10.6+git20181001+dfsg/isso/tests/test_html.py
+--- isso.orig/isso/tests/test_html.py
++++ isso/isso/tests/test_html.py
 @@ -29,7 +29,7 @@ class TestHTML(unittest.TestCase):
              self.assertEqual(convert(input), expected)
  

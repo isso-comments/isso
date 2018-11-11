@@ -8,7 +8,7 @@ export PYBUILD_NAME=isso
 
 override_dh_auto_build:
 	nodejs /usr/lib/nodejs/requirejs/r.js -convert /usr/lib/nodejs/jade/lib/ isso/js/components/jade/
-	$(MAKE) RJS="nodejs /usr/lib/nodejs/requirejs/r.js" LC_ALL=C.UTF-8
+	$(MAKE) RJS="nodejs /usr/lib/nodejs/requirejs/r.js" LC_ALL=C.UTF-8 SASS="sass --sourcemap=none"
 	rm docs/_build/html/_static/jquery.js
 	rm docs/_build/html/_static/underscore.js
 
