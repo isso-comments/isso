@@ -1,10 +1,16 @@
 Changelog for Isso
 ==================
 
-0.10.7 (unreleased)
+0.11.1 (2018-11-03)
+-------------------
+
+- Include pre-built minified JavaScript and CSS.
+
+0.11.0 (2018-11-03)
 -------------------
 
 Bugs & features:
+
 - Fix link in moderation mails if isso is setup on a sub-url (e.g. domain.tld/comments/)
 - Add reply notifications
 - Add admin interface
@@ -21,6 +27,7 @@ Bugs & features:
 - Some tests/travis/documentation improvements and fixes + pep8
 
 Translations:
+
 - Fix Chinese translation & typo in CJK
 - Add Danish translation
 - Add Hungarian translation

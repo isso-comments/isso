@@ -38,7 +38,7 @@ def timedelta(string):
     """
 
     keys = ["weeks", "days", "hours", "minutes", "seconds"]
-    regex = "".join(["((?P<%s>\d+)%s ?)?" % (k, k[0]) for k in keys])
+    regex = "".join(["((?P<%s>\\d+)%s ?)?" % (k, k[0]) for k in keys])
     kwargs = {}
     for k, v in re.match(regex, string).groupdict(default="0").items():
         kwargs[k] = int(v)

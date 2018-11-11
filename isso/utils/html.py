@@ -2,10 +2,6 @@
 
 from __future__ import unicode_literals
 
-import pkg_resources
-
-from distutils.version import LooseVersion as Version
-
 import bleach
 import misaka
 
@@ -19,19 +15,16 @@ class Sanitizer(object):
         #
         # [1] https://github.com/vmg/sundown/blob/master/html/html.c
         self.elements = ["a", "p", "hr", "br", "ol", "ul", "li",
-                            "pre", "code", "blockquote",
-                            "del", "ins", "strong", "em",
-                            "h1", "h2", "h3", "h4", "h5", "h6",
-                            "table", "thead", "tbody", "th", "td"] + elements
+                         "pre", "code", "blockquote",
+                         "del", "ins", "strong", "em",
+                         "h1", "h2", "h3", "h4", "h5", "h6",
+                         "table", "thead", "tbody", "th", "td"] + elements
 
         # href for <a> and align for <table>
         self.attributes = ["align", "href"] + attributes
 
-
-
     def sanitize(self, text):
-        clean_html = bleach.clean(text, tags=self.elements,
-            attributes=self.attributes, strip=True)
+        clean_html = bleach.clean(text, tags=self.elements, attributes=self.attributes, strip=True)
 
         def set_links(attrs, new=False):
             href_key = (None, u'href')

@@ -71,7 +71,8 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
                     isso.insert_loader(rv, lastcreated);
                 }
 
-                if (window.location.hash.length > 0) {
+                if (window.location.hash.length > 0 &&
+                    window.location.hash.match("^#isso-[0-9]+$")) {
                     $(window.location.hash).scrollIntoView();
                 }
             },

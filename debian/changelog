@@ -1,9 +1,10 @@
-isso (0.10.6+git20181001+dfsg-2) UNRELEASED; urgency=medium
+isso (0.11.1-1) UNRELEASED; urgency=medium
 
   * Move isso to section web. Closes: #910643
   * Use secure copyright file specification URI.
+  * New upstream release.
 
- -- Jelmer Vernooĳ <jelmer@debian.org>  Tue, 09 Oct 2018 17:47:23 +0100
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Sun, 11 Nov 2018 14:58:01 +0000
 
 isso (0.10.6+git20181001+dfsg-1) unstable; urgency=high
 

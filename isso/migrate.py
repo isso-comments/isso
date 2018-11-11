@@ -248,7 +248,7 @@ class WordPress(object):
 
     @classmethod
     def detect(cls, peek):
-        return re.compile("http://wordpress.org/export/(1\.\d)/").search(peek)
+        return re.compile("http://wordpress.org/export/(1\\.\\d)/").search(peek)
 
 
 class Generic(object):
