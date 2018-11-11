@@ -4,6 +4,9 @@ Changelog for Isso
 0.11.2 (unreleased)
 -------------------
 
+- Don't enable admin interface with default password by default.
+  (Jelmer Vernooĳ, #491)
+
 0.11.1 (2018-11-03)
 -------------------
 
