@@ -15,8 +15,7 @@ install:
   - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
   - tox -e $TOX_ENV
-  - IGNORE=E226,E241,E265,E402,E501,E704
-  - flake8 . --count --ignore=${IGNORE} --max-line-length=127 --show-source --statistics
+  - make flakes
 notifications:
   irc:
     channels:

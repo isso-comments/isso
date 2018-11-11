@@ -78,7 +78,7 @@ data-isso-require-email
 Set to `true` when spam guard is configured with `require-email = true`.
 
 data-isso-reply-notifications
--------------------
+-----------------------------
 
 Set to `true` when reply notifications is configured with `reply-notifications = true`.
 
