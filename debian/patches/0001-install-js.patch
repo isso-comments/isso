@@ -1,8 +1,8 @@
-diff --git a/setup.py b/setup.py
-index e54c110..1239e46 100644
---- a/setup.py
-+++ b/setup.py
-@@ -41,5 +41,12 @@ setup(
+Index: isso/setup.py
+===================================================================
+--- isso.orig/setup.py
++++ isso/setup.py
+@@ -43,5 +43,12 @@ setup(
      entry_points={
          'console_scripts':
              ['isso = isso:main'],
