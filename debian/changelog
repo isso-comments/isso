@@ -1,9 +1,9 @@
-isso (0.11.1-3) UNRELEASED; urgency=high
+isso (0.11.1-3) unstable; urgency=high
 
   * Update 0007-admin-password.patch: actually disable logins on the
     admin page, rather than just hiding the form.
 
- -- Jelmer Vernooĳ <jelmer@debian.org>  Sun, 11 Nov 2018 16:22:07 +0000
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Sun, 11 Nov 2018 16:23:24 +0000
 
 isso (0.11.1-2) unstable; urgency=high
 
