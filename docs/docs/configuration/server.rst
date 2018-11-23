@@ -355,6 +355,24 @@ base
 limit
     number of most recent comments to return for a thread
 
+Admin
+-----
+
+Isso has an optional web administration interface that can be used to moderate
+comments. The interface is available under ``/admin`` on your isso URL.
+
+.. code-block:: ini
+
+   [admin]
+   enabled = true
+   password = secret
+
+enabled
+   whether to enable the admin interface
+
+password
+   the plain text pasword to use for logging into the administration interface
+
 Appendum
 --------
 
