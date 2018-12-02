@@ -4,6 +4,11 @@
 
 * Martin Zimmermann <info@posativ.org>
 
+## Co-Maintainers
+
+* Benoît Latinier @blatinier <benoit@latinier.fr>
+
+* Jelmer Vernooĳ <jelmer@jelmer.uk>
 
 ## Contributors
 
