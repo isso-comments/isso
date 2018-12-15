@@ -103,6 +103,7 @@ class Disqus(object):
 
         for post in tree.findall(Disqus.ns + 'post'):
             email = post.find('{0}author/{0}email'.format(Disqus.ns))
+            ip = post.find(Disqus.ns + 'ipAddress')
 
             item = {
                 'dsq:id': post.attrib.get(Disqus.internals + 'id'),
@@ -111,7 +112,7 @@ class Disqus(object):
                 'email': email.text if email else '',
                 'created': mktime(strptime(
                     post.find(Disqus.ns + 'createdAt').text, '%Y-%m-%dT%H:%M:%SZ')),
-                'remote_addr': anonymize(post.find(Disqus.ns + 'ipAddress').text),
+                'remote_addr': anonymize(ip.text if ip else '0.0.0.0'),
                 'mode': 1 if post.find(Disqus.ns + "isDeleted").text == "false" else 4
             }
 
