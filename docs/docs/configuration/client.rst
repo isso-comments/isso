@@ -13,6 +13,7 @@ preferably in the script tag which embeds the JS:
             data-isso-reply-to-self="false"
             data-isso-require-author="false"
             data-isso-require-email="false"
+            data-isso-reply-notifications="false"
             data-isso-max-comments-top="10"
             data-isso-max-comments-nested="5"
             data-isso-reveal-on-click="5"
