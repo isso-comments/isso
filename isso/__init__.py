@@ -84,9 +84,11 @@ logger = logging.getLogger("isso")
 
 class Isso(object):
 
-    def __init__(self, conf):
+    def __init__(self, conf, **kwargs):
 
         self.conf = conf
+        for key, val in kwargs.items():
+            setattr(self, key, val)
         self.db = db.SQLite3(conf.get('general', 'dbpath'), conf)
         self.signer = URLSafeTimedSerializer(
             self.db.preferences.get("session-key"))
@@ -171,7 +173,12 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
         class App(Isso, uWSGIMixin):
             pass
 
-    isso = App(conf)
+    kwargs = {
+        "threading": threading,
+        "multiprocessing": multiprocessing,
+        "uwsgi": uwsgi,
+    }
+    isso = App(conf, **kwargs)
 
     # check HTTP server connection
     for host in conf.getiter("general", "host"):

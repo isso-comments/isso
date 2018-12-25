@@ -6,6 +6,7 @@ import sys
 import io
 import time
 import json
+import multiprocessing
 
 import socket
 import smtplib
@@ -87,7 +88,7 @@ class SMTP(object):
         except (socket.error, smtplib.SMTPException):
             logger.exception("unable to connect to SMTP server")
 
-        if uwsgi:
+        if self.isso.uwsgi and uwsgi:
             def spooler(args):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
@@ -175,12 +176,17 @@ class SMTP(object):
 
     def sendmail(self, subject, body, thread, comment, to=None):
         to = to or self.conf.get("to")
-        if uwsgi:
+        if self.isso.uwsgi and uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
                          b"to": to.encode("utf-8")})
-        else:
+        elif self.isso.threading:
             start_new_thread(self._retry, (subject, body, to))
+        elif self.isso.multiprocessing:
+            multiprocessing.Process(
+                target=self._retry, args=(subject, body, to)).start()
+        else:
+            self._retry(subject, body, to, attempts=1)
 
     def _sendmail(self, subject, body, to_addr):
 
@@ -195,8 +201,8 @@ class SMTP(object):
         with SMTPConnection(self.conf) as con:
             con.sendmail(from_addr, to_addr, msg.as_string())
 
-    def _retry(self, subject, body, to):
-        for x in range(5):
+    def _retry(self, subject, body, to, attempts=5):
+        for _ in range(attempts):
             try:
                 self._sendmail(subject, body, to)
             except smtplib.SMTPConnectError:
