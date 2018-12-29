@@ -180,7 +180,7 @@ class SMTP(object):
                 con_for=self.isso.conf.getlist("smtp", "user_format");
                 con_for="\n".join(con_for)
                 rv.write(con_for.format(author=author,
-                                        comment=comment,
+                                        comment=comment["text"],
                                         link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                         unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key))
             except:
