@@ -118,7 +118,7 @@ class SMTP(object):
             try:
                 if comment["mode"] == 2:
                     if comment["website"]:
-                        con_for=self.conf.getlist("smtp", "admin_format_urluser_moderate")
+                        con_for=self.isso.conf.getlist("smtp", "admin_format_urluser_moderate")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -129,7 +129,7 @@ class SMTP(object):
                                                 act_link=uri + "/activate/" + key)
                         )
                     else:
-                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_moderate")
+                        con_for=self.isso.conf.getlist("smtp", "admin_format_nourluser_moderate")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -140,7 +140,7 @@ class SMTP(object):
                         )
                 else:
                     if comment["website"]:
-                        con_for=self.conf.getlist("smtp", "admin_format_urluser_direct")
+                        con_for=self.isso.conf.getlist("smtp", "admin_format_urluser_direct")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -150,7 +150,7 @@ class SMTP(object):
                                                 del_link=uri + "/delete/" + key)
                         )
                     else:
-                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_direct")
+                        con_for=self.isso.conf.getlist("smtp", "admin_format_nourluser_direct")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
