@@ -112,36 +112,85 @@ class SMTP(object):
         if comment["email"]:
             author += " <%s>" % comment["email"]
 
-        rv.write(author + " wrote:\n")
-        rv.write("\n")
-        rv.write(comment["text"] + "\n")
-        rv.write("\n")
-
-        if admin:
-            if comment["website"]:
-                rv.write("User's URL: %s\n" % comment["website"])
-
-            rv.write("IP address: %s\n" % comment["remote_addr"])
-
-        rv.write("Link to comment: %s\n" %
-                 (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
-        rv.write("\n")
-        rv.write("---\n")
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
-
-            rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
-
-            if comment["mode"] == 2:
-                rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
-
+            try:
+                if comment["mode"] == 2:
+                    if comment["website"]:
+                        con_for=self.conf.getlist("smtp", "admin_format_urluser_moderate");
+                        con_for="\n".join(con_for)
+                        rv.write(con_for.format(author=author,
+                                                comment=comment["text"],
+                                                website=comment["website"],
+                                                ip=comment["remote_addr"],
+                                                com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                del_link=uri + "/delete/" + key,
+                                                act_link=uri + "/activate/" + key)
+                        )
+                    else:
+                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_moderate");
+                        con_for="\n".join(con_for)
+                        rv.write(con_for.format(author=author,
+                                                comment=comment["text"],
+                                                ip=comment["remote_addr"],
+                                                com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                del_link=uri + "/delete/" + key,
+                                                act_link=uri + "/activate/" + key)
+                        )
+                else:
+                    if comment["website"]:
+                        con_for=self.conf.getlist("smtp", "admin_format_urluser_direct");
+                        con_for="\n".join(con_for)
+                        rv.write(con_for.format(author=author,
+                                                comment=comment["text"],
+                                                website=comment["website"],
+                                                ip=comment["remote_addr"],
+                                                com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                del_link=uri + "/delete/" + key)
+                        )
+                    else:
+                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_direct");
+                        con_for="\n".join(con_for)
+                        rv.write(con_for.format(author=author,
+                                                comment=comment["text"],
+                                                ip=comment["remote_addr"],
+                                                com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                del_link=uri + "/delete/" + key)
+                        )
+            except:
+                con_for=[]
+                con_for.append("{author} wrote:\n\n{comment}\n".format(author=author,comment=comment["text"]))
+                if comment["website"]:
+                    con_for.append("User's URL: %s" % comment["website"])
+                con_for.append("IP address: %s" % comment["remote_addr"])
+                con_for.append("Link to comment: %s\n" %
+                               (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+                con_for.append("---")
+                con_for.append("Delete comment: %s" % (uri + "/delete/" + key))
+                if comment["mode"] == 2:
+                    con_for.append("Activate comment: %s" % (uri + "/activate/" + key))
+                rv.write("\n".join(con_for))
+            
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
-
-            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + quote(recipient) + "/" + key))
+            try:
+                con_for=self.isso.conf.getlist("smtp", "user_format");
+                con_for="\n".join(con_for)
+                rv.write(con_for.format(author=author,
+                                        comment=comment,
+                                        link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                        unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key))
+            except:
+                con_for=[]
+                con_for.append("{author} wrote:\n\n{comment}\n".format(author=author,comment=comment["text"]))
+                con_for.append("Link to comment: %s\n" %
+                               (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+                con_for.append("---")
+                con_for.append("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + quote(recipient) + "/" + key))
+                rv.write("\n".join(con_for))
 
         rv.seek(0)
         return rv.read()
