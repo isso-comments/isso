@@ -13,6 +13,7 @@ import smtplib
 from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
+from docutils.nodes import comment
 
 try:
     from urllib.parse import quote
@@ -112,14 +113,13 @@ class SMTP(object):
         if comment["email"]:
             author += " <%s>" % comment["email"]
 
-
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
             try:
                 if comment["mode"] == 2:
                     if comment["website"]:
-                        con_for=self.conf.getlist("smtp", "admin_format_urluser_moderate");
+                        con_for=self.conf.getlist("smtp", "admin_format_urluser_moderate")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -130,7 +130,7 @@ class SMTP(object):
                                                 act_link=uri + "/activate/" + key)
                         )
                     else:
-                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_moderate");
+                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_moderate")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -141,7 +141,7 @@ class SMTP(object):
                         )
                 else:
                     if comment["website"]:
-                        con_for=self.conf.getlist("smtp", "admin_format_urluser_direct");
+                        con_for=self.conf.getlist("smtp", "admin_format_urluser_direct")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -151,7 +151,7 @@ class SMTP(object):
                                                 del_link=uri + "/delete/" + key)
                         )
                     else:
-                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_direct");
+                        con_for=self.conf.getlist("smtp", "admin_format_nourluser_direct")
                         con_for="\n".join(con_for)
                         rv.write(con_for.format(author=author,
                                                 comment=comment["text"],
@@ -172,7 +172,8 @@ class SMTP(object):
                 if comment["mode"] == 2:
                     con_for.append("Activate comment: %s" % (uri + "/activate/" + key))
                 rv.write("\n".join(con_for))
-            
+ 
+
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
