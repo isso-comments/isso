@@ -13,7 +13,6 @@ import smtplib
 from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
-from docutils.nodes import comment
 
 try:
     from urllib.parse import quote
