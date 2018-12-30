@@ -108,7 +108,27 @@ class SMTP(object):
 
         rv = io.StringIO()
 
-        author = comment["author"] or "Anonymous"
+        lang = self.isso.conf.get("smtp", "mail_language");
+        
+        if lang == "en":
+            no_name = "Anonymous"
+            admin_format_url_mod = "admin_format_urluser_moderate"
+            admin_format_nourl_mod = "admin_format_nourluser_moderate"
+            admin_format_url_direct = "admin_format_urluser_direct"
+            admin_format_nourl_direct = "admin_format_nourluser_direct"
+            user_format_url = "user_format_url"
+            user_format_nourl = "user_format_nourl"
+        else:
+            no_name = self.isso.conf.get("smtp", "annoymous_%s" % lang)
+            admin_format_url_mod = "admin_format_urluser_moderate_%s" % lang
+            admin_format_nourl_mod = "admin_format_nourluser_moderate_%s" % lang
+            admin_format_url_direct = "admin_format_urluser_direct_%s" % lang
+            admin_format_nourl_direct = "admin_format_nourluser_direct_%s" % lang
+            user_format_url = "user_format_url_%s" % lang
+            user_format_nourl = "user_format_nourl_%s" % lang
+            
+        
+        author = comment["author"] or no_name
         author_0 = author
         if comment["email"]:
             author += " <%s>" % comment["email"]
@@ -118,14 +138,14 @@ class SMTP(object):
             key = self.isso.sign(comment["id"])
             if comment["mode"] == 2:
                 if comment["website"]:
-                    con_for=self.isso.conf.getlist("smtp", "admin_format_urluser_moderate")
+                    con_for=self.isso.conf.getlist("smtp", admin_format_url_mod)
                 else:
-                    con_for=self.isso.conf.getlist("smtp", "admin_format_nourluser_moderate")
+                    con_for=self.isso.conf.getlist("smtp", admin_format_nourl_mod)
             else:
                 if comment["website"]:
-                    con_for=self.isso.conf.getlist("smtp", "admin_format_urluser_direct")
+                    con_for=self.isso.conf.getlist("smtp", admin_format_url_direct)
                 else:
-                    con_for=self.isso.conf.getlist("smtp", "admin_format_nourluser_direct")
+                    con_for=self.isso.conf.getlist("smtp", admin_format_nourl_direct)
             con_for="\n".join(con_for)
             rv.write(con_for.format(author=author,
                                     only_author=author_0,
@@ -141,9 +161,9 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
             if comment["website"]:
-                con_for=self.isso.conf.getlist("smtp", "user_format_url")
+                con_for=self.isso.conf.getlist("smtp", user_format_url)
             else:
-                con_for=self.isso.conf.getlist("smtp", "user_format_nourl")
+                con_for=self.isso.conf.getlist("smtp", user_format_nourl)
             con_for="\n".join(con_for)
             rv.write(con_for.format(author=author,
                                     only_author=author_0,
