@@ -123,3 +123,4 @@ ENV/
 # pydev
 .project
 .pydevproject
+.settings/
