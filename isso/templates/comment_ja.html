@@ -4,24 +4,24 @@
 <p>{{comment}}</p>
 
 <p>ユーザーのURL： {{website}}<br>
-IPアドレス： {ip}<br>
-コメントへのリンク： <a href="{{com_link}}">Click Here</a></p>
+IPアドレス： {{ip}}<br>
+コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
 
 <hr>
-コメントを削除する： <a href="{{del_link}}">Click Here</a><br>
-コメントを有効にする： <a href="{{act_link}}">Click Here</a>
+コメントを削除する： <a href="{{del_link}}">ここをクリック</a><br>
+コメントを有効にする： <a href="{{act_link}}">ここをクリック</a>
 
 {% elif case == 2 %}
 <p>{{author}} は書いた：</p>
 
 <p>{{comment}}</p>
 
-<p>IPアドレス： {ip}<br>
-コメントへのリンク： <a href="{{com_link}}">Click Here</a></p>
+<p>IPアドレス： {{ip}}<br>
+コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
 
 <hr>
-コメントを削除する： <a href="{{del_link}}">Click Here</a><br>
-コメントを有効にする： <a href="{{act_link}}">Click Here</a>
+コメントを削除する： <a href="{{del_link}}">ここをクリック</a><br>
+コメントを有効にする： <a href="{{act_link}}">ここをクリック</a>
 
 {% elif case == 3 %}
 <p>{{author}} は書いた：</p>
@@ -29,40 +29,40 @@ IPアドレス： {ip}<br>
 <p>{{comment}}</p>
 
 <p>ユーザーのURL： {{website}}<br>
-IPアドレス： {ip}<br>
-コメントへのリンク： <a href="{{com_link}}">Click Here</a></p>
+IPアドレス： {{ip}}<br>
+コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
 
 <hr>
-コメントを削除する： <a href="{{del_link}}">Click Here</a>
+コメントを削除する： <a href="{{del_link}}">ここをクリック</a>
 
 {% elif case == 4 %}
 <p>{{author}} は書いた：</p>
 
 <p>{{comment}}</p>
 
-<p>IPアドレス： {ip}<br>
-コメントへのリンク： <a href="{{com_link}}">Click Here</a></p>
+<p>IPアドレス： {{ip}}<br>
+コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
 
 <hr>
-コメントを削除する： <a href="{{del_link}}">Click Here</a>
+コメントを削除する： <a href="{{del_link}}">ここをクリック</a>
 
 {% elif case == 5 %}
-<p>{author} は書いた：</p>
+<p>{{author}} は書いた：</p>
 
-<p>{comment}</p>
+<p>{{comment}}</p>
 
-<p>コメントへのリンク： <a href="{{link}}">{link}</a></p>
+<p>コメントへのリンク： <a href="{{link}}">ここをクリック</a></p>
 
 <hr>
-<p>退会する： {unsubscribe}</p>
+<p>退会する： {{unsubscribe}}</p>
 
 {% else %}
-<p>{author} は書いた：</p>
+<p>{{author}} は書いた：</p>
 
-<p>{comment}</p>
+<p>{{comment}}</p>
 
-<p>コメントへのリンク： <a href="{{link}}">{link}</a></p>
+<p>コメントへのリンク： <a href="{{link}}">ここをクリック</a></p>
 
 <hr>
-<p>退会する： {unsubscribe}</p>
+<p>退会する： {{unsubscribe}}</p>
 {% endif %}

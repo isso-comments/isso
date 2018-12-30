@@ -4,7 +4,7 @@
 <p>{{comment}}</p>
 
 <p>User's URL: {{website}}<br>
-IP address: {ip}<br>
+IP address: {{ip}}<br>
 Link to comment: <a href="{{com_link}}">Click Here</a></p>
 
 <hr>
@@ -16,7 +16,7 @@ Activate comment: <a href="{{act_link}}">Click Here</a>
 
 <p>{{comment}}</p>
 
-<p>IP address: {ip}<br>
+<p>IP address: {{ip}}<br>
 Link to comment: <a href="{{com_link}}">Click Here</a></p>
 
 <hr>
@@ -29,7 +29,7 @@ Activate comment: <a href="{{act_link}}">Click Here</a>
 <p>{{comment}}</p>
 
 <p>User's URL: {{website}}<br>
-IP address: {ip}<br>
+IP address: {{ip}}<br>
 Link to comment: <a href="{{com_link}}">Click Here</a></p>
 
 <hr>
@@ -40,29 +40,29 @@ Delete comment: <a href="{{del_link}}">Click Here</a>
 
 <p>{{comment}}</p>
 
-<p>IP address: {ip}<br>
+<p>IP address: {{ip}}<br>
 Link to comment: <a href="{{com_link}}">Click Here</a></p>
 
 <hr>
 Delete comment: <a href="{{del_link}}">Click Here</a>
 
 {% elif case == 5 %}
-<p>{author} wrote:</p>
+<p>{{author}} wrote:</p>
 
-<p>{comment}</p>
+<p>{{comment}}</p>
 
-<p>Link to comment: <a href="{{link}}">{link}</a></p>
+<p>Link to comment: <a href="{{link}}">Click Here</a></p>
 
 <hr>
-<p>Unsubcribe from this conversation: {unsubscribe}</p>
+<p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>
 
 {% else %}
-<p>{author} wrote:</p>
+<p>{{author}} wrote:</p>
 
-<p>{comment}</p>
+<p>{{comment}}</p>
 
-<p>Link to comment: <a href="{{link}}">{link}</a></p>
+<p>Link to comment: <a href="{{link}}">Click Here</a></p>
 
 <hr>
-<p>Unsubcribe from this conversation: {unsubscribe}</p>
+<p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>
 {% endif %}

@@ -4,24 +4,24 @@
 <p>{{comment}}</p>
 
 <p>用戶網址： {{website}}<br>
-IP地址： {ip}<br>
-評論鏈路： <a href="{{com_link}}">Click Here</a></p>
+IP地址： {{ip}}<br>
+評論鏈路： <a href="{{com_link}}">點我</a></p>
 
 <hr>
-刪除評論： <a href="{{del_link}}">Click Here</a><br>
-激活評論： <a href="{{act_link}}">Click Here</a>
+刪除評論： <a href="{{del_link}}">點我</a><br>
+激活評論： <a href="{{act_link}}">點我</a>
 
 {% elif case == 2 %}
 <p>{{author}} 说：</p>
 
 <p>{{comment}}</p>
 
-<p>IP地址： {ip}<br>
-評論鏈路： <a href="{{com_link}}">Click Here</a></p>
+<p>IP地址： {{ip}}<br>
+評論鏈路： <a href="{{com_link}}">點我</a></p>
 
 <hr>
-刪除評論： <a href="{{del_link}}">Click Here</a><br>
-激活評論： <a href="{{act_link}}">Click Here</a>
+刪除評論： <a href="{{del_link}}">點我</a><br>
+激活評論： <a href="{{act_link}}">點我</a>
 
 {% elif case == 3 %}
 <p>{{author}} 说：</p>
@@ -29,40 +29,40 @@ IP地址： {ip}<br>
 <p>{{comment}}</p>
 
 <p>用戶網址： {{website}}<br>
-IP地址： {ip}<br>
-評論鏈路： <a href="{{com_link}}">Click Here</a></p>
+IP地址： {{ip}}<br>
+評論鏈路： <a href="{{com_link}}">點我</a></p>
 
 <hr>
-刪除評論： <a href="{{del_link}}">Click Here</a>
+刪除評論： <a href="{{del_link}}">點我</a>
 
 {% elif case == 4 %}
 <p>{{author}} 说：</p>
 
 <p>{{comment}}</p>
 
-<p>IP地址： {ip}<br>
-評論鏈路： <a href="{{com_link}}">Click Here</a></p>
+<p>IP地址： {{ip}}<br>
+評論鏈路： <a href="{{com_link}}">點我</a></p>
 
 <hr>
-刪除評論： <a href="{{del_link}}">Click Here</a>
+刪除評論： <a href="{{del_link}}">點我</a>
 
 {% elif case == 5 %}
-<p>{author} 说：</p>
+<p>{{author}} 说：</p>
 
-<p>{comment}</p>
+<p>{{comment}}</p>
 
-<p>評論鏈路： <a href="{{link}}">{link}</a></p>
+<p>評論鏈路： <a href="{{link}}">點我</a></p>
 
 <hr>
-<p>退訂： {unsubscribe}</p>
+<p>退訂： {{unsubscribe}}</p>
 
 {% else %}
-<p>{author} 说：</p>
+<p>{{author}} 说：</p>
 
-<p>{comment}</p>
+<p>{{comment}}</p>
 
-<p>評論鏈路： <a href="{{link}}">{link}</a></p>
+<p>評論鏈路： <a href="{{link}}">點我</a></p>
 
 <hr>
-<p>退訂： {unsubscribe}</p>
+<p>退訂： {{unsubscribe}}</p>
 {% endif %}
