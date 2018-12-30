@@ -271,13 +271,13 @@ user_format_url
     specify the format to use when a reply notification with the replier's URL
 	is sent to a commenter. No need setting it if you are fine with the default
 	format. Available tags: `{author}`, `{comments}`, `{website}`, `{ip}`, 
-	`{com_link}`, `{only_author}`
+	`{link}`, `{only_author}`, `{parent_link}`
 
 user_format_nourl
 	specify the format to use when a reply notification is sent to a commenter
 	when the replier doesn't submit his website URL. No need setting it if you
 	are fine with the default format. Available tags: `{author}`, `{comments}`, 
-	`{ip}`, `{com_link}`, `{only_author}`
+	`{ip}`, `{link}`, `{only_author}`, `{parent_link}`
 
 Guard
 -----

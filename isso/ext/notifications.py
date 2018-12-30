@@ -149,6 +149,7 @@ class SMTP(object):
                                     only_author=author_0,
                                     comment=comment["text"],
                                     website=comment["website"],
+                                    parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
                                     link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                     unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
             )
