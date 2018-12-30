@@ -243,70 +243,11 @@ mail_title_user
 	commenter, default to `Re: New comment posted on {title}`, in which `{title}`
 	is the title of the thread. Available tags: `{title}`, `{receiver}`,
 	`{replier}`
-
-admin_format_urluser_moderate
-	specify the format to use when a reply notification with activation link is 
-	sent to the admin when the commenter has his website URL. No need setting 
-	it if you are fine with the default format. Available tags: `{author}`, 
-	`{comments}`, `{website}`, `{ip}`, `{com_link}`, `{del_link}`, `{act_link}`,
-	`{only_author}`. Only effective for `mail_language = en` (default setting 
-	for isso), for other languages please set the option 
-	`admin_format_urluser_moderate_` trailed by the `mail_language` value. 
-	For example, if you set `mail_language = zh`, 
-	please set `admin_format_urluser_moderate_zh`, usage is the same.
-
-admin_format_nourluser_moderate
-    specify the format to use when a reply notification with activation link is
-	sent to the admin when the commenter doesn't submit his website URL. No need
-	setting it if you are fine with the default format. Available tags: `{author}`, 
-	`{comments}`, `{ip}`, `{com_link}`, `{del_link}`, `{act_link}`, 
-	`{only_author}`. Only effective for `mail_language = en` (default setting 
-	for isso), for other languages please set the option 
-	`admin_format_nourluser_moderate_` trailed by the `mail_language` value. 
-	For example, if you set `mail_language = zh`, please set 
-	`admin_format_nourluser_moderate_zh`, usage is the same.
-
-admin_format_urluser_direct
-	specify the format to use when a reply notification is sent to the admin 
-	when the comment is published without moderation and the commenter has his
-	website URL. No need setting it if you are fine with the default format.
-	Available tags: `{author}`, `{comments}`, `{website}`, `{ip}`, `{com_link}`, 
-	`{del_link}`, `{only_author}`. Only effective for `mail_language = en` 
-	(default setting for isso), for other languages please set the option 
-	`admin_format_urluser_direct_` trailed by the `mail_language` value.
-	For example, if you set `mail_language = zh`, please set 
-	`admin_format_urluser_direct_zh`, usage is the same.
-
-admin_format_nourluser_direct
-	specify the format to use when a reply notification is sent to the admin 
-	when the comment is published without moderation and the commenter doesn't
-	submit his website URL.No need setting it if you are fine with the default 
-	format. Available tags: `{author}`, `{comments}`, `{ip}`, `{com_link}`, 
-	`{del_link}`, `{only_author}`. Only effective for `mail_language = en` 
-	(default setting for isso), for other languages please set the option 
-	`admin_format_nourluser_direct_` trailed by the `mail_language` value.
-	For example, if you set `mail_language = zh`, please set 
-	`admin_format_nourluser_direct_zh`, usage is the same.
-
-user_format_url
-    specify the format to use when a reply notification with the replier's URL
-	is sent to a commenter. No need setting it if you are fine with the default
-	format. Available tags: `{author}`, `{comments}`, `{website}`, `{ip}`, 
-	`{link}`, `{only_author}`, `{parent_link}`. Only effective for 
-	`mail_language = en` (default setting for isso), for other languages 
-	please set the option `user_format_url_` trailed by the `mail_language` 
-	value. For example, if you set `mail_language = zh`, please set 
-	`user_format_url_zh`, usage is the same.
-
-user_format_nourl
-	specify the format to use when a reply notification is sent to a commenter
-	when the replier doesn't submit his website URL. No need setting it if you
-	are fine with the default format. Available tags: `{author}`, `{comments}`, 
-	`{ip}`, `{link}`, `{only_author}`, `{parent_link}`. Only effective for 
-	`mail_language = en` (default setting for isso), for other languages 
-	please set the option `user_format_nourl_` trailed by the `mail_language` 
-	value. For example, if you set `mail_language = zh`, please set 
-	`user_format_nourl_zh`, usage is the same.
+	
+mail_template
+	specify the path to your customized html template of comment yourself, in 
+	jinja2 format. Default: see isso/isso/templates/comment.html or 
+	isso/isso/templates/comment_<iso639-1-code>.html. 
 
 Guard
 -----

@@ -6,6 +6,7 @@ import sys
 import io
 import time
 import json
+import os.path
 
 import socket
 import smtplib
@@ -13,6 +14,8 @@ import smtplib
 from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
+
+from jinja import Environment, FileSystemLoader
 
 try:
     from urllib.parse import quote
@@ -108,74 +111,66 @@ class SMTP(object):
 
         rv = io.StringIO()
 
-        lang = self.isso.conf.get("smtp", "mail_language");
+        lang = self.isso.conf.get("smtp", "mail_language")
         
+        temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
         if lang == "en":
+            com_ori = os.path.join(temp_path, "comments.html")
             no_name = "Anonymous"
-            admin_format_url_mod = "admin_format_urluser_moderate"
-            admin_format_nourl_mod = "admin_format_nourluser_moderate"
-            admin_format_url_direct = "admin_format_urluser_direct"
-            admin_format_nourl_direct = "admin_format_nourluser_direct"
-            user_format_url = "user_format_url"
-            user_format_nourl = "user_format_nourl"
         else:
+            com_ori = os.path.join(temp_path, "comments_%s.html" % lang)
             no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
-            admin_format_url_mod = "admin_format_urluser_moderate_%s" % lang
-            admin_format_nourl_mod = "admin_format_nourluser_moderate_%s" % lang
-            admin_format_url_direct = "admin_format_urluser_direct_%s" % lang
-            admin_format_nourl_direct = "admin_format_nourluser_direct_%s" % lang
-            user_format_url = "user_format_url_%s" % lang
-            user_format_nourl = "user_format_nourl_%s" % lang
-            
+        
+        if self.isso.conf.get("smtp", "mail_template"):
+            com_ori = self.isso.conf.get("smtp", "mail_template")
         
         author = comment["author"] or no_name
         author_0 = author
         if comment["email"]:
             author += " <%s>" % comment["email"]
 
+        jinjaenv=Environment(loader=FileSystemLoader("/"))
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
             if comment["mode"] == 2:
                 if comment["website"]:
-                    con_for=self.isso.conf.getlist("smtp", admin_format_url_mod)
+                    case = 1
                 else:
-                    con_for=self.isso.conf.getlist("smtp", admin_format_nourl_mod)
+                    case = 2
             else:
                 if comment["website"]:
-                    con_for=self.isso.conf.getlist("smtp", admin_format_url_direct)
+                    case = 3
                 else:
-                    con_for=self.isso.conf.getlist("smtp", admin_format_nourl_direct)
-            con_for="\n".join(con_for)
-            rv.write(con_for.format(author=author,
-                                    only_author=author_0,
-                                    comment=comment["text"],
-                                    website=comment["website"],
-                                    ip=comment["remote_addr"],
-                                    com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                    del_link=uri + "/delete/" + key,
-                                    act_link=uri + "/activate/" + key)
-            )
+                    case = 4
+            
+            com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                             case = case,
+                                                             only_author=author_0,
+                                                             comment=comment["text"],
+                                                             website=comment["website"],
+                                                             ip=comment["remote_addr"],
+                                                             com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                             del_link=uri + "/delete/" + key,
+                                                             act_link=uri + "/activate/" + key)
 
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
             if comment["website"]:
-                con_for=self.isso.conf.getlist("smtp", user_format_url)
+                case = 5
             else:
-                con_for=self.isso.conf.getlist("smtp", user_format_nourl)
-            con_for="\n".join(con_for)
-            rv.write(con_for.format(author=author,
-                                    only_author=author_0,
-                                    comment=comment["text"],
-                                    website=comment["website"],
-                                    parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
-                                    link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                    unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
-            )
-            
-        rv.seek(0)
-        return rv.read()
+                case = 6
+            com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                             case = case,
+                                                             only_author=author_0,
+                                                             comment=comment["text"],
+                                                             website=comment["website"],
+                                                             parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                                                             link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                             unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
+
+        return com_temp
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
@@ -221,7 +216,7 @@ class SMTP(object):
 
         from_addr = self.conf.get("from")
 
-        msg = MIMEText(body, 'plain', 'utf-8')
+        msg = MIMEText(body, 'html', 'utf-8')
         msg['From'] = from_addr
         msg['To'] = to_addr
         msg['Date'] = formatdate(localtime=True)

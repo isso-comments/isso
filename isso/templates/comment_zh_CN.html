@@ -1,0 +1,68 @@
+{% if case == 1 %}
+<p>{{author}} 说：</p>
+
+<p>{{comment}}</p>
+
+<p>用户网址： {{website}}<br>
+IP地址： {ip}<br>
+评论链接： <a href="{{com_link}}">Click Here</a></p>
+
+<hr>
+删除评论： <a href="{{del_link}}">Click Here</a><br>
+激活评论： <a href="{{act_link}}">Click Here</a>
+
+{% elif case == 2 %}
+<p>{{author}} 说：</p>
+
+<p>{{comment}}</p>
+
+<p>IP地址： {ip}<br>
+评论链接： <a href="{{com_link}}">Click Here</a></p>
+
+<hr>
+删除评论： <a href="{{del_link}}">Click Here</a><br>
+激活评论： <a href="{{act_link}}">Click Here</a>
+
+{% elif case == 3 %}
+<p>{{author}} 说：</p>
+
+<p>{{comment}}</p>
+
+<p>用户网址： {{website}}<br>
+IP地址： {ip}<br>
+评论链接： <a href="{{com_link}}">Click Here</a></p>
+
+<hr>
+删除评论： <a href="{{del_link}}">Click Here</a>
+
+{% elif case == 4 %}
+<p>{{author}} 说：</p>
+
+<p>{{comment}}</p>
+
+<p>IP地址： {ip}<br>
+评论链接： <a href="{{com_link}}">Click Here</a></p>
+
+<hr>
+删除评论： <a href="{{del_link}}">Click Here</a>
+
+{% elif case == 5 %}
+<p>{author} 说：</p>
+
+<p>{comment}</p>
+
+<p>评论链接： <a href="{{link}}">{link}</a></p>
+
+<hr>
+<p>退订： {unsubscribe}</p>
+
+{% else %}
+<p>{author} 说：</p>
+
+<p>{comment}</p>
+
+<p>评论链接： <a href="{{link}}">{link}</a></p>
+
+<hr>
+<p>退订： {unsubscribe}</p>
+{% endif %}
