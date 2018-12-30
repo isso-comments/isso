@@ -1,5 +1,5 @@
 {% if case == 1 %}
-<p>{{author}} wrote:</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
 <p>{{comment}}</p>
 
@@ -12,7 +12,7 @@ Delete comment: <a href="{{del_link}}">Click Here</a><br>
 Activate comment: <a href="{{act_link}}">Click Here</a>
 
 {% elif case == 2 %}
-<p>{{author}} wrote:</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
 <p>{{comment}}</p>
 
@@ -24,7 +24,7 @@ Delete comment: <a href="{{del_link}}">Click Here</a><br>
 Activate comment: <a href="{{act_link}}">Click Here</a>
 
 {% elif case == 3 %}
-<p>{{author}} wrote:</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
 <p>{{comment}}</p>
 
@@ -36,7 +36,7 @@ Link to comment: <a href="{{com_link}}">Click Here</a></p>
 Delete comment: <a href="{{del_link}}">Click Here</a>
 
 {% elif case == 4 %}
-<p>{{author}} wrote:</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
 <p>{{comment}}</p>
 
@@ -47,7 +47,7 @@ Link to comment: <a href="{{com_link}}">Click Here</a></p>
 Delete comment: <a href="{{del_link}}">Click Here</a>
 
 {% elif case == 5 %}
-<p>{{author}} wrote:</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
 <p>{{comment}}</p>
 
@@ -57,7 +57,7 @@ Delete comment: <a href="{{del_link}}">Click Here</a>
 <p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>
 
 {% else %}
-<p>{{author}} wrote:</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
 <p>{{comment}}</p>
 

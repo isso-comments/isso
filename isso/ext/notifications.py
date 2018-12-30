@@ -125,9 +125,9 @@ class SMTP(object):
             com_ori = self.isso.conf.get("smtp", "mail_template")
         
         author = comment["author"] or no_name
-        author_0 = author
         if comment["email"]:
-            author += " <%s>" % comment["email"]
+            email = comment["email"]
+        
 
         jinjaenv=Environment(loader=FileSystemLoader("/"))
         if admin:
@@ -145,8 +145,8 @@ class SMTP(object):
                     case = 4
             
             com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                             email = email,
                                                              case = case,
-                                                             only_author=author_0,
                                                              comment=comment["text"],
                                                              website=comment["website"],
                                                              ip=comment["remote_addr"],
@@ -162,8 +162,8 @@ class SMTP(object):
             else:
                 case = 6
             com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                             email=email,
                                                              case = case,
-                                                             only_author=author_0,
                                                              comment=comment["text"],
                                                              website=comment["website"],
                                                              parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
