@@ -229,6 +229,30 @@ timeout
     specify a timeout in seconds for blocking operations like the
     connection attempt.
 
+admin_format_urluser_moderate
+	specify the format to use when a reply notification with activation link is 
+	sent to the admin when the commenter has his website URL. No need setting 
+	it if you are fine with the default format.
+
+admin_format_nourluser_moderate
+    specify the format to use when a reply notification with activation link is
+	sent to the admin when the commenter doesn't submit his website URL. No need
+	setting it if you are fine with the default format.
+
+admin_format_urluser_direct
+	specify the format to use when a reply notification is sent to the admin 
+	when the comment is published without moderation and the commenter has his
+	website URL. No need setting it if you are fine with the default format.
+
+admin_format_nourluser_direct
+	specify the format to use when a reply notification is sent to the admin 
+	when the comment is published without moderation and the commenter doesn't
+	submit his website URL.No need setting it if you are fine with the default 
+	format.
+
+user_format
+    specify the format to use when a reply notification to a commenter is sent.
+    No need setting it if you are fine with the default format.
 
 Guard
 -----
