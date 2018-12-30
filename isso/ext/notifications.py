@@ -125,6 +125,7 @@ class SMTP(object):
             com_ori = self.isso.conf.get("smtp", "mail_template")
         
         author = comment["author"] or no_name
+        email = None
         if comment["email"]:
             email = comment["email"]
         
