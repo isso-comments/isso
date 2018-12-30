@@ -115,10 +115,10 @@ class SMTP(object):
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
         if lang == "en":
-            com_ori = os.path.join(temp_path, "comments.html")
+            com_ori = os.path.join(temp_path, "comment.html")
             no_name = "Anonymous"
         else:
-            com_ori = os.path.join(temp_path, "comments_%s.html" % lang)
+            com_ori = os.path.join(temp_path, "comment_%s.html" % lang)
             no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
         
         if self.isso.conf.get("smtp", "mail_template"):
