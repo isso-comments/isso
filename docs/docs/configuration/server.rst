@@ -231,43 +231,53 @@ timeout
 
 mail_title_admin
 	specify the title format of the notification email sent to the admin, default 
-	to `{title}`, in which `{title}` is the title of the thread.
+	to `{title}`, in which `{title}` is the title of the thread. Available tags:
+	`{title}`, `{replier}`
 
 mail_title_user
 	specify the title format of the notification email sent to the subscribed
 	commenter, default to `Re: New comment posted on {title}`, in which `{title}`
-	is the title of the thread.
+	is the title of the thread. Available tags: `{title}`, `{receiver}`,
+	`{replier}`
 
 admin_format_urluser_moderate
 	specify the format to use when a reply notification with activation link is 
 	sent to the admin when the commenter has his website URL. No need setting 
-	it if you are fine with the default format.
+	it if you are fine with the default format. Available tags: `{author}`, 
+	`{comments}`, `{website}`, `{ip}`, `{com_link}`, `{del_link}`, `{act_link}`,
+	`{only_author}`
 
 admin_format_nourluser_moderate
     specify the format to use when a reply notification with activation link is
 	sent to the admin when the commenter doesn't submit his website URL. No need
-	setting it if you are fine with the default format.
+	setting it if you are fine with the default format. Available tags: `{author}`, 
+	`{comments}`, `{ip}`, `{com_link}`, `{del_link}`, `{act_link}`, `{only_author}`
 
 admin_format_urluser_direct
 	specify the format to use when a reply notification is sent to the admin 
 	when the comment is published without moderation and the commenter has his
 	website URL. No need setting it if you are fine with the default format.
+	Available tags: `{author}`, `{comments}`, `{website}`, `{ip}`, `{com_link}`, 
+	`{del_link}`, `{only_author}`
 
 admin_format_nourluser_direct
 	specify the format to use when a reply notification is sent to the admin 
 	when the comment is published without moderation and the commenter doesn't
 	submit his website URL.No need setting it if you are fine with the default 
-	format.
+	format. Available tags: `{author}`, `{comments}`, `{ip}`, `{com_link}`, 
+	`{del_link}`, `{only_author}`
 
 user_format_url
     specify the format to use when a reply notification with the replier's URL
 	is sent to a commenter. No need setting it if you are fine with the default
-	format.
+	format. Available tags: `{author}`, `{comments}`, `{website}`, `{ip}`, 
+	`{com_link}`, `{only_author}`
 
 user_format_nourl
 	specify the format to use when a reply notification is sent to a commenter
 	when the replier doesn't submit his website URL. No need setting it if you
-	are fine with the default format.
+	are fine with the default format. Available tags: `{author}`, `{comments}`, 
+	`{ip}`, `{com_link}`, `{only_author}`
 
 Guard
 -----
