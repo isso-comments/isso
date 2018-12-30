@@ -15,7 +15,7 @@ from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
-from jinja import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 try:
     from urllib.parse import quote
