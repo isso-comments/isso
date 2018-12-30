@@ -119,3 +119,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# pydev
+.project
+.pydevproject

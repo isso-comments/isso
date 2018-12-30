@@ -229,6 +229,15 @@ timeout
     specify a timeout in seconds for blocking operations like the
     connection attempt.
 
+mail_title_admin
+	specify the title format of the notification email sent to the admin, default 
+	to `{title}`, in which `{title}` is the title of the thread.
+
+mail_title_user
+	specify the title format of the notification email sent to the subscribed
+	commenter, default to `Re: New comment posted on {title}`, in which `{title}`
+	is the title of the thread.
+
 admin_format_urluser_moderate
 	specify the format to use when a reply notification with activation link is 
 	sent to the admin when the commenter has his website URL. No need setting 

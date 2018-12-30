@@ -141,9 +141,9 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
             if comment["website"]:
-                con_for=self.isso.conf.getlist("smtp", "user_format_url");
+                con_for=self.isso.conf.getlist("smtp", "user_format_url")
             else:
-                con_for=self.isso.conf.getlist("smtp", "user_format_nourl");
+                con_for=self.isso.conf.getlist("smtp", "user_format_nourl")
             con_for="\n".join(con_for)
             rv.write(con_for.format(author=author,
                                     only_author=author_0,
@@ -159,7 +159,8 @@ class SMTP(object):
     def notify_new(self, thread, comment):
         if self.admin_notify:
             body = self.format(thread, comment, None, admin=True)
-            self.sendmail(thread["title"], body, thread, comment)
+            mailtitle_admin = self.isso.conf.get("smtp", "mail_title_admin").format(title=thread["title"])
+            self.sendmail(mailtitle_admin, body, thread, comment)
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -179,7 +180,7 @@ class SMTP(object):
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, parent_comment, email, admin=False)
-                    subject = "Re: New comment posted on %s" % thread["title"]
+                    subject = self.isso.conf.get("smtp", "mail_title_user").format(title=thread["title"])
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
 
