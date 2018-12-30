@@ -119,7 +119,7 @@ class SMTP(object):
             user_format_url = "user_format_url"
             user_format_nourl = "user_format_nourl"
         else:
-            no_name = self.isso.conf.get("smtp", "annoymous_%s" % lang)
+            no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
             admin_format_url_mod = "admin_format_urluser_moderate_%s" % lang
             admin_format_nourl_mod = "admin_format_nourluser_moderate_%s" % lang
             admin_format_url_direct = "admin_format_urluser_direct_%s" % lang
