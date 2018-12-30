@@ -250,9 +250,15 @@ admin_format_nourluser_direct
 	submit his website URL.No need setting it if you are fine with the default 
 	format.
 
-user_format
-    specify the format to use when a reply notification to a commenter is sent.
-    No need setting it if you are fine with the default format.
+user_format_url
+    specify the format to use when a reply notification with the replier's URL
+	is sent to a commenter. No need setting it if you are fine with the default
+	format.
+
+user_format_nourl
+	specify the format to use when a reply notification is sent to a commenter
+	when the replier doesn't submit his website URL. No need setting it if you
+	are fine with the default format.
 
 Guard
 -----

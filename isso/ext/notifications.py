@@ -119,17 +119,14 @@ class SMTP(object):
             if comment["mode"] == 2:
                 if comment["website"]:
                     con_for=self.isso.conf.getlist("smtp", "admin_format_urluser_moderate")
-                    con_for="\n".join(con_for)
                 else:
                     con_for=self.isso.conf.getlist("smtp", "admin_format_nourluser_moderate")
-                    con_for="\n".join(con_for)
             else:
                 if comment["website"]:
                     con_for=self.isso.conf.getlist("smtp", "admin_format_urluser_direct")
-                    con_for="\n".join(con_for)
                 else:
                     con_for=self.isso.conf.getlist("smtp", "admin_format_nourluser_direct")
-                    con_for="\n".join(con_for)
+            con_for="\n".join(con_for)
             rv.write(con_for.format(author=author,
                                     only_author=author_0,
                                     comment=comment["text"],
@@ -143,10 +140,15 @@ class SMTP(object):
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
-            con_for=self.isso.conf.getlist("smtp", "user_format");
+            if comment["website"]:
+                con_for=self.isso.conf.getlist("smtp", "user_format_url");
+            else:
+                con_for=self.isso.conf.getlist("smtp", "user_format_nourl");
             con_for="\n".join(con_for)
             rv.write(con_for.format(author=author,
+                                    only_author=author_0,
                                     comment=comment["text"],
+                                    website=comment["website"],
                                     link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                     unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
             )
