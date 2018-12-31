@@ -82,12 +82,11 @@ class SMTP(object):
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
-
-        lang = self.isso.conf.get("smtp", "mail_language")
+        self.mail_lang = self.isso.conf.get("smtp", "mail_language")
         try:
             self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
         except:
-            if lang != 'en':
+            if self.mail_lang != 'en':
                 logger.warn('[smtp] No such language: %s. Anonymous fall back to the default "Anonymous".'%lang)
             self.no_name = "Anonymous"
         
@@ -118,13 +117,11 @@ class SMTP(object):
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
         jinjaenv=Environment(loader=FileSystemLoader("/"))
-
-        lang = self.isso.conf.get("smtp", "mail_language")
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
         default_com_temp = os.path.join(temp_path, "comment.html")  
         
-        if lang == "en":
+        if self.mail_lang == "en":
             com_ori = default_com_temp
         else:
             com_ori = os.path.join(temp_path, "comment_%s.html" % lang)
@@ -143,9 +140,6 @@ class SMTP(object):
                 logger.warn("[smtp] No such template: %s. Fall back to the default." %com_ori)
                 com_ori = default_com_temp
         
-        author = comment["author"] or self.no_name
-        email = comment["email"]
-        
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
@@ -159,17 +153,17 @@ class SMTP(object):
                     case = 3
                 else:
                     case = 4
-            com_temp = jinjaenv.get_template(com_ori).render(author=author,
-                                                             email = email,
+            com_temp = jinjaenv.get_template(com_ori).render(author = comment["author"] or self.no_name,
+                                                             email = comment["email"],
                                                              case = case,
-                                                             comment=comment["text"],
-                                                             website=comment["website"],
-                                                             ip=comment["remote_addr"],
-                                                             com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                             del_link=uri + "/delete/" + key,
-                                                             act_link=uri + "/activate/" + key,
-                                                             thread_link=local("origin") + thread["uri"],
-                                                             thread_title=thread["title"]
+                                                             comment = comment["text"],
+                                                             website = comment["website"],
+                                                             ip = comment["remote_addr"],
+                                                             com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                             del_link = uri + "/delete/" + key,
+                                                             act_link = uri + "/activate/" + key,
+                                                             thread_link = local("origin") + thread["uri"],
+                                                             thread_title = thread["title"]
                                                              )
             
         else:
@@ -179,17 +173,17 @@ class SMTP(object):
                 case = 5
             else:
                 case = 6
-            com_temp = jinjaenv.get_template(com_ori).render(author=author,
-                                                             email=email,
+            com_temp = jinjaenv.get_template(com_ori).render(author = comment["author"] or self.no_name,
+                                                             email = comment["email"],
                                                              case = case,
-                                                             comment=comment["text"],
-                                                             website=comment["website"],
-                                                             ip=comment["remote_addr"],
-                                                             parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
-                                                             com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                             unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key,
-                                                             thread_link=local("origin") + thread["uri"],
-                                                             thread_title=thread["title"]
+                                                             comment = comment["text"],
+                                                             website = comment["website"],
+                                                             ip = comment["remote_addr"],
+                                                             parent_link = local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                                                             com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                             unsubscribe = uri + "/unsubscribe/" + quote(recipient) + "/" + key,
+                                                             thread_link = local("origin") + thread["uri"],
+                                                             thread_title = thread["title"]
                                                              )
 
         return com_temp
@@ -197,8 +191,8 @@ class SMTP(object):
     def notify_new(self, thread, comment):
         if self.admin_notify:
             body = self.format(thread, comment, None, admin=True)
-            mailtitle_admin = self.isso.conf.get("smtp", "mail_title_admin").format(title=thread["title"],
-                                                                                    replier=comment["author"] or self.no_name)
+            mailtitle_admin = self.isso.conf.get("smtp", "mail_title_admin").format(title = thread["title"],
+                                                                                    replier = comment["author"] or self.no_name)
             self.sendmail(mailtitle_admin, body, thread, comment)
 
         if comment["mode"] == 1:
@@ -219,9 +213,9 @@ class SMTP(object):
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, parent_comment, email, admin=False)
-                    subject = self.isso.conf.get("smtp", "mail_title_user").format(title=thread["title"],
-                                                                                   receiver=parent_comment["author"] or self.no_name,
-                                                                                   replier=comment["author"] or self.no_name)
+                    subject = self.isso.conf.get("smtp", "mail_title_user").format(title = thread["title"],
+                                                                                   receiver = parent_comment["author"] or self.no_name,
+                                                                                   replier = comment["author"] or self.no_name)
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
 
