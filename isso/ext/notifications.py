@@ -85,6 +85,12 @@ class SMTP(object):
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
 
+        lang = self.isso.conf.get("smtp", "mail_language")
+        if lang == "en":
+            self.no_name = "Anonymous"
+        else:
+            self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
+        
         # test SMTP connectivity
         try:
             with SMTPConnection(self.conf):
@@ -118,15 +124,13 @@ class SMTP(object):
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
         if lang == "en":
             com_ori = os.path.join(temp_path, "comment.html")
-            no_name = "Anonymous"
         else:
             com_ori = os.path.join(temp_path, "comment_%s.html" % lang)
-            no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
         
         if self.isso.conf.get("smtp", "mail_template"):
             com_ori = self.isso.conf.get("smtp", "mail_template")
         
-        author = comment["author"] or no_name
+        author = comment["author"] or self.no_name
         if comment["email"]:
             email = comment["email"]
         
@@ -146,6 +150,9 @@ class SMTP(object):
                     case = 3
                 else:
                     case = 4
+            parent_link = unsubscribe = None;
+            del_link=uri + "/delete/" + key,
+            act_link=uri + "/activate/" + key,
 
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
@@ -154,6 +161,10 @@ class SMTP(object):
                 case = 5
             else:
                 case = 6
+                
+            act_link = del_link = None
+            parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"]
+            unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key
             
         com_temp = jinjaenv.get_template(com_ori).render(author=author,
                                                          email=email,
@@ -163,11 +174,11 @@ class SMTP(object):
                                                          ip=comment["remote_addr"],
                                                          thread_link=uri + thread["uri"],
                                                          thread_title=thread["title"],
-                                                         parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                                                         parent_link=parent_link,
                                                          com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                         del_link=uri + "/delete/" + key,
-                                                         act_link=uri + "/activate/" + key,
-                                                         unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
+                                                         del_link=del_link,
+                                                         act_link=act_link,
+                                                         unsubscribe=unsubscribe)
 
         return com_temp
 
@@ -175,7 +186,7 @@ class SMTP(object):
         if self.admin_notify:
             body = self.format(thread, comment, None, admin=True)
             mailtitle_admin = self.isso.conf.get("smtp", "mail_title_admin").format(title=thread["title"],
-                                                                                    replier=comment["author"])
+                                                                                    replier=comment["author"] or self.no_name)
             self.sendmail(mailtitle_admin, body, thread, comment)
 
         if comment["mode"] == 1:
@@ -197,8 +208,8 @@ class SMTP(object):
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, parent_comment, email, admin=False)
                     subject = self.isso.conf.get("smtp", "mail_title_user").format(title=thread["title"],
-                                                                                   receiver=parent_comment["author"],
-                                                                                   replier=comment["author"])
+                                                                                   receiver=parent_comment["author"] or self.no_name,
+                                                                                   replier=comment["author"] or self.no_name)
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
 
