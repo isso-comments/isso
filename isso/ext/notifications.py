@@ -144,8 +144,7 @@ class SMTP(object):
                 com_ori = default_com_temp
         
         author = comment["author"] or self.no_name
-        if comment["email"]:
-            email = comment["email"]
+        email = comment["email"]
         
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
