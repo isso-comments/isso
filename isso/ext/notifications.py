@@ -80,8 +80,6 @@ class SMTP(object):
         self.isso = isso
         self.conf = isso.conf.section("smtp")
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
-        if self.public_endpoint.endswith('/'):
-            self.public_endpoint = self.public_endpoint.rstrip('/')
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
 
@@ -159,9 +157,10 @@ class SMTP(object):
                                                              com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                                              del_link=uri + "/delete/" + key,
                                                              act_link=uri + "/activate/" + key,
-                                                             thread_link=uri + thread["uri"],
+                                                             thread_link=os.path.split(uri)[0][:3] + thread["uri"],
                                                              thread_title=thread["title"]
                                                              )
+            
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
