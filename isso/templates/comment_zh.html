@@ -1,5 +1,5 @@
 {% if case == 1 %}
-<p>{{author}} 说：</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} 说：</p>
 
 <p>{{comment}}</p>
 
@@ -12,7 +12,7 @@ IP地址： {{{ip}}}<br>
 激活评论： <a href="{{act_link}}">点我</a>
 
 {% elif case == 2 %}
-<p>{{author}} 说：</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} 说：</p>
 
 <p>{{comment}}</p>
 
@@ -24,7 +24,7 @@ IP地址： {{{ip}}}<br>
 激活评论： <a href="{{act_link}}">点我</a>
 
 {% elif case == 3 %}
-<p>{{author}} 说：</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} 说：</p>
 
 <p>{{comment}}</p>
 
@@ -36,7 +36,7 @@ IP地址： {{ip}}<br>
 删除评论： <a href="{{del_link}}">点我</a>
 
 {% elif case == 4 %}
-<p>{{author}} 说：</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} 说：</p>
 
 <p>{{comment}}</p>
 
@@ -47,21 +47,21 @@ IP地址： {{ip}}<br>
 删除评论： <a href="{{del_link}}">点我</a>
 
 {% elif case == 5 %}
-<p>{{author}} 说：</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} 说：</p>
 
 <p>{{comment}}</p>
 
-<p>评论链接： <a href="{{link}}">点我</a></p>
+<p>评论链接： <a href="{{com_link}}">点我</a></p>
 
 <hr>
 <p>退订： <a href="{{unsubscribe}}">点我</a></p>
 
 {% else %}
-<p>{{author}} 说：</p>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} 说：</p>
 
 <p>{{comment}}</p>
 
-<p>评论链接： <a href="{{link}}">点我</a></p>
+<p>评论链接： <a href="{{com_link}}">点我</a></p>
 
 <hr>
 <p>退订： <a href="{{unsubscribe}}">点我</a></p>

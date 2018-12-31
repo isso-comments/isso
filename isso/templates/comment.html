@@ -1,3 +1,33 @@
+<!-- 
+=========================================================================
+ Case 1~4: For email notifications sent to the administrator.
+ ========================================================================
+ Available variables: 
+ {{thread_link}} : self-explainary
+ {{thread_title}} : self-explainary
+ {{author}} : The comment author
+ {{email}} : The comment author's email
+ {{comment}} : The comment content
+ {{website}} : The comment author's website address
+ {{ip}} : The author's IP
+ {{com_link}} : The comment link
+ {{del_link}} : The link to delete the comment
+ {{act_link}} : The link to activate the comment
+ ========================================================================
+ Case 5~6: For email notifications sent to the subscribed commenters.
+ ======================================================================== 
+ Available variables: 
+ {{thread_link}} : self-explainary
+ {{thread_title}} : self-explainary
+ {{author}} : The comment author
+ {{email}} : The comment author's email
+ {{ip}} : The comment author's IP
+ {{comment}} : The comment content
+ {{website}} : The comment author's website address
+ {{parent_link}} : The link of the comment the comment author replies to, in other words, the notification receiver's comment
+ {{com_link}} : The comment link, in other words, the link of the reply to the receiver
+ {{unsubscribe}} : The link to unsubcribe from the subcription
+ --> 
 {% if case == 1 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
@@ -51,7 +81,7 @@ Delete comment: <a href="{{del_link}}">Click Here</a>
 
 <p>{{comment}}</p>
 
-<p>Link to comment: <a href="{{link}}">Click Here</a></p>
+<p>Link to comment: <a href="{{com_link}}">Click Here</a></p>
 
 <hr>
 <p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>
@@ -61,7 +91,7 @@ Delete comment: <a href="{{del_link}}">Click Here</a>
 
 <p>{{comment}}</p>
 
-<p>Link to comment: <a href="{{link}}">Click Here</a></p>
+<p>Link to comment: <a href="{{com_link}}">Click Here</a></p>
 
 <hr>
 <p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>

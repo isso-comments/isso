@@ -80,6 +80,8 @@ class SMTP(object):
         self.isso = isso
         self.conf = isso.conf.section("smtp")
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
+        if self.public_endpoint.endswith('/'):
+            self.public_endpoint = self.public_endpoint.rstrip('/')
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
 
@@ -125,12 +127,12 @@ class SMTP(object):
             com_ori = self.isso.conf.get("smtp", "mail_template")
         
         author = comment["author"] or no_name
-        email = None
         if comment["email"]:
             email = comment["email"]
         
 
         jinjaenv=Environment(loader=FileSystemLoader("/"))
+        
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
@@ -144,16 +146,6 @@ class SMTP(object):
                     case = 3
                 else:
                     case = 4
-            
-            com_temp = jinjaenv.get_template(com_ori).render(author=author,
-                                                             email = email,
-                                                             case = case,
-                                                             comment=comment["text"],
-                                                             website=comment["website"],
-                                                             ip=comment["remote_addr"],
-                                                             com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                             del_link=uri + "/delete/" + key,
-                                                             act_link=uri + "/activate/" + key)
 
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
@@ -162,14 +154,20 @@ class SMTP(object):
                 case = 5
             else:
                 case = 6
-            com_temp = jinjaenv.get_template(com_ori).render(author=author,
-                                                             email=email,
-                                                             case = case,
-                                                             comment=comment["text"],
-                                                             website=comment["website"],
-                                                             parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
-                                                             link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                             unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
+            
+        com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                         email=email,
+                                                         case = case,
+                                                         comment=comment["text"],
+                                                         website=comment["website"],
+                                                         ip=comment["remote_addr"],
+                                                         thread_link=uri + thread["uri"],
+                                                         thread_title=thread["title"],
+                                                         parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                                                         com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                         del_link=uri + "/delete/" + key,
+                                                         act_link=uri + "/activate/" + key,
+                                                         unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key)
 
         return com_temp
 

@@ -235,13 +235,13 @@ mail_language
 
 mail_title_admin
 	specify the title format of the notification email sent to the admin, default 
-	to `{title}`, in which `{title}` is the title of the thread. Available tags:
+	to `{title}`, in which `{title}` is the title of the thread. Available variables:
 	`{title}`, `{replier}`
 
 mail_title_user
 	specify the title format of the notification email sent to the subscribed
 	commenter, default to `Re: New comment posted on {title}`, in which `{title}`
-	is the title of the thread. Available tags: `{title}`, `{receiver}`,
+	is the title of the thread. Available variables: `{title}`, `{receiver}`,
 	`{replier}`
 	
 mail_template
