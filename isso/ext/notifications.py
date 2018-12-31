@@ -87,7 +87,8 @@ class SMTP(object):
         try:
             self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
         except:
-            logger.warn('[smtp] No such language: %s. Anonymous fall back to the default "Anonymous".'%lang)
+            if lang != 'en':
+                logger.warn('[smtp] No such language: %s. Anonymous fall back to the default "Anonymous".'%lang)
             self.no_name = "Anonymous"
         
         # test SMTP connectivity
