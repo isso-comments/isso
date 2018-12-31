@@ -157,7 +157,7 @@ class SMTP(object):
                                                              com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                                              del_link=uri + "/delete/" + key,
                                                              act_link=uri + "/activate/" + key,
-                                                             thread_link=os.path.split(uri)[0][:-3] + thread["uri"],
+                                                             thread_link=local("origin") + thread["uri"],
                                                              thread_title=thread["title"]
                                                              )
             
@@ -177,7 +177,7 @@ class SMTP(object):
                                                              parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
                                                              com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                                              unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key,
-                                                             thread_link=os.path.split(uri)[0][:-3] + thread["uri"],
+                                                             thread_link=local("origin") + thread["uri"],
                                                              thread_title=thread["title"]
                                                              )
 

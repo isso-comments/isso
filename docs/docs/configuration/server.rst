@@ -246,8 +246,10 @@ mail_title_user
 	
 mail_template
 	specify the path to your customized html template of comment yourself, in 
-	jinja2 format. Default: see isso/isso/templates/comment.html or 
-	isso/isso/templates/comment_<iso639-1-code>.html. 
+	jinja2 format. Default: see isso/isso/templates/comment.html (default for 
+	`language = en` user and has some comment about the template) or 
+	isso/isso/templates/comment_<iso639-1-code>.html (default for other 
+	languages). 
 
 Guard
 -----

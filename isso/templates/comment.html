@@ -28,6 +28,26 @@
  {{com_link}} : The comment link, in other words, the link of the reply to the receiver
  {{unsubscribe}} : The link to unsubcribe from the subcription
  --> 
+
+<!-- Beginning for case 1: Email notification sent to the admin when the 
+						   author submits his website address, the 
+						   comment needs approval.
+						    
+						    Available variables: 
+						     {{thread_link}} : self-explainary
+						     {{thread_title}} : self-explainary
+						     {{author}} : The comment author
+						     {{email}} : The comment author's email
+						     {{comment}} : The comment content
+						     {{website}} : The comment author's website 
+						                   address
+						     {{ip}} : The author's IP
+						     {{com_link}} : The comment link
+						     {{del_link}} : The link to delete the comment
+						     {{act_link}} : The link to activate the comment
+						     
+						   -->
+
 {% if case == 1 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
@@ -41,6 +61,25 @@ Link to comment: <a href="{{com_link}}">Click Here</a></p>
 Delete comment: <a href="{{del_link}}">Click Here</a><br>
 Activate comment: <a href="{{act_link}}">Click Here</a>
 
+<!-- End for case 1 -->
+
+<!-- Beginning for case 2: Email notification sent to the admin when the 
+						   author doesn't submit his website address, the 
+						   comment needs approval.
+						 
+						    Available variables: 
+						     {{thread_link}} : self-explainary
+						     {{thread_title}} : self-explainary
+						     {{author}} : The comment author
+						     {{email}} : The comment author's email
+						     {{comment}} : The comment content
+						     {{ip}} : The author's IP
+						     {{com_link}} : The comment link
+						     {{del_link}} : The link to delete the comment
+						     {{act_link}} : The link to activate the comment
+						     
+						   -->
+
 {% elif case == 2 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
@@ -52,6 +91,26 @@ Link to comment: <a href="{{com_link}}">Click Here</a></p>
 <hr>
 Delete comment: <a href="{{del_link}}">Click Here</a><br>
 Activate comment: <a href="{{act_link}}">Click Here</a>
+
+<!-- End for case 2 -->
+
+<!-- Beginning for case 3: Email notification sent to the admin when the 
+						   author submits his website address, the 
+						   comment is published directly.
+						   
+						    Available variables: 
+						     {{thread_link}} : self-explainary
+						     {{thread_title}} : self-explainary
+						     {{author}} : The comment author
+						     {{email}} : The comment author's email
+						     {{comment}} : The comment content
+						     {{website}} : The comment author's website 
+						                   address
+						     {{ip}} : The author's IP
+						     {{com_link}} : The comment link
+						     {{del_link}} : The link to delete the comment
+						     
+						   -->
 
 {% elif case == 3 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
@@ -65,6 +124,26 @@ Link to comment: <a href="{{com_link}}">Click Here</a></p>
 <hr>
 Delete comment: <a href="{{del_link}}">Click Here</a>
 
+<!-- End for case 3 -->
+
+<!-- Beginning for case 4: Email notification sent to the admin when the 
+						   author doesn't submit his website address, the 
+						   comment is published directly.
+						   
+						    Available variables: 
+						     {{thread_link}} : self-explainary
+						     {{thread_title}} : self-explainary
+						     {{author}} : The comment author
+						     {{email}} : The comment author's email
+						     {{comment}} : The comment content
+						     {{website}} : The comment author's website 
+						                   address
+						     {{ip}} : The author's IP
+						     {{com_link}} : The comment link
+						     {{del_link}} : The link to delete the comment
+						     
+						   -->
+
 {% elif case == 4 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
@@ -76,6 +155,28 @@ Link to comment: <a href="{{com_link}}">Click Here</a></p>
 <hr>
 Delete comment: <a href="{{del_link}}">Click Here</a>
 
+<!-- End for case 4 -->
+
+<!-- Beginning for case 5: Reply notification sent to the subscribed user 
+						   when the replier submits his website address.
+						   
+						    Available variables: 
+						     {{thread_link}} : self-explainary
+						     {{thread_title}} : self-explainary 
+						     {{author}} : The comment author
+						     {{email}} : The comment author's email
+						     {{ip}} : The comment author's IP
+						     {{comment}} : The comment content
+						     {{website}} : The comment author's website address
+						     {{parent_link}} : The link of the comment 
+						                       the comment author replies to,
+						                       in other words, the notification
+						                       receiver's comment
+						     {{com_link}} : The comment link, in other words, the link of the reply to the receiver
+						     {{unsubscribe}} : The link to unsubcribe from the subcription
+						   
+						   -->
+
 {% elif case == 5 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
 
@@ -85,6 +186,28 @@ Delete comment: <a href="{{del_link}}">Click Here</a>
 
 <hr>
 <p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>
+
+<!-- End for case 5 -->
+
+<!-- Beginning for case 6: Reply notification sent to the subscribed user 
+						   when the replier doesn't submit his website 
+						   address.
+						   
+						    Available variables: 
+						     {{thread_link}} : self-explainary
+						     {{thread_title}} : self-explainary 
+						     {{author}} : The comment author
+						     {{email}} : The comment author's email
+						     {{ip}} : The comment author's IP
+						     {{comment}} : The comment content
+						     {{parent_link}} : The link of the comment 
+						                       the comment author replies to,
+						                       in other words, the notification
+						                       receiver's comment
+						     {{com_link}} : The comment link, in other words, the link of the reply to the receiver
+						     {{unsubscribe}} : The link to unsubcribe from the subcription
+						   
+						   -->
 
 {% else %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
@@ -96,3 +219,5 @@ Delete comment: <a href="{{del_link}}">Click Here</a>
 <hr>
 <p>Unsubcribe from this conversation: <a href="{{unsubscribe}}">Click Here</a></p>
 {% endif %}
+
+<!-- End for case 6 -->
