@@ -150,10 +150,18 @@ class SMTP(object):
                     case = 3
                 else:
                     case = 4
-            parent_link = unsubscribe = None;
-            del_link=uri + "/delete/" + key,
-            act_link=uri + "/activate/" + key,
-
+            com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                             email = email,
+                                                             case = case,
+                                                             comment=comment["text"],
+                                                             website=comment["website"],
+                                                             ip=comment["remote_addr"],
+                                                             com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                             del_link=uri + "/delete/" + key,
+                                                             act_link=uri + "/activate/" + key,
+                                                             thread_link=uri + thread["uri"],
+                                                             thread_title=thread["title"]
+                                                             )
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
@@ -161,24 +169,18 @@ class SMTP(object):
                 case = 5
             else:
                 case = 6
-                
-            act_link = del_link = None
-            parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"]
-            unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key
-            
-        com_temp = jinjaenv.get_template(com_ori).render(author=author,
-                                                         email=email,
-                                                         case = case,
-                                                         comment=comment["text"],
-                                                         website=comment["website"],
-                                                         ip=comment["remote_addr"],
-                                                         thread_link=uri + thread["uri"],
-                                                         thread_title=thread["title"],
-                                                         parent_link=parent_link,
-                                                         com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                         del_link=del_link,
-                                                         act_link=act_link,
-                                                         unsubscribe=unsubscribe)
+            com_temp = jinjaenv.get_template(com_ori).render(author=author,
+                                                             email=email,
+                                                             case = case,
+                                                             comment=comment["text"],
+                                                             website=comment["website"],
+                                                             ip=comment["remote_addr"],
+                                                             parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                                                             com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                             unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key,
+                                                             thread_link=uri + thread["uri"],
+                                                             thread_title=thread["title"]
+                                                             )
 
         return com_temp
 
