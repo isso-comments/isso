@@ -84,10 +84,10 @@ class SMTP(object):
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
 
         lang = self.isso.conf.get("smtp", "mail_language")
-        if lang == "en":
-            self.no_name = "Anonymous"
-        else:
+        try:
             self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
+        except:
+            self.no_name = "Anonymous"
         
         # test SMTP connectivity
         try:
@@ -120,10 +120,11 @@ class SMTP(object):
         lang = self.isso.conf.get("smtp", "mail_language")
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
-        if lang == "en":
-            com_ori = os.path.join(temp_path, "comment.html")
-        else:
+        
+        try:
             com_ori = os.path.join(temp_path, "comment_%s.html" % lang)
+        except:
+            com_ori = os.path.join(temp_path, "comment.html")    
         
         if self.isso.conf.get("smtp", "mail_template"):
             com_ori = self.isso.conf.get("smtp", "mail_template")
