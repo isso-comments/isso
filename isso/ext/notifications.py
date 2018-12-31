@@ -115,26 +115,33 @@ class SMTP(object):
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
-        rv = io.StringIO()
+        jinjaenv=Environment(loader=FileSystemLoader("/"))
 
         lang = self.isso.conf.get("smtp", "mail_language")
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
+        default_com_temp = os.path.join(temp_path, "comment.html")  
         
-        try:
+        if lang == "en":
+            com_ori = default_com_temp
+        else:
             com_ori = os.path.join(temp_path, "comment_%s.html" % lang)
-        except:
-            com_ori = os.path.join(temp_path, "comment.html")    
-        
+            try:
+                jinjaenv.get_template(com_ori)
+            except:
+                com_ori = default_com_temp
+            default_com_temp = com_ori
+
         if self.isso.conf.get("smtp", "mail_template"):
             com_ori = self.isso.conf.get("smtp", "mail_template")
+            try:
+                jinjaenv.get_template(com_ori)
+            except:
+                com_ori = default_com_temp
         
         author = comment["author"] or self.no_name
         if comment["email"]:
             email = comment["email"]
-        
-
-        jinjaenv=Environment(loader=FileSystemLoader("/"))
         
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
