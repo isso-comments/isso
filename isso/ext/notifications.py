@@ -87,6 +87,7 @@ class SMTP(object):
         try:
             self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
         except:
+            logger.warn('[smtp] No such language: %s. Annoymous fall back to the default "Annoymous".'%lang)
             self.no_name = "Anonymous"
         
         # test SMTP connectivity
@@ -129,6 +130,7 @@ class SMTP(object):
             try:
                 jinjaenv.get_template(com_ori)
             except:
+                logger.warn("[smtp] No such language: %s. Fall back to the default."%lang)
                 com_ori = default_com_temp
             default_com_temp = com_ori
 
@@ -137,6 +139,7 @@ class SMTP(object):
             try:
                 jinjaenv.get_template(com_ori)
             except:
+                logger.warn("[smtp] No such template: %s. Fall back to the default." %com_ori)
                 com_ori = default_com_temp
         
         author = comment["author"] or self.no_name
