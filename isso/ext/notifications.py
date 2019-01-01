@@ -146,6 +146,8 @@ class SMTP(object):
                 try:
                     jinjaenv.get_template(os.path.join(com_ori, "admin.%s"%self.mail_format))
                     jinjaenv.get_template(os.path.join(com_ori, "user.%s"%self.mail_format))
+                except TemplateSyntaxError as err:
+                    logger.warn("[smtp] Wrong format. %s"%err)
                 except:
                     logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'. Fall back to the default.".format(c_path=com_ori,format=self.mail_format)
                                 )
