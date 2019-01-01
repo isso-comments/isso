@@ -232,6 +232,9 @@ timeout
 mail_language
 	specify the language of the mail format by its `ISO 639-1<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) 
 	code, default to `en`.
+	
+mail_format = plain
+	specify mail format to use, available options: plain, html. Default: plain
 
 mail_title_admin
 	specify the title format of the notification email sent to the admin, default 
@@ -246,10 +249,12 @@ mail_title_user
 	
 mail_template
 	specify the path to your customized html template of comment yourself, in 
-	jinja2 format. Default: see isso/isso/templates/comment.html (default for 
-	`language = en` user and has some comment about the template) or 
-	isso/isso/templates/comment_<iso639-1-code>.html (default for other 
-	languages). 
+	jinja2 format. Default: For users who set `mail_format = plain`, see 
+	`isso/isso/templates/comment.plain` or 
+	`isso/isso/templates/comment_<iso639-1-code>.plain`; 
+	For users who set mail_format = html, see 
+	`isso/isso/templates/comment.html` or 
+	`isso/isso/templates/comment_<iso639-1-code>.html`. 
 
 Guard
 -----

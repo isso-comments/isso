@@ -83,6 +83,8 @@ class SMTP(object):
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
         self.mail_lang = self.isso.conf.get("smtp", "mail_language")
+        self.mail_format = self.isso.conf.get("smtp", "mail_format")
+        
         try:
             self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
         except:
@@ -119,12 +121,12 @@ class SMTP(object):
         jinjaenv=Environment(loader=FileSystemLoader("/"))
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
-        default_com_temp = os.path.join(temp_path, "comment.html")  
+        default_com_temp = os.path.join(temp_path, "comment.%s" % self.mail_format)  
         
         if self.mail_lang == "en":
             com_ori = default_com_temp
         else:
-            com_ori = os.path.join(temp_path, "comment_%s.html" % lang)
+            com_ori = os.path.join(temp_path, "comment_%s.%s" % (lang, self.mail_format))
             try:
                 jinjaenv.get_template(com_ori)
             except:
@@ -143,19 +145,10 @@ class SMTP(object):
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
-            if comment["mode"] == 2:
-                if comment["website"]:
-                    case = 1
-                else:
-                    case = 2
-            else:
-                if comment["website"]:
-                    case = 3
-                else:
-                    case = 4
             com_temp = jinjaenv.get_template(com_ori).render(author = comment["author"] or self.no_name,
                                                              email = comment["email"],
-                                                             case = case,
+                                                             admin = admin,
+                                                             mode = comment["mode"],
                                                              comment = comment["text"],
                                                              website = comment["website"],
                                                              ip = comment["remote_addr"],
@@ -169,13 +162,9 @@ class SMTP(object):
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
-            if comment["website"]:
-                case = 5
-            else:
-                case = 6
             com_temp = jinjaenv.get_template(com_ori).render(author = comment["author"] or self.no_name,
                                                              email = comment["email"],
-                                                             case = case,
+                                                             admin = admin,
                                                              comment = comment["text"],
                                                              website = comment["website"],
                                                              ip = comment["remote_addr"],
@@ -232,7 +221,7 @@ class SMTP(object):
 
         from_addr = self.conf.get("from")
 
-        msg = MIMEText(body, 'html', 'utf-8')
+        msg = MIMEText(body, self.mail_format, 'utf-8')
         msg['From'] = from_addr
         msg['To'] = to_addr
         msg['Date'] = formatdate(localtime=True)

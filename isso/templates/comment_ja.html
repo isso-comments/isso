@@ -1,68 +1,31 @@
-{% if case == 1 %}
 <p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} は書いた：</p>
 
 <p>{{comment}}</p>
 
-<p>ユーザーのURL： <a href="{{website}}">{{website}}</a><br>
-IPアドレス： {{ip}}<br>
-コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
+<p>
+	{% if admin %}
+	ユーザーのURL： <a href="{{website}}">{{website}}</a>
+	<br>
+	IPアドレス： {{ip}}
+	<br>
+	{% endif %}
+
+	コメントへのリンク： <a href="{{com_link}}">ここをクリック</a>
+</p>
 
 <hr>
-コメントを削除する： <a href="{{del_link}}">ここをクリック</a><br>
-コメントを有効にする： <a href="{{act_link}}">ここをクリック</a>
 
-{% elif case == 2 %}
-<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} は書いた：</p>
+<p>
 
-<p>{{comment}}</p>
+	{% if admin %}
+	コメントを削除する： <a href="{{del_link}}">ここをクリック</a>
+	<br>
+	{% if mode == 2 %}
+	コメントを有効にする： <a href="{{act_link}}">ここをクリック</a>
+	{% endif %}
+	
+	{% else %}
+	退会する： <a href="{{unsubscribe}}">ここをクリック</a>
+	{% endif %}
 
-<p>IPアドレス： {{ip}}<br>
-コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
-
-<hr>
-コメントを削除する： <a href="{{del_link}}">ここをクリック</a><br>
-コメントを有効にする： <a href="{{act_link}}">ここをクリック</a>
-
-{% elif case == 3 %}
-<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} は書いた：</p>
-
-<p>{{comment}}</p>
-
-<p>ユーザーのURL： <a href="{{website}}">{{website}}</a><br>
-IPアドレス： {{ip}}<br>
-コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
-
-<hr>
-コメントを削除する： <a href="{{del_link}}">ここをクリック</a>
-
-{% elif case == 4 %}
-<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} は書いた：</p>
-
-<p>{{comment}}</p>
-
-<p>IPアドレス： {{ip}}<br>
-コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
-
-<hr>
-コメントを削除する： <a href="{{del_link}}">ここをクリック</a>
-
-{% elif case == 5 %}
-<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} は書いた：</p>
-
-<p>{{comment}}</p>
-
-<p>コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
-
-<hr>
-<p>退会する： <a href="{{unsubscribe}}">ここをクリック</a></p>
-
-{% else %}
-<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} は書いた：</p>
-
-<p>{{comment}}</p>
-
-<p>コメントへのリンク： <a href="{{com_link}}">ここをクリック</a></p>
-
-<hr>
-<p>退会する： <a href="{{unsubscribe}}">ここをクリック</a></p>
-{% endif %}
+</p>

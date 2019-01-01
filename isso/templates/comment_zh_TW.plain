@@ -1,0 +1,15 @@
+{{author}}{% if email %} <{{ email }}>{% endif %} 說：
+
+{{comment}}
+
+{% if admin %}用戶網址： {{website}}
+IP地址： {{ip}}{% endif %}
+
+評論鏈路： {{com_link}}
+
+---
+{% if admin %}刪除評論： {{del_link}}
+{% if mode == 2 %}激活評論： {{act_link}}
+{% endif %}
+{% else %}退訂： {{unsubscribe}}
+{% endif %}

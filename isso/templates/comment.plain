@@ -1,0 +1,15 @@
+{{author}}{% if email %} <{{ email }}>{% endif %} wrote:
+
+{{comment}}
+
+{% if admin %}User's URL: {{website}}
+IP address: {{ip}}{% endif %}
+
+Link to comment: {{com_link}}
+
+---
+{% if admin %}Delete comment: {{del_link}}
+{% if mode == 2 %}Activate comment: {{act_link}}
+{% endif %}
+{% else %}Unsubcribe from this conversation: {{unsubscribe}}
+{% endif %}

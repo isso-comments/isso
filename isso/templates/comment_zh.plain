@@ -1,0 +1,15 @@
+{{author}}{% if email %} <{{ email }}>{% endif %} 说：
+
+{{comment}}
+
+{% if admin %}用户网址： {{website}}
+IP地址： {{ip}}{% endif %}
+
+评论链接： {{com_link}}
+
+---
+{% if admin %}删除评论： {{del_link}}
+{% if mode == 2 %}激活评论： {{act_link}}
+{% endif %}
+{% else %}退订： {{unsubscribe}}
+{% endif %}
