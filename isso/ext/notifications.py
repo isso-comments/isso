@@ -91,7 +91,7 @@ class SMTP(object):
         except:
             logger.warn('[smtp] No anonymous for such language: %s. Anonymous fell back to the default "Anonymous".' % self.mail_lang)
             self.no_name = "Anonymous"
-        logger.info("[smtp] You are now using language {0}. To change anonymous from {0} to your desired string in the current language, set 'anonymous_{0} = your desired string' in the [smtp] section of the server conf.".format(self.mail_lang))
+        logger.info("[smtp] You are now using language {0}. To change anonymous from {1} to your desired string in the current language, set 'anonymous_{0} = your desired string' in the [smtp] section of the server conf.".format(self.mail_lang,self.no_name))
         
         # test SMTP connectivity
         try:
