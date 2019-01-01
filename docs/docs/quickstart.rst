@@ -60,7 +60,8 @@ For more options, see :doc:`server <configuration/server>` and :doc:`client
 Migration
 ---------
 
-You can import comments from Disqus_ or WordPress_.
+You can import comments from Disqus_ or WordPress_. You can also import comments
+issued from any comment system but you have to stick a specific json format.
 
 To export your comments from Disqus, log into Disqus, go to your website, click
 on *Discussions* and select the *Export* tab. You'll receive an email with your
@@ -70,11 +71,33 @@ To export comments from your previous WordPress installation, go to *Tools*,
 export your data. It has been reported that WordPress may generate broken XML.
 Try to repair the file using ``xmllint`` before you continue with the import.
 
-Now import the XML dump:
+For any other comment system you can use the generic JSON format. It's up to you
+to fit the format (see isso/tests/generic.json for an example):
+
+.. code-block::
+    A list of threads, each item being a dict with the following data:
+
+        - id: a text representing the unique thread id
+        - title: the title of the thread
+        - comments: the list of comments
+
+    Each item in that list of comments is a dict with the following data:
+
+        - id: an integer with the unique id of the comment inside the thread
+          (it can be repeated among different threads); this will be used to
+          order the comment inside the thread
+        - author: the author's name
+        - email: the author's email
+        - website: the author's website
+        - remote_addr: the author's IP
+        - created: a timestamp, in the format "%Y-%m-%d %H:%M:%S"
+
+
+Now import the XML or JSON dump:
 
 .. code-block:: sh
 
-    ~> isso -c /path/to/isso.cfg import disqus-or-wordpress.xml
+    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress|generic] disqus-or-wordpress-or-generic.[xml|json]
     [100%]  53 threads, 192 comments
 
 .. _Disqus: https://disqus.com/

@@ -269,9 +269,10 @@ class Generic(object):
 
         - id: an integer with the unique id of the comment inside the thread (it can be repeated
           among different threads); this will be used to order the comment inside the thread
-        - author: the author name
-        - email: the author email
-        - website: the authot's website
+        - author: the author's name
+        - email: the author's email
+        - website: the author's website
+        - remote_addr: the author's IP
         - created: a timestamp, in the format "%Y-%m-%d %H:%M:%S"
     """
 
@@ -351,6 +352,8 @@ def dispatch(type, db, dump, empty_id=False):
         cls = Disqus
     elif type == "wordpress":
         cls = WordPress
+    elif type == "generic":
+        cls = Generic
     else:
         with io.open(dump, encoding="utf-8") as fp:
             cls = autodetect(fp.read(io.DEFAULT_BUFFER_SIZE))
