@@ -10,7 +10,6 @@ import os.path
 
 import socket
 import smtplib
-import jinja2
 
 from email.utils import formatdate
 from email.header import Header
