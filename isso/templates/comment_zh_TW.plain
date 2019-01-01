@@ -2,8 +2,8 @@
 
 {{comment}}
 
-{% if admin %}用戶網址： {{website}}
-IP地址： {{ip}}{% endif %}
+{% if admin %}{% if website %}用戶網址： {{website}}
+{% endif %}IP地址： {{ip}}{% endif %}
 
 評論鏈路： {{com_link}}
 

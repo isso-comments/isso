@@ -4,8 +4,10 @@
 
 <p>
 	{% if admin %}
+	{% if website %}
 	ユーザーのURL： <a href="{{website}}">{{website}}</a>
 	<br>
+	{% endif %}
 	IPアドレス： {{ip}}
 	<br>
 	{% endif %}

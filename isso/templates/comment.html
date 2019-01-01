@@ -55,8 +55,10 @@
 
 <p>
 	{% if admin %}
+	{% if website %}
 	User's URL: <a href="{{website}}">{{website}}</a>
 	<br>
+	{% endif %}
 	IP address: {{ip}}
 	<br>
 	{% endif %}
