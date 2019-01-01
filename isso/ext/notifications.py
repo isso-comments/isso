@@ -139,7 +139,7 @@ class SMTP(object):
                 try:
                     jinjaenv.get_template(com_ori)
                 except:
-                    logger.warn("[smtp] No such template: %s. Fall back to the default." %com_ori)
+                    logger.warn("[smtp] No such template: %s. Fall back to the default."  % com_ori)
                 else:
                     com_ori_admin = com_ori_user = com_ori
             elif os.path.isdir(com_ori):
@@ -152,6 +152,8 @@ class SMTP(object):
                 else:
                     com_ori_admin = os.path.join(com_ori, "admin.%s"%self.mail_format)
                     com_ori_user = os.path.join(com_ori, "user.%s"%self.mail_format)
+            else:
+                logger.warn("[smtp] %s does not exist. Fall back to the default."%com_ori)
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
