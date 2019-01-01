@@ -132,13 +132,14 @@ class SMTP(object):
                 logger.warn("[smtp] Wrong format. %s"%err)
                 logger.warn("[smtp] Fallback to the default")
             except jinja2_exceptions.TemplateNotFound:
-                logger.warn("[smtp] No settings for such language: %s. Fall back to the default." % self.mail_lang)
+                logger.warn("[smtp] No default template for such language: %s. Fall back to the default." % self.mail_lang)
             except Exception as err:
                 logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
                 for er in err.args:
                     logger.warn(      "%s" % er)
                 logger.warn("[smtp] Fallback to the default")
             else:
+                logger.warn("[smtp] You are now using the language {lang} for the mail. To change the anonymous from '{no_name}' to something else, you can set a desired string for the option anonymous_{lang} in the [smtp] section of the server conf. (ex. anonymous)" .format(lang=self.mail_lang, no_name=self.no_name))
                 com_ori_admin = com_ori_user = os.path.basename(com_ori)
 
         if self.isso.conf.get("smtp", "mail_template"):
