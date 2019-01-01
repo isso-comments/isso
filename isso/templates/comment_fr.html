@@ -1,0 +1,34 @@
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} a écrit :</p>
+
+<p>{{comment}}</p>
+
+<p>
+	{% if admin %}
+	{% if website %}
+	Site de l'utilisateur : <a href="{{website}}">{{website}}</a>
+	<br>
+	{% endif %}
+	Addresse IP : {{ip}}
+	<br>
+	{% endif %}
+
+	Lien vers le commentaire : <a href="{{com_link}}">Cliquez ici</a>
+</p>
+
+<hr>
+
+<p>
+
+	{% if admin %}
+	Supprimer le commentaire : <a href="{{del_link}}">Cliquez ici</a>
+	<br>
+	{% if mode == 2 %}
+	Activer le commentaire : <a href="{{act_link}}">Cliquez ici</a>
+	{% endif %}
+	
+	{% else %}
+	Se désinscrire de cette conversation : <a href="{{unsubscribe}}">Cliquez ici</a>
+	{% endif %}
+
+</p>
+
