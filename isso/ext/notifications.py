@@ -89,9 +89,9 @@ class SMTP(object):
         try:
             self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % self.mail_lang)
         except:
-            if self.mail_lang != 'en':
-                logger.warn('[smtp] No such language: %s. Anonymous fall back to the default "Anonymous".'%self.mail_lang)
+            logger.warn('[smtp] No anonymous for such language: %s. Anonymous fell back to the default "Anonymous".' % self.mail_lang)
             self.no_name = "Anonymous"
+        logger.info("[smtp] You are now using language {0}. To change anonymous from {0} to your desired string in the current language, set 'anonymous_{0} = your desired string' in the [smtp] section of the server conf.".format(self.mail_lang))
         
         # test SMTP connectivity
         try:
@@ -130,16 +130,15 @@ class SMTP(object):
                 jinjaenv.get_template(com_ori)
             except jinja2_exceptions.TemplateSyntaxError as err:
                 logger.warn("[smtp] Wrong format. %s"%err)
-                logger.warn("[smtp] Fallback to the default")
+                logger.warn("[smtp] Default template fell back to the one for en.")
             except jinja2_exceptions.TemplateNotFound:
-                logger.warn("[smtp] No default template for such language: %s. Fall back to the default." % self.mail_lang)
+                logger.warn("[smtp] No default template for such language: %s. Default template fell back to the one for en." % self.mail_lang)
             except Exception as err:
                 logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
                 for er in err.args:
                     logger.warn(      "%s" % er)
-                logger.warn("[smtp] Fallback to the default")
+                logger.warn("[smtp] Default template fell back to the one for en.")
             else:
-                logger.warn("[smtp] You are now using the language {lang} for the mail. To change the anonymous from '{no_name}' to something else, you can set a desired string for the option anonymous_{lang} in the [smtp] section of the server conf. (ex. anonymous)" .format(lang=self.mail_lang, no_name=self.no_name))
                 com_ori_admin = com_ori_user = os.path.basename(com_ori)
 
         if self.isso.conf.get("smtp", "mail_template"):
@@ -149,13 +148,14 @@ class SMTP(object):
                     jinjaenv.get_template(com_ori)
                 except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[smtp] Wrong format. %s"%err)
-                    logger.warn("[smtp] Fallback to the default")
+                    logger.warn("[smtp] The template fell back to the default")
                 except Exception as err:
                     logger.warn("[smtp] %s"  % typeof(err))
                     for er in err.args:
                         logger.warn(      "%s" % er)
-                    logger.warn("[smtp] Fallback to the default")
+                    logger.warn("[smtp] The template fell back to the default")
                 else:
+                    logger.info("[smtp] You are now using your customized templates in {0}".format(com_ori))
                     com_ori_admin = com_ori_user = os.path.basename(com_ori)
                     temp_path = os.path.dirname(com_ori)
             elif os.path.isdir(com_ori):
@@ -164,22 +164,25 @@ class SMTP(object):
                     jinjaenv.get_template(os.path.join(com_ori, "user.%s"%self.mail_format))
                 except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[smtp] Wrong format. %s" % err)
-                    logger.warn("[smtp] Fallback to the default")
+                    logger.warn("[smtp] The template fell back to the default")
                 except jinja2_exceptions.TemplateNotFound:
                     logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'.".format(c_path=com_ori,format=self.mail_format)
                                 )
-                    logger.warn("[smtp] Fallback to the default")
+                    logger.warn("[smtp] The template fell back to the default")
                 except Exception as err:
                     logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
                     for er in err.args:
                         logger.warn(      "%s" % er)
-                    logger.warn("[smtp] Fallback to the default")
+                    logger.warn("[smtp] The template fell back to the default")
                 else:
+                    logger.info("[smtp] You are now using your customized templates in {0}, 'admin.{1}' for admin notification, 'user.{1}' for reply notication to the subcribers".format(com_ori,self.mail_format))
                     com_ori_admin = "admin.%s" % self.mail_format
                     com_ori_user = "user.%s"% self.mail_format
                     temp_path = com_ori
             else:
-                logger.warn("[smtp] %s does not exist. Fall back to the default."%com_ori)
+                logger.warn("[smtp] %s does not exist. Fell back to the default template."%com_ori)
+        else:
+            logger.info("[smtp] You are now using the default template.")
 
         jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader(temp_path))
 
