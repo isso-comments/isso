@@ -177,7 +177,7 @@ class SMTP(object):
                 else:
                     com_ori_admin = "admin.%s" % self.mail_format
                     com_ori_user = "user.%s"% self.mail_format
-                    temp_path = os.path.dirname(com_ori)
+                    temp_path = com_ori
             else:
                 logger.warn("[smtp] %s does not exist. Fall back to the default."%com_ori)
 
