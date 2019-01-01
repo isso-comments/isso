@@ -121,31 +121,42 @@ class SMTP(object):
         jinjaenv=Environment(loader=FileSystemLoader("/"))
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
-        default_com_temp = os.path.join(temp_path, "comment.%s" % self.mail_format)  
+        com_ori = os.path.join(temp_path, "comment.%s" % self.mail_format)  
+        com_ori_admin = com_ori_user = com_ori
         
-        if self.mail_lang == "en":
-            com_ori = default_com_temp
-        else:
+        if self.mail_lang != "en":
             com_ori = os.path.join(temp_path, "comment_%s.%s" % (self.mail_lang, self.mail_format))
             try:
                 jinjaenv.get_template(com_ori)
             except:
-                logger.warn("[smtp] No such language: %s. Fall back to the default."%self.mail_lang)
-                com_ori = default_com_temp
-            default_com_temp = com_ori
+                logger.warn("[smtp] No such language: %s. Fall back to the default." % self.mail_lang)
+            else:
+                com_ori_admin = com_ori_user = com_ori
 
         if self.isso.conf.get("smtp", "mail_template"):
             com_ori = self.isso.conf.get("smtp", "mail_template")
-            try:
-                jinjaenv.get_template(com_ori)
-            except:
-                logger.warn("[smtp] No such template: %s. Fall back to the default." %com_ori)
-                com_ori = default_com_temp
-        
+            if os.path.isfile(com_ori):
+                try:
+                    jinjaenv.get_template(com_ori)
+                except:
+                    logger.warn("[smtp] No such template: %s. Fall back to the default." %com_ori)
+                else:
+                    com_ori_admin = com_ori_user = com_ori
+            elif os.path.isdir(com_ori):
+                try:
+                    jinjaenv.get_template(os.path.join(com_ori, "admin.%s"%self.mail_format))
+                    jinjaenv.get_template(os.path.join(com_ori, "user.%s"%self.mail_format))
+                except:
+                    logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'. Fall back to the default.".format(c_path=com_ori,format=self.mail_format)
+                                )
+                else:
+                    com_ori_admin = os.path.join(com_ori, "admin.%s"%self.mail_format)
+                    com_ori_user = os.path.join(com_ori, "user.%s"%self.mail_format)
+
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
-            com_temp = jinjaenv.get_template(com_ori).render(author = comment["author"] or self.no_name,
+            com_temp = jinjaenv.get_template(com_ori_admin).render(author = comment["author"] or self.no_name,
                                                              email = comment["email"],
                                                              admin = admin,
                                                              mode = comment["mode"],
@@ -158,11 +169,10 @@ class SMTP(object):
                                                              thread_link = local("origin") + thread["uri"],
                                                              thread_title = thread["title"]
                                                              )
-            
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
-            com_temp = jinjaenv.get_template(com_ori).render(author = comment["author"] or self.no_name,
+            com_temp = jinjaenv.get_template(com_ori_user).render(author = comment["author"] or self.no_name,
                                                              email = comment["email"],
                                                              admin = admin,
                                                              comment = comment["text"],
