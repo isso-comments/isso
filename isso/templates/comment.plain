@@ -2,8 +2,7 @@
 
 {{comment}}
 
-{% if admin %}{% if website %}User's URL: {{website}}
-{% else %}{% endif %}IP address: {{ip}}{% endif %}
+{% if admin %}{% if website %}User's URL: {{website}}\n{% endif %}IP address: {{ip}}{% endif %}
 
 Link to comment: {{com_link}}
 
