@@ -118,12 +118,12 @@ class SMTP(object):
         yield "comments.activate", self.notify_activated
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
-
+        
         jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader("/"))
         
-        temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
-        com_ori = os.path.join(temp_path, "comment.%s" % self.mail_format)  
-        com_ori_admin = com_ori_user = com_ori
+        temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")  
+        temp_path_fallback = temp_path
+        com_ori_admin = com_ori_user = "comment.%s" % self.mail_format
         
         if self.mail_lang != "en":
             com_ori = os.path.join(temp_path, "comment_%s.%s" % (self.mail_lang, self.mail_format))
@@ -131,14 +131,16 @@ class SMTP(object):
                 jinjaenv.get_template(com_ori)
             except jinja2_exceptions.TemplateSyntaxError as err:
                 logger.warn("[smtp] Wrong format. %s"%err)
+                logger.warn("[smtp] Fallback to the default")
             except jinja2_exceptions.TemplateNotFound:
                 logger.warn("[smtp] No settings for such language: %s. Fall back to the default." % self.mail_lang)
             except Exception as err:
                 logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
                 for er in err.args:
                     logger.warn(      "%s" % er)
+                logger.warn("[smtp] Fallback to the default")
             else:
-                com_ori_admin = com_ori_user = com_ori
+                com_ori_admin = com_ori_user = os.path.basename(com_ori)
 
         if self.isso.conf.get("smtp", "mail_template"):
             com_ori = self.isso.conf.get("smtp", "mail_template")
@@ -147,30 +149,39 @@ class SMTP(object):
                     jinjaenv.get_template(com_ori)
                 except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[smtp] Wrong format. %s"%err)
+                    logger.warn("[smtp] Fallback to the default")
                 except Exception as err:
                     logger.warn("[smtp] %s"  % typeof(err))
                     for er in err.args:
                         logger.warn(      "%s" % er)
+                    logger.warn("[smtp] Fallback to the default")
                 else:
-                    com_ori_admin = com_ori_user = com_ori
+                    com_ori_admin = com_ori_user = os.path.basename(com_ori)
+                    temp_path = os.path.dirname(com_ori)
             elif os.path.isdir(com_ori):
                 try:
                     jinjaenv.get_template(os.path.join(com_ori, "admin.%s"%self.mail_format))
                     jinjaenv.get_template(os.path.join(com_ori, "user.%s"%self.mail_format))
                 except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[smtp] Wrong format. %s" % err)
+                    logger.warn("[smtp] Fallback to the default")
                 except jinja2_exceptions.TemplateNotFound:
-                    logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'. Fall back to the default.".format(c_path=com_ori,format=self.mail_format)
+                    logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'.".format(c_path=com_ori,format=self.mail_format)
                                 )
+                    logger.warn("[smtp] Fallback to the default")
                 except Exception as err:
                     logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
                     for er in err.args:
                         logger.warn(      "%s" % er)
+                    logger.warn("[smtp] Fallback to the default")
                 else:
-                    com_ori_admin = os.path.join(com_ori, "admin.%s"%self.mail_format)
-                    com_ori_user = os.path.join(com_ori, "user.%s"%self.mail_format)
+                    com_ori_admin = "admin.%s"
+                    com_ori_user = "user.%s"
+                    temp_path = os.path.dirname(com_ori)
             else:
                 logger.warn("[smtp] %s does not exist. Fall back to the default."%com_ori)
+
+        jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader(temp_path))
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
