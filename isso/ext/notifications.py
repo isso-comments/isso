@@ -118,7 +118,7 @@ class SMTP(object):
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
         
-        jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader("/"))
+        jinjaenv=Environment(loader=FileSystemLoader("/"))
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")  
         com_ori_admin = com_ori_user = "comment.%s" % self.mail_format
@@ -183,7 +183,7 @@ class SMTP(object):
         else:
             logger.info("[smtp] You are now using the default template.")
 
-        jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader(temp_path))
+        jinjaenv=Environment(loader=FileSystemLoader(temp_path))
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
