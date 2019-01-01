@@ -10,12 +10,11 @@ import os.path
 
 import socket
 import smtplib
+import jinja2
 
 from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
-
-from jinja2 import Environment, FileSystemLoader
 
 try:
     from urllib.parse import quote
@@ -118,7 +117,7 @@ class SMTP(object):
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
-        jinjaenv=Environment(loader=FileSystemLoader("/"))
+        jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader("/"))
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")
         com_ori = os.path.join(temp_path, "comment.%s" % self.mail_format)  
