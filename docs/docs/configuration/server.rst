@@ -255,6 +255,11 @@ mail_template
 	For users who set mail_format = html, see 
 	`isso/isso/templates/comment.html` or 
 	`isso/isso/templates/comment_<iso639-1-code>.html`. 
+	It's also possible to set the option to a directory. Then it'll check 
+	if `admin.html` and `user.html` (`admin.plain` and `user.plain` for plain
+	text users) in that directory are available to be used for the format
+	of the mail intended to be sent to admin and user, individually.
+	The log will tell you what happened when the error occurs.
 
 Guard
 -----

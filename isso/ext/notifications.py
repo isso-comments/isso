@@ -122,7 +122,6 @@ class SMTP(object):
         jinjaenv=jinja2.Environment(loader=jinja2.FileSystemLoader("/"))
         
         temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")  
-        temp_path_fallback = temp_path
         com_ori_admin = com_ori_user = "comment.%s" % self.mail_format
         
         if self.mail_lang != "en":
