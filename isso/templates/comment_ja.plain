@@ -4,7 +4,6 @@
 
 {% if admin %}{% if website %}ユーザーのURL： {{website}}
 {% endif %}IPアドレス： {{ip}}{% endif %}
-
 コメントへのリンク： {{com_link}}
 
 ---
