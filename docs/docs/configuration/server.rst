@@ -233,7 +233,7 @@ mail_language
 	specify the language of the mail format by its `ISO 639-1<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) 
 	code, default to `en`.
 	
-mail_format = plain
+mail_format
 	specify mail format to use, available options: plain, html. Default: plain
 
 mail_title_admin
