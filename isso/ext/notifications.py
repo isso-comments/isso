@@ -86,10 +86,10 @@ class SMTP(object):
         self.mail_format = self.isso.conf.get("smtp", "mail_format")
         
         try:
-            self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % lang)
+            self.no_name = self.isso.conf.get("smtp", "anonymous_%s" % self.mail_lang)
         except:
             if self.mail_lang != 'en':
-                logger.warn('[smtp] No such language: %s. Anonymous fall back to the default "Anonymous".'%lang)
+                logger.warn('[smtp] No such language: %s. Anonymous fall back to the default "Anonymous".'%self.mail_lang)
             self.no_name = "Anonymous"
         
         # test SMTP connectivity
@@ -130,7 +130,7 @@ class SMTP(object):
             try:
                 jinjaenv.get_template(com_ori)
             except:
-                logger.warn("[smtp] No such language: %s. Fall back to the default."%lang)
+                logger.warn("[smtp] No such language: %s. Fall back to the default."%self.mail_lang)
                 com_ori = default_com_temp
             default_com_temp = com_ori
 
