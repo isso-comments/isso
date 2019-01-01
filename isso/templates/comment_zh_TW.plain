@@ -3,9 +3,8 @@
 {{comment}}
 
 {% if admin %}{% if website %}用戶網址： {{website}}
-{% endif %}IP地址： {{ip}}{% endif %}
-
-評論鏈路： {{com_link}}
+{% endif %}IP地址： {{ip}}
+{% endif %}評論鏈路： {{com_link}}
 
 ---
 {% if admin %}刪除評論： {{del_link}}

@@ -3,8 +3,8 @@
 {{comment}}
 
 {% if admin %}{% if website %}User's URL: {{website}}
-{% endif %}IP address: {{ip}}{% endif %}
-Link to comment: {{com_link}}
+{% endif %}IP address: {{ip}}
+{% endif %}Link to comment: {{com_link}}
 
 ---
 {% if admin %}Delete comment: {{del_link}}

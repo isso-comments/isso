@@ -3,8 +3,8 @@
 {{comment}}
 
 {% if admin %}{% if website %}ユーザーのURL： {{website}}
-{% endif %}IPアドレス： {{ip}}{% endif %}
-コメントへのリンク： {{com_link}}
+{% endif %}IPアドレス： {{ip}}
+{% endif %}コメントへのリンク： {{com_link}}
 
 ---
 {% if admin %}コメントを削除する： {{del_link}}
