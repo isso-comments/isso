@@ -128,8 +128,10 @@ class SMTP(object):
             com_ori = os.path.join(temp_path, "comment_%s.%s" % (self.mail_lang, self.mail_format))
             try:
                 jinjaenv.get_template(com_ori)
-            except:
-                logger.warn("[smtp] No such language: %s. Fall back to the default." % self.mail_lang)
+            except jinja2.exceptions.TemplateSyntaxError as err:
+                logger.warn("[smtp] Wrong format. %s"%err)
+            except jinja2.exceptions.TemplateNotFound:
+                logger.warn("[smtp] No settings for such language: %s. Fall back to the default." % self.mail_lang)
             else:
                 com_ori_admin = com_ori_user = com_ori
 
@@ -138,7 +140,9 @@ class SMTP(object):
             if os.path.isfile(com_ori):
                 try:
                     jinjaenv.get_template(com_ori)
-                except:
+                except jinja2.exceptions.TemplateSyntaxError as err:
+                    logger.warn("[smtp] Wrong format. %s"%err)
+                except jinja2.exceptions.TemplateNotFound:
                     logger.warn("[smtp] No such template: %s. Fall back to the default."  % com_ori)
                 else:
                     com_ori_admin = com_ori_user = com_ori
@@ -146,9 +150,9 @@ class SMTP(object):
                 try:
                     jinjaenv.get_template(os.path.join(com_ori, "admin.%s"%self.mail_format))
                     jinjaenv.get_template(os.path.join(com_ori, "user.%s"%self.mail_format))
-                except TemplateSyntaxError as err:
+                except jinja2.exceptions.TemplateSyntaxError as err:
                     logger.warn("[smtp] Wrong format. %s"%err)
-                except:
+                except jinja2.exceptions.TemplateNotFound:
                     logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'. Fall back to the default.".format(c_path=com_ori,format=self.mail_format)
                                 )
                 else:
