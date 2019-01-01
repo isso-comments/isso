@@ -15,6 +15,8 @@ import jinja2
 from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
+from jinja2 import Environment, FileSystemLoader
+import jinja2.exceptions as jinja2_exceptions
 
 try:
     from urllib.parse import quote
@@ -127,10 +129,14 @@ class SMTP(object):
             com_ori = os.path.join(temp_path, "comment_%s.%s" % (self.mail_lang, self.mail_format))
             try:
                 jinjaenv.get_template(com_ori)
-            except jinja2.exceptions.TemplateSyntaxError as err:
+            except jinja2_exceptions.TemplateSyntaxError as err:
                 logger.warn("[smtp] Wrong format. %s"%err)
-            except jinja2.exceptions.TemplateNotFound:
+            except jinja2_exceptions.TemplateNotFound:
                 logger.warn("[smtp] No settings for such language: %s. Fall back to the default." % self.mail_lang)
+            except Exception as err:
+                logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
+                for er in err.args:
+                    logger.warn(      "%s" % er)
             else:
                 com_ori_admin = com_ori_user = com_ori
 
@@ -139,21 +145,27 @@ class SMTP(object):
             if os.path.isfile(com_ori):
                 try:
                     jinjaenv.get_template(com_ori)
-                except jinja2.exceptions.TemplateSyntaxError as err:
+                except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[smtp] Wrong format. %s"%err)
-                except jinja2.exceptions.TemplateNotFound:
-                    logger.warn("[smtp] No such template: %s. Fall back to the default."  % com_ori)
+                except Exception as err:
+                    logger.warn("[smtp] %s"  % typeof(err))
+                    for er in err.args:
+                        logger.warn(      "%s" % er)
                 else:
                     com_ori_admin = com_ori_user = com_ori
             elif os.path.isdir(com_ori):
                 try:
                     jinjaenv.get_template(os.path.join(com_ori, "admin.%s"%self.mail_format))
                     jinjaenv.get_template(os.path.join(com_ori, "user.%s"%self.mail_format))
-                except jinja2.exceptions.TemplateSyntaxError as err:
-                    logger.warn("[smtp] Wrong format. %s"%err)
-                except jinja2.exceptions.TemplateNotFound:
+                except jinja2_exceptions.TemplateSyntaxError as err:
+                    logger.warn("[smtp] Wrong format. %s" % err)
+                except jinja2_exceptions.TemplateNotFound:
                     logger.warn("[smtp] No usable templates found in {c_path}, the template used for email notification sent to admin should be named 'admin.{format}', and the template for reply notification to the subcribed users should be named 'user.{format}'. Fall back to the default.".format(c_path=com_ori,format=self.mail_format)
                                 )
+                except Exception as err:
+                    logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
+                    for er in err.args:
+                        logger.warn(      "%s" % er)
                 else:
                     com_ori_admin = os.path.join(com_ori, "admin.%s"%self.mail_format)
                     com_ori_user = os.path.join(com_ori, "user.%s"%self.mail_format)
