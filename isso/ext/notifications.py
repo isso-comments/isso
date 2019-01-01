@@ -126,7 +126,7 @@ class SMTP(object):
         if self.mail_lang == "en":
             com_ori = default_com_temp
         else:
-            com_ori = os.path.join(temp_path, "comment_%s.%s" % (lang, self.mail_format))
+            com_ori = os.path.join(temp_path, "comment_%s.%s" % (self.mail_lang, self.mail_format))
             try:
                 jinjaenv.get_template(com_ori)
             except:
