@@ -72,7 +72,7 @@ export your data. It has been reported that WordPress may generate broken XML.
 Try to repair the file using ``xmllint`` before you continue with the import.
 
 For any other comment system you can use the generic JSON format. It's up to you
-to fit the format (see isso/tests/generic.json for an example):
+to fit the format (see generic.json_ for an example):
 
 .. code-block::
     A list of threads, each item being a dict with the following data:
@@ -97,11 +97,12 @@ Now import the XML or JSON dump:
 
 .. code-block:: sh
 
-    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress|generic] disqus-or-wordpress-or-generic.[xml|json]
+    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress|generic] comment-dump.[xml|json]
     [100%]  53 threads, 192 comments
 
 .. _Disqus: https://disqus.com/
 .. _WordPress: https://wordpress.org/
+.. _generic.json: https://github.com/posativ/isso/blob/master/isso/tests/generic.json
 
 Running Isso
 ------------
