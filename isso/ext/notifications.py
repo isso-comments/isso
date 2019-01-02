@@ -189,33 +189,33 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
             com_temp = jinjaenv.get_template(com_ori_admin).render(author = comment["author"] or self.no_name,
-                                                             email = comment["email"],
-                                                             admin = admin,
-                                                             mode = comment["mode"],
-                                                             comment = comment["text"],
-                                                             website = comment["website"],
-                                                             ip = comment["remote_addr"],
-                                                             com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                             del_link = uri + "/delete/" + key,
-                                                             act_link = uri + "/activate/" + key,
-                                                             thread_link = local("origin") + thread["uri"],
-                                                             thread_title = thread["title"]
-                                                             )
+                                                                   email = comment["email"],
+                                                                   admin = admin,
+                                                                   mode = comment["mode"],
+                                                                   comment = comment["text"],
+                                                                   website = comment["website"],
+                                                                   ip = comment["remote_addr"],
+                                                                   com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                                   del_link = uri + "/delete/" + key,
+                                                                   act_link = uri + "/activate/" + key,
+                                                                   thread_link = local("origin") + thread["uri"],
+                                                                   thread_title = thread["title"]
+                                                                   )
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
             com_temp = jinjaenv.get_template(com_ori_user).render(author = comment["author"] or self.no_name,
-                                                             email = comment["email"],
-                                                             admin = admin,
-                                                             comment = comment["text"],
-                                                             website = comment["website"],
-                                                             ip = comment["remote_addr"],
-                                                             parent_link = local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
-                                                             com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                             unsubscribe = uri + "/unsubscribe/" + quote(recipient) + "/" + key,
-                                                             thread_link = local("origin") + thread["uri"],
-                                                             thread_title = thread["title"]
-                                                             )
+                                                                  email = comment["email"],
+                                                                  admin = admin,
+                                                                  comment = comment["text"],
+                                                                  website = comment["website"],
+                                                                  ip = comment["remote_addr"],
+                                                                  parent_link = local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                                                                  com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                                                                  unsubscribe = uri + "/unsubscribe/" + quote(recipient) + "/" + key,
+                                                                  thread_link = local("origin") + thread["uri"],
+                                                                  thread_title = thread["title"]
+                                                                  )
 
         return com_temp
 

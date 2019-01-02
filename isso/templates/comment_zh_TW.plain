@@ -12,3 +12,4 @@
 {% endif %}
 {% else %}退訂： {{unsubscribe}}
 {% endif %}
+{# See comment_plain.txt for manual #}
