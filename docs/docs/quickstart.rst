@@ -72,9 +72,10 @@ export your data. It has been reported that WordPress may generate broken XML.
 Try to repair the file using ``xmllint`` before you continue with the import.
 
 For any other comment system you can use the generic JSON format. It's up to you
-to fit the format (see generic.json_ for an example):
+to fit to the format (see generic.json_ for an example):
 
 .. code-block::
+
     A list of threads, each item being a dict with the following data:
 
         - id: a text representing the unique thread id
