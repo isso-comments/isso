@@ -1,0 +1,88 @@
+<!-- 
+ ========================================================================
+ Variables usable under all situations:
+ ========================================================================
+ {{thread_link}} : self-explainary
+ {{thread_title}} : self-explainary
+ {{author}} : The comment author
+ {{email}} : The comment author's email
+ {{comment}} : The comment content
+ {{website}} : The comment author's website address
+ {{ip}} : The author's IP
+ ========================================================================
+ Usable variables only under an admin situation:
+   EXAMPLE:  
+   {% if admin %}
+   ...(USE HERE)...
+   {% else %}
+   ...(Not here)...
+   {% endif %}
+ ========================================================================
+ {{com_link}} : The comment link
+ {{del_link}} : The link to delete the comment
+ {{act_link}} : The link to activate the comment
+                (Only available when the comment is waiting for approval,
+                 For example:
+                 {% if admin %}
+                 ...
+                 {% if mode == 2 %}
+                 ...(USE HERE)...
+                 {% endif %}
+                 ...
+                 {% endif %}
+                )
+ ========================================================================
+ Usable variables only under a reply notification situation:
+   EXAMPLE:  
+   {% if admin %}
+   ...(Not here)...
+   {% else %}
+   ...(USE HERE)...
+   {% endif %}
+ ======================================================================== 
+ {{parent_link}} : The link of the comment the comment author replies to,
+                   in other words, the notification receiver's comment
+ {{com_link}} : The comment link, in other words, the link of the reply 
+                to the receiver
+ {{unsubscribe}} : The link to unsubcribe from the subcription
+ ========================================================================
+ Styling suggestion: Use as much inline css as you can, 'cause in most web
+                     mails only inline css will be rendered. Only receiving
+                     through imap remains the <style> tag.
+--> 
+
+
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} hat geschrieben:</p>
+
+<p>{{comment}}</p>
+
+<p>
+	{% if admin %}
+	{% if website %}
+	URL des Benutzers: <a href="{{website}}">{{website}}</a>
+	<br>
+	{% endif %}
+	IP Adresse: {{ip}}
+	<br>
+	{% endif %}
+
+	Link zum Kommentar: <a href="{{com_link}}">Hier klicken</a>
+</p>
+
+<hr>
+
+<p>
+
+	{% if admin %}
+	Kommentar löschen: <a href="{{del_link}}">Hier klicken</a>
+	<br>
+	{% if mode == 2 %}
+	Kommentar freischalten: <a href="{{act_link}}">Hier klicken</a>
+	{% endif %}
+	
+	{% else %}
+	Keine E-Mails mehr von dieser Konversation bekommen (abmelden): <a href="{{unsubscribe}}">Hier klicken</a>
+	{% endif %}
+
+</p>
+
