@@ -249,7 +249,7 @@ class SMTP(object):
                                                                                    receiver = parent_comment["author"] or self.no_name,
                                                                                    replier = comment["author"] or self.no_name)
                     self.sendmail(subject, body, thread, comment, to=email)
-                    logger.info("[smtp] Sending notification mail titled '{0}' to {1}".format(subject,to))
+                    logger.info("[smtp] Sending notification mail titled '{0}' to {1}".format(subject,email))
                     notified.append(email)
 
     def sendmail(self, subject, body, thread, comment, to=None):
