@@ -225,7 +225,7 @@ class SMTP(object):
             mailtitle_admin = self.isso.conf.get("smtp", "mail_title_admin").format(title = thread["title"],
                                                                                     replier = comment["author"] or self.no_name)
             self.sendmail(mailtitle_admin, body, thread, comment)
-            logger.info("[smtp] Sent notification mail titled '{0}' to the admin".format(mailtitle_admin))
+            logger.info("[smtp] Sending notification mail titled '{0}' to the admin".format(mailtitle_admin))
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -249,7 +249,7 @@ class SMTP(object):
                                                                                    receiver = parent_comment["author"] or self.no_name,
                                                                                    replier = comment["author"] or self.no_name)
                     self.sendmail(subject, body, thread, comment, to=email)
-                    logger.info("[smtp] Sent notification mail titled '{0}' to {1}".format(subject,to))
+                    logger.info("[smtp] Sending notification mail titled '{0}' to {1}".format(subject,to))
                     notified.append(email)
 
     def sendmail(self, subject, body, thread, comment, to=None):
@@ -279,8 +279,10 @@ class SMTP(object):
             try:
                 self._sendmail(subject, body, to)
             except smtplib.SMTPConnectError:
+                logger.info("[smtp] The notification mail hasn't been sent to %s due to SMTPConnectError, trying in 1 minute unless no tries left. (Tries so far: %d / 5)" % (to, x+1))
                 time.sleep(60)
             else:
+                logger.info("[smtp] The notification mail has been sent to %s successfully." % to)
                 break
 
 
