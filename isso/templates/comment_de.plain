@@ -1,0 +1,15 @@
+{{author}}{% if email %} <{{ email }}>{% endif %} hat geschrieben:
+
+{{comment}}
+
+{% if admin %}{% if website %}URL des Benutzers: {{website}}
+{% endif %}IP Adresse: {{ip}}
+{% endif %}Link zum Kommentar: {{com_link}}
+
+---
+{% if admin %}Kommentar löschen: {{del_link}}
+{% if mode == 2 %}Kommentar freischalten: {{act_link}}
+{% endif %}
+{% else %}Keine E-Mails mehr von dieser Konversation bekommen (abmelden): {{unsubscribe}}
+{% endif %}
+{# See comment_plain.txt for manual #}
