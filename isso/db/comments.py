@@ -34,10 +34,10 @@ class Comments:
             '    created FLOAT NOT NULL, modified FLOAT, mode INTEGER, remote_addr VARCHAR,',
             '    text VARCHAR, author VARCHAR, email VARCHAR, website VARCHAR,',
             '    likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL,',
-            '    notification INTEGER NOT NULL DEFAULT 0);'])
+            '    notification INTEGER DEFAULT 0);'])
         try:
-            self.db.execute(['ALTER TABLE comments ADD COLUMN notification INTEGER NOT NULL DEFAULT 0;'])
-        except:
+            self.db.execute(['ALTER TABLE comments ADD COLUMN notification INTEGER DEFAULT 0;'])
+        except Exception:
             pass
 
     def add(self, uri, c):
@@ -137,8 +137,7 @@ class Comments:
                                          for f in fields_comments])
         sql_threads_fields = ', '.join(['threads.' + f
                                         for f in fields_threads])
-        sql = ['SELECT ' + sql_comments_fields + ', ' +
-               sql_threads_fields + ' '
+        sql = ['SELECT ' + sql_comments_fields + ', ' + sql_threads_fields + ' '
                'FROM comments INNER JOIN threads '
                'ON comments.tid=threads.id '
                'WHERE comments.mode = ? ']

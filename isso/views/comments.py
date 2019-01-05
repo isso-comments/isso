@@ -1067,8 +1067,10 @@ class API(object):
         )
 
     def login(self, env, req):
+        if not self.isso.conf.getboolean("admin", "enabled"):
+            return render_template('disabled.html')
         data = req.form
-        password = self.isso.conf.get("general", "admin_password")
+        password = self.isso.conf.get("admin", "password")
         if data['password'] and data['password'] == password:
             response = redirect(re.sub(
                 r'/login$',
@@ -1087,13 +1089,15 @@ class API(object):
 
     def admin(self, env, req):
         isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+        if not self.isso.conf.getboolean("admin", "enabled"):
+            return render_template('disabled.html')
         try:
             data = self.isso.unsign(req.cookies.get('admin-session', ''),
                                     max_age=60 * 60 * 24)
         except BadSignature:
-            return render_template('login.html',isso_host_script=isso_host_script)
+            return render_template('login.html', isso_host_script=isso_host_script)
         if not data or not data['logged']:
-            return render_template('login.html',isso_host_script=isso_host_script)
+            return render_template('login.html', isso_host_script=isso_host_script)
         page_size = 100
         page = int(req.args.get('page', 0))
         order_by = req.args.get('order_by', None)

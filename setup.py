@@ -5,8 +5,8 @@ import sys
 
 from setuptools import setup, find_packages
 
-requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib<0.9999999',
-            'werkzeug>=0.9']
+requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
+            'werkzeug>=0.9', 'bleach']
 
 if sys.version_info < (2, 7):
     raise SystemExit("Python 2 versions < 2.7 are not supported.")
@@ -15,7 +15,7 @@ elif (3, 0) <= sys.version_info < (3, 4):
 
 setup(
     name='isso',
-    version='0.10.7.dev0',
+    version='0.11.2dev0',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),

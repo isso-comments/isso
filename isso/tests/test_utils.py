@@ -19,6 +19,18 @@ class TestUtils(unittest.TestCase):
         for (addr, anonymized) in examples:
             self.assertEqual(utils.anonymize(addr), anonymized)
 
+    def test_str(self):
+        # Accept a str on both Python 2 and Python 3, for
+        # convenience.
+        examples = [
+            ('12.34.56.78', u'12.34.56.0'),
+            ('1234:5678:90ab:cdef:fedc:ba09:8765:4321',
+             '1234:5678:90ab:0000:0000:0000:0000:0000'),
+            ('::ffff:127.0.0.1', u'127.0.0.0')]
+
+        for (addr, anonymized) in examples:
+            self.assertEqual(utils.anonymize(addr), anonymized)
+
 
 class TestParse(unittest.TestCase):
 

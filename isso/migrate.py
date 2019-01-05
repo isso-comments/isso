@@ -102,15 +102,17 @@ class Disqus(object):
         res = defaultdict(list)
 
         for post in tree.findall(Disqus.ns + 'post'):
+            email = post.find('{0}author/{0}email'.format(Disqus.ns))
+            ip = post.find(Disqus.ns + 'ipAddress')
 
             item = {
                 'dsq:id': post.attrib.get(Disqus.internals + 'id'),
                 'text': post.find(Disqus.ns + 'message').text,
                 'author': post.find('{0}author/{0}name'.format(Disqus.ns)).text,
-                'email': post.find('{0}author/{0}email'.format(Disqus.ns)).text,
+                'email': email.text if email else '',
                 'created': mktime(strptime(
                     post.find(Disqus.ns + 'createdAt').text, '%Y-%m-%dT%H:%M:%SZ')),
-                'remote_addr': anonymize(post.find(Disqus.ns + 'ipAddress').text),
+                'remote_addr': anonymize(ip.text if ip else '0.0.0.0'),
                 'mode': 1 if post.find(Disqus.ns + "isDeleted").text == "false" else 4
             }
 
@@ -150,10 +152,11 @@ class Disqus(object):
                 if post.attrib.get(Disqus.internals + "id") not in orphans:
                     continue
 
+                email = post.find("{0}author/{0}email".format(Disqus.ns))
                 print(" * {0} by {1} <{2}>".format(
                     post.attrib.get(Disqus.internals + "id"),
                     post.find("{0}author/{0}name".format(Disqus.ns)).text,
-                    post.find("{0}author/{0}email".format(Disqus.ns)).text))
+                    email.text if email else ""))
                 print(textwrap.fill(post.find(Disqus.ns + "message").text,
                                     initial_indent="  ", subsequent_indent="  "))
                 print("")
@@ -248,7 +251,7 @@ class WordPress(object):
 
     @classmethod
     def detect(cls, peek):
-        return re.compile("http://wordpress.org/export/(1\.\d)/").search(peek)
+        return re.compile("http://wordpress.org/export/(1\\.\\d)/").search(peek)
 
 
 class Generic(object):
