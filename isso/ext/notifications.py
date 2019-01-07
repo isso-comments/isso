@@ -133,7 +133,7 @@ class SMTP(object):
             except jinja2_exceptions.TemplateNotFound:
                 logger.warn("[smtp] No default template for such language: %s. Default template fell back to the one for en." % self.mail_lang)
             except Exception as err:
-                logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
+                logger.warn("[smtp] Some error about jinja2. %s"  % type(err))
                 for er in err.args:
                     logger.warn(      "%s" % er)
                 logger.warn("[smtp] Default template fell back to the one for en.")
@@ -149,7 +149,7 @@ class SMTP(object):
                     logger.warn("[smtp] Wrong format. %s"%err)
                     logger.warn("[smtp] The template fell back to the default")
                 except Exception as err:
-                    logger.warn("[smtp] %s"  % typeof(err))
+                    logger.warn("[smtp] %s"  % type(err))
                     for er in err.args:
                         logger.warn(      "%s" % er)
                     logger.warn("[smtp] The template fell back to the default")
@@ -169,7 +169,7 @@ class SMTP(object):
                                 )
                     logger.warn("[smtp] The template fell back to the default")
                 except Exception as err:
-                    logger.warn("[smtp] Some error about jinja2. %s"  % typeof(err))
+                    logger.warn("[smtp] Some error about jinja2. %s"  % type(err))
                     for er in err.args:
                         logger.warn(      "%s" % er)
                     logger.warn("[smtp] The template fell back to the default")
