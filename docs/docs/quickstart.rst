@@ -62,7 +62,7 @@ Migration
 
 Isso provides a tool for importing comments from Disqus_ or WordPress_.
 You can also import comments form any other comment system, but this topic is more
-complex and covered in :doc:`advanced migration <extra/advanced-migration>`.
+complex and covered in :doc:`advanced migration <extras/advanced-migration>`.
 
 To export your comments from Disqus, log into Disqus, go to your website, click
 on *Discussions* and select the *Export* tab. You'll receive an email with your
