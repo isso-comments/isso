@@ -60,8 +60,9 @@ For more options, see :doc:`server <configuration/server>` and :doc:`client
 Migration
 ---------
 
-You can import comments from Disqus_ or WordPress_. You can also import comments
-issued from any comment system but you have to stick a specific json format.
+Isso provides a tool for importing comments from Disqus_ or WordPress_.
+You can also import comments form any other comment system, but this topic is more
+complex and covered in :doc:`advanced migration <extra/advanced-migration>`.
 
 To export your comments from Disqus, log into Disqus, go to your website, click
 on *Discussions* and select the *Export* tab. You'll receive an email with your
@@ -71,39 +72,15 @@ To export comments from your previous WordPress installation, go to *Tools*,
 export your data. It has been reported that WordPress may generate broken XML.
 Try to repair the file using ``xmllint`` before you continue with the import.
 
-For any other comment system you can use the generic JSON format. It's up to you
-to fit to the format (see generic.json_ for an example):
-
-.. code-block::
-
-    A list of threads, each item being a dict with the following data:
-
-        - id: a text representing the unique thread id
-        - title: the title of the thread
-        - comments: the list of comments
-
-    Each item in that list of comments is a dict with the following data:
-
-        - id: an integer with the unique id of the comment inside the thread
-          (it can be repeated among different threads); this will be used to
-          order the comment inside the thread
-        - author: the author's name
-        - email: the author's email
-        - website: the author's website
-        - remote_addr: the author's IP
-        - created: a timestamp, in the format "%Y-%m-%d %H:%M:%S"
-
-
-Now import the XML or JSON dump:
+Now import the XML dump:
 
 .. code-block:: sh
 
-    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress|generic] comment-dump.[xml|json]
+    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress] disqus-or-wordpress.xml
     [100%]  53 threads, 192 comments
 
 .. _Disqus: https://disqus.com/
 .. _WordPress: https://wordpress.org/
-.. _generic.json: https://github.com/posativ/isso/blob/master/isso/tests/generic.json
 
 Running Isso
 ------------
