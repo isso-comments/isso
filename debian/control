@@ -22,7 +22,6 @@ Homepage: http://posativ.org/isso/
 Vcs-Git: https://salsa.debian.org/jelmer/isso.git -b master
 Vcs-Browser: https://salsa.debian.org/jelmer/isso.git
 
-
 Package: isso
 Architecture: all
 Depends:
