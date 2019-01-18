@@ -6,6 +6,7 @@ define({
     "postbox-preview": "Vorschau",
     "postbox-edit": "Bearbeiten",
     "postbox-submit": "Abschicken",
+    "postbox-notification": "wenn auf meinen Kommentar geantwortet wird, möchte ich eine E-Mail bekommen",
     "num-comments": "1 Kommentar\n{{ n }} Kommentare",
     "no-comments": "Bisher keine Kommentare",
     "comment-reply": "Antworten",
