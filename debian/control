@@ -18,7 +18,7 @@ Build-Depends:
  python3-nose,
  ruby-sass
 Standards-Version: 4.3.0
-Homepage: http://posativ.org/isso/
+Homepage: https://posativ.org/isso/
 Vcs-Git: https://salsa.debian.org/jelmer/isso.git -b master
 Vcs-Browser: https://salsa.debian.org/jelmer/isso.git
 

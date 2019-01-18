@@ -3,6 +3,7 @@ isso (0.12.0-1) UNRELEASED; urgency=medium
   * New upstream release.
   * Drop patch 0007-admin-password.patch: applied upstream.
   * Bump standards version to 4.3.0 (no changes).
+  * Use secure URI in Homepage field.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Fri, 18 Jan 2019 20:20:09 +0000
 
