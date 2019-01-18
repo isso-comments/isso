@@ -109,10 +109,10 @@ class Disqus(object):
                 'dsq:id': post.attrib.get(Disqus.internals + 'id'),
                 'text': post.find(Disqus.ns + 'message').text,
                 'author': post.find('{0}author/{0}name'.format(Disqus.ns)).text,
-                'email': email.text if email else '',
+                'email': email.text if email is not None else '',
                 'created': mktime(strptime(
                     post.find(Disqus.ns + 'createdAt').text, '%Y-%m-%dT%H:%M:%SZ')),
-                'remote_addr': anonymize(ip.text if ip else '0.0.0.0'),
+                'remote_addr': anonymize(ip.text if ip is not None else '0.0.0.0'),
                 'mode': 1 if post.find(Disqus.ns + "isDeleted").text == "false" else 4
             }
 
@@ -156,7 +156,7 @@ class Disqus(object):
                 print(" * {0} by {1} <{2}>".format(
                     post.attrib.get(Disqus.internals + "id"),
                     post.find("{0}author/{0}name".format(Disqus.ns)).text,
-                    email.text if email else ""))
+                    email.text if email is not None else ""))
                 print(textwrap.fill(post.find(Disqus.ns + "message").text,
                                     initial_indent="  ", subsequent_indent="  "))
                 print("")
