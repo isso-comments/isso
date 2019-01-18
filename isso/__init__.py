@@ -225,7 +225,7 @@ def main():
     imprt.add_argument("-n", "--dry-run", dest="dryrun", action="store_true",
                        help="perform a trial run with no changes made")
     imprt.add_argument("-t", "--type", dest="type", default=None,
-                       choices=["disqus", "wordpress"], help="export type")
+                       choices=["disqus", "wordpress", "generic"], help="export type")
     imprt.add_argument("--empty-id", dest="empty_id", action="store_true",
                        help="workaround for weird Disqus XML exports, #135")
 
