@@ -85,7 +85,10 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
     var plural = pluralforms(lang);
 
     var translate = function(msgid) {
-        return catalogue[lang][msgid] || en[msgid] || "???";
+        return config[msgid + '-text-' + lang] ||
+          catalogue[lang][msgid] ||
+          en[msgid] ||
+          "???";
     };
 
     var pluralize = function(msgid, n) {

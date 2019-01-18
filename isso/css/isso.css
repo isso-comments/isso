@@ -178,6 +178,16 @@
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
+.isso-postbox > .form-wrapper input[type=checkbox] {
+    vertical-align: middle;
+    position: relative;
+    bottom: 1px;
+    margin-left: 0;
+}
+.isso-postbox > .form-wrapper .notification-section {
+    font-size: 0.90em;
+    padding-top: .3em;
+}
 #isso-thread .textarea:focus,
 #isso-thread input:focus {
     border-color: rgba(0, 0, 0, 0.8);
@@ -239,6 +249,7 @@
         #fff 10px,
         #fff 20px
     );
+}
 .isso-postbox > .form-wrapper > .notification-section {
     display: none;
     padding-bottom: 10px;

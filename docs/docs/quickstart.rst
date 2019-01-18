@@ -60,7 +60,9 @@ For more options, see :doc:`server <configuration/server>` and :doc:`client
 Migration
 ---------
 
-You can import comments from Disqus_ or WordPress_.
+Isso provides a tool for importing comments from Disqus_ or WordPress_.
+You can also import comments from any other comment system, but this topic is more
+complex and covered in :doc:`advanced migration <extras/advanced-migration>`.
 
 To export your comments from Disqus, log into Disqus, go to your website, click
 on *Discussions* and select the *Export* tab. You'll receive an email with your
@@ -74,7 +76,7 @@ Now import the XML dump:
 
 .. code-block:: sh
 
-    ~> isso -c /path/to/isso.cfg import disqus-or-wordpress.xml
+    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress] disqus-or-wordpress.xml
     [100%]  53 threads, 192 comments
 
 .. _Disqus: https://disqus.com/

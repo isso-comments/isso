@@ -1,6 +1,20 @@
 Changelog for Isso
 ==================
 
+0.12.0 (2019-01-18)
+-------------------
+
+- Fix compatibility with new XML API.
+- Don't enable admin interface with default password by default.  #491
+- Add support and documentation for "generic" imports.
+- Remove potential duplicate slashes in URLs from
+  email links. #420
+- Add data-isso-reply-notifications to attributes in configuration.
+- Use default IP in imports if none is found. Fixes imports of some comments.
+- embed: fix feed link creation on older browsers.
+- Properly handle to field in mail notifications when using uWSGI spooler
+- css: fix vertical alignment of notification checkbox
+
 0.11.1 (2018-11-03)
 -------------------
 
