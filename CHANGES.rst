@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.12.1 (UNRELEASED)
+0.12.1 (2019-01-19)
 -------------------
 
 - Revert fix for duplicate slashes, as it prevents isso from
