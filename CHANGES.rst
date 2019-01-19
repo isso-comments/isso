@@ -4,6 +4,9 @@ Changelog for Isso
 0.12.1 (UNRELEASED)
 -------------------
 
+- Revert fix for duplicate slashes, as it prevents isso from
+  starting in some cases. #523
+
 0.12.0 (2019-01-18)
 -------------------
 
