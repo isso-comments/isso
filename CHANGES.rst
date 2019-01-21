@@ -1,9 +1,11 @@
 Changelog for Isso
 ==================
 
-0.12.2 (UNRELEASED)
+0.12.2 (2019-01-21)
 -------------------
 
+- Revert use of labels instead of placeholders, since it breaks
+  mail notifications. #524
 
 0.12.1 (2019-01-19)
 -------------------
