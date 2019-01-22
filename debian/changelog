@@ -1,8 +1,8 @@
-isso (0.12.2-1) UNRELEASED; urgency=medium
+isso (0.12.2-1) unstable; urgency=medium
 
   * New upstream release.
 
- -- Jelmer Vernooĳ <jelmer@debian.org>  Tue, 22 Jan 2019 00:56:59 +0000
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Tue, 22 Jan 2019 00:57:22 +0000
 
 isso (0.12.1-1) unstable; urgency=medium
 
