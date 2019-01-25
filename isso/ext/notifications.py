@@ -76,7 +76,14 @@ class SMTP(object):
 
         self.isso = isso
         self.conf = isso.conf.section("smtp")
-        self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
+        self.public_endpoint = isso.conf.get("server", "public-endpoint")
+        # rstrips potential trailing '/', without having to `repr` the `local` object.
+        if self.public_endpoint:
+            if self.public_endpoint.endswith('/'):
+                self.public_endpoint = self.public_endpoint.rstrip('/')
+        else:
+            self.public_endpoint = local("host")
+
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
 
