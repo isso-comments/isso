@@ -117,7 +117,7 @@ class SMTP(object):
         yield "comments.new:after-save", self.notify_new
         yield "comments.activate", self.notify_activated
 
-    def format(self, thread, comment, parent_comment, recipient=None, admin=False, part):
+    def format(self, thread, comment, parent_comment, recipient=None, admin=False, part="plain"):
         
         jinjaenv=Environment(loader=FileSystemLoader("/"))
         
