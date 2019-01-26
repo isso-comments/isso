@@ -264,7 +264,7 @@ class SMTP(object):
                     logger.info("[mail] Sending notification mail titled '{0}' to {1}".format(subject,email))
                     notified.append(email)
 
-    def sendmail(self, subject, body='', body_html='', body_plain='', thread, comment, to=None):
+    def sendmail(self, subject, body=None, body_html=None, body_plain=None, thread, comment, to=None):
         to = to or self.conf.get("to")
         if uwsgi:
             if self.mail_format == "multipart":
