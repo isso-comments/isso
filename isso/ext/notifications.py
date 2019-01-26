@@ -264,7 +264,7 @@ class SMTP(object):
                     logger.info("[mail] Sending notification mail titled '{0}' to {1}".format(subject,email))
                     notified.append(email)
 
-    def sendmail(self, subject, body=None, body_html=None, body_plain=None, thread, comment, to=None):
+    def sendmail(self, subject, thread, comment, body=None, body_html=None, body_plain=None, to=None):
         to = to or self.conf.get("to")
         if uwsgi:
             if self.mail_format == "multipart":
@@ -279,11 +279,11 @@ class SMTP(object):
                          b"to": to.encode("utf-8")})
         else:
             if self.mail_format == "multipart":
-                start_new_thread(self._retry, (subject, None, body_html, body_plain, to))
+                start_new_thread(self._retry, (subject, to, None, body_html, body_plain))
             else:
-                start_new_thread(self._retry, (subject, body, None, None, to))
+                start_new_thread(self._retry, (subject, to, body, None, None))
 
-    def _sendmail(self, subject, body=None, body_html=None, body_plain=None, to_addr):
+    def _sendmail(self, subject, to_addr, body=None, body_html=None, body_plain=None):
 
         from_addr = self.conf.get("from")
 
@@ -303,7 +303,7 @@ class SMTP(object):
         with SMTPConnection(self.conf) as con:
             con.sendmail(from_addr, to_addr, msg.as_string())
 
-    def _retry(self, subject, body=None, body_html=None, body_plain=None, to):
+    def _retry(self, subject, to, body=None, body_html=None, body_plain=None):
         for x in range(5):
             try:
                 if self.mail_format == "multipart":
