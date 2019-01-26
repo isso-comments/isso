@@ -279,9 +279,9 @@ class SMTP(object):
                          b"to": to.encode("utf-8")})
         else:
             if self.mail_format == "multipart":
-                start_new_thread(self._retry, (subject=subject, body_html=body_html, body_plain=body_plain, to=to))
+                start_new_thread(self._retry, (subject, '', body_html, body_plain, to))
             else:
-                start_new_thread(self._retry, (subject=subject, body=body, to=to))
+                start_new_thread(self._retry, (subject, body, '', '', to))
 
     def _sendmail(self, subject, body='', body_html='', body_plain='', to_addr):
 
