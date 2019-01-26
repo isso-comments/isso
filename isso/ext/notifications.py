@@ -222,14 +222,16 @@ class SMTP(object):
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
+            mailtitle_admin = self.isso.conf.get("mail", "mail_title_admin").format(title = thread["title"],
+                                                                        replier = comment["author"] or self.no_name)
             if self.mail_format == "multipart":
                 body_plain = self.format(thread, comment, None, admin=True, part = "plain")
                 body_html = self.format(thread, comment, None, admin=True, part = "html")
+                self.sendmail(subject = mailtitle_admin, body_html = body_html, body_plain = body_plain, thread = thread, comment = comment)
             else:
                 body = self.format(thread, comment, None, admin=True, part = self.mail_format)
-            mailtitle_admin = self.isso.conf.get("mail", "mail_title_admin").format(title = thread["title"],
-                                                                                    replier = comment["author"] or self.no_name)
-            self.sendmail(mailtitle_admin, body, thread, comment)
+                self.sendmail(subject = mailtitle_admin, body = body, thread = thread, comment = comment)
+            
             logger.info("[mail] Sending notification mail titled '{0}' to the admin".format(mailtitle_admin))
 
         if comment["mode"] == 1:
@@ -249,28 +251,39 @@ class SMTP(object):
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
+                    subject = self.isso.conf.get("mail", "mail_title_user").format(title = thread["title"],
+                                                               receiver = parent_comment["author"] or self.no_name,
+                                                               replier = comment["author"] or self.no_name)
                     if self.mail_format == "multipart":
                         body_plain = self.format(thread, comment, parent_comment, email, admin=False, part = "plain")
                         body_html = self.format(thread, comment, parent_comment, email, admin=False, part = "html")
+                        self.sendmail(subject = subject, body_html = body_html, body_plain = body_plain, thread = thread, comment = comment, to=email)
                     else:
                         body = self.format(thread, comment, parent_comment, email, admin=False, part = self.mail_format)
-                    subject = self.isso.conf.get("mail", "mail_title_user").format(title = thread["title"],
-                                                                                   receiver = parent_comment["author"] or self.no_name,
-                                                                                   replier = comment["author"] or self.no_name)
-                    self.sendmail(subject, body, thread, comment, to=email)
+                        self.sendmail(subject = subject, body = body, thread = thread, comment = comment, to=email)
                     logger.info("[mail] Sending notification mail titled '{0}' to {1}".format(subject,email))
                     notified.append(email)
 
-    def sendmail(self, subject, body, thread, comment, to=None):
+    def sendmail(self, subject, body='', body_html='', body_plain='', thread, comment, to=None):
         to = to or self.conf.get("to")
         if uwsgi:
+            if self.mail_format == "multipart":
+                msg = MIMEMultipart('alternative')
+                msg_plain = MIMEText(body_plain, "plain")
+                msg_html = MIMEText(body_html, "html")
+                msg.attach(msg_plain)
+                msg.attach(html)
+                body = msg.as_string()
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
                          b"to": to.encode("utf-8")})
         else:
-            start_new_thread(self._retry, (subject, body, to))
+            if self.mail_format == "multipart":
+                start_new_thread(self._retry, (subject=subject, body_html=body_html, body_plain=body_plain, to=to))
+            else:
+                start_new_thread(self._retry, (subject=subject, body=body, to=to))
 
-    def _sendmail(self, subject, body, to_addr):
+    def _sendmail(self, subject, body='', body_html='', body_plain='', to_addr):
 
         from_addr = self.conf.get("from")
 
@@ -290,10 +303,13 @@ class SMTP(object):
         with SMTPConnection(self.conf) as con:
             con.sendmail(from_addr, to_addr, msg.as_string())
 
-    def _retry(self, subject, body, to):
+    def _retry(self, subject, body='', body_html='', body_plain='', to):
         for x in range(5):
             try:
-                self._sendmail(subject, body, to)
+                if self.mail_format == "multipart":
+                    self._sendmail(subject=subject, body_html=body_html, body_plain=body_plain, to_addr=to)
+                else:
+                    self._sendmail(subject=subject, body=body, to_addr=to)
             except smtplib.SMTPConnectError:
                 logger.info("[mail] The notification mail hasn't been sent to %s due to SMTPConnectError, trying in 1 minute unless no tries left. (Tries so far: %d / 5)" % (to, x+1))
                 time.sleep(60)
