@@ -237,42 +237,57 @@ Confiurgure the format the mail notification uses in SMTP section.
 .. code-block:: ini
 
     [mail]
-    mail_language = en
-    mail_format = plain
-    mail_title_admin = {title}
-    mail_title_user = Re: New comment posted on {title}
-    mail_template = 
+    language = en
+    format = plain
+    title_admin = {title}
+    title_user = Re: New comment posted on {title}
+    template = 
 
-mail_language
+language
 	specify the language of the mail format by its `ISO 639-1<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) 
 	code, default to `en`.
 	
-mail_format
-	specify mail format to use, available options: plain, html. Default: plain
+format
+	specify mail format to use, available options: plain, html, multipart. 
+	Default: plain
 
-mail_title_admin
+title_admin
 	specify the title format of the notification email sent to the admin, default 
 	to `{title}`, in which `{title}` is the title of the thread. Available variables:
 	`{title}`, `{replier}`
 
-mail_title_user
+title_user
 	specify the title format of the notification email sent to the subscribed
 	commenter, default to `Re: New comment posted on {title}`, in which `{title}`
 	is the title of the thread. Available variables: `{title}`, `{receiver}`,
 	`{replier}`
 	
-mail_template
+template
 	specify the path to your customized html template of comment yourself, in 
-	jinja2 format. Default: For users who set `mail_format = plain`, see 
-	`isso/isso/templates/comment.plain` or 
-	`isso/isso/templates/comment_<iso639-1-code>.plain`; 
-	For users who set mail_format = html, see 
-	`isso/isso/templates/comment.html` or 
-	`isso/isso/templates/comment_<iso639-1-code>.html`. 
-	It's also possible to set the option to a directory. Then it'll check 
-	if `admin.html` and `user.html` (`admin.plain` and `user.plain` for plain
-	text users) in that directory are available to be used for the format
-	of the mail intended to be sent to admin and user, individually.
+	jinja2 format. Default: For users who set `format = plain`, see 
+	`isso/isso/templates/comment.plain` (or 
+	`isso/isso/templates/comment_<iso639-1-code>.plain` for other languages); 
+	For users who set `format = html`, see 
+	`isso/isso/templates/comment.html` (or 
+	`isso/isso/templates/comment_<iso639-1-code>.html` for other languages); 
+	For users who set `format = multipart`, see 
+	`isso/isso/templates/comment.html` and `isso/isso/templates/comment.plain`
+	(or `isso/isso/templates/comment_<iso639-1-code>.html` and 
+	`isso/isso/templates/comment_<iso639-1-code>.plain` for other languages).
+	Customized path: For users who set `format = plain` or `format = html`, 
+	it's also possible to set the option to the absolute path of a directory 
+	or a single template. When the option is set to the absolute path of a 
+	directory, it'll check if `admin.html` and `user.html` (`admin.plain` and 
+	`user.plain` for plain text users) in that directory are available to be 
+	used for the format of the mail intended to be sent to admin and user, 
+	individually. 
+	For users who set `format = multipart`, just set it to the absolute path 
+	to a directory. it'll check if `admin.html`, `user.html` (For html part, 
+	the former is used for the format of the mail sent to admin, the latter 
+	for the format of the mail sent to user), `admin.plain` and `user.plain` 
+	(For plain text part, the former is used for the format of the mail sent 
+	to admin, the latter for the format of the mail sent to user) in that 
+	directory are available.
 	The log will tell you what happened when the error occurs.
 
 Guard

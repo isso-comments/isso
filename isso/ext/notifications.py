@@ -83,8 +83,8 @@ class SMTP(object):
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
-        self.mail_lang = self.isso.conf.get("mail", "mail_language")
-        self.mail_format = self.isso.conf.get("mail", "mail_format")
+        self.mail_lang = self.isso.conf.get("mail", "language")
+        self.mail_format = self.isso.conf.get("mail", "format")
         
         try:
             self.no_name = self.isso.conf.get("mail", "anonymous_%s" % self.mail_lang)
@@ -104,8 +104,10 @@ class SMTP(object):
             def spooler(args):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
+                                   args[b"to"].decode("utf-8"),
                                    args["body"].decode("utf-8"),
-                                   args[b"to"].decode("utf-8"))
+                                   args["body-html"].decode("utf-8"),
+                                   args["body-plain"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -141,8 +143,8 @@ class SMTP(object):
             else:
                 com_ori_admin = com_ori_user = os.path.basename(com_ori)
 
-        if self.isso.conf.get("mail", "mail_template"):
-            com_ori = self.isso.conf.get("mail", "mail_template")
+        if self.isso.conf.get("mail", "template"):
+            com_ori = self.isso.conf.get("mail", "template")
             if os.path.isfile(com_ori):
                 try:
                     jinjaenv.get_template(com_ori)
@@ -222,7 +224,7 @@ class SMTP(object):
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
-            mailtitle_admin = self.isso.conf.get("mail", "mail_title_admin").format(title = thread["title"],
+            mailtitle_admin = self.isso.conf.get("mail", "title_admin").format(title = thread["title"],
                                                                         replier = comment["author"] or self.no_name)
             if self.mail_format == "multipart":
                 body_plain = self.format(thread, comment, None, admin=True, part = "plain")
@@ -251,7 +253,7 @@ class SMTP(object):
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
-                    subject = self.isso.conf.get("mail", "mail_title_user").format(title = thread["title"],
+                    subject = self.isso.conf.get("mail", "title_user").format(title = thread["title"],
                                                                receiver = parent_comment["author"] or self.no_name,
                                                                replier = comment["author"] or self.no_name)
                     if self.mail_format == "multipart":
@@ -289,8 +291,8 @@ class SMTP(object):
 
         if self.mail_format == "multipart":
             msg = MIMEMultipart('alternative')
-            msg_plain = MIMEText(body_plain, "plain")
-            msg_html = MIMEText(body_html, "html")
+            msg_plain = MIMEText(body_plain, "plain", 'utf-8')
+            msg_html = MIMEText(body_html, "html", 'utf-8')
             msg.attach(msg_plain)
             msg.attach(msg_html)
         else:
@@ -316,7 +318,6 @@ class SMTP(object):
             else:
                 logger.info("[mail] The notification mail has been sent to %s successfully." % to)
                 break
-
 
 class Stdout(object):
 
