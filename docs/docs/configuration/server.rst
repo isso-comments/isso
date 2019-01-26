@@ -287,8 +287,10 @@ template
 	for the format of the mail sent to user), `admin.plain` and `user.plain` 
 	(For plain text part, the former is used for the format of the mail sent 
 	to admin, the latter for the format of the mail sent to user) in that 
-	directory are available.
-	The log will tell you what happened when the error occurs.
+	directory are available. I don't recommend it though it's possible to set
+	it to the absolute path to a single template and get it working, see 
+	`isso/isso/templates/comment.plain` for some details on this.
+	The log will tell you what happened when any error occurs.
 
 Guard
 -----
