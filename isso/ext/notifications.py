@@ -202,7 +202,8 @@ class SMTP(object):
                                                                    del_link = uri + "/delete/" + key,
                                                                    act_link = uri + "/activate/" + key,
                                                                    thread_link = local("origin") + thread["uri"],
-                                                                   thread_title = thread["title"]
+                                                                   thread_title = thread["title"],
+                                                                   part = part
                                                                    )
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
@@ -217,7 +218,8 @@ class SMTP(object):
                                                                   com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
                                                                   unsubscribe = uri + "/unsubscribe/" + quote(recipient) + "/" + key,
                                                                   thread_link = local("origin") + thread["uri"],
-                                                                  thread_title = thread["title"]
+                                                                  thread_title = thread["title"],
+                                                                  part = part
                                                                   )
 
         return com_temp
