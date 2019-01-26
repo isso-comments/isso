@@ -292,7 +292,7 @@ class SMTP(object):
             msg_plain = MIMEText(body_plain, "plain")
             msg_html = MIMEText(body_html, "html")
             msg.attach(msg_plain)
-            msg.attach(html)
+            msg.attach(msg_html)
         else:
             msg = MIMEText(body, self.mail_format, 'utf-8')
         msg['From'] = from_addr
