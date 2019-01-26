@@ -279,11 +279,11 @@ class SMTP(object):
                          b"to": to.encode("utf-8")})
         else:
             if self.mail_format == "multipart":
-                start_new_thread(self._retry, (subject, '', body_html, body_plain, to))
+                start_new_thread(self._retry, (subject, None, body_html, body_plain, to))
             else:
-                start_new_thread(self._retry, (subject, body, '', '', to))
+                start_new_thread(self._retry, (subject, body, None, None, to))
 
-    def _sendmail(self, subject, body='', body_html='', body_plain='', to_addr):
+    def _sendmail(self, subject, body=None, body_html=None, body_plain=None, to_addr):
 
         from_addr = self.conf.get("from")
 
@@ -303,7 +303,7 @@ class SMTP(object):
         with SMTPConnection(self.conf) as con:
             con.sendmail(from_addr, to_addr, msg.as_string())
 
-    def _retry(self, subject, body='', body_html='', body_plain='', to):
+    def _retry(self, subject, body=None, body_html=None, body_plain=None, to):
         for x in range(5):
             try:
                 if self.mail_format == "multipart":
