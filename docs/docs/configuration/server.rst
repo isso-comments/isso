@@ -229,6 +229,20 @@ timeout
     specify a timeout in seconds for blocking operations like the
     connection attempt.
 
+Mail
+----
+
+Confiurgure the format the mail notification uses in SMTP section.
+
+.. code-block:: ini
+
+    [mail]
+    mail_language = en
+    mail_format = plain
+    mail_title_admin = {title}
+    mail_title_user = Re: New comment posted on {title}
+    mail_template = 
+
 mail_language
 	specify the language of the mail format by its `ISO 639-1<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) 
 	code, default to `en`.
