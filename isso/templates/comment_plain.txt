@@ -48,9 +48,7 @@
  To use a single template for multipart format:
    {% if part == "html" %}
    ...(Html part)...
-   {% else %}
-   ...(Plain part)...
-   {% endif %}
+   {% else %}...(Plain part)...{% endif %}
  ========================================================================
  Warning: If you are customizng .plain templates, remember to tidy your 
           text and remove every unnecessary spaces besides the comment you

@@ -48,9 +48,7 @@ Usable variables only under a reply notification situation:
 To use a single template for multipart format:
   {% if part == "html" %}
   ...(Html part)...
-  {% else %}
-  ...(Plain part)...
-  {% endif %}
+  {% else %}...(Plain part)...{% endif %}
 ========================================================================
 Styling suggestion: Use as much inline css as you can, 'cause in most web
                     mails only inline css will be rendered. Only receiving
