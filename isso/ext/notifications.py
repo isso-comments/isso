@@ -32,7 +32,7 @@ except ImportError:
     uwsgi = None
 
 from isso.compat import PY2K
-from isso import local
+from isso import local, dist
 
 if PY2K:
     from thread import start_new_thread
@@ -123,7 +123,7 @@ class SMTP(object):
         
         jinjaenv=Environment(loader=FileSystemLoader("/"))
         
-        temp_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "templates/")  
+        temp_path = os.path.join(dist.location, "isso", "templates/")  
         com_ori_admin = com_ori_user = "comment.%s" % part
         
         if self.mail_lang != "en":

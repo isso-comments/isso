@@ -5,25 +5,13 @@
 import unittest
 import os
 
-from isso import Isso, core, config, dist
+from isso import config, dist
  
 class TestMail(unittest.TestCase):
       
     def setUp(self):
         conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         self.conf = conf
-  
-#         class App(Isso, core.Mixin):
-#             pass
-#   
-#         self.app = App(conf)
-#         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
-#   
-#         self.client = JSONClient(self.app, Response)
-#         self.get = self.client.get
-#         self.put = self.client.put
-#         self.post = self.client.post
-#         self.delete = self.client.delete
 
     def testAnonymous(self):
         ano_cases = {
