@@ -8,7 +8,7 @@ import os
 from isso import config, dist
  
 class TestMail(unittest.TestCase):
-      
+    
     def setUp(self):
         conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
         self.conf = conf
@@ -44,12 +44,12 @@ class TestMail(unittest.TestCase):
          
     def testTemplate(self):
         langs = ["de", "fr", "ja", "zh", "zh_TW", "zh_CN"]
-        self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment.plain")), True)
-        self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment.html")), True)
+        self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment.plain")))
+        self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment.html")))
         for lang in langs:
-            self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment_%s.plain"%lang)), True)
-            self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment_%s.html"%lang)), True)
+            self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment_%s.plain"%lang)))
+            self.assertTrue(os.path.isfile(os.path.join(dist.location, "isso", "templates", "comment_%s.html"%lang)))
     
     def testTitle(self):
-        self.assertTrue(self.conf.get("mail", "title_admin").format(title="test"), "test")
-        self.assertTrue(self.conf.get("mail", "title_user").format(title="test"), "Re: New comment posted on test")
+        self.assertEqual(self.conf.get("mail", "title_admin").format(title="test"), "test")
+        self.assertEqual(self.conf.get("mail", "title_user").format(title="test"), "Re: New comment posted on test")
