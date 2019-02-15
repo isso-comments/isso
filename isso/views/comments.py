@@ -6,6 +6,7 @@ import re
 import cgi
 import time
 import functools
+import json  # json.dumps to put URL in <script>
 
 from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
@@ -516,14 +517,13 @@ class API(object):
     @apiSuccessExample {html} Using GET:
         &lt;!DOCTYPE html&gt;
         &lt;html&gt;
-            &lt;head&gt;
-                &lt;script&gt;
-                    if (confirm('Delete: Are you sure?')) {
-                        xhr = new XMLHttpRequest;
-                        xhr.open('POST', window.location.href);
-                        xhr.send(null);
-                    }
-                &lt;/script&gt;
+        &lt;head&gt;
+          &lt;title&gt;Successfully unsubscribed&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+          &lt;p&gt;You have been unsubscribed from replies in the given conversation.&lt;/p&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
 
     @apiSuccessExample Using POST:
         Yo
@@ -589,6 +589,9 @@ class API(object):
                         xhr = new XMLHttpRequest;
                         xhr.open('POST', window.location.href);
                         xhr.send(null);
+                        xhr.onload = function() {
+                            window.location.href = "https://example.com/example-thread/#isso-13";
+                        };
                     }
                 &lt;/script&gt;
 
@@ -603,6 +606,8 @@ class API(object):
             raise Forbidden
 
         item = self.comments.get(id)
+        thread = self.threads.get(item['tid'])
+        link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
 
         if item is None:
             raise NotFound
@@ -617,8 +622,11 @@ class API(object):
                 "      xhr = new XMLHttpRequest;"
                 "      xhr.open('POST', window.location.href);"
                 "      xhr.send(null);"
+                "      xhr.onload = function() {"
+                "          window.location.href = %s;"
+                "      };"
                 "  }"
-                "</script>" % action.capitalize())
+                "</script>" % (action.capitalize(), json.dumps(link)))
 
             return Response(modal, 200, content_type="text/html")
 
@@ -627,7 +635,6 @@ class API(object):
                 return Response("Already activated", 200)
             with self.isso.lock:
                 self.comments.activate(id)
-            thread = self.threads.get(item['tid'])
             self.signal("comments.activate", thread, item)
             return Response("Yo", 200)
         elif action == "edit":
