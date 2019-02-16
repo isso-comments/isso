@@ -5,7 +5,7 @@ Maintainer: Jelmer Vernooĳ <jelmer@debian.org>
 Build-Depends:
  debhelper (>= 11~),
  dh-python,
- node-almond,
+ node-almond (>= 0.3.3+dfsg),
  node-uglify (>= 2.4.13-2),
  node-jade,
  node-requirejs,
