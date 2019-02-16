@@ -109,7 +109,7 @@ class SMTP(object):
         rv = io.StringIO()
 
         author = comment["author"] or "Anonymous"
-        if comment["email"]:
+        if admin and comment["email"]:
             author += " <%s>" % comment["email"]
 
         rv.write(author + " wrote:\n")
