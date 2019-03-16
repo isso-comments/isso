@@ -517,13 +517,14 @@ class API(object):
     @apiSuccessExample {html} Using GET:
         &lt;!DOCTYPE html&gt;
         &lt;html&gt;
-        &lt;head&gt;
-          &lt;title&gt;Successfully unsubscribed&lt;/title&gt;
-        &lt;/head&gt;
-        &lt;body&gt;
-          &lt;p&gt;You have been unsubscribed from replies in the given conversation.&lt;/p&gt;
-        &lt;/body&gt;
-        &lt;/html&gt;
+            &lt;head&gt;
+                &lt;script&gt;
+                    if (confirm('Delete: Are you sure?')) {
+                        xhr = new XMLHttpRequest;
+                        xhr.open('POST', window.location.href);
+                        xhr.send(null);
+                    }
+                &lt;/script&gt;
 
     @apiSuccessExample Using POST:
         Yo
