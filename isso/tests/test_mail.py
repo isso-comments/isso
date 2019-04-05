@@ -4,43 +4,33 @@
 
 import unittest
 import os
+import tempfile
 
-from isso import config, dist
+from isso import Isso, core, config, dist
+
+from fixtures import curl, loads, FakeIP, JSONClient
  
 class TestMail(unittest.TestCase):
     
     def setUp(self):
+        fd, self.path = tempfile.mkstemp()
         conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
+        conf.set("general", "dbpath", self.path)
+        conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
         self.conf = conf
+        
+        class App(Isso, core.Mixin):
+            pass
 
-    def testAnonymous(self):
-        ano_cases = {
-            "bg": "анонимен",
-            "cs": "Anonym",
-            "da": "Anonym",
-            "de": "Anonym",
-            "el_GR": "Ανώνυμος",
-            "en": "Anonymous",
-            "eo": "Sennoma",
-            "es": "Anónimo",
-            "fa": "ناشناس",
-            "fi": "Nimetön",
-            "fr": "Anonyme",
-            "hr": "Anonimno",
-            "hu": "Névtelen",
-            "it": "Anonimo",
-            "nl": "Anoniem",
-            "pl": "Anonim",
-            "ru": "Аноним",
-            "sv": "Anonym",
-            "vi": "Nặc danh",
-            "zh": "匿名",
-            "zh_CN": "匿名",
-            "zh_TW": "匿名",
-            "ja": "アノニマス"
-        }
-        for key, value in ano_cases.items():
-            self.assertEqual(self.conf.get("mail", "anonymous_%s"%key), value)
+        self.app = App(conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+
+        self.client = JSONClient(self.app, Response)
+        self.get = self.client.get
+        self.put = self.client.put
+        self.post = self.client.post
+        self.delete = self.client.delete
          
     def testTemplate(self):
         langs = ["de", "fr", "ja", "zh", "zh_TW", "zh_CN"]

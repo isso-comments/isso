@@ -85,13 +85,37 @@ class SMTP(object):
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
         self.mail_lang = self.isso.conf.get("mail", "language")
         self.mail_format = self.isso.conf.get("mail", "format")
+        self.no_name_list = {
+            "bg": "анонимен",
+            "cs": "Anonym",
+            "da": "Anonym",
+            "de": "Anonym",
+            "el_GR": "Ανώνυμος",
+            "en": "Anonymous",
+            "eo": "Sennoma",
+            "es": "Anónimo",
+            "fa": "ناشناس",
+            "fi": "Nimetön",
+            "fr": "Anonyme",
+            "hr": "Anonimno",
+            "hu": "Névtelen",
+            "it": "Anonimo",
+            "nl": "Anoniem",
+            "pl": "Anonim",
+            "ru": "Аноним",
+            "sv": "Anonym",
+            "vi": "Nặc danh",
+            "zh": "匿名",
+            "zh_CN": "匿名",
+            "zh_TW": "匿名",
+            "ja": "アノニマス"
+        }
         
         try:
-            self.no_name = self.isso.conf.get("mail", "anonymous_%s" % self.mail_lang)
+            self.no_name = self.no_name_list[self.mail_lang]
         except:
             logger.warn('[mail] No anonymous for such language: %s. Anonymous fell back to the default "Anonymous".' % self.mail_lang)
             self.no_name = "Anonymous"
-        logger.info("[mail] You are now using language {0}. To change anonymous from {1} to your desired string in the current language, set 'anonymous_{0} = your desired string' in the [mail] section of the server conf.".format(self.mail_lang,self.no_name))
         
         # test SMTP connectivity
         try:
@@ -120,8 +144,7 @@ class SMTP(object):
         yield "comments.activate", self.notify_activated
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False, part="plain"):
-        
-        jinjaenv=Environment(loader=FileSystemLoader("/"))
+        jinjaenv = Environment(loader=FileSystemLoader("/"))
         
         temp_path = os.path.join(dist.location, "isso", "templates/")  
         com_ori_admin = com_ori_user = "comment.%s" % part
@@ -186,12 +209,13 @@ class SMTP(object):
         else:
             logger.info("[mail] You are now using the default template.")
 
-        jinjaenv=Environment(loader=FileSystemLoader(temp_path))
+        jinjaenv = Environment(loader=FileSystemLoader(temp_path))
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
-            com_temp = jinjaenv.get_template(com_ori_admin).render(author = comment["author"] or self.no_name,
+            com_temp = jinjaenv.get_template(com_ori_admin).render(
+                                                                   author = comment["author"] or self.no_name,
                                                                    email = comment["email"],
                                                                    admin = admin,
                                                                    mode = comment["mode"],
@@ -208,7 +232,8 @@ class SMTP(object):
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
-            com_temp = jinjaenv.get_template(com_ori_user).render(author = comment["author"] or self.no_name,
+            com_temp = jinjaenv.get_template(com_ori_user).render(
+                                                                  author = comment["author"] or self.no_name,
                                                                   email = comment["email"],
                                                                   admin = admin,
                                                                   comment = comment["text"],
