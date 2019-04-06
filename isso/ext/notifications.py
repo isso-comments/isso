@@ -161,7 +161,7 @@ class SMTP(object):
             except Exception as err:
                 logger.warn("[mail] Some error about jinja2. %s"  % type(err))
                 for er in err.args:
-                    logger.warn(      "%s" % er)
+                    logger.warn("      %s" % er)
                 logger.warn("[mail] Default template fell back to the one for en.")
             else:
                 com_ori_admin = com_ori_user = os.path.basename(com_ori)
@@ -177,7 +177,7 @@ class SMTP(object):
                 except Exception as err:
                     logger.warn("[mail] %s"  % type(err))
                     for er in err.args:
-                        logger.warn(      "%s" % er)
+                        logger.warn("      %s" % er)
                     logger.warn("[mail] The template fell back to the default")
                 else:
                     logger.info("[mail] You are now using your customized templates in {0} for {1} part".format(com_ori, part))
@@ -197,7 +197,7 @@ class SMTP(object):
                 except Exception as err:
                     logger.warn("[mail] Some error about jinja2. %s"  % type(err))
                     for er in err.args:
-                        logger.warn(      "%s" % er)
+                        logger.warn("      %s" % er)
                     logger.warn("[mail] The template fell back to the default")
                 else:
                     logger.info("[mail] You are now using your customized templates in {0} ({1} part), 'admin.{1}' for admin notification, 'user.{1}' for reply notication to the subcribers".format(com_ori,part))
