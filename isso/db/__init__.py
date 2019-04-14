@@ -98,7 +98,8 @@ class SQLite3:
         # limit max. nesting level to 1
         if self.version == 2:
 
-            def first(rv): return list(map(operator.itemgetter(0), rv))
+            def first(rv):
+                return list(map(operator.itemgetter(0), rv))
 
             with sqlite3.connect(self.path) as con:
                 top = first(con.execute(

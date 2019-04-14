@@ -104,23 +104,23 @@ class API(object):
     ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
 
     VIEWS = [
-        ('fetch',       ('GET', '/')),
-        ('new',         ('POST', '/new')),
-        ('count',       ('GET', '/count')),
-        ('counts',      ('POST', '/count')),
-        ('feed',        ('GET', '/feed')),
-        ('view',        ('GET', '/id/<int:id>')),
-        ('edit',        ('PUT', '/id/<int:id>')),
-        ('delete',      ('DELETE', '/id/<int:id>')),
+        ('fetch', ('GET', '/')),
+        ('new', ('POST', '/new')),
+        ('count', ('GET', '/count')),
+        ('counts', ('POST', '/count')),
+        ('feed', ('GET', '/feed')),
+        ('view', ('GET', '/id/<int:id>')),
+        ('edit', ('PUT', '/id/<int:id>')),
+        ('delete', ('DELETE', '/id/<int:id>')),
         ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:email>/<string:key>')),
-        ('moderate',    ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('moderate',    ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('like',        ('POST', '/id/<int:id>/like')),
-        ('dislike',     ('POST', '/id/<int:id>/dislike')),
-        ('demo',        ('GET', '/demo')),
-        ('preview',     ('POST', '/preview')),
-        ('login',       ('POST', '/login')),
-        ('admin',       ('GET', '/admin'))
+        ('moderate', ('GET', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('like', ('POST', '/id/<int:id>/like')),
+        ('dislike', ('POST', '/id/<int:id>/dislike')),
+        ('demo', ('GET', '/demo')),
+        ('preview', ('POST', '/preview')),
+        ('login', ('POST', '/login')),
+        ('admin', ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):

@@ -97,7 +97,8 @@ class TestGuard(unittest.TestCase):
 
     def testSelfReply(self):
 
-        def payload(id): return json.dumps({"text": "...", "parent": id})
+        def payload(id):
+            return json.dumps({"text": "...", "parent": id})
 
         client = self.makeClient("127.0.0.1", self_reply=False)
         self.assertEqual(client.post(
@@ -124,7 +125,8 @@ class TestGuard(unittest.TestCase):
 
     def testRequireEmail(self):
 
-        def payload(email): return json.dumps({"text": "...", "email": email})
+        def payload(email):
+            return json.dumps({"text": "...", "email": email})
 
         client = self.makeClient("127.0.0.1", ratelimit=4, require_email=False)
         client_strict = self.makeClient(
@@ -144,8 +146,8 @@ class TestGuard(unittest.TestCase):
 
     def testRequireAuthor(self):
 
-        def payload(author): return json.dumps(
-            {"text": "...", "author": author})
+        def payload(author):
+            return json.dumps({"text": "...", "author": author})
 
         client = self.makeClient(
             "127.0.0.1", ratelimit=4, require_author=False)
