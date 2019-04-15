@@ -237,7 +237,7 @@ class SMTP(object):
                 logger.warn("[mail] %s does not exist. Fell back to the default template for %s."
                             % (com_ori, part))
         else:
-            logger.info("[mail] You are now using the default template.")
+            logger.info("[mail] You are now using the default template (%s part)." % part)
 
         jinjaenv = Environment(loader=FileSystemLoader(temp_path))
 
