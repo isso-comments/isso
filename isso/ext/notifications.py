@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import sys
-import io
 import time
 import json
 import os.path
@@ -86,15 +85,15 @@ class SMTP(object):
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
         self.mail_lang = self.isso.conf.get("mail", "language")
         self.mail_format = self.isso.conf.get("mail", "format")
-        
+
         try:
-            self.no_name = Translator(to_lang = self.mail_lang).translate("Anonymous")
+            self.no_name = Translator(to_lang=self.mail_lang).translate("Anonymous")
         except RuntimeError:
             self.no_name = "Anonymous"
             logger.warn('[mail] Runtime Error on the lang %s, anonymous fell back to "Anonymous".'
                         % self.mail_lang)
         except Exception as err:
-            logger.warn("[mail] Some error about translate. %s"  
+            logger.warn("[mail] Some error about translate. %s"
                         % type(err)
                         )
             for er in err.args:
@@ -106,7 +105,7 @@ class SMTP(object):
                 self.no_name = "Anonymous"
                 logger.warn('[mail] No anonymous found for %s, anonymous fell back to "Anonymous".'
                             % self.mail_lang)
-        
+
         # test SMTP connectivity
         try:
             with SMTPConnection(self.conf):
@@ -135,11 +134,11 @@ class SMTP(object):
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False, part="plain"):
         jinjaenv = Environment(loader=FileSystemLoader("/"))
-        
-        temp_path = os.path.join(dist.location, "isso", "templates")  
+
+        temp_path = os.path.join(dist.location, "isso", "templates")
         com_ori = "comment_{0}.{1}".format(self.mail_lang, part)
         com_ori_admin = com_ori_user = "comment.%s" % part
-        
+
         try:
             jinjaenv.get_template(os.path.join(temp_path, com_ori))
         except jinja2_exceptions.TemplateSyntaxError as err:
@@ -147,11 +146,11 @@ class SMTP(object):
             logger.warn("[mail] Default template fell back to the one for en.")
         except jinja2_exceptions.TemplateNotFound:
             logger.warn("[mail] No default template for such language: %s. "
-                         % self.mail_lang
-                         )
+                        % self.mail_lang
+                        )
             logger.warn("[mail] Default template fell back to the one for en.")
         except Exception as err:
-            logger.warn("[mail] Some error about jinja2. %s"  
+            logger.warn("[mail] Some error about jinja2. %s"
                         % type(err)
                         )
             for er in err.args:
@@ -167,27 +166,14 @@ class SMTP(object):
                     jinjaenv.get_template(com_ori)
                 except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[mail] Wrong format. %s" % err)
-                    logger.warn("[mail] The template fell back to the default ({} part)"
-                                 .format(
-                                     part
-                                     )
-                                 )
+                    logger.warn("[mail] The template fell back to the default ({} part)".format(part))
                 except Exception as err:
-                    logger.warn("[mail] %s"  % type(err))
+                    logger.warn("[mail] %s" % type(err))
                     for er in err.args:
                         logger.warn("      %s" % er)
-                    logger.warn("[mail] The template fell back to the default ({} part)"
-                                 .format(
-                                     part
-                                     )
-                                 )
+                    logger.warn("[mail] The template fell back to the default ({} part)".format(part))
                 else:
-                    logger.info("[mail] You are now using your customized template {0} for {1} part"
-                                .format(
-                                    com_ori, 
-                                    part
-                                    )
-                                )
+                    logger.info("[mail] You are now using your customized template {0} for {1} part".format(com_ori, part))
                     com_ori_admin = com_ori_user = os.path.basename(com_ori)
                     temp_path = os.path.dirname(com_ori)
             elif os.path.isdir(com_ori):
@@ -196,40 +182,23 @@ class SMTP(object):
                     jinjaenv.get_template(os.path.join(com_ori, "user.%s" % part))
                 except jinja2_exceptions.TemplateSyntaxError as err:
                     logger.warn("[mail] Wrong format. %s" % err)
-                    logger.warn("[mail] The template fell back to the default ({} part)"
-                                 .format(
-                                     part
-                                     )
-                                 )
+                    logger.warn("[mail] The template fell back to the default ({} part)".format(part))
                 except jinja2_exceptions.TemplateNotFound:
                     logger.warn("[mail] No usable templates for {format} part found in {c_path}."
                                 .format(
-                                    c_path = com_ori,
-                                    format = part
-                                    )
-                                )
+                                    c_path=com_ori,
+                                    format=part))
                     logger.warn("[mail] The template used for email notification sent to admin should be named 'admin.{0}', and the template for reply notification to the subcribed users should be named 'user.{0}'."
-                                .format(
-                                     part
-                                     )
-                                 )
-                    logger.warn("[mail] The template fell back to the default (%s part)"
-                                 % part
-                                 )
+                                .format(part))
+                    logger.warn("[mail] The template fell back to the default (%s part)" % part)
                 except Exception as err:
-                    logger.warn("[mail] Some error about jinja2. %s"  % type(err))
+                    logger.warn("[mail] Some error about jinja2. %s" % type(err))
                     for er in err.args:
                         logger.warn("      %s" % er)
-                    logger.warn("[mail] The template fell back to the default (%s part)"
-                                 % part
-                                 )
+                    logger.warn("[mail] The template fell back to the default (%s part)" % part)
+
                 else:
-                    logger.info("[mail] You are now using your customized templates in {0} ({1} part), 'admin.{1}' for admin notification, 'user.{1}' for reply notication to the subcribers"
-                                .format(
-                                    com_ori, 
-                                    part
-                                    )
-                                )
+                    logger.info("[mail] You are now using your customized templates in {0} ({1} part), 'admin.{1}' for admin notification, 'user.{1}' for reply notication to the subcribers".format(com_ori, part))
                     com_ori_admin = "admin.%s" % part
                     com_ori_user = "user.%s" % part
                     temp_path = com_ori
@@ -245,65 +214,60 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
             com_temp = jinjaenv.get_template(com_ori_admin).render(
-                                                                   author = comment["author"] or self.no_name,
-                                                                   email = comment["email"],
-                                                                   admin = admin,
-                                                                   mode = comment["mode"],
-                                                                   comment = comment["text"],
-                                                                   website = comment["website"],
-                                                                   ip = comment["remote_addr"],
-                                                                   com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                                   del_link = uri + "/delete/" + key,
-                                                                   act_link = uri + "/activate/" + key,
-                                                                   thread_link = local("origin") + thread["uri"],
-                                                                   thread_title = thread["title"],
-                                                                   part = part
-                                                                   )
+                author=comment["author"] or self.no_name,
+                email=comment["email"],
+                admin=admin,
+                mode=comment["mode"],
+                comment=comment["text"],
+                website=comment["website"],
+                ip=comment["remote_addr"],
+                com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                del_link=uri + "/delete/" + key,
+                act_link=uri + "/activate/" + key,
+                thread_link=local("origin") + thread["uri"],
+                thread_title=thread["title"],
+                part=part)
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             key = self.isso.sign(('unsubscribe', recipient))
             com_temp = jinjaenv.get_template(com_ori_user).render(
-                                                                  author = comment["author"] or self.no_name,
-                                                                  email = comment["email"],
-                                                                  admin = admin,
-                                                                  comment = comment["text"],
-                                                                  website = comment["website"],
-                                                                  ip = comment["remote_addr"],
-                                                                  parent_link = local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
-                                                                  com_link = local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                                                                  unsubscribe = uri + "/unsubscribe/" + quote(recipient) + "/" + key,
-                                                                  thread_link = local("origin") + thread["uri"],
-                                                                  thread_title = thread["title"],
-                                                                  part = part
-                                                                  )
+                author=comment["author"] or self.no_name,
+                email=comment["email"],
+                admin=admin,
+                comment=comment["text"],
+                website=comment["website"],
+                ip=comment["remote_addr"],
+                parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
+                com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
+                unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key,
+                thread_link=local("origin") + thread["uri"],
+                thread_title=thread["title"],
+                part=part)
 
         return com_temp
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
             mailtitle_admin = self.isso.conf.get("mail", "title_admin").format(
-                title = thread["title"],
-                replier = comment["author"] or self.no_name
-                )
+                title=thread["title"],
+                replier=comment["author"] or self.no_name)
             if self.mail_format == "multipart":
-                body_plain = self.format(thread, comment, None, admin=True, part = "plain")
-                body_html = self.format(thread, comment, None, admin=True, part = "html")
+                body_plain = self.format(thread, comment, None, admin=True, part="plain")
+                body_html = self.format(thread, comment, None, admin=True, part="html")
                 self.sendmail(
-                    subject = mailtitle_admin, 
-                    body_html = body_html, 
-                    body_plain = body_plain, 
-                    thread = thread, 
-                    comment = comment
-                    )
+                    subject=mailtitle_admin,
+                    body_html=body_html,
+                    body_plain=body_plain,
+                    thread=thread,
+                    comment=comment)
             else:
-                body = self.format(thread, comment, None, admin=True, part = self.mail_format)
+                body = self.format(thread, comment, None, admin=True, part=self.mail_format)
                 self.sendmail(
-                    subject = mailtitle_admin, 
-                    body = body, 
-                    thread = thread, 
-                    comment = comment
-                    )
-            
+                    subject=mailtitle_admin,
+                    body=body,
+                    thread=thread,
+                    comment=comment)
+
             logger.info("[mail] Sending notification mail titled '{0}' to the admin".format(mailtitle_admin))
 
         if comment["mode"] == 1:
@@ -324,35 +288,31 @@ class SMTP(object):
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     subject = self.isso.conf.get("mail", "title_user").format(
-                        title = thread["title"],
-                        receiver = parent_comment["author"] or self.no_name,
-                        replier = comment["author"] or self.no_name
-                        )
+                        title=thread["title"],
+                        receiver=parent_comment["author"] or self.no_name,
+                        replier=comment["author"] or self.no_name)
                     if self.mail_format == "multipart":
-                        body_plain = self.format(thread, comment, parent_comment, email, admin=False, part = "plain")
-                        body_html = self.format(thread, comment, parent_comment, email, admin=False, part = "html")
+                        body_plain = self.format(thread, comment, parent_comment, email, admin=False, part="plain")
+                        body_html = self.format(thread, comment, parent_comment, email, admin=False, part="html")
                         self.sendmail(
-                            subject = subject, 
-                            body_html = body_html, 
-                            body_plain = body_plain, 
-                            thread = thread, 
-                            comment = comment, 
-                            to=email
-                            )
+                            subject=subject,
+                            body_html=body_html,
+                            body_plain=body_plain,
+                            thread=thread,
+                            comment=comment,
+                            to=email)
                     else:
-                        body = self.format(thread, comment, parent_comment, email, admin=False, part = self.mail_format)
+                        body = self.format(thread, comment, parent_comment, email, admin=False, part=self.mail_format)
                         self.sendmail(
-                            subject = subject, 
-                            body = body,
-                            thread = thread, 
-                            comment = comment, 
-                            to=email
-                            )
+                            subject=subject,
+                            body=body,
+                            thread=thread,
+                            comment=comment,
+                            to=email)
                     logger.info("[mail] Sending notification mail titled '{0}' to {1}"
-                                .format(subject, 
-                                        email
-                                        )
-                                )
+                                .format(
+                                    subject,
+                                    email))
                     notified.append(email)
 
     def sendmail(self, subject, thread, comment, body=None, body_html=None, body_plain=None, to=None):
@@ -363,7 +323,7 @@ class SMTP(object):
                 msg_plain = MIMEText(body_plain, "plain")
                 msg_html = MIMEText(body_html, "html")
                 msg.attach(msg_plain)
-                msg.attach(html)
+                msg.attach(msg_html)
                 body = msg.as_string()
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
@@ -399,30 +359,24 @@ class SMTP(object):
             try:
                 if self.mail_format == "multipart":
                     self._sendmail(
-                        subject=subject, 
+                        subject=subject,
                         body_html=body_html,
-                        body_plain=body_plain, 
-                        to_addr=to
-                        )
+                        body_plain=body_plain,
+                        to_addr=to)
                 else:
                     self._sendmail(
-                        subject=subject, 
-                        body=body, 
-                        to_addr=to
-                        )
+                        subject=subject,
+                        body=body,
+                        to_addr=to)
             except smtplib.SMTPConnectError:
-                logger.info("[mail] The notification mail hasn't been sent to %s due to SMTPConnectError, trying in 1 minute unless no tries left. (Tries so far: %d / 5)"
-                             % (to, x+1)
-                             )
+                logger.info("[mail] The notification mail hasn't been sent to %s due to SMTPConnectError, trying in 1 minute unless no tries left. (Tries so far: %d / 5)" % (to, x + 1))
                 time.sleep(60)
             else:
-                logger.info("[mail] The notification mail has been sent to %s successfully."
-                             % to
-                             )
+                logger.info("[mail] The notification mail has been sent to %s successfully." % to)
                 break
 
-class Stdout(object):
 
+class Stdout(object):
     def __init__(self, conf):
         pass
 
