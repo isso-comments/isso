@@ -311,7 +311,7 @@ class SMTP(object):
                 body_plain = self.format(thread, comment, None, admin=True, part = "plain")
                 body_html = self.format(thread, comment, None, admin=True, part = "html")
                 self.sendmail(
-                    ubject = mailtitle_admin, 
+                    subject = mailtitle_admin, 
                     body_html = body_html, 
                     body_plain = body_plain, 
                     thread = thread, 
