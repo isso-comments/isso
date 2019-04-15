@@ -228,9 +228,11 @@ class SMTP(object):
                                     format = part
                                     )
                                 )
-                    logger.warn("[mail] The template used for email notification sent to admin should be named 'admin.%s', and the template for reply notification to the subcribed users should be named 'user.%s'."
-                                % part
-                                )
+                    logger.warn("[mail] The template used for email notification sent to admin should be named 'admin.{}', and the template for reply notification to the subcribed users should be named 'user.{}'."
+                                .format(
+                                     part
+                                     )
+                                 )
                     logger.warn("[mail] The template fell back to the default (%s part)"
                                  .format(
                                      part
