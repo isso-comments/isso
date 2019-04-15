@@ -102,15 +102,17 @@ class Disqus(object):
         res = defaultdict(list)
 
         for post in tree.findall(Disqus.ns + 'post'):
+            email = post.find('{0}author/{0}email'.format(Disqus.ns))
+            ip = post.find(Disqus.ns + 'ipAddress')
 
             item = {
                 'dsq:id': post.attrib.get(Disqus.internals + 'id'),
                 'text': post.find(Disqus.ns + 'message').text,
                 'author': post.find('{0}author/{0}name'.format(Disqus.ns)).text,
-                'email': post.find('{0}author/{0}email'.format(Disqus.ns)).text,
+                'email': email.text if email is not None else '',
                 'created': mktime(strptime(
                     post.find(Disqus.ns + 'createdAt').text, '%Y-%m-%dT%H:%M:%SZ')),
-                'remote_addr': anonymize(post.find(Disqus.ns + 'ipAddress').text),
+                'remote_addr': anonymize(ip.text if ip is not None else '0.0.0.0'),
                 'mode': 1 if post.find(Disqus.ns + "isDeleted").text == "false" else 4
             }
 
@@ -150,10 +152,11 @@ class Disqus(object):
                 if post.attrib.get(Disqus.internals + "id") not in orphans:
                     continue
 
+                email = post.find("{0}author/{0}email".format(Disqus.ns))
                 print(" * {0} by {1} <{2}>".format(
                     post.attrib.get(Disqus.internals + "id"),
                     post.find("{0}author/{0}name".format(Disqus.ns)).text,
-                    post.find("{0}author/{0}email".format(Disqus.ns)).text))
+                    email.text if email is not None else ""))
                 print(textwrap.fill(post.find(Disqus.ns + "message").text,
                                     initial_indent="  ", subsequent_indent="  "))
                 print("")
@@ -266,9 +269,10 @@ class Generic(object):
 
         - id: an integer with the unique id of the comment inside the thread (it can be repeated
           among different threads); this will be used to order the comment inside the thread
-        - author: the author name
-        - email: the author email
-        - website: the authot's website
+        - author: the author's name
+        - email: the author's email
+        - website: the author's website
+        - remote_addr: the author's IP
         - created: a timestamp, in the format "%Y-%m-%d %H:%M:%S"
     """
 
@@ -348,6 +352,8 @@ def dispatch(type, db, dump, empty_id=False):
         cls = Disqus
     elif type == "wordpress":
         cls = WordPress
+    elif type == "generic":
+        cls = Generic
     else:
         with io.open(dump, encoding="utf-8") as fp:
             cls = autodetect(fp.read(io.DEFAULT_BUFFER_SIZE))

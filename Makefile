@@ -1,7 +1,5 @@
 # INSTALLATION: pip install sphinx && npm install --global node-sass
 
-FLAKE_IGNORE=E226,E241,E265,E402,E501,E704
-
 ISSO_JS_SRC := $(shell find isso/js/app -type f) \
 	       $(shell ls isso/js/*.js | grep -vE "(min|dev)") \
 	       isso/js/lib/requirejs-jade/jade.js
@@ -39,7 +37,7 @@ init:
 	(cd isso/js; bower --allow-root install almond requirejs requirejs-text jade)
 
 flakes:
-	flake8 . --count --ignore=${FLAKE_IGNORE} --max-line-length=127 --show-source --statistics
+	flake8 . --count --max-line-length=127 --show-source --statistics
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	$(RJS) -o isso/js/build.$*.js out=$@

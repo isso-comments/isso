@@ -1,11 +1,34 @@
 Changelog for Isso
 ==================
 
-0.11.2 (unreleased)
+0.12.3 (UNRELEASED)
 -------------------
 
-- Don't enable admin interface with default password by default.
-  (Jelmer Vernooĳ, #491)
+0.12.2 (2019-01-21)
+-------------------
+
+- Revert use of labels instead of placeholders, since it breaks
+  mail notifications. #524
+
+0.12.1 (2019-01-19)
+-------------------
+
+- Revert fix for duplicate slashes, as it prevents isso from
+  starting in some cases. #523
+
+0.12.0 (2019-01-18)
+-------------------
+
+- Fix compatibility with new XML API.
+- Don't enable admin interface with default password by default.  #491
+- Add support and documentation for "generic" imports.
+- Remove potential duplicate slashes in URLs from
+  email links. #420
+- Add data-isso-reply-notifications to attributes in configuration.
+- Use default IP in imports if none is found. Fixes imports of some comments.
+- embed: fix feed link creation on older browsers.
+- Properly handle to field in mail notifications when using uWSGI spooler
+- css: fix vertical alignment of notification checkbox
 
 0.11.1 (2018-11-03)
 -------------------

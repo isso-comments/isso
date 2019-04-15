@@ -109,5 +109,9 @@ In chronological order:
 * Craig P Hicks @craigphicks
   * Fix sub urls configurations on admin interface
 
+* Chris Warrick @Kwpolska
+  * Update Polish translation
+  * Redirect to comment after moderation
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]

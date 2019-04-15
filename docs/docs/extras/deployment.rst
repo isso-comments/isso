@@ -196,6 +196,10 @@ directory.
 `mod_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+You can use this method if your hosting provider doesn't allow you to have long
+running processes. If FastCGI has not yet been configured in your server,
+please follow these steps:
+
 .. note:: This information may be incorrect, if you have more knowledge on how
    to deploy Python via `mod_fastcgi`, consider extending/correcting this section.
 
@@ -219,21 +223,30 @@ directory.
         </Location>
     </VirtualHost>
 
-Next, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
+Next, to run isso as a FastCGI script you'll need to install ``flup`` with
+PIP:
+
+.. code-block:: sh
+
+    $ pip install flup
+
+Finally, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
 
 .. code-block:: python
 
     #!/usr/bin/env python
     #: uncomment if you're using a virtualenv
     # import sys
-    # sys.insert(0, '<your_local_path>/lib/python2.7/site-packages')
+    # sys.path.insert(0, '<your_local_path>/lib/python2.7/site-packages')
 
-    from isso import make_app
-    from isso.core import Config
+    from isso import make_app, dist, config
+    import os
 
     from flup.server.fcgi import WSGIServer
 
-    application = make_app(Config.load("/path/to/isso.cfg"))
+    application = make_app(config.load(
+            os.path.join(dist.location, dist.project_name, "defaults.ini"),
+            "/path/to/isso.cfg"))
     WSGIServer(application).run()
 
 `Openshift <http://openshift.com>`__

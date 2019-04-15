@@ -119,7 +119,8 @@ class TestComments(unittest.TestCase):
 
     def testVerifyFields(self):
 
-        def verify(comment): return comments.API.verify(comment)[0]
+        def verify(comment):
+            return comments.API.verify(comment)[0]
 
         # text is missing
         self.assertFalse(verify({}))

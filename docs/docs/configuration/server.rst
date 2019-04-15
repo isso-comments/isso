@@ -324,19 +324,19 @@ reply-to-self
     the comment. After the editing timeframe is gone, commenters can reply to
     their own comments anyways.
 
-    Do not forget to configure the client.
+    Do not forget to configure the `client <client>`_ accordingly
 
 require-author
     force commenters to enter a value into the author field. No validation is
     performed on the provided value.
 
-    Do not forget to configure the client accordingly.
+    Do not forget to configure the `client <client>`_ accordingly.
 
 require-email
     force commenters to enter a value into the email field. No validation is
     performed on the provided value.
 
-    Do not forget to configure the client.
+    Do not forget to configure the `client <client>`_ accordingly.
 
 Markup
 ------
@@ -433,7 +433,7 @@ enabled
    whether to enable the admin interface
 
 password
-   the plain text pasword to use for logging into the administration interface
+   the plain text password to use for logging into the administration interface
 
 Appendum
 --------

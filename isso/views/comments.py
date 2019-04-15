@@ -6,6 +6,7 @@ import re
 import cgi
 import time
 import functools
+import json  # json.dumps to put URL in <script>
 
 from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
@@ -103,23 +104,23 @@ class API(object):
     ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
 
     VIEWS = [
-        ('fetch',       ('GET', '/')),
-        ('new',         ('POST', '/new')),
-        ('count',       ('GET', '/count')),
-        ('counts',      ('POST', '/count')),
-        ('feed',        ('GET', '/feed')),
-        ('view',        ('GET', '/id/<int:id>')),
-        ('edit',        ('PUT', '/id/<int:id>')),
-        ('delete',      ('DELETE', '/id/<int:id>')),
+        ('fetch', ('GET', '/')),
+        ('new', ('POST', '/new')),
+        ('count', ('GET', '/count')),
+        ('counts', ('POST', '/count')),
+        ('feed', ('GET', '/feed')),
+        ('view', ('GET', '/id/<int:id>')),
+        ('edit', ('PUT', '/id/<int:id>')),
+        ('delete', ('DELETE', '/id/<int:id>')),
         ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:email>/<string:key>')),
-        ('moderate',    ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('moderate',    ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('like',        ('POST', '/id/<int:id>/like')),
-        ('dislike',     ('POST', '/id/<int:id>/dislike')),
-        ('demo',        ('GET', '/demo')),
-        ('preview',     ('POST', '/preview')),
-        ('login',       ('POST', '/login')),
-        ('admin',       ('GET', '/admin'))
+        ('moderate', ('GET', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('like', ('POST', '/id/<int:id>/like')),
+        ('dislike', ('POST', '/id/<int:id>/dislike')),
+        ('demo', ('GET', '/demo')),
+        ('preview', ('POST', '/preview')),
+        ('login', ('POST', '/login')),
+        ('admin', ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):
@@ -589,6 +590,9 @@ class API(object):
                         xhr = new XMLHttpRequest;
                         xhr.open('POST', window.location.href);
                         xhr.send(null);
+                        xhr.onload = function() {
+                            window.location.href = "https://example.com/example-thread/#isso-13";
+                        };
                     }
                 &lt;/script&gt;
 
@@ -603,6 +607,8 @@ class API(object):
             raise Forbidden
 
         item = self.comments.get(id)
+        thread = self.threads.get(item['tid'])
+        link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
 
         if item is None:
             raise NotFound
@@ -617,8 +623,11 @@ class API(object):
                 "      xhr = new XMLHttpRequest;"
                 "      xhr.open('POST', window.location.href);"
                 "      xhr.send(null);"
+                "      xhr.onload = function() {"
+                "          window.location.href = %s;"
+                "      };"
                 "  }"
-                "</script>" % action.capitalize())
+                "</script>" % (action.capitalize(), json.dumps(link)))
 
             return Response(modal, 200, content_type="text/html")
 
@@ -627,7 +636,6 @@ class API(object):
                 return Response("Already activated", 200)
             with self.isso.lock:
                 self.comments.activate(id)
-            thread = self.threads.get(item['tid'])
             self.signal("comments.activate", thread, item)
             return Response("Yo", 200)
         elif action == "edit":
