@@ -17,6 +17,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
 import jinja2.exceptions as jinja2_exceptions
+from translate import Translator
 
 try:
     from urllib.parse import quote
@@ -85,39 +86,26 @@ class SMTP(object):
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
         self.mail_lang = self.isso.conf.get("mail", "language")
         self.mail_format = self.isso.conf.get("mail", "format")
-        self.no_name_list = {
-            "bg": "анонимен",
-            "cs": "Anonym",
-            "da": "Anonym",
-            "de": "Anonym",
-            "el_GR": "Ανώνυμος",
-            "en": "Anonymous",
-            "eo": "Sennoma",
-            "es": "Anónimo",
-            "fa": "ناشناس",
-            "fi": "Nimetön",
-            "fr": "Anonyme",
-            "hr": "Anonimno",
-            "hu": "Névtelen",
-            "it": "Anonimo",
-            "nl": "Anoniem",
-            "pl": "Anonim",
-            "ru": "Аноним",
-            "sv": "Anonym",
-            "vi": "Nặc danh",
-            "zh": "匿名",
-            "zh_CN": "匿名",
-            "zh_TW": "匿名",
-            "ja": "アノニマス"
-        }
         
         try:
-            self.no_name = self.no_name_list[self.mail_lang]
-        except:
-            logger.warn('[mail] No anonymous for such language: %s.".'
-                         % self.mail_lang)
-            logger.warn('[mail] Anonymous fell back to the default "Anonymous".')
+            self.no_name = Translator(to_lang = self.mail_lang).translate("Anonymous")
+        except RuntimeError:
             self.no_name = "Anonymous"
+            logger.warn('[mail] Runtime Error on the lang %s, anonymous fell back to "Anonymous".'
+                        % self.mail_lang)
+        except Exception as err:
+            logger.warn("[mail] Some error about translate. %s"  
+                        % type(err)
+                        )
+            for er in err.args:
+                logger.warn("      %s" % er)
+            self.no_name = "Anonymous"
+            logger.warn('[mail] Anonymous fell back to "Anonymous".')
+        else:
+            if self.mail_lang.upper() in self.no_name:
+                self.no_name = "Anonymous"
+                logger.warn('[mail] No anonymous found for %s, anonymous fell back to "Anonymous".'
+                            % self.mail_lang)
         
         # test SMTP connectivity
         try:
@@ -148,37 +136,29 @@ class SMTP(object):
     def format(self, thread, comment, parent_comment, recipient=None, admin=False, part="plain"):
         jinjaenv = Environment(loader=FileSystemLoader("/"))
         
-        temp_path = os.path.join(dist.location, "isso", "templates/")  
+        temp_path = os.path.join(dist.location, "isso", "templates")  
+        com_ori = "comment_{0}.{1}".format(self.mail_lang, part)
         com_ori_admin = com_ori_user = "comment.%s" % part
         
-        if self.mail_lang != "en":
-            com_ori = os.path.join(temp_path, "comment_%s.%s" 
-                                   % (
-                                       self.mail_lang, 
-                                       part
-                                       )
-                                   )
-            try:
-                jinjaenv.get_template(com_ori)
-            except jinja2_exceptions.TemplateSyntaxError as err:
-                logger.warn("[mail] Wrong format. %s"
-                            % err
-                            )
-                logger.warn("[mail] Default template fell back to the one for en.")
-            except jinja2_exceptions.TemplateNotFound:
-                logger.warn("[mail] No default template for such language: %s. "
-                             % self.mail_lang
-                             )
-                logger.warn("[mail] Default template fell back to the one for en.")
-            except Exception as err:
-                logger.warn("[mail] Some error about jinja2.%s"  
-                            % type(err)
-                            )
-                for er in err.args:
-                    logger.warn("      %s" % er)
-                logger.warn("[mail] Default template fell back to the one for en.")
-            else:
-                com_ori_admin = com_ori_user = os.path.basename(com_ori)
+        try:
+            jinjaenv.get_template(os.path.join(temp_path, com_ori))
+        except jinja2_exceptions.TemplateSyntaxError as err:
+            logger.warn("[mail] Wrong format. %s" % err)
+            logger.warn("[mail] Default template fell back to the one for en.")
+        except jinja2_exceptions.TemplateNotFound:
+            logger.warn("[mail] No default template for such language: %s. "
+                         % self.mail_lang
+                         )
+            logger.warn("[mail] Default template fell back to the one for en.")
+        except Exception as err:
+            logger.warn("[mail] Some error about jinja2. %s"  
+                        % type(err)
+                        )
+            for er in err.args:
+                logger.warn("      %s" % er)
+            logger.warn("[mail] Default template fell back to the one for en.")
+        else:
+            com_ori_admin = com_ori_user = os.path.basename(com_ori)
 
         if self.isso.conf.get("mail", "template"):
             com_ori = self.isso.conf.get("mail", "template")
