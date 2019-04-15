@@ -234,9 +234,7 @@ class SMTP(object):
                                      )
                                  )
                     logger.warn("[mail] The template fell back to the default (%s part)"
-                                 .format(
-                                     part
-                                     )
+                                 % part
                                  )
                 except Exception as err:
                     logger.warn("[mail] Some error about jinja2. %s"  % type(err))
