@@ -114,7 +114,7 @@ class SMTP(object):
             if os.path.join(dist.location, "isso", "tests", "test_mail.py") in sys.argv:
                 pass
             else:
-                logger.exception("%s, unable to connect to SMTP server" % sys.argv)
+                logger.exception("unable to connect to SMTP server")
 
         if uwsgi:
             def spooler(args):
