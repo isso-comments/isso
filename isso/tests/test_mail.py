@@ -65,7 +65,7 @@ class TestMail(unittest.TestCase):
                              author="Anonymous",
                              comment=rv["text"],
                              ip=rv["remote_addr"],
-                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.isso.sign(rv["id"]),
+                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # Test what will happen when these happens:
@@ -89,7 +89,7 @@ class TestMail(unittest.TestCase):
                              author="Anonymous",
                              comment=rv["text"],
                              ip=rv["remote_addr"],
-                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.isso.sign(rv["id"]),
+                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # Test what will happen when these happens:
@@ -113,7 +113,7 @@ class TestMail(unittest.TestCase):
                              author="Anonymous",
                              comment=rv["text"],
                              ip=rv["remote_addr"],
-                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.isso.sign(rv["id"]),
+                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # Test the mail when the author has an email
@@ -134,7 +134,7 @@ class TestMail(unittest.TestCase):
                              comment=rv["text"],
                              email=rv["email"],
                              ip=rv["remote_addr"],
-                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.isso.sign(rv["id"]),
+                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # Test:
@@ -160,7 +160,7 @@ class TestMail(unittest.TestCase):
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
-                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.isso.sign(rv["id"]),
+                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # Test the approval mail of first-class comment waiting for approval
@@ -179,15 +179,14 @@ class TestMail(unittest.TestCase):
         rv["email"] = ""
         rv["remote_addr"] = "127.0.0.1"
         rv["mode"] = 2
-        key = self.smtp.isso.sign(rv["id"])
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True),
                          "{author} wrote:\n\n{comment}\n\nUser's URL: {website}\nIP address: {ip}\nLink to comment: {com_link}\n\n---\nDelete comment: {del_link}\nActivate comment: {act_link}\n\n\n".format(
                              author=rv["author"],
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
-                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + key,
-                             act_link=self.public_endpoint + "/id/%i/activate/" % rv["id"] + key,
+                             del_link=self.public_endpoint + "/id/%i/delete/" % rv["id"] + self.smtp.key,
+                             act_link=self.public_endpoint + "/id/%i/activate/" % rv["id"] + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 # Test reply notification
 
@@ -214,7 +213,7 @@ class TestMail(unittest.TestCase):
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
-                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.isso.sign(('unsubscribe', pa["email"])),
+                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 # When the template is set to an available directory
 
@@ -243,7 +242,7 @@ class TestMail(unittest.TestCase):
                 comment=pa["text"],
                 website=pa["website"],
                 ip=pa["remote_addr"],
-                del_link=self.public_endpoint + "/id/%i/delete/" % pa["id"] + self.smtp.isso.sign(pa["id"]),
+                del_link=self.public_endpoint + "/id/%i/delete/" % pa["id"] + self.smtp.key,
                 com_link=local("origin") + thread_test["uri"] + "#isso-%i" % pa["id"]))
 
         rv = loads(rv.data)
@@ -255,7 +254,7 @@ class TestMail(unittest.TestCase):
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
-                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.isso.sign(('unsubscribe', pa["email"])),
+                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # When the template is set to an available file
@@ -285,7 +284,7 @@ class TestMail(unittest.TestCase):
                 comment=pa["text"],
                 website=pa["website"],
                 ip=pa["remote_addr"],
-                del_link=self.public_endpoint + "/id/%i/delete/" % pa["id"] + self.smtp.isso.sign(pa["id"]),
+                del_link=self.public_endpoint + "/id/%i/delete/" % pa["id"] + self.smtp.key,
                 com_link=local("origin") + thread_test["uri"] + "#isso-%i" % pa["id"]))
 
         rv = loads(rv.data)
@@ -297,7 +296,7 @@ class TestMail(unittest.TestCase):
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
-                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.isso.sign(('unsubscribe', pa["email"])),
+                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))
 
 # When the template is set to an unavailable path
@@ -327,7 +326,7 @@ class TestMail(unittest.TestCase):
                 comment=pa["text"],
                 website=pa["website"],
                 ip=pa["remote_addr"],
-                del_link=self.public_endpoint + "/id/%i/delete/" % pa["id"] + self.smtp.isso.sign(pa["id"]),
+                del_link=self.public_endpoint + "/id/%i/delete/" % pa["id"] + self.smtp.key,
                 com_link=local("origin") + thread_test["uri"] + "#isso-%i" % pa["id"]))
 
         rv = loads(rv.data)
@@ -339,5 +338,5 @@ class TestMail(unittest.TestCase):
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
-                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.isso.sign(('unsubscribe', pa["email"])),
+                             unsubscribe=self.public_endpoint + "/id/%i/unsubscribe/" % pa["id"] + quote(pa["email"]) + "/" + self.smtp.key,
                              com_link=local("origin") + thread_test["uri"] + "#isso-%i" % rv["id"]))

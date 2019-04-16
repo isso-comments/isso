@@ -88,17 +88,13 @@ class SMTP(object):
 
         try:
             self.no_name = Translator(to_lang=self.mail_lang).translate("Anonymous")
-        except RuntimeError:
-            self.no_name = "Anonymous"
-            logger.warn('[mail] Runtime Error on the lang %s, anonymous fell back to "Anonymous".'
-                        % self.mail_lang)
         except Exception as err:
             logger.warn("[mail] Some error about translate. %s"
                         % type(err)
                         )
             for er in err.args:
                 logger.warn("      %s" % er)
-            self.no_name = "Anonymous"
+            self.no_name = Translator(to_lang="en").translate("Anonymous")
             logger.warn('[mail] Anonymous fell back to "Anonymous".')
         else:
             if self.mail_lang.upper() in self.no_name:
@@ -215,7 +211,7 @@ class SMTP(object):
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
-            key = self.isso.sign(comment["id"])
+            self.key = self.isso.sign(comment["id"])
             com_temp = jinjaenv.get_template(com_ori_admin).render(
                 author=comment["author"] or self.no_name,
                 email=comment["email"],
@@ -225,14 +221,14 @@ class SMTP(object):
                 website=comment["website"],
                 ip=comment["remote_addr"],
                 com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                del_link=uri + "/delete/" + key,
-                act_link=uri + "/activate/" + key,
+                del_link=uri + "/delete/" + self.key,
+                act_link=uri + "/activate/" + self.key,
                 thread_link=local("origin") + thread["uri"],
                 thread_title=thread["title"],
                 part=part)
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
-            key = self.isso.sign(('unsubscribe', recipient))
+            self.key = self.isso.sign(('unsubscribe', recipient))
             com_temp = jinjaenv.get_template(com_ori_user).render(
                 author=comment["author"] or self.no_name,
                 email=comment["email"],
@@ -242,7 +238,7 @@ class SMTP(object):
                 ip=comment["remote_addr"],
                 parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
                 com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
-                unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + key,
+                unsubscribe=uri + "/unsubscribe/" + quote(recipient) + "/" + self.key,
                 thread_link=local("origin") + thread["uri"],
                 thread_title=thread["title"],
                 part=part)
