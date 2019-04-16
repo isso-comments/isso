@@ -94,7 +94,7 @@ class SMTP(object):
                         )
             for er in err.args:
                 logger.warn("      %s" % er)
-            self.no_name = Translator(to_lang="en").translate("Anonymous")
+            self.no_name = "Anonymous"
             logger.warn('[mail] Anonymous fell back to "Anonymous".')
         else:
             if self.mail_lang.upper() in self.no_name:
@@ -213,7 +213,7 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             self.key = self.isso.sign(comment["id"])
             com_temp = jinjaenv.get_template(com_ori_admin).render(
-                author=comment["author"] or self.no_name,
+                author=comment["author"] or self.no_name or "Anonymous",
                 email=comment["email"],
                 admin=admin,
                 mode=comment["mode"],
@@ -230,7 +230,7 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
             self.key = self.isso.sign(('unsubscribe', recipient))
             com_temp = jinjaenv.get_template(com_ori_user).render(
-                author=comment["author"] or self.no_name,
+                author=comment["author"] or self.no_name or "Anonymous",
                 email=comment["email"],
                 admin=admin,
                 comment=comment["text"],

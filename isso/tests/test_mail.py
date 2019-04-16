@@ -156,7 +156,7 @@ class TestMail(unittest.TestCase):
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True),
                          "{author} hat geschrieben:\n\n{comment}\n\nURL des Benutzers: {website}\nIP Adresse: {ip}\nLink zum Kommentar: {com_link}\n\n---\nKommentar löschen: {del_link}\n\n\n".format(
-                             author=self.smtp.no_name,
+                             author="Anonym",
                              comment=rv["text"],
                              website=rv["website"],
                              ip=rv["remote_addr"],
