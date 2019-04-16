@@ -1,4 +1,4 @@
-{{author}}{% if email %} <{{ email }}>{% endif %} は書いた：
+{{author}}{% if admin and email %} <{{ email }}>{% endif %} は書いた：
 
 {{comment}}
 

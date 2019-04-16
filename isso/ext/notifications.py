@@ -143,11 +143,21 @@ class SMTP(object):
         except jinja2_exceptions.TemplateSyntaxError as err:
             logger.warn("[mail] Wrong format. %s" % err)
             logger.warn("[mail] Default template fell back to the one for en.")
+            logger.info("[mail] You can edit the default template for {0} at {1}. The default template you are using now is {2}. ({3} part)".format(
+                self.mail_lang,
+                os.path.join(temp_path, com_ori),
+                os.path.join(temp_path, com_ori_admin),
+                part))
         except jinja2_exceptions.TemplateNotFound:
             logger.warn("[mail] No default template for such language: %s. "
                         % self.mail_lang
                         )
             logger.warn("[mail] Default template fell back to the one for en.")
+            logger.info("[mail] You can add the default template for {0} as {1}. The default template you are using now is {2}. ({3} part)".format(
+                self.mail_lang,
+                os.path.join(temp_path, com_ori),
+                os.path.join(temp_path, com_ori_admin),
+                part))
         except Exception as err:
             logger.warn("[mail] Some error about jinja2. %s"
                         % type(err)
@@ -155,6 +165,11 @@ class SMTP(object):
             for er in err.args:
                 logger.warn("      %s" % er)
             logger.warn("[mail] Default template fell back to the one for en.")
+            logger.info("[mail] You can edit the default template for {0} at {1}. The default template you are using now is {2}. ({3} part)".format(
+                self.mail_lang,
+                os.path.join(temp_path, com_ori),
+                os.path.join(temp_path, com_ori_admin),
+                part))
         else:
             com_ori_admin = com_ori_user = os.path.basename(com_ori)
 

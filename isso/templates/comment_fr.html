@@ -1,5 +1,5 @@
 <html>
-<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} a écrit :</p>
+<p>{{author}}{% if admin and email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} a écrit :</p>
 
 <p>{{comment}}</p>
 

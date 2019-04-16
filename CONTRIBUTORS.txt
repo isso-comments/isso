@@ -113,5 +113,14 @@ In chronological order:
   * Update Polish translation
   * Redirect to comment after moderation
 
+* Sim <sim@snorl.ax>
+  * Email notification Customization with the following features:
+    * Mail Format Choose (plain, html, multipart. Default: plain)
+    * Title Customization
+    * Mail language (Will translate the "Anonymous" and the default template. Default: en)
+    * Mail Customization Path (Accept dir or single text file as the mail template.)
+    * The usage: https://github.com/posativ/isso/pull/518#issue-241452322
+    
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]

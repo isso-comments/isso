@@ -1,4 +1,4 @@
-{{author}}{% if email %} <{{ email }}>{% endif %}說：
+{{author}}{% if admin and email %} <{{ email }}>{% endif %}說：
 
 {{comment}}
 
