@@ -15,7 +15,6 @@ matrix:
 install:
   - pip install -U pip
   - pip install flake8 tox
-  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 script:
   - tox -e $TOX_ENV
   - make flakes
