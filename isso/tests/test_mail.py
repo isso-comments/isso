@@ -330,7 +330,7 @@ class TestMail(unittest.TestCase):
                 com_link=local("origin") + thread_test["uri"] + "#isso-%i" % pa["id"]))
 
         rv = loads(rv.data)
-        rv["email"] = ""
+        rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"]),
                          "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubcribe from this conversation: {unsubscribe}\n\n".format(
