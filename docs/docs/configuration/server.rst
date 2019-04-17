@@ -290,7 +290,8 @@ template
 	directory are available. I don't recommend it though it's possible to set
 	it to the absolute path to a single template and get it working, see 
 	`isso/isso/templates/comment.plain` for some details on this.
-	The log will tell you what happened when any error occurs.
+	The log will tell you what happened when any error occurs. 
+	You can also refer to the `original pull request<https://github.com/posativ/isso/pull/518#issue-241452322>` for details.
 
 Guard
 -----
