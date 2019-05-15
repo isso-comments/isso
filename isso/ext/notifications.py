@@ -225,7 +225,7 @@ class SMTP(object):
 
         jinjaenv = Environment(loader=FileSystemLoader(temp_path))
         if part == "html":
-            convert = html.Markdown(extensions=())
+            convert = html.Markup(self.isso.conf.section("markup")).render
             comment_text = convert(comment["text"])
         else:
             comment_text = comment["text"]
