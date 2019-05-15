@@ -225,7 +225,8 @@ class SMTP(object):
 
         jinjaenv = Environment(loader=FileSystemLoader(temp_path))
         if part == "html":
-            comment_text = html.Markdown(comment["text"])
+            convert = html.Markdown(extensions=("strikethrough", "superscript"))
+            comment_text = convert(comment["text"])
         else:
             comment_text = comment["text"]
 
