@@ -33,6 +33,7 @@ except ImportError:
 
 from isso.compat import PY2K
 from isso import local, dist
+from isso.utils import html
 
 if PY2K:
     from thread import start_new_thread
@@ -223,6 +224,10 @@ class SMTP(object):
             logger.info("[mail] You are now using the default template (%s part)." % part)
 
         jinjaenv = Environment(loader=FileSystemLoader(temp_path))
+        if part == "html":
+            comment_text = html.Markdown(comment["text"])
+        else:
+            comment_text = comment["text"]
 
         if admin:
             uri = self.public_endpoint + "/id/%i" % comment["id"]
@@ -232,7 +237,7 @@ class SMTP(object):
                 email=comment["email"],
                 admin=admin,
                 mode=comment["mode"],
-                comment=comment["text"],
+                comment=comment_text,
                 website=comment["website"],
                 ip=comment["remote_addr"],
                 com_link=local("origin") + thread["uri"] + "#isso-%i" % comment["id"],
@@ -248,7 +253,7 @@ class SMTP(object):
                 author=comment["author"] or self.no_name or "Anonymous",
                 email=comment["email"],
                 admin=admin,
-                comment=comment["text"],
+                comment=comment_text,
                 website=comment["website"],
                 ip=comment["remote_addr"],
                 parent_link=local("origin") + thread["uri"] + "#isso-%i" % parent_comment["id"],
