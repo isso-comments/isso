@@ -1,0 +1,34 @@
+<html>
+<p>{{author}}{% if email %} &lt;<a href="mailto:{{email}}">{{ email }}</a>&gt;{% endif %} wrote:</p>
+
+<p>{{comment}}</p>
+
+<p>
+
+	{% if website %}
+	User's URL: <a href="{{website}}">{{website}}</a>
+	<br>
+	{% endif %}
+	IP address: {{ip}}
+	<br>
+
+
+	Link to comment: <a href="{{com_link}}">Click Here</a>
+</p>
+
+<hr>
+
+<p>
+
+
+	Delete comment: <a href="{{del_link}}">Click Here</a>
+	<br>
+	{% if mode == 2 %}
+	Activate comment: <a href="{{act_link}}">Click Here</a>
+	{% endif %}
+
+
+
+</p>
+</html>
+{# See comment.txt for manual #}
