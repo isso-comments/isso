@@ -339,9 +339,9 @@ class SMTP(object):
         to = to or self.conf.get("to")
         if uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
-                         b"body": body.encode("utf-8") or Null,
-                         b"body_html": body_html or Null,
-                         b"body_plain": body_plain or Null,
+                         b"body": body,
+                         b"body_html": body_html,
+                         b"body_plain": body_plain,
                          b"to": to.encode("utf-8")})
         else:
             if self.mail_format == "multipart":
