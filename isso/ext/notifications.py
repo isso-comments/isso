@@ -118,9 +118,9 @@ class SMTP(object):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
                                    args[b"to"].decode("utf-8"),
-                                   body=args["body"],
-                                   body_html=args["body_html"],
-                                   body_plain=args["body_plain"])
+                                   body=args["body"].decode("utf-8"),
+                                   body_html=args["body_html"].decode("utf-8"),
+                                   body_plain=args["body_plain"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -335,13 +335,13 @@ class SMTP(object):
                                     email))
                     notified.append(email)
 
-    def sendmail(self, subject, thread, comment, body=None, body_html=None, body_plain=None, to=None):
+    def sendmail(self, subject, thread, comment, body="None", body_html="None", body_plain="None", to=None):
         to = to or self.conf.get("to")
         if uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
-                         b"body": body,
-                         b"body_html": body_html,
-                         b"body_plain": body_plain,
+                         b"body": body.encode("utf-8"),
+                         b"body_html": body_html.encode("utf-8"),
+                         b"body_plain": body_plain.encode("utf-8"),
                          b"to": to.encode("utf-8")})
         else:
             if self.mail_format == "multipart":
