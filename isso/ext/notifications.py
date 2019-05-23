@@ -118,9 +118,9 @@ class SMTP(object):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
                                    args[b"to"].decode("utf-8"),
-                                   body=args["body"].decode("utf-8"),
-                                   body_html=args["body_html"].decode("utf-8"),
-                                   body_plain=args["body_plain"].decode("utf-8"))
+                                   body=args["body"],
+                                   body_html=args["body_html"],
+                                   body_plain=args["body_plain"])
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -359,6 +359,7 @@ class SMTP(object):
             msg_html = MIMEText(body_html, "html", 'utf-8')
             msg.attach(msg_plain)
             msg.attach(msg_html)
+            body = msg
 
         msg = MIMEText(body, self.mail_format, 'utf-8')
 
