@@ -118,9 +118,7 @@ class SMTP(object):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
                                    args[b"to"].decode("utf-8"),
-                                   args["body"].decode("utf-8"),
-                                   args["body_html"].decode("utf-8"),
-                                   args["body_plain"].decode("utf-8"))
+                                   body=args["body"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -358,7 +356,7 @@ class SMTP(object):
 
         from_addr = self.conf.get("from")
 
-        if self.mail_format == "multipart":
+        if not uwsgi and self.mail_format == "multipart":
             msg = MIMEMultipart('alternative')
             msg_plain = MIMEText(body_plain, "plain", 'utf-8')
             msg_html = MIMEText(body_html, "html", 'utf-8')
@@ -366,6 +364,7 @@ class SMTP(object):
             msg.attach(msg_html)
         else:
             msg = MIMEText(body, self.mail_format, 'utf-8')
+
         msg['From'] = from_addr
         msg['To'] = to_addr
         msg['Date'] = formatdate(localtime=True)
@@ -377,7 +376,7 @@ class SMTP(object):
     def _retry(self, subject, to, body=None, body_html=None, body_plain=None):
         for x in range(5):
             try:
-                if self.mail_format == "multipart":
+                if not uwsgi and self.mail_format == "multipart":
                     self._sendmail(
                         subject=subject,
                         body_html=body_html,
