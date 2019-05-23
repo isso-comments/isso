@@ -1,23 +1,28 @@
 ========================================================================
 Variables usable under all situations:
 ========================================================================
-{{thread_link}} : self-explainary
-{{thread_title}} : self-explainary
-{{author}} : The comment author
-{{email}} : The comment author's email
-{{comment}} : The comment content
-{{website}} : The comment author's website address
-{{ip}} : The author's IP
+{{thread_link}} : self-explanatory
+{{thread_title}} : self-explanatory
+{{author}} : The name of the author of the comment
+{{email}} : The email of the author of the comment
+{{comment}} : The content of the comment
+{{website}} : The website address of the author of the comment
+{{ip}} : The IP address of the author of the comment
 ========================================================================
 Usable variables only under an admin situation:
-  EXAMPLE:  
+
+  VARIABLE USAGE EXAMPLE (IN SINGLE-FILE TEMPLATE SITUATION OR THE
+  SITUATION OF THE DEFAULT TEMPLATE):
   {% if admin %}
   ...(USE HERE)...
   {% else %}
   ...(Not here)...
   {% endif %}
+
+  For multiple-files situation, only use these variables in admin.html
+  and admin.plain.
 ========================================================================
-{{com_link}} : The comment link
+{{com_link}} : The link to see the comment
 {{del_link}} : The link to delete the comment
 {{act_link}} : The link to activate the comment
                (Only available when the comment is waiting for approval,
@@ -32,17 +37,23 @@ Usable variables only under an admin situation:
                )
 ========================================================================
 Usable variables only under a reply notification situation:
-  EXAMPLE:  
+
+  VARIABLE USAGE EXAMPLE (IN SINGLE-FILE TEMPLATE SITUATION OR THE
+  SITUATION OF THE DEFAULT TEMPLATE):
   {% if admin %}
   ...(Not here)...
   {% else %}
   ...(USE HERE)...
   {% endif %}
-======================================================================== 
-{{parent_link}} : The link of the comment the comment author replies to,
-                  in other words, the notification receiver's comment
-{{com_link}} : The comment link, in other words, the link of the reply 
-               to the receiver
+
+  For multiple-files situation, only use these variables in admin.html
+  and admin.plain.
+========================================================================
+{{parent_link}} : The link of the comment the author of the comment
+                  replies to, in other words, the link to the comment of
+                  the receiver of the notification
+{{com_link}} : The link to the comment link, in other words, the link of
+               the reply to the receiver
 {{unsubscribe}} : The link to unsubcribe from the subcription
 ========================================================================
 To use a single template for multipart format:
@@ -50,6 +61,7 @@ To use a single template for multipart format:
   ...(Html part)...
   {% else %}...(Plain part)...{% endif %}
 ========================================================================
-Styling suggestion: Use as much inline css as you can, 'cause in most web
-                    mails only inline css will be rendered. Only receiving
-                    through imap remains the <style> tag.
+Styling suggestion: Use as much inline css as you can in an html
+                    template, 'cause in most web mails only inline css
+                    will be rendered. Only receiving through imap remains
+                    the <style> tag.

@@ -232,7 +232,7 @@ timeout
 Mail
 ----
 
-confiurgure the format the mail notification uses in SMTP section.
+configure the format the mail notification uses in SMTP section.
 
 .. code-block:: ini
 
@@ -261,9 +261,9 @@ title_admin
 	specify the title format of the notification email sent to the admin.
   Default: `{title}`
   Available variables:
-  `{title}`: The name of the isso thread.
-  `{replier}`: The author name of the comment. If the author didn't fill in the Name
-  blank, it will fallback to "Anonymous" or something else according to the language
+  `{title}`: The title of the isso thread.
+  `{replier}`: The name of the author of the comment. If the author didn't fill in a
+  name, it will fallback to "Anonymous" or something else according to the language
   you set to in the `language` option above.
 
 title_user
@@ -271,17 +271,17 @@ title_user
 	commenter.
   Default: `Re: New comment posted on {title}`
   Available variables:
-  `{title}`: The name of the isso thread.
-  `{replier}`: The author name of the comment. If the author didn't fill in the `Name`
-  blank, it will fallback to "Anonymous" or something else according to the language
+  `{title}`: The title of the isso thread.
+  `{replier}`: The name of the author of the comment. If the author didn't fill in a
+  name, it will fallback to "Anonymous" or something else according to the language
   you set to in the `language` option above.
   `{receiver}`: The author whose comment is replied to in this situation.  If the
-  author didn't fill in the `Name` blank, it will fallback to "Anonymous" or something
+  author didn't fill in a name, it will fallback to "Anonymous" or something
   else according to the language you set to in the `language` option above.
 
 template
-	specify the path to your customized html template of comment yourself, in
-	jinja2 format. Default: For users who set `format = plain`, see
+	specify the path to your customized template of comment, in jinja2 format.
+  Default: For users who set `format = plain`, see
 	`isso/isso/templates/comment.plain` (or
 	`isso/isso/templates/comment_<iso639-1-code>.plain` for other languages);
 	For users who set `format = html`, see
@@ -297,7 +297,7 @@ template
 	directory, it'll check if `admin.html` and `user.html` (`admin.plain` and
 	`user.plain` for plain text users) in that directory are available to be
 	used for the format of the mail intended to be sent to admin and user,
-	individually.
+	respectively.
 	For users who set `format = multipart`, just set it to the absolute path
 	to a directory. it'll check if `admin.html`, `user.html` (For html part,
 	the former is used for the format of the mail sent to admin, the latter
