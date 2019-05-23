@@ -359,9 +359,9 @@ class SMTP(object):
             msg_html = MIMEText(body_html, "html", 'utf-8')
             msg.attach(msg_plain)
             msg.attach(msg_html)
-            body = msg
 
-        msg = MIMEText(body, self.mail_format, 'utf-8')
+        else:
+            msg = MIMEText(body, self.mail_format, 'utf-8')
 
         msg['From'] = from_addr
         msg['To'] = to_addr
