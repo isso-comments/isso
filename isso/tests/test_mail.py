@@ -83,7 +83,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = ""
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True, part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                              author="Anonymous",
                              comment="<p>From Anonymous<br>\n<strong>I love you.</strong></p>",
                              ip=rv["remote_addr"],
@@ -131,7 +131,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = ""
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True, part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                              author="Anonymous",
                              comment="<p>From <strong>Anonymous</strong></p>",
                              ip=rv["remote_addr"],
@@ -179,7 +179,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = ""
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True, part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                              author="Anonymous",
                              comment="<p>From <strong>Anonymous</strong></p>",
                              ip=rv["remote_addr"],
@@ -218,7 +218,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "sim@snorl.ax"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True, part="html"),
-                         '<html>\n<p>{author} &lt;<a href="mailto:{email}">{email}</a>&gt; wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} &lt;<a href="mailto:{email}">{email}</a>&gt; wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                              author=rv["author"],
                              comment="<p>From <em>Email</em> user</p>",
                              email=rv["email"],
@@ -319,7 +319,7 @@ class TestMail(unittest.TestCase):
         rv["remote_addr"] = "127.0.0.1"
         rv["mode"] = 2
         self.assertEqual(self.smtp.format(thread_test, rv, None, admin=True, part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tUser\'s URL: <a href="{website}">{website}</a>\n\t<br>\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\tActivate comment: <a href="{act_link}">Click Here</a>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tUser\'s URL: <a href="{website}">{website}</a>\n\t<br>\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\tActivate comment: <a href="{act_link}">Click Here</a>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                              author=rv["author"],
                              comment="<p><em>This</em> is a <strong>first-class</strong> comment</p>",
                              website=rv["website"],
@@ -347,7 +347,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"]),
-                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubcribe from this conversation: {unsubscribe}\n\n".format(
+                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubscribe from this conversation: {unsubscribe}\n\n".format(
                              author=rv["author"],
                              comment=rv["text"],
                              website=rv["website"],
@@ -374,7 +374,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"], part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tUnsubcribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tUnsubscribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
                              author=rv["author"],
                              comment='<p><strong>THis</strong> is a <em>sub-class</em> comment<br>\n<a href="https://snorl.ax" rel="nofollow noopener">Hello</a></p>',
                              website=rv["website"],
@@ -415,7 +415,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"]),
-                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubcribe from this conversation: {unsubscribe}\n\n".format(
+                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubscribe from this conversation: {unsubscribe}\n\n".format(
                              author=rv["author"],
                              comment=rv["text"],
                              website=rv["website"],
@@ -456,7 +456,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"], part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\n\tUnsubcribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\n\tUnsubscribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\n\n</p>\n</html>\n'.format(
                              author=rv["author"],
                              comment='<p><strong>THis</strong> is a <em>sub-class</em> comment<br>\n<a href="https://snorl.ax" rel="nofollow noopener">Hello</a></p>',
                              website=rv["website"],
@@ -497,7 +497,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"]),
-                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubcribe from this conversation: {unsubscribe}\n\n".format(
+                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubscribe from this conversation: {unsubscribe}\n\n".format(
                              author=rv["author"],
                              comment=rv["text"],
                              website=rv["website"],
@@ -525,7 +525,7 @@ class TestMail(unittest.TestCase):
         pa["remote_addr"] = "127.0.0.1"
         self.assertEqual(
             self.smtp.format(thread_test, pa, None, admin=True, part="html"),
-            '<html>\n<p>{author} &lt;<a href="mailto:{email}">{email}</a>&gt; wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+            '<html>\n<p>{author} &lt;<a href="mailto:{email}">{email}</a>&gt; wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                 author="Anonymous",
                 email=pa["email"],
                 comment="<p>...<strong>you</strong></p>",
@@ -538,7 +538,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"], part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tUnsubcribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tUnsubscribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
                              author=rv["author"],
                              comment='<p><strong>THis</strong> is a <em>sub-class</em> comment<br>\n<a href="https://snorl.ax" rel="nofollow noopener">Hello</a></p>',
                              website=rv["website"],
@@ -579,7 +579,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"]),
-                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubcribe from this conversation: {unsubscribe}\n\n".format(
+                         "{author} wrote:\n\n{comment}\n\nLink to comment: {com_link}\n\n---\nUnsubscribe from this conversation: {unsubscribe}\n\n".format(
                              author=rv["author"],
                              comment=rv["text"],
                              website=rv["website"],
@@ -607,7 +607,7 @@ class TestMail(unittest.TestCase):
         pa["remote_addr"] = "127.0.0.1"
         self.assertEqual(
             self.smtp.format(thread_test, pa, None, admin=True, part="html"),
-            '<html>\n<p>{author} &lt;<a href="mailto:{email}">{email}</a>&gt; wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\t\n\t\n\n</p>\n</html>\n'.format(
+            '<html>\n<p>{author} &lt;<a href="mailto:{email}">{email}</a>&gt; wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\t\n\tIP address: {ip}\n\t<br>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tDelete comment: <a href="{del_link}">Click Here</a>\n\t<br>\n\t\n\n\t\n\n</p>\n</html>\n'.format(
                 author="Anonymous",
                 email=pa["email"],
                 comment='<p><strong>...</strong></p>',
@@ -620,7 +620,7 @@ class TestMail(unittest.TestCase):
         rv["email"] = "hello@example.com"
         rv["remote_addr"] = "127.0.0.1"
         self.assertEqual(self.smtp.format(thread_test, rv, pa, recipient=pa["email"], part="html"),
-                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tUnsubcribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
+                         '<html>\n<p>{author} wrote:</p>\n\n<p>{comment}</p>\n\n<p>\n\t\n\n\tLink to comment: <a href="{com_link}">Click Here</a>\n</p>\n\n<hr>\n\n<p>\n\n\t\n\tUnsubscribe from this conversation: <a href="{unsubscribe}">Click Here</a>\n\t\n\n</p>\n</html>\n'.format(
                              author=rv["author"],
                              comment='<p><strong>THis</strong> is a <em>sub-class</em> comment<br>\n<a href="https://snorl.ax" rel="nofollow noopener">Hello</a></p>',
                              website=rv["website"],

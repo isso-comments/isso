@@ -10,6 +10,6 @@
 {% if admin %}Delete comment: {{del_link}}
 {% if mode == 2 %}Activate comment: {{act_link}}
 {% endif %}
-{% else %}Unsubcribe from this conversation: {{unsubscribe}}
+{% else %}Unsubscribe from this conversation: {{unsubscribe}}
 {% endif %}
 {# See comment_plain.txt for manual #}

@@ -10,12 +10,17 @@
  {{ip}} : The author's IP
  ========================================================================
  Usable variables only under an admin situation:
-   EXAMPLE:  
+
+   VARIABLE USAGE EXAMPLE (IN SINGLE-FILE TEMPLATE SITUATION OR THE
+   SITUATION OF THE DEFAULT TEMPLATE):
    {% if admin %}
    ...(USE HERE)...
    {% else %}
    ...(Not here)...
    {% endif %}
+
+   For multiple-files situation, only use these variables in admin.html
+   and admin.plain.
  ========================================================================
  {{com_link}} : The comment link
  {{del_link}} : The link to delete the comment
@@ -32,25 +37,25 @@
                 )
  ========================================================================
  Usable variables only under a reply notification situation:
-   EXAMPLE:  
+
+   VARIABLE USAGE EXAMPLE (IN SINGLE-FILE TEMPLATE SITUATION OR THE
+   SITUATION OF THE DEFAULT TEMPLATE):
    {% if admin %}
    ...(Not here)...
    {% else %}
    ...(USE HERE)...
    {% endif %}
- ======================================================================== 
+
+   For multiple-files situation, only use these variables in admin.html
+   and admin.plain.
+ ========================================================================
  {{parent_link}} : The link of the comment the comment author replies to,
                    in other words, the notification receiver's comment
- {{com_link}} : The comment link, in other words, the link of the reply 
+ {{com_link}} : The comment link, in other words, the link of the reply
                 to the receiver
- {{unsubscribe}} : The link to unsubcribe from the subcription
+ {{unsubscribe}} : The link to unsubscribe from the subcription
  ========================================================================
- To use a single template for multipart format:
-   {% if part == "html" %}
-   ...(Html part)...
-   {% else %}...(Plain part)...{% endif %}
- ========================================================================
- Warning: If you are customizng .plain templates, remember to tidy your 
+ Warning: If you are customizng .plain templates, remember to tidy your
           text and remove every unnecessary spaces besides the comment you
-          want (things like {#...#} won't be rendered), 'cause they will 
-          be rendered into the final mail. 
+          want (things like {#...#} won't be rendered), 'cause they will
+          be rendered into the final mail.

@@ -54,7 +54,7 @@ Usable variables only under a reply notification situation:
                   the receiver of the notification
 {{com_link}} : The link to the comment link, in other words, the link of
                the reply to the receiver
-{{unsubscribe}} : The link to unsubcribe from the subcription
+{{unsubscribe}} : The link to unsubscribe from the subcription
 ========================================================================
 To use a single template for multipart format:
   {% if part == "html" %}
