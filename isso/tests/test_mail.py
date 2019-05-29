@@ -9,11 +9,6 @@ import os
 import json
 import tempfile
 
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import quote
-
 from werkzeug.wrappers import Response
 from isso import Isso, core, config, local, dist
 from isso.utils import http
