@@ -109,9 +109,10 @@ class SMTP(object):
         yield "comments.new:after-save", self.notify_new
         yield "comments.activate", self.notify_activated
 
-    def format(self, thread, comment, parent_comment, recipient=None, admin=False):
+    def format(self, thread, comment, parent_comment, recipient=None):
 
         rv = io.StringIO()
+        admin = not parent_comment
 
         author = comment["author"] or "Anonymous"
         if admin and comment["email"]:
@@ -165,7 +166,7 @@ class SMTP(object):
     def notify_new(self, thread, comment):
         if self.admin_notify:
             subject = self.notify_subject(thread, comment)
-            body = self.format(thread, comment, None, admin=True)
+            body = self.format(thread, comment, None)
             self.sendmail(subject, body, thread, comment)
 
         if comment["mode"] == 1:
