@@ -257,8 +257,8 @@ format
 	specify mail format to use, available options: plain, html, multipart.
 	Default: plain
 
-title_admin
-	specify the title format of the notification email sent to the admin.
+subject_admin
+	specify the subject format of the notification email sent to the admin.
   Default: `{title}`
   Available variables:
   `{title}`: The title of the isso thread.
@@ -266,8 +266,8 @@ title_admin
   name, it will fallback to "Anonymous" or something else according to the language
   you set to in the `language` option above.
 
-title_user
-	specify the title format of the notification email sent to the subscribed
+subject_user
+	specify the subject format of the notification email sent to the subscribed
 	commenter.
   Default: `Re: New comment posted on {title}`
   Available variables:

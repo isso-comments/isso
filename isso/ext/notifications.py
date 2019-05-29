@@ -268,7 +268,7 @@ class SMTP(object):
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
-            mailtitle_admin = self.isso.conf.get("mail", "title_admin").format(
+            mailtitle_admin = self.isso.conf.get("mail", "subject_admin").format(
                 title=thread["title"],
                 replier=comment["author"] or self.no_name)
             if self.mail_format == "multipart":
@@ -307,7 +307,7 @@ class SMTP(object):
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
-                    subject = self.isso.conf.get("mail", "title_user").format(
+                    subject = self.isso.conf.get("mail", "subject_user").format(
                         title=thread["title"],
                         receiver=parent_comment["author"] or self.no_name,
                         replier=comment["author"] or self.no_name)
