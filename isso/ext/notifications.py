@@ -79,6 +79,7 @@ class SMTP(object):
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
+        self.no_name = "Anonymous"
 
         # test SMTP connectivity
         try:
