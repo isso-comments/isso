@@ -68,7 +68,7 @@ class TestMail(unittest.TestCase):
 
     def testSubject_customization(self):
         """Test subject customization parsing"""
-        self.conf.set("mail", "subject_user", "{receiver}, {replier} replied to {repliee}'s comment on the post {title}")
+        self.conf.set("mail", "subject_user", "{receiver}, {replier} replied to {repliee}'s comment on the post {title}\n{replier} replied to your comment on the post {title}")
         self.conf.set("mail", "subject_admin", "{replier} commented on your post {title}")
         self.smtp = SMTP(self.app)
         thread_test = {"uri": "/aaa", "title": "Hello isso!"}
@@ -85,5 +85,5 @@ class TestMail(unittest.TestCase):
         pa = loads(pa.data)
         rv = loads(rv.data)
 
-        self.assertEqual(self.smtp.notify_subject(thread_test, rv, pa, pa), "Anonymous, Sim replied to Anonymous's comment on the post Hello isso!")
+        self.assertEqual(self.smtp.notify_subject(thread_test, rv, pa, pa), "Sim replied to your comment on the post Hello isso!")
         self.assertEqual(self.smtp.notify_subject(thread_test, pa), "Anonymous commented on your post Hello isso!")
