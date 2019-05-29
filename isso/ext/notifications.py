@@ -148,8 +148,11 @@ class SMTP(object):
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
+            subject = self.isso.conf.get("mail", "subject_admin").format(
+                title=thread["title"],
+                replier=comment["author"] or self.no_name)
             body = self.format(thread, comment, None, admin=True)
-            self.sendmail(thread["title"], body, thread, comment)
+            self.sendmail(subject, body, thread, comment)
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -169,7 +172,10 @@ class SMTP(object):
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, parent_comment, email, admin=False)
-                    subject = "Re: New comment posted on %s" % thread["title"]
+                    subject = self.isso.conf.get("mail", "subject_user").format(
+                        title=thread["title"],
+                        receiver=parent_comment["author"] or self.no_name,
+                        replier=comment["author"] or self.no_name)
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
 

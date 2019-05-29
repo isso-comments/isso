@@ -229,6 +229,35 @@ timeout
     specify a timeout in seconds for blocking operations like the
     connection attempt.
 
+Mail
+----
+
+configure the format the mail notification uses in SMTP section.
+
+.. code-block:: ini
+
+    [mail]
+    subject_admin = {title}
+    subject_user = Re: New comment posted on {title}
+
+subject_admin
+  	specify the subject format of the notification email sent to the admin.
+    Default: `{title}`
+    Available variables:
+    `{title}`: The title of the isso thread.
+    `{replier}`: The name of the author of the comment. If the author didn't fill in a
+    name, it will fallback to the term "Anonymous".
+
+subject_user
+  	specify the subject format of the notification email sent to the subscribed
+  	commenter.
+    Default: `Re: New comment posted on {title}`
+    Available variables:
+    `{title}`: The title of the isso thread.
+    `{replier}`: The name of the author of the comment. If the author didn't fill in a
+    name, it will fallback to the term "Anonymous".
+    `{receiver}`: The author whose comment is replied to in this situation.  If the
+    author didn't fill in a name, it will fallback to to the term "Anonymous".
 
 Guard
 -----
