@@ -145,19 +145,20 @@ class SMTP(object):
 
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
-            key = self.isso.sign(('unsubscribe', recipient))
+            key = self.isso.sign(('unsubscribe', recipient["email"]))
 
-            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + quote(recipient) + "/" + key))
+            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + quote(recipient["email"]) + "/" + key))
 
         rv.seek(0)
         return rv.read()
 
-    def notify_subject(self, thread, comment, parent_comment=None):
+    def notify_subject(self, thread, comment, parent_comment=None, recipient=None):
         if parent_comment:
             return self.isso.conf.get("mail", "subject_user").format(
                 title=thread["title"],
-                receiver=parent_comment["author"] or self.no_name,
-                replier=comment["author"] or self.no_name)
+                repliee=parent_comment["author"] or self.no_name,
+                replier=comment["author"] or self.no_name,
+                receiver=recipient["author"] or self.no_name)
         else:
             return self.isso.conf.get("mail", "subject_admin").format(
                 title=thread["title"],
@@ -186,8 +187,8 @@ class SMTP(object):
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
-                    body = self.format(thread, comment, parent_comment, email)
-                    subject = self.notify_subject(thread, comment, parent_comment=parent_comment)
+                    body = self.format(thread, comment, parent_comment, comment_to_notify)
+                    subject = self.notify_subject(thread, comment, parent_comment, comment_to_notify)
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
 

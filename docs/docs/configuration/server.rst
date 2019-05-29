@@ -256,8 +256,9 @@ subject_user
     `{title}`: The title of the isso thread.
     `{replier}`: The name of the author of the comment. If the author has no name,
     it will fallback to the term "Anonymous".
-    `{receiver}`: The author whose comment is replied to in this situation.  If the
-    author has no name, it will fallback to the term "Anonymous".
+    `{repliee}`: The author whose comment is replied to.  If the author has no
+    name, it will fallback to the term "Anonymous".
+    `{receiver}`: The receiver of the email.
 
 Guard
 -----
