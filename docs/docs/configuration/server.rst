@@ -232,7 +232,7 @@ timeout
 Mail
 ----
 
-configure the format the mail notification uses in SMTP section.
+Configure the format the mail notification uses in the SMTP section.
 
 .. code-block:: ini
 
@@ -245,8 +245,8 @@ subject_admin
     Default: `{title}`
     Available variables:
     `{title}`: The title of the isso thread.
-    `{replier}`: The name of the author of the comment. If the author didn't fill in a
-    name, it will fallback to the term "Anonymous".
+    `{replier}`: The name of the author of the comment. If the author has no name,
+    it will fallback to the term "Anonymous".
 
 subject_user
   	specify the subject format of the notification email sent to the subscribed
@@ -254,10 +254,10 @@ subject_user
     Default: `Re: New comment posted on {title}`
     Available variables:
     `{title}`: The title of the isso thread.
-    `{replier}`: The name of the author of the comment. If the author didn't fill in a
-    name, it will fallback to the term "Anonymous".
+    `{replier}`: The name of the author of the comment. If the author has no name,
+    it will fallback to the term "Anonymous".
     `{receiver}`: The author whose comment is replied to in this situation.  If the
-    author didn't fill in a name, it will fallback to to the term "Anonymous".
+    author has no name, it will fallback to the term "Anonymous".
 
 Guard
 -----
