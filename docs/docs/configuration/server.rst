@@ -239,8 +239,8 @@ configure the format the mail notification uses in SMTP section.
     [mail]
     language = en
     format = plain
-    title_admin = {title}
-    title_user = Re: New comment posted on {title}
+    subject_admin = {title}
+    subject_user = Re: New comment posted on {title}
     template =
 
 language
