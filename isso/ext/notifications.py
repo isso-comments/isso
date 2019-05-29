@@ -6,6 +6,7 @@ import sys
 import io
 import time
 import json
+import os.path
 
 import socket
 import smtplib
@@ -28,7 +29,7 @@ except ImportError:
     uwsgi = None
 
 from isso.compat import PY2K
-from isso import local
+from isso import local, dist
 
 if PY2K:
     from thread import start_new_thread
@@ -86,7 +87,10 @@ class SMTP(object):
             with SMTPConnection(self.conf):
                 logger.info("connected to SMTP server")
         except (socket.error, smtplib.SMTPException):
-            logger.exception("unable to connect to SMTP server")
+            if os.path.join(dist.location, "isso", "tests", "test_mail.py") in sys.argv:
+                pass
+            else:
+                logger.exception("unable to connect to SMTP server")
 
         if uwsgi:
             def spooler(args):
@@ -147,11 +151,20 @@ class SMTP(object):
         rv.seek(0)
         return rv.read()
 
-    def notify_new(self, thread, comment):
-        if self.admin_notify:
-            subject = self.isso.conf.get("mail", "subject_admin").format(
+    def notify_subject(self, thread, comment, parent_comment=None):
+        if parent_comment:
+            return self.isso.conf.get("mail", "subject_user").format(
+                title=thread["title"],
+                receiver=parent_comment["author"] or self.no_name,
+                replier=comment["author"] or self.no_name)
+        else:
+            return self.isso.conf.get("mail", "subject_admin").format(
                 title=thread["title"],
                 replier=comment["author"] or self.no_name)
+
+    def notify_new(self, thread, comment):
+        if self.admin_notify:
+            subject = self.notify_subject(thread, comment)
             body = self.format(thread, comment, None, admin=True)
             self.sendmail(subject, body, thread, comment)
 
@@ -172,11 +185,8 @@ class SMTP(object):
                 email = comment_to_notify["email"]
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
-                    body = self.format(thread, comment, parent_comment, email, admin=False)
-                    subject = self.isso.conf.get("mail", "subject_user").format(
-                        title=thread["title"],
-                        receiver=parent_comment["author"] or self.no_name,
-                        replier=comment["author"] or self.no_name)
+                    body = self.format(thread, comment, parent_comment, email)
+                    subject = self.notify_subject(thread, comment, parent_comment=parent_comment)
                     self.sendmail(subject, body, thread, comment, to=email)
                     notified.append(email)
 
