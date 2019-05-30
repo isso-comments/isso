@@ -241,27 +241,42 @@ Configure the format the mail notification uses in the SMTP section.
     subject_user = Re: New comment posted on {title}
 
 subject_admin
-  	specify the subject format of the notification email sent to the admin.
+    specify the subject format of the notification email sent to the admin.
+
     Default: `{title}`
+
     Available variables:
-    `{title}`: The title of the isso thread.
-    `{replier}`: The name of the author of the comment. If the author has no name,
-    it will fallback to the term "Anonymous".
+
+    {title}
+        The title of the isso thread.
+
+    {replier}
+        The name of the author of the comment. If the author has no name,
+        it will fallback to the term "Anonymous".
 
 subject_user
-  	specify the subject format of the notification email sent to the subscribed
-  	commenter.
+    specify the subject format of the notification email sent to the subscribed
+    commenter. If it is set to two values, then the first one will be used when
+    `{repliee}`'s comment is not the `{receiver}`'s original one, the second one
+    will be used otherwise.
+
     Default: `Re: New comment posted on {title}`
+
     Available variables:
-    `{title}`: The title of the isso thread.
-    `{replier}`: The name of the author of the comment. If the author has no name,
-    it will fallback to the term "Anonymous".
-    `{repliee}`: The author whose comment is replied to.  If the author has no
-    name, it will fallback to the term "Anonymous".
-    `{receiver}`: The receiver of the email.
-    If it is set to two values, then the first one will be used when `{repliee}`'s
-    comment is not the `{receiver}`'s original one, the second one will be used
-    otherwise.
+
+    {title}
+        The title of the isso thread.
+
+    {replier}
+        The name of the author of the comment. If the author has no name,
+        it will fallback to the term "Anonymous".
+
+    {repliee}
+        The author whose comment is replied to.  If the author has no
+        name, it will fallback to the term "Anonymous".
+
+    {receiver}
+        The receiver of the email.
 
 Guard
 -----
