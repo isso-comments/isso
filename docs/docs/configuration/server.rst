@@ -242,9 +242,7 @@ Configure the format the mail notification uses in the SMTP section.
 
 subject_admin
     specify the subject format of the notification email sent to the admin.
-
-    Default: `{title}`
-
+    Default: ``{title}``. 
     Available variables:
 
     {title}
@@ -257,11 +255,9 @@ subject_admin
 subject_user
     specify the subject format of the notification email sent to the subscribed
     commenter. If it is set to two values, then the first one will be used when
-    `{repliee}`'s comment is not the `{receiver}`'s original one, the second one
+    ``{repliee}``'s comment is not the ``{receiver}``'s original one, the second one
     will be used otherwise.
-
-    Default: `Re: New comment posted on {title}`
-
+    Default: ``Re: New comment posted on {title}``.
     Available variables:
 
     {title}
