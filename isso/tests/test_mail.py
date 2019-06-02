@@ -64,7 +64,7 @@ class TestMail(unittest.TestCase):
         rv = loads(rv.data)
 
         self.assertEqual(self.smtp.notify_subject(thread_test, rv, pa, pa), "Re: New comment posted on %s" % thread_test["title"])
-        self.assertEqual(self.smtp.notify_subject(thread_test, pa), thread_test["title"])
+        self.assertEqual(self.smtp.notify_subject(thread_test, pa, admin=True), thread_test["title"])
 
     def testSubject_customization(self):
         """Test subject customization parsing"""
@@ -86,4 +86,4 @@ class TestMail(unittest.TestCase):
         rv = loads(rv.data)
 
         self.assertEqual(self.smtp.notify_subject(thread_test, rv, pa, pa), "Sim replied to your comment on the post Hello isso!")
-        self.assertEqual(self.smtp.notify_subject(thread_test, pa), "Anonymous commented on your post Hello isso!")
+        self.assertEqual(self.smtp.notify_subject(thread_test, pa, admin=True), "Anonymous commented on your post Hello isso!")

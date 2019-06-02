@@ -105,10 +105,9 @@ class SMTP(object):
         yield "comments.new:after-save", self.notify_new
         yield "comments.activate", self.notify_activated
 
-    def format(self, thread, comment, parent_comment, recipient=None):
+    def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
         rv = io.StringIO()
-        admin = not recipient
 
         author = comment["author"] or "Anonymous"
         if admin and comment["email"]:
@@ -148,8 +147,12 @@ class SMTP(object):
         rv.seek(0)
         return rv.read()
 
-    def notify_subject(self, thread, comment, parent_comment=None, recipient=None):
-        if recipient:
+    def notify_subject(self, thread, comment, parent_comment=None, recipient=None, admin=False):
+        if admin:
+            return self.isso.conf.get("mail", "subject_admin").format(
+                title=thread["title"],
+                replier=comment["author"] or "Anonymous")
+        else:
             subject_format = list(self.isso.conf.getiter("mail", "subject_user"))
             if len(subject_format) == 1:
                 return subject_format[0].format(
@@ -168,15 +171,11 @@ class SMTP(object):
                 repliee=parent_comment["author"] or "Anonymous",
                 replier=comment["author"] or "Anonymous",
                 receiver=recipient["author"] or "Anonymous")
-        else:
-            return self.isso.conf.get("mail", "subject_admin").format(
-                title=thread["title"],
-                replier=comment["author"] or "Anonymous")
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
-            subject = self.notify_subject(thread, comment)
-            body = self.format(thread, comment, None)
+            subject = self.notify_subject(thread, comment, admin=True)
+            body = self.format(thread, comment, None, admin=True)
             self.sendmail(subject, body, thread, comment)
 
         if comment["mode"] == 1:
