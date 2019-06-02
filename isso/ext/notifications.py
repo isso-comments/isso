@@ -6,7 +6,6 @@ import sys
 import io
 import time
 import json
-import os.path
 
 import socket
 import smtplib
