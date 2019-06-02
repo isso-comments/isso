@@ -28,7 +28,7 @@ except ImportError:
     uwsgi = None
 
 from isso.compat import PY2K
-from isso import local, dist
+from isso import local
 
 if PY2K:
     from thread import start_new_thread

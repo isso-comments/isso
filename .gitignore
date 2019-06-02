@@ -119,3 +119,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Atom build
+.build-tools.cson
+flake.log
