@@ -242,7 +242,7 @@ Configure the format the mail notification uses in the SMTP section.
 
 subject_admin
     specify the subject format of the notification email sent to the admin.
-    Default: ``{title}``. 
+    Default: ``{title}``.
     Available variables:
 
     {title}
@@ -272,7 +272,7 @@ subject_user
         name, it will fallback to the term "Anonymous".
 
     {receiver}
-        The receiver of the email.
+        The name of the recipient of the email.
 
 Guard
 -----

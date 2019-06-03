@@ -123,3 +123,4 @@ ENV/
 # Atom build
 .build-tools.cson
 flake.log
+.pylintrc
