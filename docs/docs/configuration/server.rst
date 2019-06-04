@@ -238,7 +238,8 @@ Configure the format the mail notification uses in the SMTP section.
 
     [mail]
     subject_admin = {title}
-    subject_user = Re: New comment posted on {title}
+    subject_user_reply = Re: New comment posted on {title}
+    subject_user_new_comment = Re: New comment posted on {title}
 
 subject_admin
     specify the subject format of the notification email sent to the admin.
