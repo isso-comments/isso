@@ -100,6 +100,9 @@ class SMTP(object):
 
             uwsgi.spooler = spooler
 
+    def NO_NAME(self):
+        return "Anonymous"
+
     def __iter__(self):
         yield "comments.new:after-save", self.notify_new
         yield "comments.activate", self.notify_activated
@@ -108,7 +111,7 @@ class SMTP(object):
 
         rv = io.StringIO()
 
-        author = comment["author"] or "Anonymous"
+        author = comment["author"] or self.NO_NAME()
         if admin and comment["email"]:
             author += " <%s>" % comment["email"]
 
@@ -150,18 +153,18 @@ class SMTP(object):
         if admin:
             return self.isso.conf.get("mail", "subject_admin").format(
                 title=thread["title"],
-                replier=comment["author"] or "Anonymous")
+                replier=comment["author"] or self.NO_NAME())
         if parent_comment["id"] == recipient_comment["id"]:
             return self.isso.conf.get("mail", "subject_user_reply").format(
                 title=thread["title"],
-                repliee=parent_comment["author"] or "Anonymous",
-                replier=comment["author"] or "Anonymous",
-                receiver=recipient_comment["author"] or "Anonymous")
+                repliee=parent_comment["author"] or self.NO_NAME(),
+                replier=comment["author"] or self.NO_NAME(),
+                receiver=recipient_comment["author"] or self.NO_NAME())
         return self.isso.conf.get("mail", "subject_user_new_comment").format(
             title=thread["title"],
-            repliee=parent_comment["author"] or "Anonymous",
-            replier=comment["author"] or "Anonymous",
-            receiver=recipient_comment["author"] or "Anonymous")
+            repliee=parent_comment["author"] or self.NO_NAME(),
+            replier=comment["author"] or self.NO_NAME(),
+            receiver=recipient_comment["author"] or self.NO_NAME())
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
