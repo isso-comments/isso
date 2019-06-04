@@ -151,20 +151,13 @@ class SMTP(object):
             return self.isso.conf.get("mail", "subject_admin").format(
                 title=thread["title"],
                 replier=comment["author"] or "Anonymous")
-        subject_format = list(self.isso.conf.getiter("mail", "subject_user"))
-        if len(subject_format) == 1:
-            return subject_format[0].format(
-                title=thread["title"],
-                repliee=parent_comment["author"] or "Anonymous",
-                replier=comment["author"] or "Anonymous",
-                receiver=recipient_comment["author"] or "Anonymous")
         if parent_comment["id"] == recipient_comment["id"]:
-            return subject_format[1].format(
+            return self.isso.conf.get("mail", "subject_user_reply").format(
                 title=thread["title"],
                 repliee=parent_comment["author"] or "Anonymous",
                 replier=comment["author"] or "Anonymous",
                 receiver=recipient_comment["author"] or "Anonymous")
-        return subject_format[0].format(
+        return self.isso.conf.get("mail", "subject_user_new_comment").format(
             title=thread["title"],
             repliee=parent_comment["author"] or "Anonymous",
             replier=comment["author"] or "Anonymous",

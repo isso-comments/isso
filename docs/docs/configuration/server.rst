@@ -252,11 +252,30 @@ subject_admin
         The name of the author of the comment. If the author has no name,
         it will fallback to the term "Anonymous".
 
-subject_user
+subject_user_reply
     specify the subject format of the notification email sent to the subscribed
-    commenter. If it is set to two values, then the first one will be used when
-    ``{repliee}``'s comment is not the ``{receiver}``'s original one, the second one
-    will be used otherwise.
+    commenter when the new comment is a reply to his comment.
+    Default: ``Re: New comment posted on {title}``.
+    Available variables:
+
+    {title}
+        The title of the isso thread.
+
+    {replier}
+        The name of the author of the comment. If the author has no name,
+        it will fallback to the term "Anonymous".
+
+    {repliee}
+        The author whose comment is replied to.  If the author has no
+        name, it will fallback to the term "Anonymous".
+
+    {receiver}
+        The name of the recipient of the email.
+
+subject_user_new_comment
+    specify the subject format of the notification email sent to the subscribed
+    commenter whose comment is a reply to a comment when the new comment is also
+    a reply to that comment.
     Default: ``Re: New comment posted on {title}``.
     Available variables:
 
