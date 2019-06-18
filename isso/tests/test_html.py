@@ -89,6 +89,7 @@ class TestHTML(unittest.TestCase):
         conf = config.new({
             "markup": {
                 "options": "autolink",
+                "flags": "",
                 "allowed-elements": "",
                 "allowed-attributes": ""
             }
