@@ -4,6 +4,14 @@ Changelog for Isso
 0.12.3 (UNRELEASED)
 -------------------
 
+- New "flags" option in the [markdown] section to customize Misaka's Markdown
+  HTML rendering. By default, no flags are set.
+
+      [markup]
+      flags = skip-html, escape, hard-wrap
+
+  Check docs/configuration/server.rst for more details.
+
 0.12.2 (2019-01-21)
 -------------------
 
