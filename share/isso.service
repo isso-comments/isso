@@ -1,0 +1,10 @@
+[Unit]
+Description=lightweight Disqus alternative
+
+[Service]
+Type=simple
+User=isso
+ExecStart=/opt/isso/bin/isso -c /opt/isso/conf/isso.ini run
+
+[Install]
+WantedBy=multi-user.target
