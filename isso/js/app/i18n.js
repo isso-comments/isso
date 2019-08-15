@@ -1,9 +1,9 @@
 define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         "app/i18n/de", "app/i18n/en", "app/i18n/fa", "app/i18n/fi",
         "app/i18n/fr", "app/i18n/hr",  "app/i18n/hu", "app/i18n/ru", "app/i18n/it",
-        "app/i18n/eo", "app/i18n/pl", "app/i18n/sk", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR",
+        "app/i18n/eo", "app/i18n/oc" "app/i18n/pl", "app/i18n/sk", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR",
         "app/i18n/es", "app/i18n/vi", "app/i18n/zh_CN", "app/i18n/zh_CN", "app/i18n/zh_TW"],
-        function(config, bg, cs, da, de, en, fa, fi, fr, hr, hu, ru, it, eo, pl, sk, sv, nl, el, es, vi, zh, zh_CN, zh_TW) {
+        function(config, bg, cs, da, de, en, fa, fi, fr, hr, hu, ru, it, eo, oc, pl, sk, sv, nl, el, es, vi, zh, zh_CN, zh_TW) {
 
     "use strict";
 
@@ -44,6 +44,10 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
                 } else {
                     return typeof msgs[2] !== "undefined" ? msgs[2] : msgs[1];
                 }
+            };
+        case "oc":
+            return function(msgs, n) {
+                return msgs[n > 1 ? 1 : 0];
             };
         case "pl":
             return function(msgs, n) {
@@ -93,6 +97,7 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         it: it,
         hr: hr,
         hu: hu,
+        oc: oc,
         pl: pl,
         ru: ru,
         sk: sk,
