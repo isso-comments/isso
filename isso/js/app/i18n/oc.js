@@ -22,7 +22,7 @@ define({
     "comment-deleted": "Comentari suprimit.",
     "comment-queued": "Comentari en espèra de moderacion.",
     "comment-anonymous": "Anonim",
-    "comment-hidden": "{{ n }} resconduts",
+    "comment-hidden": "1 rescondut\n{{ n }} resconduts",
 
     "date-now": "ara meteis",
     "date-minute": "fa una minuta \nfa {{ n }} minutas",
