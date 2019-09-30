@@ -159,10 +159,18 @@ class TestComments(unittest.TestCase):
 
     def testGetInvalid(self):
 
-        self.assertEqual(self.get('/?uri=%2Fpath%2F&id=123').status_code, 404)
+        self.assertEqual(self.get('/?uri=%2Fpath%2F&id=123').status_code, 200)
+        data = loads(self.get('/?uri=%2Fpath%2F&id=123').data)
+        self.assertEqual(len(data['replies']), 0)
+
         self.assertEqual(
-            self.get('/?uri=%2Fpath%2Fspam%2F&id=123').status_code, 404)
-        self.assertEqual(self.get('/?uri=?uri=%foo%2F').status_code, 404)
+            self.get('/?uri=%2Fpath%2Fspam%2F&id=123').status_code, 200)
+        data = loads(self.get('/?uri=%2Fpath%2Fspam%2F&id=123').data)
+        self.assertEqual(len(data['replies']), 0)
+
+        self.assertEqual(self.get('/?uri=?uri=%foo%2F').status_code, 200)
+        data = loads(self.get('/?uri=?uri=%foo%2F').data)
+        self.assertEqual(len(data['replies']), 0)
 
     def testGetLimited(self):
 
@@ -244,8 +252,11 @@ class TestComments(unittest.TestCase):
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=2').status_code, 200)
 
         r = client.delete('/id/2')
-        self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 404)
+        self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 200)
         self.assertNotIn('/path/', self.app.db.threads)
+
+        data = loads(client.get('/?uri=%2Fpath%2F').data)
+        self.assertEqual(len(data['replies']), 0)
 
     def testDeleteWithMultipleReferences(self):
         """
@@ -272,7 +283,10 @@ class TestComments(unittest.TestCase):
         client.delete('/id/3')
         self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 200)
         client.delete('/id/4')
-        self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 404)
+        self.assertEqual(self.get('/?uri=%2Fpath%2F').status_code, 200)
+
+        data = loads(client.get('/?uri=%2Fpath%2F').data)
+        self.assertEqual(len(data['replies']), 0)
 
     def testPathVariations(self):
 
@@ -465,7 +479,10 @@ class TestModeratedComments(unittest.TestCase):
         self.assertEqual(rv.status_code, 202)
 
         self.assertEqual(self.client.get('/id/1').status_code, 200)
-        self.assertEqual(self.client.get('/?uri=test').status_code, 404)
+        self.assertEqual(self.client.get('/?uri=test').status_code, 200)
+
+        data = loads(self.client.get('/?uri=test').data)
+        self.assertEqual(len(data['replies']), 0)
 
         self.app.db.comments.activate(1)
         self.assertEqual(self.client.get('/?uri=test').status_code, 200)
