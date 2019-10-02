@@ -35,8 +35,8 @@ Example:
     [
         {
             "id": "/blog/article1",
-            "title": "First article!"
-            comments": [
+            "title": "First article!",
+            "comments": [
                 {
                     "author": "James",
                     "created": "2018-11-28 17:24:23",
