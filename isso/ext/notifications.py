@@ -79,8 +79,7 @@ class SMTP(object):
         self.public_endpoint = isso.conf.get("server", "public-endpoint")
         # rstrips potential trailing '/', without having to `repr` the `local` object.
         if self.public_endpoint:
-            if self.public_endpoint.endswith('/'):
-                self.public_endpoint = self.public_endpoint.rstrip('/')
+            self.public_endpoint = self.public_endpoint.rstrip('/')
         else:
             self.public_endpoint = local("host")
 
