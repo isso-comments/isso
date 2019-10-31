@@ -73,6 +73,7 @@ from isso.utils import http, JSONRequest, html, hash
 from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
+from isso.ext.telegram import TelegramBot
 
 logging.getLogger('werkzeug').setLevel(logging.WARN)
 logging.basicConfig(
@@ -102,6 +103,8 @@ class Isso(object):
                 subscribers.append(Stdout(None))
             elif backend in ("smtp", "SMTP"):
                 smtp_backend = True
+            elif backend == "telegram":
+                subscribers.append(TelegramBot(self.conf))
             else:
                 logger.warn("unknown notification backend '%s'", backend)
         if smtp_backend or conf.getboolean("general", "reply-notifications"):
