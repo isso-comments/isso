@@ -134,11 +134,7 @@ To upgrade Isso, activate your virtual environment again, and run
 Prebuilt Packages
 -----------------
 
-* Debian: https://packages.crapouillou.net/ – built from PyPi. Includes
-  startup scripts and vhost configurations for Lighttpd, Apache and Nginx
-  [`source <https://github.com/jgraichen/debian-isso>`__].
-  `#729218 <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=729218>`_ is an
-  ITP for Debian.
+* Debian (since Buster): https://packages.debian.org/search?keywords=isso
 
 * Gentoo: http://eroen.eu/cgit/cgit.cgi/eroen-overlay/tree/www-apps/isso?h=isso
   – not yet available in Portage, but you can use the ebuild to build Isso.
