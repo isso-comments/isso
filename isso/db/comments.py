@@ -81,6 +81,23 @@ class Comments:
             '    mode=1',
             'WHERE id=? AND mode=2'], (id, ))
 
+    def is_previously_approved_author(self, email):
+        """
+        Search for previously activated comments with this author email.
+        """
+
+        if type(email) is str and len(email) >= 3:
+            # this SQL should be one of the fastest ways of determining if
+            # there's at least one comment with the given email and activation
+            # https://stackoverflow.com/questions/18114458/fastest-way-to-determine-if-record-exists
+            rv = self.db.execute(
+                'SELECT CASE WHEN EXISTS(select * from comments where email=? and mode=1) THEN 1 ELSE 0 END;', (email, )).fetchone()
+            print(rv)
+            return rv[0] == 1
+
+        else:
+            return False
+
     def unsubscribe(self, email, id):
         """
         Turn off email notifications for replies to this comment.
