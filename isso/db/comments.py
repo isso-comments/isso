@@ -94,7 +94,7 @@ class Comments:
                 'SELECT CASE WHEN EXISTS(',
                 '    select * from comments where email=? and mode=1 and ',
                 '    created > strftime("%s", DATETIME("now", "-6 month"))',
-                ') THEN 1 ELSE 0 END;', (email,)).fetchone()
+                ') THEN 1 ELSE 0 END;'], (email,)).fetchone()
             return rv[0] == 1
 
         else:
