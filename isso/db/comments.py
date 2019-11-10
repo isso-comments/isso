@@ -87,12 +87,14 @@ class Comments:
         """
 
         if type(email) is str and len(email) >= 3:
-            # this SQL should be one of the fastest ways of determining if
-            # there's at least one comment with the given email and activation
+            # search for any activated comments within the last 6 months by email
+            # this SQL should be one of the fastest ways of doing this check
             # https://stackoverflow.com/questions/18114458/fastest-way-to-determine-if-record-exists
-            rv = self.db.execute(
-                'SELECT CASE WHEN EXISTS(select * from comments where email=? and mode=1) THEN 1 ELSE 0 END;', (email, )).fetchone()
-            print(rv)
+            rv = self.db.execute([
+                'SELECT CASE WHEN EXISTS(',
+                '    select * from comments where email=? and mode=1 and ',
+                '    created > strftime("%s", DATETIME("now", "-6 month"))',
+                ') THEN 1 ELSE 0 END;', (email,)).fetchone()
             return rv[0] == 1
 
         else:
