@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Jelmer Vernooĳ <jelmer@debian.org>
 Build-Depends:
- debhelper (>= 12~),
+ debhelper-compat (= 12),
  dh-python,
  node-almond,
  node-uglify (>= 2.4.13-2),
