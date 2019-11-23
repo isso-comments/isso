@@ -1,4 +1,4 @@
-isso (0.12.1-1) UNRELEASED; urgency=medium
+isso (0.12.2-1) UNRELEASED; urgency=medium
 
   * New upstream release.
   * Add gitlab-ci configuration.
@@ -8,8 +8,9 @@ isso (0.12.1-1) UNRELEASED; urgency=medium
   * Set upstream metadata fields: Repository-Browse.
   * Use canonical URL in Vcs-Browser.
   * Remove obsolete fields Name from debian/upstream/metadata.
+  * New upstream release.
 
- -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 19 Jan 2019 17:43:17 +0000
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 23 Nov 2019 22:47:20 +0000
 
 isso (0.12.0-1) unstable; urgency=medium
 
