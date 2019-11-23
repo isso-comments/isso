@@ -371,7 +371,7 @@ enabled
    whether to enable the admin interface
 
 password
-   the plain text pasword to use for logging into the administration interface
+   the plain text password to use for logging into the administration interface
 
 Appendum
 --------

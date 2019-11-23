@@ -6,5 +6,5 @@ Releasing steps
 * ``git commit -m "Preparing ${VERSION}" setup.py CHANGES.rst``
 * ``git tag -as ${VERSION}``
 * ``make init all``
-* ``./setup.py sdist``
-* ``twine upload dist/isso-${VERSION}.tar.gz``
+* ``python3 setup.py sdist``
+* ``twine upload --sign dist/isso-${VERSION}.tar.gz``
