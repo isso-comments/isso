@@ -9,6 +9,8 @@ isso (0.12.2-1) UNRELEASED; urgency=medium
   * Use canonical URL in Vcs-Browser.
   * Remove obsolete fields Name from debian/upstream/metadata.
   * New upstream release.
+  * Fix compatibility with newer copies of node-almond.
+  * Set Rules-Requires-Root.
 
  -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 23 Nov 2019 22:47:20 +0000
 
