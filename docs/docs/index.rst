@@ -2,7 +2,7 @@ Overview
 ========
 
 Welcome to Isso's documentation. This documentation will help you get started
-fast. If you get any problems when using Isso, you can find the answer in
+fast. If you run into any problems when using Isso, you can find the answer in
 troubleshooting guide or you can ask me on IRC or GitHub.
 
 Documentation overview:
