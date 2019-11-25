@@ -149,7 +149,10 @@ class SMTP(object):
     def notify_new(self, thread, comment):
         if self.admin_notify:
             body = self.format(thread, comment, None, admin=True)
-            self.sendmail(thread["title"], body, thread, comment)
+            subject = "New comment posted"
+            if thread['title']:
+                subject = "%s on %s" % (subject, thread["title"])
+            self.sendmail(subject, body, thread, comment)
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -175,6 +178,9 @@ class SMTP(object):
 
     def sendmail(self, subject, body, thread, comment, to=None):
         to = to or self.conf.get("to")
+        if not subject:
+            # Fallback, just in case as an empty subject does not work
+            subject = 'isso notification'
         if uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
