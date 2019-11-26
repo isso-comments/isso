@@ -2,7 +2,7 @@ Quickstart
 ==========
 
 Assuming you have successfully :doc:`installed <install>` Isso, here's
-a quickstart quide that covers the most common setup. Sections covered:
+a quickstart guide that covers the most common setup. Sections covered:
 
 .. contents::
     :local:
@@ -13,12 +13,12 @@ Configuration
 
 You must provide a custom configuration to set `dbpath` (your database
 location) and `host` (a list of websites for CORS_). All other options have
-sane defaults.
+the same defaults.
 
 .. code-block:: ini
 
     [general]
-    ; database location, check permissions, automatically created if not exists
+    ; database location, check permissions, automatically created if none exist
     dbpath = /var/lib/isso/comments.db
     ; your website or blog (not the location of Isso!)
     host = http://example.tld/
@@ -62,7 +62,7 @@ Migration
 
 Isso provides a tool for importing comments from Disqus_ or WordPress_.
 You can also import comments from any other comment system, but this topic is more
-complex and covered in :doc:`advanced migration <extras/advanced-migration>`.
+complex and is covered in :doc:`advanced migration <extras/advanced-migration>`.
 
 To export your comments from Disqus, log into Disqus, go to your website, click
 on *Discussions* and select the *Export* tab. You'll receive an email with your
@@ -140,7 +140,7 @@ a comment to see if the setup works. If not, see :doc:`troubleshooting`.
 Going Further
 -------------
 
-There are several server and client configuration options uncovered in this
+There are several server and client configuration options not covered in this
 quickstart, check out :doc:`configuration/server` and
 :doc:`configuration/client` for more information. For further website
 integration, see :doc:`extras/advanced-integration`.
