@@ -22,12 +22,12 @@ libraries, but most likely not all required by Isso (or in an up-to-date
 version – looking at you, Debian!).
 
 That's why most Python developers use the `Python Package Index`_ to get their
-dependencies. But the most important rule: never install *anything* from PyPi
+dependencies. The most important rule to follow is to never install *anything* from PyPi
 as root. Not because of malicious software, but because you *will* break your
 system.
 ``easy_install`` is one tool to mess up your system. Another package manager is
 ``pip``. If you ever searched for an issue with Python/pip and Stackoverflow is
-suggesting your ``easy_install pip`` or ``pip install --upgrade pip`` (as root
+suggesting you ``easy_install pip`` or ``pip install --upgrade pip`` (as root
 of course!), you are doing it wrong. `Why you should not use Python's
 easy_install carelessly on Debian`_ is worth the read.
 
@@ -228,7 +228,7 @@ don't use FastCGi or uWSGI:
 
 If you're writing your own init script, you can utilize ``start-stop-daemon``
 to run Isso in the background (Isso runs in the foreground usually). Below you
-find a very basic SysVinit script which you can use for inspiration:
+will find a very basic SysVinit script which you can use for inspiration:
 
 .. code-block:: sh
 
