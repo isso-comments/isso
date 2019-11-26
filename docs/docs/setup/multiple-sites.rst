@@ -5,8 +5,8 @@ Multiple Sites
 --------------
 
 Isso is designed to serve comments for a single website and therefore stores
-comments for a relative URL to support HTTP, HTTPS and even domain transfers
-without manual intervention. But you can chain Isso to support multiple
+comments for a relative URL. This is done to support HTTP, HTTPS and even domain transfers
+without manual intervention. You can chain Isso to support multiple
 websites on different domains.
 
 The following example uses `gunicorn <http://gunicorn.org/>`_ as WSGI server (
