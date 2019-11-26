@@ -298,8 +298,7 @@ class API(object):
         with self.isso.lock:
             # if email-based auto-moderation enabled, check for previously approved author
             # right before approval.
-            if self.activate_if_email_previously_approved and \
-                self.comments.is_previously_approved_author(data['email']):
+            if self.activate_if_email_previously_approved and self.comments.is_previously_approved_author(data['email']):
                 data['mode'] = 1
 
             rv = self.comments.add(uri, data)
