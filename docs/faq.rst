@@ -11,7 +11,7 @@ websites (use a `dedicated Disqus`_ instance then).
 
     Comments are not big data.
 
-For example, If you have 209 threads and 778 comments in total this only needs 620K (kilobytes) 
+For example, if you have 209 threads and 778 comments in total this only needs 620 kilobytes 
 of memory. This example would be an excellent use case for SQLite.
 
 .. _dedicated Disqus:
