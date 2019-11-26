@@ -4,7 +4,7 @@ Troubleshooting
 For uberspace users
 -------------------
 Some uberspace users experienced problems with isso and they solved their
-issue by adding `DirectoryIndex disabled` as the first line in the `.htaccess`
+issues by adding `DirectoryIndex disabled` as the first line in the `.htaccess`
 file for the domain the isso server is running on.
 
 pkg_ressources.DistributionNotFound
@@ -29,9 +29,9 @@ encoding either in :envvar:`LANG`, :envvar:`LANGUAGE`, :envvar:`LC_ALL` or
 
     $ env LANG=C.UTF-8 isso [-h] [--version] ...
 
-If none of the mentioned variables is set, the interaction with Isso will
+If none of the mentioned variables are set, the interaction with Isso will
 likely fail (unable to print non-ascii characters to stdout/err, unable to
-parse configuration file with non-ascii characters and to forth).
+parse configuration file with non-ascii characters and so forth).
 
 The web console shows 404 Not Found responses
 ---------------------------------------------
