@@ -124,12 +124,17 @@ Enable moderation queue and handling of comments still in moderation queue
 
     [moderation]
     enabled = false
+    approve-if-email-previously-approved = false
     purge-after = 30d
 
 enabled
     enable comment moderation queue. This option only affects new comments.
     Comments in moderation queue are not visible to other users until you
     activate them.
+
+approve-if-email-previously-approved
+    automatically approve comments by an author if that author has had a
+    comment approved within the last 6 months.
 
 purge-after
     remove unprocessed comments in moderation queue after given time.
