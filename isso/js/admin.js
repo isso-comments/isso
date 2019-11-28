@@ -1,0 +1,253 @@
+<html>
+<head>
+  <title>Isso admin</title>
+  <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
+  <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
+</head>
+<body>
+<script type="text/javascript">
+function ajax(req) {
+  var r = new XMLHttpRequest();
+  r.open(req.method, req.url, true);
+  r.onreadystatechange = function () {
+    if (r.readyState != 4 || r.status != 200) {
+      if (req.failure) {
+        req.failure();
+      }
+      return;
+    }
+    req.success(r.responseText);
+  };
+  r.send(req.data);
+}
+function fade(element) {
+    var op = 1;  // initial opacity
+    var timer = setInterval(function () {
+        if (op <= 0.1){
+            clearInterval(timer);
+            element.style.display = 'none';
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.1;
+    }, 10);
+}
+function moderate(com_id, hash, action, isso_host_script) {
+  ajax({method: "POST",
+        url: isso_host_script + "/id/" + com_id + "/" + action + "/" + hash,
+        success: function(){
+            fade(document.getElementById("isso-" + com_id));
+        }});
+}
+function edit(com_id, hash, author, email, website, comment, isso_host_script) {
+  ajax({method: "POST",
+        url: isso_host_script + "/id/" + com_id + "/edit/" + hash,
+        data: JSON.stringify({text: comment,
+                              author: author,
+                              email: email,
+                              website: website}),
+        success: function(ret){
+          console.log("edit successed: ", ret);// TODO display some pretty stuff & update msg
+        },
+        error: function(ret){
+          console.log("Error: ", ret); // TODO flash msg/notif
+        }});
+}
+function validate_com(com_id, hash, isso_host_script) {
+    moderate(com_id, hash, "activate", isso_host_script);
+}
+function delete_com(com_id, hash, isso_host_script) {
+    moderate(com_id, hash, "delete", isso_host_script);
+}
+function unset_editable(elt_id) {
+    var elt = document.getElementById(elt_id);
+    if (elt) {
+      elt.contentEditable = false;
+      elt.classList.remove("editable");
+    }
+}
+function set_editable(elt_id) {
+    var elt = document.getElementById(elt_id);
+    if (elt) {
+      elt.contentEditable = true;
+      elt.classList.add("editable");
+    }
+}
+function start_edit(com_id) {
+    var editable_elements = ['isso-author-' + com_id,
+                             'isso-email-' + com_id,
+                             'isso-website-' + com_id,
+                             'isso-text-' + com_id];
+    for (var idx=0; idx <= editable_elements.length; idx++) {
+        set_editable(editable_elements[idx]);
+    }
+    document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
+    document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
+    document.getElementById('send-edit-btn-' + com_id).classList.toggle('hidden');
+}
+function stop_edit(com_id) {
+    var editable_elements = ['isso-author-' + com_id,
+                             'isso-email-' + com_id,
+                             'isso-website-' + com_id,
+                             'isso-text-' + com_id];
+    for (var idx=0; idx <= editable_elements.length; idx++) {
+        unset_editable(editable_elements[idx]);
+    }
+    document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
+    document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
+    document.getElementById('send-edit-btn-' + com_id).classList.toggle('hidden');
+}
+function send_edit(com_id, hash, isso_host_script) {
+    var author = document.getElementById('isso-author-' + com_id).textContent;
+    var email = document.getElementById('isso-email-' + com_id).textContent;
+    var website = document.getElementById('isso-website-' + com_id).textContent;
+    var comment = document.getElementById('isso-text-' + com_id).textContent;
+    edit(com_id, hash, author, email, website, comment, isso_host_script);
+    stop_edit(com_id);
+}
+</script>
+  <div class="wrapper">
+    <div class="header">
+      <header>
+        <img class="logo" src="{{isso_host_script}}/img/isso.svg" alt="Wynaut by @veekun"/>
+        <div class="title">
+          <a href="./">
+            <h1>Isso</h1>
+            <h2>Administration</h2>
+          </a>
+        </div>
+      </header>
+    </div>
+    <div class="outer">
+      <div class="filters">
+        <div class="mode">
+          <a href="?mode=1&page={{page}}&order_by={{order_by}}">
+            <span class="label label-valid {% if mode == 1 %}active{% endif %}">
+              Valid ({{counts.get(1, 0)}})
+            </span>
+          </a>
+          <a href="?mode=2&page={{page}}&order_by={{order_by}}">
+            <span class="label label-pending {% if mode == 2 %}active{% endif %}">
+              Pending ({{counts.get(2, 0)}})
+            </span>
+          </a>
+          <a href="?mode=4&page={{page}}&order_by={{order_by}}">
+            <span class="label label-staled {% if mode == 4 %}active{% endif %}">
+              Staled ({{counts.get(4, 0)}})
+            </span>
+          </a>
+        </div>
+        <div class="group">
+          Group by thread: <input type="checkbox" {% if order_by == "tid" %}checked{% endif %} onClick="javascript:window.location='?mode={{mode}}&page={{page}}&order_by={% if order_by == "tid" %}id{% else %}tid{% endif %}';" />
+        </div>
+        <div class="pagination">
+          Pages:
+          {% if page > 0 %}
+            <a href="?mode={{mode}}&page={{page - 1}}">
+              «
+            </a>
+          {% endif %}
+          <input type="text" size="1" name="page" value="{{page}}" />
+          {% if page < max_page %}
+            <a href="?mode={{mode}}&page={{page + 1}}">
+              »
+            </a>
+          {% endif %}
+          / {{ max_page }}
+        </div>
+      </div>
+        <div class="filters order">
+          Order:
+          {% for order in ['id', 'created', 'modified', 'likes', 'dislikes'] %}
+            <a href="?mode={{mode}}&page={{page}}&order_by={{order}}&asc={{1 - asc}}">
+              <span class="label label-valid {% if order == order_by %}active{% endif %}">
+                {{ order }}
+                {% if order == order_by %}
+                  {% if asc %} ↑ {% else %} ↓ {% endif %}
+                {% else %}
+                  ↓
+                {% endif %}
+              </span>
+            </a>
+          {% endfor %}
+        </div>
+    </div>
+    <div id="isso-root">
+    {% set thread_id = "no_id" %}
+    {% for comment in comments %}
+      {% if order_by == "tid" %}
+        {% if thread_id != comment.tid %}
+          {% set thread_id = comment.tid %}
+          <h2 class="thread-title">{{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</h2>
+        {% endif %}
+      {% endif %}
+<div class='isso-comment' id='isso-{{comment.id}}'>
+  {% if conf.avatar %}
+    <div class='avatar'>
+      svg(data-hash='#{{comment.hash}}')
+    </div>
+  {% endif %}
+    <div class='text-wrapper'>
+      <div class='isso-comment-header' role='meta'>
+        {% if order_by != "tid" %}
+          <div>Thread: {{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</div><br />
+        {% endif %}
+        {% if comment.author %}
+          <span class='author' id="isso-author-{{comment.id}}">{{comment.author}}</span>
+        {% else %}
+          <span class='author' id="isso-author-{{comment.id}}">Anonymous</span>
+        {% endif %}
+        {% if comment.email %}
+          (<span id="isso-email-{{comment.id}}">{{comment.email}}</span> <a href="mailto:{{comment.email}}" rel='nofollow' class='email'>mailto</a>)
+        {% else %}
+          <span id="isso-email-{{comment.id}}"></span>
+        {% endif %}
+        {% if comment.website %}
+          (<span id="isso-website-{{comment.id}}">{{comment.website}}</span> <a href="{{comment.website}}" rel='nofollow' class='website'>open</a>)
+        {% else %}
+          <span id="isso-website-{{comment.id}}"></span>
+        {% endif %}
+        <span class="spacer"> &bull;</span>
+        <time>{{comment.created | datetimeformat}}</time>
+        <span class='note'>
+          {% if comment.mode == 1 %}
+            <span class="label label-valid">Valid</span>
+          {% elif comment.mode == 2 %}
+            <span class="label label-pending">Pending</span>
+          {% elif comment.mode == 4 %}
+            <span class="label label-staled">Staled</span>
+          {% endif %}
+        </span>
+      </div>
+      <div class='text'>
+        {% if comment.mode == 4 %}
+          <strong>HIDDEN</strong>. Original text: <br />
+        {% endif %}
+        <div id="isso-text-{{comment.id}}">{{comment.text}}</div>
+      </div>
+      <div class='isso-comment-footer'>
+        {% if conf.votes and comment.likes - comment.dislikes != 0 %}
+          <span class='votes'>{{comment.likes - comment.dislikes}}</span>
+        {% endif %}
+        <span class='spacer'></span>
+        <a id="edit-btn-{{comment.id}}" class="edit" onClick="javascript:start_edit({{comment.id}})">Edit</a>
+        <a id="stop-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:stop_edit({{comment.id}})">Cancel</a>
+        <a id="send-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:send_edit({{comment.id}}, '{{comment.hash}}','{{isso_host_script}}')">Send</a>
+        {% if comment.mode != 4 %}
+          <a class="delete"
+             onClick="javascript:delete_com({{comment.id}}, '{{comment.hash}}', '{{isso_host_script}}')">
+            Delete
+          </a>
+        {% endif %}
+        {% if comment.mode == 2 %}
+          <a class='validate'
+             onClick="javascript:validate_com({{comment.id}}, '{{comment.hash}}', '{{isso_host_script}}')">Validate</a>
+        {% endif %}
+      </div>
+    </div>
+</div>
+    {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
