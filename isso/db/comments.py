@@ -86,9 +86,10 @@ class Comments:
         Search for previously activated comments with this author email.
         """
 
-        # if the user has not entered email, email == None in which case we can't check if they have previous comments
+        # if the user has not entered email, email == None, in which case we can't check if they have previous comments
         # in addition, we will only check for a matching email if the passed string is 3 chars or longer.
-        # we can only do len() on a string, so we use that check, which of course also ensures it's not None
+        # here we ensure that we only do this check if email is a string, which both excludes None,
+        # and ensures that this code correctly ignores other types that might accidentally be passed
         if type(email) is str and len(email) >= 3:
             # search for any activated comments within the last 6 months by email
             # this SQL should be one of the fastest ways of doing this check
