@@ -13,12 +13,13 @@ Configuration
 
 You must provide a custom configuration to set `dbpath` (your database
 location) and `host` (a list of websites for CORS_). All other options have
-the same defaults.
+sane defaults.
 
 .. code-block:: ini
 
     [general]
-    ; database location, check permissions, automatically created if none exist
+    ; database location, check permissions, automatically created if it
+    does not exist
     dbpath = /var/lib/isso/comments.db
     ; your website or blog (not the location of Isso!)
     host = http://example.tld/
