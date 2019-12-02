@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import re
 import cgi
+import html
 import time
 import functools
 import json  # json.dumps to put URL in <script>
@@ -261,7 +262,10 @@ class API(object):
 
         for field in ("author", "email", "website"):
             if data.get(field) is not None:
-                data[field] = cgi.escape(data[field])
+                if hasattr(cgi, "escape"):
+                    data[field] = cgi.escape(data[field])
+                else:
+                    data[field] = html.escape(data[field])
 
         if data.get("website"):
             data["website"] = normalize(data["website"])
