@@ -815,7 +815,7 @@ class API(object):
         if not self.conf.getboolean('gravatar'):
             return item
 
-        email = item['email'] or ""
+        email = item['email'] or item['author'] or ''
         email_md5_hash = md5(email)
 
         gravatar_url = self.conf.get('gravatar-url')
