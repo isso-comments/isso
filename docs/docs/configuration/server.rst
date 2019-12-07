@@ -133,8 +133,11 @@ enabled
     activate them.
 
 approve-if-email-previously-approved
-    automatically approve comments by an author if that author has had a
-    comment approved within the last 6 months.
+    automatically approve comments by an email address if that address has
+    had a comment approved within the last 6 months. No ownership verification
+    is done on the entered email address. This means that if someone is able
+    to guess correctly the email address used by a previously approved author,
+    they will be able to have their new comment auto-approved.
 
 purge-after
     remove unprocessed comments in moderation queue after given time.
