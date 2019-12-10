@@ -133,6 +133,8 @@ class API(object):
 
         self.conf = isso.conf.section("general")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
+        # this is similar to the wordpress setting "Comment author must have a previously approved comment"
+        self.approve_if_email_previously_approved = isso.conf.getboolean("moderation", "approve-if-email-previously-approved")
 
         self.guard = isso.db.guard
         self.threads = isso.db.threads
@@ -298,6 +300,11 @@ class API(object):
             raise Forbidden(reason)
 
         with self.isso.lock:
+            # if email-based auto-moderation enabled, check for previously approved author
+            # right before approval.
+            if self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data['email']):
+                data['mode'] = 1
+
             rv = self.comments.add(uri, data)
 
         # notify extension, that the new comment has been successfully saved
@@ -819,7 +826,7 @@ class API(object):
         if not self.conf.getboolean('gravatar'):
             return item
 
-        email = item['email'] or ""
+        email = item['email'] or item['author'] or ''
         email_md5_hash = md5(email)
 
         gravatar_url = self.conf.get('gravatar-url')
