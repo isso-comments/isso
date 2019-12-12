@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import re
-import cgi
 import time
 import functools
 import json  # json.dumps to put URL in <script>
@@ -29,6 +28,10 @@ from isso.views import requires
 from isso.utils.hash import sha1
 from isso.utils.hash import md5
 
+try:
+    from cgi import escape
+except ImportError:
+    from html import escape
 try:
     from urlparse import urlparse
 except ImportError:
@@ -263,7 +266,7 @@ class API(object):
 
         for field in ("author", "email", "website"):
             if data.get(field) is not None:
-                data[field] = cgi.escape(data[field])
+                data[field] = escape(data[field], quote=False)
 
         if data.get("website"):
             data["website"] = normalize(data["website"])
