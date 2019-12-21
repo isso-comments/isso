@@ -6,7 +6,7 @@ What's Isso?
 
 Isso is a lightweight commenting server similar to Disqus. It allows anonymous
 comments, maintains identity and is simple to administrate. It uses JavaScript
-and cross-origin ressource sharing for easy integration into static websites.
+and cross-origin resource sharing for easy integration into static websites.
 
 No, I meant "Isso"
 ------------------

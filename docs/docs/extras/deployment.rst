@@ -4,7 +4,7 @@ Deployment
 Isso ships with a built-in web server, which is useful for the initial setup
 and may be used in production for low-traffic sites (up to 20 requests per
 second). Running a "real" WSGI server supports nice things such as UNIX domain
-sockets, daemonization and solid HTTP handler while being more stable, secure
+sockets, daemonization and solid HTTP handler. WSGI servers are more stable, secure
 and web-scale than the built-in web server.
 
 * gevent_, coroutine-based network library
@@ -188,7 +188,7 @@ The Apache configuration will then be similar to the following:
     </VirtualHost>
 
 You will need to adjust the user and group according to your Apache installation and
-security policy. Be also aware that the directory containing the comments database must
+security policy. Be aware that the directory containing the comments database must
 be writable by the user or group running the WSGI daemon process: having a writable
 database only is not enough, since SQLite will need to create a lock file in the same
 directory.
