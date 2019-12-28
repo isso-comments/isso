@@ -113,6 +113,9 @@ a {
   text-align: center;
   width: 100%;
 }
+.isso-comment pre {
+    white-space: pre-wrap;
+}
 .isso-comment-footer a {
   cursor: pointer;
 }
