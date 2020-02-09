@@ -27,7 +27,7 @@
      paths: {
 -        "text": "components/text/text",
 +        "fs": "lib/requirejs-jade/fs",
-+        "text": "/usr/lib/nodejs/requirejs/text",
++        "text": "/usr/share/nodejs/requirejs/text/text",
          "jade": "lib/requirejs-jade/jade",
          "libjs-jade": "components/jade/jade",
          "libjs-jade-runtime": "components/jade/runtime"
