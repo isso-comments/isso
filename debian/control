@@ -9,7 +9,7 @@ Build-Depends:
  node-uglify (>= 2.4.13-2),
  node-jade,
  node-requirejs,
- node-requirejs-text,
+ node-requirejs-text (>= 2.0.16),
  nodejs,
  python3-all,
  python3-setuptools,
@@ -25,6 +25,7 @@ Vcs-Browser: https://salsa.debian.org/jelmer/isso
 
 Package: isso
 Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
 Depends:
  ${misc:Depends},
  ${python3:Depends},
