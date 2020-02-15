@@ -46,6 +46,7 @@ try:
 except ImportError:
     from io import BytesIO as StringIO
 
+
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
     r'^'
