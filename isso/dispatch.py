@@ -8,7 +8,7 @@ import logging
 
 from glob import glob
 
-from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.wrappers import Response
 
 from isso import dist, make_app, wsgi, config
