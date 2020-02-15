@@ -10,6 +10,9 @@ matrix:
     - python: 3.7
       dist: xenial
       env: TOX_ENV=py37
+    - python: 3.8
+      dist: xenial
+      env: TOX_ENV=py38
 install:
   - pip install -U pip
   - pip install flake8 tox
