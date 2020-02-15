@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+import collections
 import re
 import time
 import functools
@@ -112,6 +113,7 @@ class API(object):
         ('count', ('GET', '/count')),
         ('counts', ('POST', '/count')),
         ('feed', ('GET', '/feed')),
+        ('latest', ('GET', '/latest')),
         ('view', ('GET', '/id/<int:id>')),
         ('edit', ('PUT', '/id/<int:id>')),
         ('delete', ('DELETE', '/id/<int:id>')),
@@ -1136,3 +1138,89 @@ class API(object):
                                counts=comment_mode_count,
                                order_by=order_by, asc=asc,
                                isso_host_script=isso_host_script)
+    """
+    @api {get} /latest latest
+    @apiGroup Comment
+    @apiDescription
+        Get the latest comments from the system, no matter which thread
+
+    @apiParam {number} limit
+        The quantity of last comments to retrieve
+
+    @apiExample {curl} Get the latest 5 comments
+        curl 'https://comments.example.com/latest?limit=5'
+
+    @apiUse commentResponse
+
+    @apiSuccessExample Example result:
+        [
+            {
+                "website": null,
+                "uri": "/some",
+                "author": null,
+                "parent": null,
+                "created": 1464912312.123416,
+                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+                "dislikes": 0,
+                "modified": null,
+                "mode": 1,
+                "id": 3,
+                "likes": 1
+            },
+            {
+                "website": null,
+                "uri": "/other",
+                "author": null,
+                "parent": null,
+                "created": 1464914341.312426,
+                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+                "dislikes": 0,
+                "modified": null,
+                "mode": 1,
+                "id": 4,
+                "likes": 0
+            }
+        ]
+    """
+
+    def latest(self, environ, request):
+        # if the feature is not allowed, don't present the endpoint
+        if not self.conf.getboolean("latest-enabled"):
+            return NotFound()
+
+        # get and check the limit
+        bad_limit_msg = "Query parameter 'limit' is mandatory (integer, >0)"
+        try:
+            limit = int(request.args['limit'])
+        except (KeyError, ValueError):
+            return BadRequest(bad_limit_msg)
+        if limit <= 0:
+            return BadRequest(bad_limit_msg)
+
+        # retrieve the latest N comments from the DB
+        all_comments_gen = self.comments.fetchall(limit=None, order_by='created', mode='1')
+        comments = collections.deque(all_comments_gen, maxlen=limit)
+
+        # prepare a special set of fields (except text which is rendered specifically)
+        fields = {
+            'author',
+            'created',
+            'dislikes',
+            'id',
+            'likes',
+            'mode',
+            'modified',
+            'parent',
+            'text',
+            'uri',
+            'website',
+        }
+
+        # process the retrieved comments and build results
+        result = []
+        for comment in comments:
+            processed = {key: comment[key] for key in fields}
+            processed['text'] = self.isso.render(comment['text'])
+            result.append(processed)
+
+        return JSON(result, 200)

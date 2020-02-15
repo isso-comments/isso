@@ -110,6 +110,10 @@ gravatar-url
     Url for gravatar images. The "{}" is where the email hash will be placed.
     Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
 
+latest-enabled
+    If True it will enable the ``/latest`` endpoint. Optional, defaults 
+    to False.
+
 
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS

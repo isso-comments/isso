@@ -83,6 +83,19 @@ plain :
     pass plain=1 to get the raw comment text, defaults to 0.
 
 
+Get the latest N comments for all threads:
+
+.. code-block:: text
+
+    GET /latest?limit=N
+
+The N parameter limits how many of the latest comments to retrieve; it's 
+mandatory, and must be an integer greater than 0.
+
+This endpoint needs to be enabled in the configuration (see the 
+``latest-enabled`` option in the ``general`` section).
+
+
 Create comment
 --------------
 

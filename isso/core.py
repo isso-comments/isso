@@ -19,7 +19,8 @@ if PY2K:
 else:
     import _thread as thread
 
-from werkzeug.contrib.cache import NullCache, SimpleCache
+from flask_caching.backends.null import NullCache
+from flask_caching.backends.simple import SimpleCache
 
 logger = logging.getLogger("isso")
 
