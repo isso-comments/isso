@@ -146,7 +146,7 @@ class CORSMiddleware(object):
             if self.exposed:
                 headers.add("Access-Control-Expose-Headers",
                             ", ".join(self.exposed))
-            return start_response(status, headers.to_list(), exc_info)
+            return start_response(status, headers.to_wsgi_list(), exc_info)
 
         if environ.get("REQUEST_METHOD") == "OPTIONS":
             add_cors_headers("200 Ok", [("Content-Type", "text/plain")])

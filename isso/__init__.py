@@ -57,11 +57,11 @@ from itsdangerous import URLSafeTimedSerializer
 from werkzeug.routing import Map
 from werkzeug.exceptions import HTTPException, InternalServerError
 
-from werkzeug.wsgi import SharedDataMiddleware
+from werkzeug.middleware.shared_data import SharedDataMiddleware
 from werkzeug.local import Local, LocalManager
 from werkzeug.serving import run_simple
-from werkzeug.contrib.fixers import ProxyFix
-from werkzeug.contrib.profiler import ProfilerMiddleware
+from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.middleware.profiler import ProfilerMiddleware
 
 local = Local()
 local_manager = LocalManager([local])
