@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.12.3 (UNRELEASED)
+0.12.3 (2020-02-22)
 -------------------
 
 - New "flags" option in the [markdown] section to customize Misaka's Markdown
@@ -10,7 +10,34 @@ Changelog for Isso
       [markup]
       flags = skip-html, escape, hard-wrap
 
-  Check docs/configuration/server.rst for more details.
+  Check docs/configuration/server.rst for more details. #616
+
+* Fix compatibility with newer versions of werkzeug. #614
+
+* Add Python 3.8 support. #600, #615
+
+* New 'latest' endpoint to serve latest comments. #556
+
+* include admin.js in Python Package. #606
+
+* Add a approve-if-email-previously-approved setting.
+
+* Fall back to author names in gravatars (#482)
+
+* Make Isso compatible with Content Security Policies without `script-src 'unsafe-inline'`. #597
+
+* Set subject for notification about new comment, subject should not be empty. #589
+
+* Fix rendering of disabled.html for 'Sub URI' sites.
+
+* contrib: Add Blogger importer tool. #529
+
+* Return 200 with empty array when there are no comments. #301
+
+* Translation updates for Polish, Slovak, Occitan.
+
+* Redirect to comment after moderation. #358
+
 
 0.12.2 (2019-01-21)
 -------------------
