@@ -5,7 +5,7 @@ import sys
 
 from setuptools import setup, find_packages
 
-requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
+requires = ['itsdangerous', 'Jinja2', 'misaka', 'html5lib',
             'werkzeug>=1.0', 'bleach', 'flask-caching']
 
 if sys.version_info < (2, 7):
@@ -15,7 +15,7 @@ elif (3, 0) <= sys.version_info < (3, 4):
 
 setup(
     name='isso',
-    version='0.12.3dev0',
+    version='0.12.3',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
