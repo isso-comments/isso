@@ -5,7 +5,7 @@
      },
  
 -    name: "components/almond/almond",
-+    name: "/usr/lib/nodejs/almond/almond.min.js",
++    name: "/usr/share/nodejs/almond/almond.min.js",
      include: ['count'],
      out: "count.min.js",
      wrap: true
@@ -16,7 +16,7 @@
      stubModules: ['text', 'jade'],
  
 -    name: "components/almond/almond",
-+    name: "/usr/lib/nodejs/almond/almond.min.js",
++    name: "/usr/share/nodejs/almond/almond.min.js",
      include: ['embed'],
      out: "embed.min.js",
  
@@ -27,7 +27,7 @@
      paths: {
 -        "text": "components/text/text",
 +        "fs": "lib/requirejs-jade/fs",
-+        "text": "/usr/lib/nodejs/requirejs/text",
++        "text": "/usr/share/nodejs/requirejs/text/text",
          "jade": "lib/requirejs-jade/jade",
          "libjs-jade": "components/jade/jade",
          "libjs-jade-runtime": "components/jade/runtime"

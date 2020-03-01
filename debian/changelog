@@ -1,3 +1,16 @@
+isso (0.12.2-3) UNRELEASED; urgency=medium
+
+  * Update standards version to 4.4.1, no changes needed.
+  * Bump debhelper from old 11 to 12.
+  * Set debhelper-compat version in Build-Depends.
+  * Set upstream metadata fields: Repository-Browse.
+  * Use canonical URL in Vcs-Browser.
+  * Remove obsolete fields Name from debian/upstream/metadata.
+  * Fix compatibility with newer copies of node-almond. Closes: #952261
+  * Set Rules-Requires-Root.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Sat, 23 Nov 2019 22:47:20 +0000
+
 isso (0.12.2-2) unstable; urgency=medium
 
   * Update patch 0003-js-paths.patch: Update for new node-almond path.
