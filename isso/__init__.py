@@ -113,6 +113,7 @@ class Isso(object):
 
         views.Info(self)
         comments.API(self, self.hasher)
+        logger.info("Isso started up")
 
     def render(self, text):
         return self.markup.render(text)
