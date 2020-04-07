@@ -33,7 +33,7 @@ class StatefulGuard:
 
         if len(rv) >= self.conf.getint("ratelimit"):
             return False, "{0}: ratelimit exceeded ({1})".format(
-                comment["remote_addr"], ', '.join(Guard.ids(rv)))
+                comment["remote_addr"], ', '.join(StatefulGuard.ids(rv)))
 
         # block more than three comments as direct response to the post
         if comment["parent"] is None:
