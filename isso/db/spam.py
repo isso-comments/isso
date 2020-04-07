@@ -2,9 +2,8 @@
 
 import time
 
-
-class Guard:
-
+# A guard which uses database
+class StatefulGuard:
     def __init__(self, db):
 
         self.db = db
@@ -16,10 +15,9 @@ class Guard:
         if not self.conf.getboolean("enabled"):
             return True, ""
 
-        for func in (self._limit, self._spam):
-            valid, reason = func(uri, comment)
-            if not valid:
-                return False, reason
+        valid, reason = self._limit(uri, comment)
+        if not valid:
+        	return False, reason
         return True, ""
 
     @classmethod
@@ -62,15 +60,4 @@ class Guard:
             if len(rv) > 0:
                 return False, "edit time frame is still open"
 
-        # require email if :param:`require-email` is enabled
-        if self.conf.getboolean("require-email") and not comment.get("email"):
-            return False, "email address required but not provided"
-
-        # require author if :param:`require-author` is enabled
-        if self.conf.getboolean("require-author") and not comment.get("author"):
-            return False, "author address required but not provided"
-
-        return True, ""
-
-    def _spam(self, uri, comment):
         return True, ""

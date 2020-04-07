@@ -13,7 +13,7 @@ from isso.compat import buffer
 
 from isso.db.comments import Comments
 from isso.db.threads import Threads
-from isso.db.spam import Guard
+from isso.db.spam import StatefulGuard
 from isso.db.preferences import Preferences
 
 
@@ -39,7 +39,7 @@ class SQLite3:
         self.preferences = Preferences(self)
         self.threads = Threads(self)
         self.comments = Comments(self)
-        self.guard = Guard(self)
+        self.guard = StatefulGuard(self)
 
         if rv is None:
             self.execute("PRAGMA user_version = %i" % SQLite3.MAX_VERSION)

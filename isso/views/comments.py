@@ -21,13 +21,15 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from isso.compat import text_type as str
 
-from isso import utils, local
+from isso import utils, local, guardian
 from isso.utils import (http, parse,
                         JSONResponse as JSON, XMLResponse as XML,
                         render_template)
 from isso.views import requires
 from isso.utils.hash import sha1
 from isso.utils.hash import md5
+
+from isso.guardian import StatelessGuard
 
 try:
     from cgi import escape
@@ -141,7 +143,8 @@ class API(object):
         # this is similar to the wordpress setting "Comment author must have a previously approved comment"
         self.approve_if_email_previously_approved = isso.conf.getboolean("moderation", "approve-if-email-previously-approved")
 
-        self.guard = isso.db.guard
+        self.statefulGuard = isso.db.guard
+        self.statelessGuard = StatelessGuard(isso.conf.section("guard"))
         self.threads = isso.db.threads
         self.comments = isso.db.comments
 
@@ -277,6 +280,13 @@ class API(object):
         data['mode'] = 2 if self.moderated else 1
         data['remote_addr'] = utils.anonymize(str(request.remote_addr))
 
+        # Validations
+        for guard in (self.statelessGuard, self.statefulGuard) :
+            valid, reason = guard.validate(uri, data)
+            if not valid:
+                self.signal("comments.new:guard", reason)
+                raise Forbidden(reason)
+
         with self.isso.lock:
             if uri not in self.threads:
                 if 'title' not in data:
@@ -296,10 +306,10 @@ class API(object):
         # notify extensions that the new comment is about to save
         self.signal("comments.new:before-save", thread, data)
 
-        valid, reason = self.guard.validate(uri, data)
-        if not valid:
-            self.signal("comments.new:guard", reason)
-            raise Forbidden(reason)
+        #valid, reason = self.guard.validate(uri, data)
+        #if not valid:
+        #    self.signal("comments.new:guard", reason)
+        #    raise Forbidden(reason)
 
         with self.isso.lock:
             # if email-based auto-moderation enabled, check for previously approved author
