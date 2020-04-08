@@ -8,9 +8,9 @@ class StatelessGuard:
 	def validate(self, uri, comment):
 		if not self.conf.getboolean("enabled"):
 			return True, ""
-		return self._requiredFields(comment)
+		return self._requiredFields(uri, comment)
 	
-	def _requiredFields(self, comment):
+	def _requiredFields(self, uri, comment):
 		"""Checks required fields.
 		@param comment : A JSON object
 		@return True,empty string if everything is OK; else False and a reason"""
