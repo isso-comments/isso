@@ -1,3 +1,9 @@
+isso (0.12.2-4) UNRELEASED; urgency=medium
+
+  * Source upload for transition to testing.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 08 Apr 2020 01:10:38 +0000
+
 isso (0.12.2-3) unstable; urgency=medium
 
   * Update standards version to 4.4.1, no changes needed.
