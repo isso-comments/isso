@@ -140,6 +140,7 @@ class API(object):
         self.moderated = isso.conf.getboolean("moderation", "enabled")
         # this is similar to the wordpress setting "Comment author must have a previously approved comment"
         self.approve_if_email_previously_approved = isso.conf.getboolean("moderation", "approve-if-email-previously-approved")
+        self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
 
         self.guard = isso.db.guard
         self.threads = isso.db.threads
@@ -275,7 +276,7 @@ class API(object):
             data["website"] = normalize(data["website"])
 
         data['mode'] = 2 if self.moderated else 1
-        data['remote_addr'] = utils.anonymize(str(request.remote_addr))
+        data['remote_addr'] = self._remote_addr(request)
 
         with self.isso.lock:
             if uri not in self.threads:
@@ -335,6 +336,21 @@ class API(object):
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
+
+    def _remote_addr(self, request):
+        """Return the anonymized IP address of the requester.
+
+        Takes into consideration a potential X-Forwarded-For HTTP header
+        if a necessary server.trusted-proxies configuration entry is set.
+
+        Recipe source: https://stackoverflow.com/a/22936947/636849
+        """
+        remote_addr = request.remote_addr
+        if self.trusted_proxies:
+            route = request.access_route + [remote_addr]
+            remote_addr = next((addr for addr in reversed(route)
+                                if addr not in self.trusted_proxies), remote_addr)
+        return utils.anonymize(str(remote_addr))
 
     """
     @api {get} /id/:id view
@@ -890,8 +906,7 @@ class API(object):
     @xhr
     def like(self, environ, request, id):
 
-        nv = self.comments.vote(
-            True, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(True, id, self._remote_addr(request))
         return JSON(nv, 200)
 
     """
@@ -917,8 +932,7 @@ class API(object):
     @xhr
     def dislike(self, environ, request, id):
 
-        nv = self.comments.vote(
-            False, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(False, id, self._remote_addr(request))
         return JSON(nv, 200)
 
     # TODO: remove someday (replaced by :func:`counts`)
