@@ -1,9 +1,16 @@
 # -*- encoding: utf-8 -*-
 
+import logging
 import time
 
 from isso.utils import Bloomfilter
 from isso.compat import buffer
+
+
+logger = logging.getLogger("isso")
+
+
+MAX_LIKES_AND_DISLIKES = 142
 
 
 class Comments:
@@ -280,13 +287,18 @@ class Comments:
         if rv is None:
             return None
 
+        operation_name = 'Upvote' if upvote else 'Downvote'
         likes, dislikes, voters = rv
-        if likes + dislikes >= 142:
-            return {'likes': likes, 'dislikes': dislikes}
+        if likes + dislikes >= MAX_LIKES_AND_DISLIKES:
+            message = '{} denied due to a "likes + dislikes" total too high ({} >= {})'.format(operation_name, likes + dislikes, MAX_LIKES_AND_DISLIKES)
+            logger.debug('Comments.vote(id=%s): %s', id, message)
+            return {'likes': likes, 'dislikes': dislikes, 'message': message}
 
         bf = Bloomfilter(bytearray(voters), likes + dislikes)
         if remote_addr in bf:
-            return {'likes': likes, 'dislikes': dislikes}
+            message = '{} denied because a vote has already been registered for this remote address: {}'.format(operation_name, remote_addr)
+            logger.debug('Comments.vote(id=%s): %s', id, message)
+            return {'likes': likes, 'dislikes': dislikes, 'message': message}
 
         bf.add(remote_addr)
         self.db.execute([
