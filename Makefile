@@ -65,7 +65,7 @@ coverage: $(ISSO_PY_SRC)
 	nosetests --with-doctest --with-coverage --cover-package=isso --cover-html isso/
 
 test: $($ISSO_PY_SRC)
-	python setup.py nosetests
+	python3 setup.py nosetests
 
 clean:
 	rm -f $(DOCS_MAN_DST) $(DOCS_CSS_DST) $(ISSO_JS_DST)
