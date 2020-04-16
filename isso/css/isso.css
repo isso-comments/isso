@@ -152,7 +152,7 @@
 .isso-comment .isso-postbox {
     margin-top: 0.8em;
 }
-.isso-comment.isso-no-votes span.votes {
+.isso-comment.isso-no-votes > * > .isso-comment-footer span.votes {
     display: none;
 }
 
