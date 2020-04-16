@@ -74,6 +74,10 @@ In chronological order:
 * Lucas Cimon @Lucas-C
   * Added the possibility to define CORS origins through ISSO_CORS_ORIGIN environment variable
   * Fix a bug with <a> in <svg>
+  * Fixing likes counter of replies not being displayed
+  * Adding contrib/dump_comments.py
+  * Adding a [server] proxy-fix-enable-x-prefix configuration option
+  * Using .access_route instead of .remote_addr to take into account HTTP_X_FORWARDED_FOR header
 
 * Yuchen Pei @ycpei
   * Fix link in moderation emails when isso is installed in a sub URL

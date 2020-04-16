@@ -190,6 +190,13 @@ profile
     show 10 most time consuming function in Isso after each request. Do
     not use in production.
 
+trusted-proxies
+    an optional list of reverse proxies IPs behind which you have deployed
+    your Isso web service (e.g. `127.0.0.1`).
+    This allow for proper remote address resolution based on a
+    `X-Forwarded-For` HTTP header, which is important for the mechanism
+    forbiding several comment votes coming from the same subnet.
+
 .. _configure-smtp:
 
 SMTP
