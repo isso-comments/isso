@@ -82,6 +82,14 @@ logging.basicConfig(
 logger = logging.getLogger("isso")
 
 
+class ProxyFixCustom(ProxyFix):
+    def __init__(self, app):
+        # This is needed for werkzeug.wsgi.get_current_url called in isso/views/comments.py
+        # to work properly when isso is hosted under a sub-path
+        # cf. https://werkzeug.palletsprojects.com/en/1.0.x/middleware/proxy_fix/
+        super().__init__(app, x_prefix=1)
+
+
 class Isso(object):
 
     def __init__(self, conf):
@@ -202,7 +210,7 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
                            allowed=("Origin", "Referer", "Content-Type"),
                            exposed=("X-Set-Cookie", "Date")))
 
-    wrapper.extend([wsgi.SubURI, ProxyFix])
+    wrapper.extend([wsgi.SubURI, ProxyFixCustom])
 
     if werkzeug.version.startswith("0.8"):
         wrapper.append(wsgi.LegacyWerkzeugMiddleware)
