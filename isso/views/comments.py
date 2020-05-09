@@ -1134,8 +1134,8 @@ class API(object):
             return render_template('login.html', isso_host_script=isso_host_script)
         page_size = 100
         page = int(req.args.get('page', 0))
-        order_by = req.args.get('order_by', None)
-        asc = int(req.args.get('asc', 1))
+        order_by = req.args.get('order_by', 'created')
+        asc = int(req.args.get('asc', 0))
         mode = int(req.args.get('mode', 2))
         comments = self.comments.fetchall(mode=mode, page=page,
                                           limit=page_size,
