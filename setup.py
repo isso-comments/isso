@@ -6,7 +6,7 @@ import sys
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
-            'werkzeug>=1.0', 'bleach', 'flask-caching']
+            'werkzeug>=1.0', 'bleach', 'flask-caching>=1.9']
 
 if sys.version_info < (3, ):
     raise SystemExit("Python 2 is not supported.")
