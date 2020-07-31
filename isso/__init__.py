@@ -287,3 +287,18 @@ def main():
             if ex.errno != errno.ENOENT:
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
+
+# Gunicorn entry point generator
+def app(*args, **kwargs):
+    # Gunicorn CLI args are useless.
+    # https://stackoverflow.com/questions/8495367/
+    #
+    # Start the application in modified environment.
+    # https://stackoverflow.com/questions/18668947/
+    #
+    import sys
+    sys.argv = ['--gunicorn']
+    for k in kwargs:
+        sys.argv.append("--" + k)
+        sys.argv.append(kwargs[k])
+    return main()
