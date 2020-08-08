@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 
+from configparser import NoOptionError
 import collections
 import re
 import time
@@ -139,8 +140,14 @@ class API(object):
         self.conf = isso.conf.section("general")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
         # this is similar to the wordpress setting "Comment author must have a previously approved comment"
-        self.approve_if_email_previously_approved = isso.conf.getboolean("moderation", "approve-if-email-previously-approved")
-        self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
+        try:
+            self.approve_if_email_previously_approved = isso.conf.getboolean("moderation", "approve-if-email-previously-approved")
+        except NoOptionError:
+            self.approve_if_email_previously_approved = False
+        try:
+            self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
+        except NoOptionError:
+            self.trusted_proxies = []
 
         self.guard = isso.db.guard
         self.threads = isso.db.threads
