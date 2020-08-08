@@ -7,9 +7,7 @@ import logging
 import datetime
 
 from email.utils import parseaddr, formataddr
-from configparser import ConfigParser
-
-from isso.compat import text_type as str
+from configparser import ConfigParser, NoOptionError, NoSectionError
 
 logger = logging.getLogger("isso")
 
@@ -142,7 +140,11 @@ def load(default, user=None):
             logger.info("Your `session-key` has been stored in the "
                         "database itself, this option is now unused")
 
-    if not parseaddr(parser.get("smtp", "from"))[0]:
+    try:
+        fromaddr = parser.get("smtp", "from")
+    except (NoOptionError, NoSectionError):
+        fromaddr = ''
+    if not parseaddr(fromaddr)[0]:
         parser.set("smtp", "from",
                    formataddr(("Ich schrei sonst!", parser.get("smtp", "from"))))
 

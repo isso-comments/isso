@@ -8,18 +8,13 @@ import re
 import tempfile
 import unittest
 
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
+from urllib.parse import urlencode
 
 from werkzeug.wrappers import Response
 
 from isso import Isso, core, config, dist
 from isso.utils import http
 from isso.views import comments
-
-from isso.compat import iteritems
 
 from fixtures import curl, loads, FakeIP, JSONClient
 http.curl = curl
@@ -402,7 +397,7 @@ class TestComments(unittest.TestCase):
 
         expected = {'a': 1, 'b': 2, 'c': 0}
 
-        for uri, count in iteritems(expected):
+        for uri, count in expected.items():
             for _ in range(count):
                 self.post('/new?uri=%s' %
                           uri, data=json.dumps({"text": "..."}))

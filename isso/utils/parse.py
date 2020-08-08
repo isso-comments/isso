@@ -4,18 +4,9 @@ from __future__ import print_function, unicode_literals
 from itertools import chain
 
 
-try:
-    from urllib import unquote
-except ImportError:
-    from urllib.parse import unquote
+from urllib.parse import unquote
 
 import html5lib
-
-from isso.compat import map, filter, PY2K
-
-if PY2K:  # http://bugs.python.org/issue12984
-    from xml.dom.minidom import NamedNodeMap
-    NamedNodeMap.__contains__ = lambda self, key: self.has_key(key)  # noqa
 
 
 def thread(data, default=u"Untitled.", id=None):

@@ -14,10 +14,7 @@ from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import quote
+from urllib.parse import quote
 
 import logging
 logger = logging.getLogger("isso")
@@ -27,13 +24,9 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso.compat import PY2K
 from isso import local
 
-if PY2K:
-    from thread import start_new_thread
-else:
-    from _thread import start_new_thread
+from _thread import start_new_thread
 
 
 class SMTPConnection(object):

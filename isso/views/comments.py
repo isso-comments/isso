@@ -20,8 +20,6 @@ from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
-from isso.compat import text_type as str
-
 from isso import utils, local
 from isso.utils import (http, parse,
                         JSONResponse as JSON, XMLResponse as XML,
@@ -34,18 +32,9 @@ try:
     from cgi import escape
 except ImportError:
     from html import escape
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
-try:
-    from urllib import unquote
-except ImportError:
-    from urllib.parse import unquote
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import BytesIO as StringIO
+from urllib.parse import urlparse
+from urllib.parse import unquote
+from io import BytesIO as StringIO
 
 
 # from Django appearently, looks good to me *duck*

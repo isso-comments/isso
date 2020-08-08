@@ -12,7 +12,6 @@ from werkzeug.routing import Rule
 from werkzeug.exceptions import BadRequest
 
 from isso import local
-from isso.compat import text_type as str
 
 
 class requires:

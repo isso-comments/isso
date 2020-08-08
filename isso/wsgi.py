@@ -5,23 +5,14 @@ from __future__ import unicode_literals
 import sys
 import socket
 
-try:
-    from urllib.parse import quote, urlparse
+from urllib.parse import quote, urlparse
 
-    from socketserver import ThreadingMixIn
-    from http.server import HTTPServer
-except ImportError:
-    from urllib import quote
-    from urlparse import urlparse
-
-    from SocketServer import ThreadingMixIn
-    from BaseHTTPServer import HTTPServer
+from socketserver import ThreadingMixIn
+from http.server import HTTPServer
 
 from werkzeug.serving import WSGIRequestHandler
 from werkzeug.wrappers import Request as _Request
 from werkzeug.datastructures import Headers
-
-from isso.compat import string_types
 
 
 def host(environ):  # pragma: no cover
@@ -52,7 +43,7 @@ def urlsplit(name):
     Parse :param:`name` into (netloc, port, ssl)
     """
 
-    if not (isinstance(name, string_types)):
+    if not isinstance(name, (str, )):
         name = str(name)
 
     if not name.startswith(('http://', 'https://')):

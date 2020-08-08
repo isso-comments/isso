@@ -12,12 +12,7 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso.compat import PY2K
-
-if PY2K:
-    import thread
-else:
-    import _thread as thread
+import _thread as thread
 
 from flask_caching.backends.nullcache import NullCache
 from flask_caching.backends.simplecache import SimpleCache
