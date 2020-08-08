@@ -119,3 +119,4 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.mypy_cache
