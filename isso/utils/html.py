@@ -5,10 +5,7 @@ from __future__ import unicode_literals
 import bleach
 import misaka
 
-try:
-    from backports.configparser import NoOptionError
-except ImportError:
-    from configparser import NoOptionError
+from configparser import NoOptionError
 
 
 class Sanitizer(object):
