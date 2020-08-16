@@ -42,19 +42,12 @@ class SMTPConnection(object):
                             timeout=self.conf.getint('timeout'))
 
         if self.conf.get('security') == 'starttls':
-            if sys.version_info >= (3, 4):
-                import ssl
-                self.client.starttls(context=ssl.create_default_context())
-            else:
-                self.client.starttls()
+            import ssl
+            self.client.starttls(context=ssl.create_default_context())
 
         username = self.conf.get('username')
         password = self.conf.get('password')
         if username and password:
-            if PY2K:
-                username = username.encode('ascii')
-                password = password.encode('ascii')
-
             self.client.login(username, password)
 
         return self.client
