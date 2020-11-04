@@ -165,7 +165,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         // update datetime every 60 seconds
         var refresh = function() {
-            $(".permalink > time", el).textContent = utils.ago(
+            $(".permalink > time", el).textContent = i18n.ago(
                 globals.offset.localTime(), new Date(parseInt(comment.created, 10) * 1000));
             setTimeout(refresh, 60*1000);
         };

@@ -121,12 +121,32 @@ Defaults to `true`.
 data-isso-lang
 --------------
 
-Override useragent's preferred language. Isso has been translated in over 12
-languages. The language is configured by its `ISO 639-1
-<https://en.wikipedia.org/wiki/ISO_639-1>`_ (two letter) code.
+Always render the Isso UI in this language, ignoring what the
+user-agent says is the preferred language.  The default is to
+honor the user-agent's preferred language, and this can be
+specified explicitly by using ``data-isso-lang=""``.
 
-You find a list of all supported languages on `GitHub
-<https://github.com/posativ/isso/tree/master/isso/js/app/i18n>`_.
+The value of this property should be a `BCP 47 language tag
+<https://tools.ietf.org/html/bcp47>`_, such as "en", "ru", or "pt-BR".
+Language tags are processed case-insensitively, and may use
+underscores as separators instead of dashes (e.g. "pt_br" is treated
+the same as same as "pt-BR").
+
+You can find a list of all supported languages by browsing the
+`i18n directory
+<https://github.com/posativ/isso/tree/master/isso/js/app/i18n>`_ of
+the source tree.
+
+data-isso-default-lang
+----------------------
+
+Render the Isso UI in this language when the user-agent does not
+specify a preferred language, or if the language it specifies is not
+supported.  Like ``data-isso-lang``, the value of this property should
+be a BCP 47 language tag.  Defaults to "en".
+
+If you specify both ``data-isso-default-lang`` and ``data-isso-lang``,
+``data-isso-lang`` takes precedence.
 
 data-isso-reply-to-self
 -----------------------

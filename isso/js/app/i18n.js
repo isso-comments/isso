@@ -8,7 +8,9 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
     "use strict";
 
     var pluralforms = function(lang) {
-        switch (lang) {
+        // we currently only need to look at the primary language
+        // subtag.
+        switch (lang.split("-", 1)[0]) {
         case "bg":
         case "cs":
         case "da":
@@ -23,14 +25,11 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         case "hu":
         case "it":
         case "ko":
-        case "pt_BR":
-        case "pt_PT":
+        case "pt":
         case "sv":
         case "nl":
         case "vi":
         case "zh":
-        case "zh_CN":
-        case "zh_TW":
             return function(msgs, n) {
                 return msgs[n === 1 ? 0 : 1];
             };
@@ -77,14 +76,6 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         }
     };
 
-    // useragent's prefered language (or manually overridden)
-    var lang = config.lang;
-
-    // fall back to English
-    if (! pluralforms(lang)) {
-        lang = "en";
-    }
-
     var catalogue = {
         bg: bg,
         cs: cs,
@@ -104,25 +95,50 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         oc: oc,
         pl: pl,
         pt: pt_BR,
-        pt_BR: pt_BR,
-        pt_PT: pt_PT,
+        "pt-BR": pt_BR,
+        "pt-PT": pt_PT,
         ru: ru,
         sk: sk,
         sv: sv,
         nl: nl,
         vi: vi,
         zh: zh_CN,
-        zh_CN: zh_CN,
-        zh_TW: zh_TW
+        "zh-CN": zh_CN,
+        "zh-TW": zh_TW
     };
 
-    var plural = pluralforms(lang);
+    // for each entry in config.langs, see whether we have a catalogue
+    // entry and a pluralforms entry for it.  if we don't, try chopping
+    // off everything but the primary language subtag, before moving
+    // on to the next one.
+    var lang, plural, translations;
+    for (var i = 0; i < config.langs.length; i++) {
+        lang = config.langs[i];
+        plural = pluralforms(lang);
+        translations = catalogue[lang];
+        if (plural && translations)
+            break;
+        if (/-/.test(lang)) {
+            lang = lang.split("-", 1)[0];
+            plural = pluralforms(lang);
+            translations = catalogue[lang];
+            if (plural && translations)
+                break;
+        }
+    }
+
+    // absolute backstop; if we get here there's a bug in config.js
+    if (!plural || !translations) {
+        lang = "en";
+        plural = pluralforms(lang);
+        translations = catalogue[lang];
+    }
 
     var translate = function(msgid) {
         return config[msgid + '-text-' + lang] ||
-          catalogue[lang][msgid] ||
+          translations[msgid] ||
           en[msgid] ||
-          "???";
+          "[?" + msgid + "]";
     };
 
     var pluralize = function(msgid, n) {
@@ -136,7 +152,34 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
         return msg ? msg.replace("{{ n }}", (+ n)) : msg;
     };
 
+    var ago = function(localTime, date) {
+
+        var secs = ((localTime.getTime() - date.getTime()) / 1000);
+
+        if (isNaN(secs) || secs < 0 ) {
+            secs = 0;
+        }
+
+        var mins = Math.floor(secs / 60), hours = Math.floor(mins / 60),
+            days = Math.floor(hours / 24);
+
+        return secs  <=  45 && translate("date-now")  ||
+               secs  <=  90 && pluralize("date-minute", 1) ||
+               mins  <=  45 && pluralize("date-minute", mins) ||
+               mins  <=  90 && pluralize("date-hour", 1) ||
+               hours <=  22 && pluralize("date-hour", hours) ||
+               hours <=  36 && pluralize("date-day", 1) ||
+               days  <=   5 && pluralize("date-day", days) ||
+               days  <=   8 && pluralize("date-week", 1) ||
+               days  <=  21 && pluralize("date-week", Math.floor(days / 7)) ||
+               days  <=  45 && pluralize("date-month", 1) ||
+               days  <= 345 && pluralize("date-month", Math.floor(days / 30)) ||
+               days  <= 547 && pluralize("date-year", 1) ||
+                               pluralize("date-year", Math.floor(days / 365.25));
+    };
+
     return {
+        ago: ago,
         lang: lang,
         translate: translate,
         pluralize: pluralize
