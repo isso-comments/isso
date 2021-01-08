@@ -26,6 +26,8 @@
 /docs/_build
 /docs/_static/css/site.css
 
+node_modules/
+
 /pip-selfcheck.json
 
 # github/gitignore

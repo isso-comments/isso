@@ -3,7 +3,7 @@
     mainConfigFile: 'config.js',
     stubModules: ['text', 'jade'],
 
-    name: "components/almond/almond",
+    name: "../../node_modules/almond/almond",
     include: ['embed'],
     out: "embed.min.js",
 
