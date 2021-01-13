@@ -76,7 +76,7 @@ class Unofficial(misaka.HtmlRenderer):
 
     def blockcode(self, text, lang):
         lang = ' class="{0}"'.format(html.escape(lang)) if lang else ''
-        return "<pre><code{1}>{0}</code></pre>\n".format(html.escape(text,False), lang)
+        return "<pre><code{1}>{0}</code></pre>\n".format(html.escape(text, False), lang)
 
 
 class Markup(object):
