@@ -231,6 +231,17 @@ class TestComments(unittest.TestCase):
         self.assertEqual(loads(r.data), None)
         self.assertEqual(self.get('/id/1').status_code, 404)
 
+    def testFetchAuthorization(self):
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': 'Lorem ipsum ...'}))
+
+        r = self.get('/id/1?plain=1')
+        self.assertEqual(r.status_code, 200)
+
+        self.client.delete_cookie('localhost.local', '1')
+        r = self.get('/id/1?plain=1')
+        self.assertEqual(r.status_code, 403)
+
     def testDeleteWithReference(self):
 
         client = JSONClient(self.app, Response)
