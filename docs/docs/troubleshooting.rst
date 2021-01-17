@@ -18,6 +18,14 @@ Install Isso in a virtual environment as described in
 :ref:`install-interludium`. Alternatively, you can use `pip install --user`
 to install Isso into the user's home.
 
+Why isn't markdown in my comments rendering as I expect?
+--------------------------------------------------------
+
+Please configure Isso's markup parser to your requirements as described in
+:ref:`configure-markup`. As of version 0.12.2, Isso uses misaka 2.0 to render
+markdown. Misaka 2.0 uses ``dashed-case`` instead of ``snake_case`` for
+options, you might have to update your config.
+
 UnicodeDecodeError: 'ascii' codec can't decode byte 0xff
 --------------------------------------------------------
 
