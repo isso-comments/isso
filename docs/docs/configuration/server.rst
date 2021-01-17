@@ -29,9 +29,10 @@ Sections covered in this document:
 .. contents::
     :local:
 
-
 General
 -------
+
+.. _configure-general:
 
 In this section, you configure most comment-related options such as database path,
 session key and hostname. Here are the default values for this section:
@@ -111,13 +112,15 @@ gravatar-url
     Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
 
 latest-enabled
-    If True it will enable the ``/latest`` endpoint. Optional, defaults 
+    If True it will enable the ``/latest`` endpoint. Optional, defaults
     to False.
 
 
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
+
+.. _configure-moderation:
 
 Moderation
 ----------
@@ -146,6 +149,8 @@ approve-if-email-previously-approved
 purge-after
     remove unprocessed comments in moderation queue after given time.
 
+
+.. _configure-server-block:
 
 Server
 ------
@@ -295,6 +300,8 @@ require-email
 
     Do not forget to configure the `client <client>`_ accordingly.
 
+.. _configure-markup:
+
 Markup
 ------
 
@@ -384,6 +391,8 @@ limit
 
 Admin
 -----
+
+.. _configure-admin:
 
 Isso has an optional web administration interface that can be used to moderate
 comments. The interface is available under ``/admin`` on your isso URL.
