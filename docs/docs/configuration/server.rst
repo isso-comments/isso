@@ -311,7 +311,7 @@ supported, but new languages are relatively easy to add.
 .. code-block:: ini
 
     [markup]
-    options = strikethrough, superscript, autolink
+    options = strikethrough, superscript, autolink, fenced-code
     flags = skip-html, escape, hard-wrap
     allowed-elements =
     allowed-attributes =
@@ -319,12 +319,14 @@ supported, but new languages are relatively easy to add.
 options
     `Misaka-specific Markdown extensions <https://misaka.61924.nl/#api>`_, all
     extension flags can be used there, separated by comma, either by their name
-    or as `EXT_`_.
+    or as ``EXT_``.
+
+    **Careful:** Misaka 1.0 used ``snake_case``, but 2.0 needs ``dashed-case``!
 
 flags
     `Misaka-specific HTML rendering flags
     <https://misaka.61924.nl/#html-render-flags>`_, all html rendering flags
-    can be used here, separated by comma, either by their name or as `HTML_`_.
+    can be used here, separated by comma, either by their name or as ``HTML_``.
     Per Misaka's defaults, no flags are set.
 
 allowed-elements
