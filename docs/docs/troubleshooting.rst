@@ -36,4 +36,7 @@ parse configuration file with non-ascii characters and so forth).
 The web console shows 404 Not Found responses
 ---------------------------------------------
 
-That's fine. Isso returns "404 Not Found" to indicate "No comments".
+Isso returned "404 Not Found" to indicate "No comments" in versions prior to
+0.12.3. This behaviour was changed in
+`a pull request <https://github.com/posativ/isso/pull/565>`_ to return a code
+of "200" with an empty array.
