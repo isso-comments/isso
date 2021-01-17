@@ -164,7 +164,7 @@ Install from Source
 If you want to hack on Isso or track down issues, there's an alternate
 way to set up Isso. It requires a lot more dependencies and effort:
 
-- Python 2.7 or 3.4+ (+ devel headers)
+- Python 3.4+ (+ devel headers)
 - Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
