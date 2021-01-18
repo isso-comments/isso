@@ -121,16 +121,13 @@ jobs:
           paths:
             - ~/project/node_modules
             - ~/.npm
-      # Does not work somehow? Next step seems not aware
       - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
-          # taken to be the root directory of the workspace.
+          # Must be an absolute path, or relative path from working_directory.
+          # This is a directory on the container which is taken to be the root
+          # directory of the workspace.
           root: docs/_static/css/
           paths:
             - site.css
-      - store_artifacts:
-          path: docs/_static/css/site.css
-          destination: docs-html/_static/css/site.css
 
   docs:
     docker:
@@ -138,10 +135,9 @@ jobs:
     steps:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
-          at: docs/_static/css
-      - run: "ls docs/_static/css"
+          at: /tmp/workspace
       - checkout
-      - run: "ls docs/_static/css"
+      - run: cp /tmp/workspace/site.css docs/_static/css/site.css
       - restore_cache:
           key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - run:
