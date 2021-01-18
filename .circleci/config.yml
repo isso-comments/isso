@@ -8,48 +8,35 @@ general:
      - /feature-.*/ # or regexes
 
 orbs:
-  # The python orb contains a set of prepackaged circleci configuration you can use repeatedly in your configurations files
-  # Orb commands and jobs help you with common scripting around a language/tool
-  # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.2
 
 workflows:
-  default:  # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
-    # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  default:
     jobs:
-      - build-and-test
+      - nosetests
 
 
 jobs:
-  build-and-test:  # This is the name of the job, feel free to change it to better match what you're trying to do!
-    # These next lines defines a docker executors: https://circleci.com/docs/2.0/executor-types/
-    # You can specify an image from dockerhub or use one of the convenience images from CircleCI's Developer Hub
-    # A list of available CircleCI docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
-    # The executor is the environment in which the steps below will be executed - below will use a python 3.9 container
-    # Change the version below to your required version of python
+  nosetests:
     docker:
       - image: cimg/python:3.8
-    # Checkout the code as the first step. This is a dedicated CircleCI step.
-    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
-    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
-    # Then run your tests!
-    # CircleCI will report the results back to your VCS provider.
     steps:
       - checkout
-      #- run: 'echo "cwd: $(pwd)"'
-      #- run: 'ls -la'
-      #- run: 'ls -la isso || echo "ls failed"'
+      - run: "ls -la ~ && ls -la ."
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - python/install-packages:
           pkg-manager: pip
-          #app-dir: ~/isso/isso/test/  # If you're requirements.txt isn't in the root directory.
-          app-dir: ~/project/isso/tests/  # If you're requirements.txt isn't in the root directory.
-          pip-dependency-file: requirements-test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
+          app-dir: ~/project/isso/tests/
+          pip-dependency-file: requirements-test.txt
       - run:
           name: Install isso in editable mode
           command: pip install -e .
       - run:
-          name: Run tests
-          # This assumes pytest is installed via the install-package step above
+          name: Run nosetests
           command: nosetests isso/
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          paths:
+            - "venv"
