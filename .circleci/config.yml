@@ -97,9 +97,7 @@ jobs:
           name: Run flake8
           # FIXME Allowed to fail until formatting is fixed
           command: |
-            . venv/bin/activate
-            pwd
-            ls -la
+            . ~/venv/bin/activate
             flake8 . --count --max-line-length=127 --show-source --statistics || /bin/true
       - save_cache:
           key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
