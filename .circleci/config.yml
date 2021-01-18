@@ -52,4 +52,4 @@ jobs:
           name: Run nosetests with coverage
           command: |
             . venv/bin/activate
-            nosetests --with-doctest --with-coverage --cover-package=isso --cover-html isso/
+            nosetests --with-doctest --with-coverage --cover-package=isso isso/
