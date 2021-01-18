@@ -117,6 +117,10 @@ jobs:
           key: node-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/project/node_modules
+     - persist_to_workspace:
+         root: ~/project/docs/_static/css/
+         paths:
+           - site.css
 
   docs:
     docker:
