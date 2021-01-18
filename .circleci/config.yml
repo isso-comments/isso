@@ -48,7 +48,7 @@ jobs:
           pip-dependency-file: requirements-test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
       - run:
           name: Install isso in editable mode
-          command: sudo pip install -e .
+          command: pip install -e .
       - run:
           name: Run tests
           # This assumes pytest is installed via the install-package step above
