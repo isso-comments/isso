@@ -57,7 +57,6 @@ jobs:
       - image: cimg/python:3.8
     steps:
       - checkout
-      - run: "ls -la ~ && ls -la ."
       - restore_cache:
           key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - run:
@@ -99,6 +98,8 @@ jobs:
           # FIXME Allowed to fail until formatting is fixed
           command: |
             . venv/bin/activate
+            pwd
+            ls -la
             flake8 . --count --max-line-length=127 --show-source --statistics || /bin/true
       - save_cache:
           key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
@@ -136,11 +137,6 @@ jobs:
           key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
             - "~/venv"
-      - run:
-          name: Install isso in editable mode
-          command: |
-            . ~/venv/bin/activate
-            pip install -e .
       - run:
           name: Compile docs using sphinx
           command: |
