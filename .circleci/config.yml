@@ -4,6 +4,7 @@ general:
   branches:
     only:
      - master # list of branches to build
+     - circleci
      - /feature-.*/ # or regexes
 
 orbs:
