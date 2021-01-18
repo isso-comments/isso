@@ -34,22 +34,22 @@ jobs:
       - run:
           name: Install Python deps in a venv
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
             pip install -r isso/tests/requirements-test.txt
       - save_cache:
           key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
-            - "venv"
+            - "~/venv"
       - run:
           name: Install isso in editable mode
           command: |
-            . venv/bin/activate
+            . ~/venv/bin/activate
             pip install -e .
       - run:
           name: Run nosetests with coverage
           command: |
-            . venv/bin/activate
+            . ~/venv/bin/activate
             nosetests --with-doctest --with-coverage --cover-package=isso isso/
 
   flakes:
@@ -62,8 +62,8 @@ jobs:
       - run:
           name: Install Python deps in a venv
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
             pip install -r isso/tests/requirements-test.txt
       - run:
           name: Run flake8
@@ -74,35 +74,7 @@ jobs:
       - save_cache:
           key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
-            - "venv"
-
-  docs:
-    docker:
-      - image: cimg/python:3.8
-    steps:
-      - checkout
-      - restore_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
-      - run:
-          name: Install Python deps in a venv
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r isso/tests/requirements-test.txt
-      - save_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
-          paths:
-            - "venv"
-      - run:
-          name: Install isso in editable mode
-          command: |
-            . venv/bin/activate
-            pip install -e .
-      - run:
-          name: Compile docs using sphinx
-          command: |
-            . venv/bin/activate
-            sphinx-build -b dirhtml docs/ docs/_build/html
+            - "~/venv"
 
   css:
     executor: node/default
@@ -117,3 +89,34 @@ jobs:
           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/project/node_modules
+      - store_artifacts:
+          path: docs/_static/css/site.css
+          destination: site.css
+
+  docs:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
+      - save_cache:
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          paths:
+            - "~/venv"
+      - run:
+          name: Install isso in editable mode
+          command: |
+            . ~/venv/bin/activate
+            pip install -e .
+      - run:
+          name: Compile docs using sphinx
+          command: |
+            . ~/venv/bin/activate
+            sphinx-build -b dirhtml docs/ docs/_build/html
