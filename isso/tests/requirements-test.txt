@@ -6,3 +6,6 @@ werkzeug>=1.0
 bleach
 flask-caching>=1.9
 cffi>=1.3.0
+# nosetests
+nose
+coverage
