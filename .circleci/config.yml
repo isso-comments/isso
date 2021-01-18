@@ -58,7 +58,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - run:
           name: Install Python deps in a venv
           command: |
@@ -66,7 +66,7 @@ jobs:
             . ~/venv/bin/activate
             pip install -r isso/tests/requirements-test.txt
       - save_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
             - "~/venv"
       - run:
@@ -86,7 +86,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - run:
           name: Install Python deps in a venv
           command: |
@@ -102,7 +102,7 @@ jobs:
             ls -la
             flake8 . --count --max-line-length=127 --show-source --statistics || /bin/true
       - save_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
             - "~/venv"
 
@@ -116,7 +116,7 @@ jobs:
       - run: npm install node-sass
       - run: ./node_modules/node-sass/bin/node-sass --no-cache docs/_static/css/site.scss docs/_static/css/site.css
       - save_cache:
-          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: node-v2-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/project/node_modules
 
@@ -126,7 +126,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - run:
           name: Install Python deps in a venv
           command: |
@@ -134,7 +134,7 @@ jobs:
             . ~/venv/bin/activate
             pip install -r isso/tests/requirements-test.txt
       - save_cache:
-          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
             - "~/venv"
       - run:
