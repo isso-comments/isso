@@ -24,19 +24,32 @@ jobs:
     steps:
       - checkout
       - run: "ls -la ~ && ls -la ."
+      #- run: sudo chown -R circleci:circleci /usr/local/bin
+      #- run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
-      - python/install-packages:
-          pkg-manager: pip
-          app-dir: ~/project/isso/tests/
-          pip-dependency-file: requirements-test.txt
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+      # Meh, let's do this manually instead
+      #- python/install-packages:
+      #    pkg-manager: pip
+      #    app-dir: ~/project/isso/tests/
+      #    pip-dependency-file: requirements-test.txt
       - run:
-          name: Install isso in editable mode
-          command: pip install -e .
-      - run:
-          name: Run nosetests
-          command: nosetests isso/
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
           paths:
             - "venv"
+      - run:
+          name: Install isso in editable mode
+          command: |
+            . venv/bin/activate
+            pip install -e .
+      - run:
+          name: Run nosetests with coverage
+          command: |
+            . venv/bin/activate
+            nosetests --with-doctest --with-coverage --cover-package=isso --cover-html isso/
