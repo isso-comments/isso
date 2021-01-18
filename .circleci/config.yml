@@ -43,8 +43,8 @@ orbs:
 workflows:
   default:
     jobs:
-      - nosetests
-      - flakes
+      #- nosetests
+      #- flakes
       - css
       - docs:
           requires:
@@ -117,14 +117,14 @@ jobs:
           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/project/node_modules
-      #- persist_to_workspace:
-      #    root: /tmp/one/
-      #    paths:
-      #      - first.txt
+      # Does not work somehow? Next step seems not aware
       - persist_to_workspace:
           root: /home/circleci/project/docs/_static/css/
           paths:
             - site.css
+      - store_artifacts:
+          path: docs/_static/css/site.css
+          destination: docs-html/_static/css/site.css
 
   docs:
     docker:
