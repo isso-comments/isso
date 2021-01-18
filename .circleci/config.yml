@@ -11,7 +11,7 @@ orbs:
   # https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.2
   # https://circleci.com/developer/orbs/orb/circleci/node
-  node: circleci/node@x.y
+  node: circleci/node@4.1.0
 
 workflows:
   default:
