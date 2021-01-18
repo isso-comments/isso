@@ -38,8 +38,8 @@ jobs:
     # CircleCI will report the results back to your VCS provider.
     steps:
       - checkout
-      - run: echo "cwd: $(pwd)"
-      - run: ls -la
+      - run: 'echo "cwd: $(pwd)"'
+      - run: 'ls -la'
       - run: 'ls -la isso || echo "ls failed"'
       - python/install-packages:
           pkg-manager: pip
