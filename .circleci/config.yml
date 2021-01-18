@@ -110,9 +110,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-          - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           # # Find the most recently generated cache used from any branch
           - node-v1-
+          # Will fail
+          #- node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm install node-sass
       - run: ./node_modules/node-sass/bin/node-sass --no-cache docs/_static/css/site.scss docs/_static/css/site.css
       - save_cache:
