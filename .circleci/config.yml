@@ -1,5 +1,32 @@
 version: 2.1
 
+# https://circleci.com/docs/2.0/language-python/
+# https://circleci.com/docs/2.0/language-javascript/
+#
+# According to https://circleci.com/blog/persisting-data-in-workflows-when-to-use-caching-artifacts-and-workspaces/
+#
+# > How data flows between CircleCI jobs
+# > Data can flow between CircleCI jobs in different ways. Workspaces persist
+# > data between jobs in a single Workflow. Caching persists data between the
+# > same job in different Workflow builds. Artifacts persist data after a
+# > Workflow has finished. The use-case, implementation, and amount of time data
+# > will hang around varies between them.
+#
+# > Workspaces moves data in-between sequential jobs in a workflow.
+# > When a workspace is declared in a job, one or more files or directories can
+# > be added. Each addition creates a new layer in the workspace filesystem.
+# > Downstream jobs can then use this workspace for its own needs or add more
+# > layers on top.
+# > A common approach is to use the workspace to pass generated version numbers
+# > from a build job to a deploy job. They can also be used to pass along
+# > compiled binaries - but as they need to be uploaded and downloaded again in
+# > each job, this can be slower than just passing metadata.
+# > Unlike caching, workspaces are not shared between runs as they no longer
+# > exists once a workflow is complete. There is one exception, re-running
+# > workflows. More information on this and a complete deep-dive of workspaces
+# > and be found in tomorrow’s blog post: Deep Diving into CircleCI Workspaces.
+# https://circleci.com/blog/deep-diving-into-circleci-workspaces/
+
 general:
   branches:
     only:
@@ -18,8 +45,10 @@ workflows:
     jobs:
       - nosetests
       - flakes
-      - docs
       - css
+      - docs:
+          requires:
+            - css # For site.css
 
 
 jobs:
@@ -89,9 +118,6 @@ jobs:
           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/project/node_modules
-      - store_artifacts:
-          path: docs/_static/css/site.css
-          destination: site.css
 
   docs:
     docker:
@@ -120,3 +146,6 @@ jobs:
           command: |
             . ~/venv/bin/activate
             sphinx-build -b dirhtml docs/ docs/_build/html
+      - store_artifacts:
+          path: docs/_build/html
+          destination: docs-html
