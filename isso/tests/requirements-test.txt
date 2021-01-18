@@ -9,3 +9,7 @@ cffi>=1.3.0
 # nosetests
 nose
 coverage
+# flakes
+flake8
+# docs
+sphinx

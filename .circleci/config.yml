@@ -8,13 +8,18 @@ general:
      - /feature-.*/ # or regexes
 
 orbs:
-  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  # https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.2
+  # https://circleci.com/developer/orbs/orb/circleci/node
+  node: circleci/node@x.y
 
 workflows:
   default:
     jobs:
       - nosetests
+      - flakes
+      - docs
+      - css
 
 
 jobs:
@@ -24,15 +29,8 @@ jobs:
     steps:
       - checkout
       - run: "ls -la ~ && ls -la ."
-      #- run: sudo chown -R circleci:circleci /usr/local/bin
-      #- run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - restore_cache:
           key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
-      # Meh, let's do this manually instead
-      #- python/install-packages:
-      #    pkg-manager: pip
-      #    app-dir: ~/project/isso/tests/
-      #    pip-dependency-file: requirements-test.txt
       - run:
           name: Install Python deps in a venv
           command: |
@@ -53,3 +51,64 @@ jobs:
           command: |
             . venv/bin/activate
             nosetests --with-doctest --with-coverage --cover-package=isso isso/
+  flakes:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
+      - save_cache:
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: Install isso in editable mode
+          command: |
+            . venv/bin/activate
+            pip install -e .
+      - run:
+          name: Run flake8
+          command: |
+            . venv/bin/activate
+            flake8 . --count --max-line-length=127 --show-source --statistics
+  docs:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
+      - save_cache:
+          key: pip-pkgs-v1-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
+          paths:
+            - "venv"
+      - run:
+          name: Install isso in editable mode
+          command: |
+            . venv/bin/activate
+            pip install -e .
+      - run:
+          name: Compile docs using sphinx
+          command: |
+            . venv/bin/activate
+            sphinx-build -b dirhtml docs/ docs/_build/html
+
+  css:
+    executor: node/default
+    steps:
+      - checkout
+      - run: npm install node-sass
+      - run: node-sass --no-cache docs/_static/css/site.scss docs/_static/css/site.css
