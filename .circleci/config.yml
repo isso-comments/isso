@@ -3,29 +3,11 @@ version: 2.1
 # https://circleci.com/docs/2.0/language-python/
 # https://circleci.com/docs/2.0/language-javascript/
 #
-# According to https://circleci.com/blog/persisting-data-in-workflows-when-to-use-caching-artifacts-and-workspaces/
+# TODO: Only trigger relevant jobs if files in directories changed
+# https://stackoverflow.com/questions/44793903/circleci-how-to-run-job-when-has-change-in-specific-directory#44815405
+# https://gist.github.com/naesheim/18d0c0a58ee61f4674353a2f4cf71475
 #
-# > How data flows between CircleCI jobs
-# > Data can flow between CircleCI jobs in different ways. Workspaces persist
-# > data between jobs in a single Workflow. Caching persists data between the
-# > same job in different Workflow builds. Artifacts persist data after a
-# > Workflow has finished. The use-case, implementation, and amount of time data
-# > will hang around varies between them.
-#
-# > Workspaces moves data in-between sequential jobs in a workflow.
-# > When a workspace is declared in a job, one or more files or directories can
-# > be added. Each addition creates a new layer in the workspace filesystem.
-# > Downstream jobs can then use this workspace for its own needs or add more
-# > layers on top.
-# > A common approach is to use the workspace to pass generated version numbers
-# > from a build job to a deploy job. They can also be used to pass along
-# > compiled binaries - but as they need to be uploaded and downloaded again in
-# > each job, this can be slower than just passing metadata.
-# > Unlike caching, workspaces are not shared between runs as they no longer
-# > exists once a workflow is complete. There is one exception, re-running
-# > workflows. More information on this and a complete deep-dive of workspaces
-# > and be found in tomorrow’s blog post: Deep Diving into CircleCI Workspaces.
-# https://circleci.com/blog/deep-diving-into-circleci-workspaces/
+# TODO: Maybe re-use tox as with travis?
 
 general:
   branches:
@@ -36,25 +18,42 @@ general:
 
 orbs:
   # https://circleci.com/developer/orbs/orb/circleci/python
-  python: circleci/python@1.2
+  python: circleci/python@1.3.2
   # https://circleci.com/developer/orbs/orb/circleci/node
   node: circleci/node@4.1.0
 
 workflows:
   default:
     jobs:
-      #- nosetests
-      #- flakes
+      - nosetests:
+          matrix:
+            parameters:
+              python_version: ["3.6"]
+              #python-version: ["3.4", "3.5", "3.6", "3.7", "3.8", "3.9"]
+              #python-version:
+              # - 3.6
+      - flakes:
+          matrix:
+            parameters:
+              python_version: ["3.6"]
       - css
       - docs:
           requires:
             - css # For site.css
+          matrix:
+            parameters:
+              python_version: ["3.6"]
 
 
 jobs:
   nosetests:
+    parameters:
+      python_version:
+        type: string
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:<< parameters.python_version >>
+    #executor: python/<< parameters.python_version >>
+    # -> 'Cannot find a definition for executor named python/3.6'
     steps:
       - checkout
       - restore_cache:
@@ -81,8 +80,13 @@ jobs:
             nosetests --with-doctest --with-coverage --cover-package=isso isso/
 
   flakes:
+    parameters:
+      python_version:
+        type: string
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:<< parameters.python_version >>
+    #executor: python/<< parameters.python_version >>
+    # -> 'Cannot find a definition for executor named python/3.6'
     steps:
       - checkout
       - restore_cache:
@@ -130,8 +134,13 @@ jobs:
             - site.css
 
   docs:
+    parameters:
+      python_version:
+        type: string
     docker:
-      - image: cimg/python:3.8
+      - image: cimg/python:<< parameters.python_version >>
+    #executor: python/<< parameters.python_version >>
+    # -> 'Cannot find a definition for executor named python/3.6'
     steps:
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
@@ -151,6 +160,9 @@ jobs:
           paths:
             - "~/venv"
       - run:
+          # FIXME: Use `html` builder instead of `dirhtml` so that artifacts
+          # are viewable on circleci without appending /index.html ???
+          # Sadly sphinx emits a mix of .html and non-index links :-/
           name: Compile docs using sphinx
           command: |
             . ~/venv/bin/activate
