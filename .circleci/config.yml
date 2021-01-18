@@ -111,6 +111,8 @@ jobs:
       - restore_cache:
           keys:
           - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          # # Find the most recently generated cache used from any branch
+          - node-v1-
       - run: npm install node-sass
       - run: ./node_modules/node-sass/bin/node-sass --no-cache docs/_static/css/site.scss docs/_static/css/site.css
       - save_cache:
@@ -119,7 +121,9 @@ jobs:
             - ~/project/node_modules
       # Does not work somehow? Next step seems not aware
       - persist_to_workspace:
-          root: /home/circleci/project/docs/_static/css/
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
+          # taken to be the root directory of the workspace.
+          root: docs/_static/css/
           paths:
             - site.css
       - store_artifacts:
@@ -130,7 +134,12 @@ jobs:
     docker:
       - image: cimg/python:3.8
     steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: docs/_static/css
+      - run: "ls docs/_static/css"
       - checkout
+      - run: "ls docs/_static/css"
       - restore_cache:
           key: pip-pkgs-v2-{{ .Branch }}-{{ checksum "isso/tests/requirements-test.txt" }}
       - run:
