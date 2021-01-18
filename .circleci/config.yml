@@ -120,6 +120,7 @@ jobs:
           key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/project/node_modules
+            - ~/.npm
       # Does not work somehow? Next step seems not aware
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is
