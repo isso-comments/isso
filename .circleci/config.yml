@@ -118,7 +118,7 @@ jobs:
           paths:
             - ~/project/node_modules
      - persist_to_workspace:
-         root: ~/project/docs/_static/css/
+         root: /home/circleci/project/docs/_static/css/
          paths:
            - site.css
 
