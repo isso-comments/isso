@@ -1,0 +1,171 @@
+version: 2.1
+
+# https://circleci.com/docs/2.0/language-python/
+# https://circleci.com/docs/2.0/language-javascript/
+#
+# TODO: Only trigger relevant jobs if files in directories changed
+# https://stackoverflow.com/questions/44793903/circleci-how-to-run-job-when-has-change-in-specific-directory#44815405
+# https://gist.github.com/naesheim/18d0c0a58ee61f4674353a2f4cf71475
+# TODO: Maybe re-use tox as with travis?
+
+general:
+  branches:
+    only:
+     - master
+     - circleci
+
+orbs:
+  # https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@1.3.2
+  # https://circleci.com/developer/orbs/orb/circleci/node
+  node: circleci/node@4.1.0
+
+workflows:
+  default:
+    jobs:
+      - nosetests:
+          matrix:
+            parameters:
+              docker_image:
+                # circleci does not offer a python:3.4 image
+                # FIXME: Failing because werkzeug>=1.0 not available for 3.4
+                #- python:3.4
+                - cimg/python:3.5
+                - cimg/python:3.6
+                - cimg/python:3.7
+                - cimg/python:3.8
+                - cimg/python:3.9
+      - flakes
+      - css-sassc
+      - docs:
+          requires:
+            - css-sassc # For site.css
+
+
+jobs:
+  nosetests:
+    parameters:
+      docker_image:
+        type: string
+    docker:
+      - image: << parameters.docker_image >>
+    resource_class: small
+    steps:
+      - checkout
+      # Avoid mixing pip caches across python versions
+      - create_python_version_specific_pip_lock:
+          filename: pip-pyver-specific-pkg-lock.txt
+          lock_version: << parameters.docker_image >>
+      - restore_cache:
+          key: pip-pkgs-v1-{{ checksum "pip-pyver-specific-pkg-lock.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
+      - save_cache:
+          key: pip-pkgs-v1-{{ checksum "pip-pyver-specific-pkg-lock.txt" }}
+          paths:
+            - "~/venv"
+      - run:
+          name: Install isso in editable mode
+          command: |
+            . ~/venv/bin/activate
+            pip install -e .
+      - run:
+          name: Run nosetests with coverage
+          command: |
+            . ~/venv/bin/activate
+            nosetests --with-doctest --with-coverage --cover-package=isso isso/
+
+  flakes:
+    docker:
+      - image: cimg/python:3.8
+    resource_class: small
+    steps:
+      - checkout
+      - restore_cache:
+          key: pip-pkgs-py3.8-{{ checksum "isso/tests/requirements-test.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
+      - run:
+          name: Run flake8
+          command: |
+            . ~/venv/bin/activate
+            flake8 . --count --max-line-length=127 --show-source --statistics
+      - save_cache:
+          key: pip-pkgs-py3.8-{{ checksum "isso/tests/requirements-test.txt" }}
+          paths:
+            - "~/venv"
+
+  css-sassc:
+    docker:
+      - image: cimg/base:stable-20.04
+    resource_class: small
+    steps:
+      - checkout
+      - run: sudo apt update
+      - run: sudo apt install sassc
+      - run: sassc docs/_static/css/site.scss docs/_static/css/site.css
+      - persist_to_workspace:
+          root: docs/_static/css/
+          paths:
+            - site.css
+
+  docs:
+    docker:
+      - image: cimg/python:3.8
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - run:
+          name: Restore site.css from previous step
+          command: cp /tmp/workspace/site.css docs/_static/css/site.css
+      - restore_cache:
+          key: pip-pkgs-py3.8-{{ checksum "isso/tests/requirements-test.txt" }}
+      - run:
+          name: Install Python deps in a venv
+          command: |
+            python3 -m venv ~/venv
+            . ~/venv/bin/activate
+            pip install -r isso/tests/requirements-test.txt
+      - save_cache:
+          key: pip-pkgs-py3.8-{{ checksum "isso/tests/requirements-test.txt" }}
+          paths:
+            - "~/venv"
+      - run:
+          # FIXME: Use `html` builder instead of `dirhtml` so that artifacts
+          # are viewable on circleci without appending /index.html ???
+          # Sadly sphinx emits a mix of .html and non-index links :-/
+          name: Compile docs using sphinx
+          command: |
+            . ~/venv/bin/activate
+            sphinx-build -b dirhtml docs/ docs/_build/html
+      - store_artifacts:
+          path: docs/_build/html
+          destination: docs-html
+
+
+# Specific cache shards for each python version
+# https://circleci.com/docs/2.0/caching/#creating-and-building-a-concatenated-package-lock-file
+commands:
+  create_python_version_specific_pip_lock:
+    description: "Python-version-specific cache lock. File is used as checksum source for part of caching key."
+    parameters:
+      filename:
+        type: string
+      # Python version (by proxy of image name) to create the lock file for
+      lock_version:
+        type: string
+    steps:
+      - run:
+          name: Combine requirements.txt and given python version into lock file
+          command: |
+            echo -e "$(cat isso/tests/requirements-test.txt)\n<<parameters.lock_version>>" > << parameters.filename >>
