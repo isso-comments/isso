@@ -1,0 +1,7 @@
+# nosetests
+nose
+coverage
+# flakes
+flake8
+# docs
+sphinx
