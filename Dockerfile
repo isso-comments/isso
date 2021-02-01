@@ -1,14 +1,14 @@
 # First, compile JS stuff
-FROM node:dubnium-buster
+FROM node:dubnium-buster AS jsBuilder
 WORKDIR /src/
 COPY . .
 RUN npm install -g requirejs uglify-js jade bower \
  && make init js
 
 # Second, create virtualenv
-FROM python:3.8-buster
+FROM python:3.8-buster AS venvBuilder
 WORKDIR /src/
-COPY --from=0 /src .
+COPY --from=jsBuilder /src .
 RUN python3 -m venv /isso \
  && . /isso/bin/activate \
  && pip3 install --no-cache-dir --upgrade pip \
@@ -19,7 +19,7 @@ RUN python3 -m venv /isso \
 # Third, create final repository
 FROM python:3.8-slim-buster
 WORKDIR /isso/
-COPY --from=1 /isso .
+COPY --from=venvBuilder /isso .
 
 # Configuration
 VOLUME /db /config
