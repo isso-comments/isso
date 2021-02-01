@@ -10,7 +10,7 @@ define({
 
     "num-comments": "Um Comentário\n{{ n }} Comentários",
     "no-comments": "Nenhum comentário ainda",
-    "atom-feed": "Feed Atom",European Portuguese
+    "atom-feed": "Feed Atom",
 
     "comment-reply": "Responder",
     "comment-edit": "Editar",
