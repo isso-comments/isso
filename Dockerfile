@@ -2,8 +2,7 @@
 FROM node:dubnium-buster AS jsBuilder
 WORKDIR /src/
 COPY . .
-RUN npm install -g requirejs uglify-js jade bower \
- && make init js
+RUN make init js
 
 # Second, create virtualenv
 FROM python:3.8-buster AS venvBuilder
