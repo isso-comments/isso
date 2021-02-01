@@ -27,14 +27,14 @@ DOCS_MAN_DST := man/man1/isso.1 man/man5/isso.conf.5
 
 DOCS_HTML_DST := docs/_build/html
 
-RJS = r.js
+RJS = npx --no-install r.js
 
 SASS = node-sass
 
 all: man js site
 
 init:
-	(cd isso/js; bower --allow-root install almond requirejs requirejs-text jade)
+	npm install
 
 flakes:
 	flake8 . --count --max-line-length=127 --show-source --statistics
