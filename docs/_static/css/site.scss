@@ -301,6 +301,11 @@ main {
       font-family: Monaco, Menlo, Consolas, monospace;
     }
 
+    code {
+      background-color: #eeeeee;
+      padding: 0.2em 0.3em;
+    }
+
     .highlight {
       margin: 1.2em 0;
       padding: 10px 15px;

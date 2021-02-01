@@ -89,10 +89,10 @@ Get the latest N comments for all threads:
 
     GET /latest?limit=N
 
-The N parameter limits how many of the latest comments to retrieve; it's 
+The N parameter limits how many of the latest comments to retrieve; it's
 mandatory, and must be an integer greater than 0.
 
-This endpoint needs to be enabled in the configuration (see the 
+This endpoint needs to be enabled in the configuration (see the
 ``latest-enabled`` option in the ``general`` section).
 
 
@@ -192,12 +192,12 @@ Counts all publicly visible comments for thread `uri`:
 
     GET /count?uri=%2Fhello-world%2F
     2
-    
+
 uri :
     URI to count comments for, required.
 
 returns an integer
-    
+
 Get Atom feed
 -------------
 
@@ -206,7 +206,7 @@ Get an Atom feed of comments for thread `uri`:
 .. code-block:: text
 
     GET /feed?uri=%2Fhello-world%2F
-    
+
 uri :
     URI to get comments for, required.
 

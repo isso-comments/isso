@@ -29,9 +29,10 @@ Sections covered in this document:
 .. contents::
     :local:
 
-
 General
 -------
+
+.. _configure-general:
 
 In this section, you configure most comment-related options such as database path,
 session key and hostname. Here are the default values for this section:
@@ -111,13 +112,15 @@ gravatar-url
     Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
 
 latest-enabled
-    If True it will enable the ``/latest`` endpoint. Optional, defaults 
+    If True it will enable the ``/latest`` endpoint. Optional, defaults
     to False.
 
 
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
+
+.. _configure-moderation:
 
 Moderation
 ----------
@@ -146,6 +149,8 @@ approve-if-email-previously-approved
 purge-after
     remove unprocessed comments in moderation queue after given time.
 
+
+.. _configure-server-block:
 
 Server
 ------
@@ -295,6 +300,8 @@ require-email
 
     Do not forget to configure the `client <client>`_ accordingly.
 
+.. _configure-markup:
+
 Markup
 ------
 
@@ -304,7 +311,7 @@ supported, but new languages are relatively easy to add.
 .. code-block:: ini
 
     [markup]
-    options = strikethrough, superscript, autolink
+    options = strikethrough, superscript, autolink, fenced-code
     flags = skip-html, escape, hard-wrap
     allowed-elements =
     allowed-attributes =
@@ -312,12 +319,14 @@ supported, but new languages are relatively easy to add.
 options
     `Misaka-specific Markdown extensions <https://misaka.61924.nl/#api>`_, all
     extension flags can be used there, separated by comma, either by their name
-    or as `EXT_`_.
+    or as ``EXT_``.
+
+    **Careful:** Misaka 1.0 used ``snake_case``, but 2.0 needs ``dashed-case``!
 
 flags
     `Misaka-specific HTML rendering flags
     <https://misaka.61924.nl/#html-render-flags>`_, all html rendering flags
-    can be used here, separated by comma, either by their name or as `HTML_`_.
+    can be used here, separated by comma, either by their name or as ``HTML_``.
     Per Misaka's defaults, no flags are set.
 
 allowed-elements
@@ -384,6 +393,8 @@ limit
 
 Admin
 -----
+
+.. _configure-admin:
 
 Isso has an optional web administration interface that can be used to moderate
 comments. The interface is available under ``/admin`` on your isso URL.

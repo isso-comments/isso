@@ -18,6 +18,14 @@ Install Isso in a virtual environment as described in
 :ref:`install-interludium`. Alternatively, you can use `pip install --user`
 to install Isso into the user's home.
 
+Why isn't markdown in my comments rendering as I expect?
+--------------------------------------------------------
+
+Please configure Isso's markup parser to your requirements as described in
+:ref:`configure-markup`. As of version 0.12.2, Isso uses misaka 2.0 to render
+markdown. Misaka 2.0 uses ``dashed-case`` instead of ``snake_case`` for
+options, you might have to update your config.
+
 UnicodeDecodeError: 'ascii' codec can't decode byte 0xff
 --------------------------------------------------------
 
@@ -36,4 +44,7 @@ parse configuration file with non-ascii characters and so forth).
 The web console shows 404 Not Found responses
 ---------------------------------------------
 
-That's fine. Isso returns "404 Not Found" to indicate "No comments".
+Isso returned "404 Not Found" to indicate "No comments" in versions prior to
+0.12.3. This behaviour was changed in
+`a pull request <https://github.com/posativ/isso/pull/565>`_ to return a code
+of "200" with an empty array.
