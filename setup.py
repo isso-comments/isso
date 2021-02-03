@@ -31,9 +31,9 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6"
-        "Programming Language :: Python :: 3.7"
-        "Programming Language :: Python :: 3.8"
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     install_requires=requires,
     setup_requires=["cffi>=1.3.0"],
