@@ -146,6 +146,6 @@ def load(default, user=None):
         fromaddr = ''
     if not parseaddr(fromaddr)[0]:
         parser.set("smtp", "from",
-                   formataddr(("Ich schrei sonst!", parser.get("smtp", "from"))))
+                   formataddr(("Ich schrei sonst!", fromaddr)))
 
     return parser
