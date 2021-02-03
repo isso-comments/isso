@@ -10,8 +10,8 @@ requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
 
 if sys.version_info < (3, ):
     raise SystemExit("Python 2 is not supported.")
-elif (3, 0) <= sys.version_info < (3, 4):
-    raise SystemExit("Python 3 versions < 3.4 are not supported.")
+elif (3, 0) <= sys.version_info < (3, 5):
+    raise SystemExit("Python 3 versions < 3.5 are not supported.")
 
 setup(
     name='isso',
