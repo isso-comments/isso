@@ -15,7 +15,7 @@ elif (3, 0) <= sys.version_info < (3, 5):
 
 setup(
     name='isso',
-    version='0.12.3',
+    version='0.12.4',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
@@ -31,8 +31,8 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6"
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8"
     ],
     install_requires=requires,

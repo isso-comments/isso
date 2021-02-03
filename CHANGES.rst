@@ -1,6 +1,28 @@
 Changelog for Isso
 ==================
 
+0.12.4 (2021-02-03)
+-------------------
+
+- Require Python >= 3.5, for consistency with werkzeug.
+  (#698, Stefan Gehn)
+
+- Use npm for pacakge installation.
+  (#695, Stefan Gehn)
+
+- Use sassc. (Stefan Gehn)
+
+- Cope with broken HTTP clients that require specific casing of
+  "200 OK". (#646, #347, Konzertheld)
+
+- Add European Portuguese translation. (#692, boturon)
+
+- Various doc updates. (ix5)
+
+- Add Turkish translation. (Özcan Oğuz, #669)
+
+- Drop Python 2 support. (Jelmer Vernooĳ)
+
 0.12.3 (2020-02-22)
 -------------------
 
