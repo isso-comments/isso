@@ -202,6 +202,17 @@ trusted-proxies
     `X-Forwarded-For` HTTP header, which is important for the mechanism
     forbiding several comment votes coming from the same subnet.
 
+samesite
+    override ``Set-Cookie`` header ``SameSite`` value.
+    Needed for setups where isso is not hosted on the same domain, e.g. called
+    from example.org and hosted under comments.example.org.
+    By default, isso will set ``SameSite=None`` when served over https and
+    ``SameSite=Lax`` when served over http
+    (see `MDM: SameSite <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite>`_
+    and `#682 <https://github.com/posativ/isso/issues/682>`_ for details).
+
+    Accepted values: ``None``, ``Lax``, ``Strict``
+
 .. _configure-smtp:
 
 SMTP
