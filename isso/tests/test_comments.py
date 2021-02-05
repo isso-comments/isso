@@ -17,7 +17,7 @@ from isso import Isso, core, config, dist
 from isso.utils import http
 from isso.views import comments
 
-from fixtures import curl, loads, FakeIP, JSONClient
+from fixtures import curl, loads, FakeIP, FakeHost, JSONClient
 http.curl = curl
 
 
@@ -493,6 +493,70 @@ class TestComments(unittest.TestCase):
 
         response = self.get('/latest?limit=5')
         self.assertEqual(response.status_code, 404)
+
+
+class TestHostDependent(unittest.TestCase):
+
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        conf = config.load(os.path.join(dist.location, dist.project_name, "defaults.ini"))
+        conf.set("general", "dbpath", self.path)
+        self.conf = conf
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(conf)
+
+        self.client = JSONClient(self.app, Response)
+        self.post = self.client.post
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def testSecureCookieNoConf(self):
+        self.app.wsgi_app = FakeHost(self.app.wsgi_app, "isso-dev.local", "https")
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({'text': 'Lorem ipsum ...'}))
+
+        self.assertIn("Secure", rv.headers["Set-Cookie"])
+        self.assertIn("Secure", rv.headers["X-Set-Cookie"])
+        self.assertIn("SameSite=None", rv.headers["Set-Cookie"])
+
+    def testInSecureCookieNoConf(self):
+        self.app.wsgi_app = FakeHost(self.app.wsgi_app, "isso-dev.local", "http")
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({'text': 'Lorem ipsum ...'}))
+
+        self.assertNotIn("Secure", rv.headers["Set-Cookie"])
+        self.assertNotIn("Secure", rv.headers["X-Set-Cookie"])
+        self.assertIn("SameSite=Lax", rv.headers["Set-Cookie"])
+
+    def testSameSiteConfNone(self):
+        # By default, isso should set SameSite=Lax when served over http
+        self.app.wsgi_app = FakeHost(self.app.wsgi_app, "isso-dev.local", "http")
+        # Conf overrides SameSite setting
+        self.conf.set("server", "samesite", "None")
+
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({'text': 'Lorem ipsum ...'}))
+
+        self.assertNotIn("Secure", rv.headers["Set-Cookie"])
+        self.assertNotIn("Secure", rv.headers["X-Set-Cookie"])
+        self.assertIn("SameSite=None", rv.headers["Set-Cookie"])
+
+    def testSameSiteConfLax(self):
+        # By default, isso should set SameSite=None when served over https
+        self.app.wsgi_app = FakeHost(self.app.wsgi_app, "isso-dev.local", "https")
+        # Conf overrides SameSite setting
+        self.conf.set("server", "samesite", "Lax")
+
+        rv = self.post('/new?uri=%2Fpath%2F',
+                       data=json.dumps({'text': 'Lorem ipsum ...'}))
+
+        self.assertIn("Secure", rv.headers["Set-Cookie"])
+        self.assertIn("Secure", rv.headers["X-Set-Cookie"])
+        self.assertIn("SameSite=Lax", rv.headers["Set-Cookie"])
 
 
 class TestModeratedComments(unittest.TestCase):

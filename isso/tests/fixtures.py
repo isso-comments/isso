@@ -16,6 +16,19 @@ class FakeIP(object):
         return self.app(environ, start_response)
 
 
+class FakeHost(object):
+
+    def __init__(self, app, host, scheme):
+        self.app = app
+        self.host = host
+        self.scheme = scheme
+
+    def __call__(self, environ, start_response):
+        environ['HTTP_HOST'] = self.host
+        environ['wsgi.url_scheme'] = self.scheme
+        return self.app(environ, start_response)
+
+
 class JSONClient(Client):
 
     def open(self, *args, **kwargs):
