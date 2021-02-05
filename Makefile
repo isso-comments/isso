@@ -1,7 +1,7 @@
 # INSTALLATION:
 # pip install sphinx
-# npm install -g requirejs uglify-js jade
 # apt install sassc
+# make init
 
 ISSO_JS_SRC := $(shell find isso/js/app -type f) \
 	       $(shell ls isso/js/*.js | grep -vE "(min|dev)") \

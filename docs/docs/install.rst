@@ -168,7 +168,7 @@ way to set up Isso. It requires a lot more dependencies and effort:
 - Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
-- Node.js, `NPM <https://npmjs.org/>`__ and `Bower <http://bower.io/>`__ - *for frontend*
+- Node.js, `NPM <https://npmjs.org/>`__ - *for frontend*
 - `sassc <https://github.com/sass/sassc>`_ for compiling
   `.scss <https://sass-lang.com/>`_ - *for docs*
 
@@ -199,14 +199,7 @@ Install JavaScript modules:
 
     ~> make init
 
-Integration without optimization:
-
-.. code-block:: html
-
-    <script src="/js/config.js"></script>
-    <script data-main="/js/embed" src="/js/components/requirejs/require.js"></script>
-
-Optimization - generate ``embed.(min|dev).js``:
+Build JavaScript frontend code:
 
 .. code-block:: sh
 
