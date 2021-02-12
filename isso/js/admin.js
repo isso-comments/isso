@@ -70,9 +70,7 @@ function start_edit(com_id) {
                              'isso-email-' + com_id,
                              'isso-website-' + com_id,
                              'isso-text-' + com_id];
-    for (var idx=0; idx <= editable_elements.length; idx++) {
-        set_editable(editable_elements[idx]);
-    }
+    editable_elements.map(set_editable);
     document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('send-edit-btn-' + com_id).classList.toggle('hidden');
@@ -82,9 +80,7 @@ function stop_edit(com_id) {
                              'isso-email-' + com_id,
                              'isso-website-' + com_id,
                              'isso-text-' + com_id];
-    for (var idx=0; idx <= editable_elements.length; idx++) {
-        unset_editable(editable_elements[idx]);
-    }
+    editable_elements.map(unset_editable);
     document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('send-edit-btn-' + com_id).classList.toggle('hidden');
