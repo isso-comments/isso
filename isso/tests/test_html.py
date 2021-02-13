@@ -89,6 +89,7 @@ class TestHTML(unittest.TestCase):
         conf = config.new({
             "markup": {
                 "options": "autolink",
+                "flags": "",
                 "allowed-elements": "",
                 "allowed-attributes": ""
             }
@@ -97,3 +98,13 @@ class TestHTML(unittest.TestCase):
         self.assertIn(renderer("http://example.org/ and sms:+1234567890"),
                       ['<p><a href="http://example.org/" rel="nofollow noopener">http://example.org/</a> and sms:+1234567890</p>',
                        '<p><a rel="nofollow noopener" href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>'])
+
+    def test_code_blocks(self):
+        convert = html.Markdown(extensions=('fenced-code',))
+        examples = [
+            ("```\nThis is a code-fence. <hello>\n```", "<p><pre><code>This is a code-fence. &lt;hello&gt;\n</code></pre></p>"),
+            ("```c++\nThis is a code-fence. <hello>\n```", "<p><pre><code class=\"c++\">This is a code-fence. &lt;hello&gt;\n</code></pre></p>"),
+            ("    This is a four-character indent. <hello>", "<p><pre><code>This is a four-character indent. &lt;hello&gt;\n</code></pre></p>")]
+
+        for (input, expected) in examples:
+            self.assertEqual(convert(input), expected)

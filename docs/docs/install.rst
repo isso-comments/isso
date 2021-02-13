@@ -22,12 +22,12 @@ libraries, but most likely not all required by Isso (or in an up-to-date
 version – looking at you, Debian!).
 
 That's why most Python developers use the `Python Package Index`_ to get their
-dependencies. But the most important rule: never install *anything* from PyPi
+dependencies. The most important rule to follow is to never install *anything* from PyPi
 as root. Not because of malicious software, but because you *will* break your
 system.
 ``easy_install`` is one tool to mess up your system. Another package manager is
 ``pip``. If you ever searched for an issue with Python/pip and Stackoverflow is
-suggesting your ``easy_install pip`` or ``pip install --upgrade pip`` (as root
+suggesting you ``easy_install pip`` or ``pip install --upgrade pip`` (as root
 of course!), you are doing it wrong. `Why you should not use Python's
 easy_install carelessly on Debian`_ is worth the read.
 
@@ -134,11 +134,7 @@ To upgrade Isso, activate your virtual environment again, and run
 Prebuilt Packages
 -----------------
 
-* Debian: https://packages.crapouillou.net/ – built from PyPi. Includes
-  startup scripts and vhost configurations for Lighttpd, Apache and Nginx
-  [`source <https://github.com/jgraichen/debian-isso>`__].
-  `#729218 <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=729218>`_ is an
-  ITP for Debian.
+* Debian (since Buster): https://packages.debian.org/search?keywords=isso
 
 * Gentoo: http://eroen.eu/cgit/cgit.cgi/eroen-overlay/tree/www-apps/isso?h=isso
   – not yet available in Portage, but you can use the ebuild to build Isso.
@@ -168,11 +164,13 @@ Install from Source
 If you want to hack on Isso or track down issues, there's an alternate
 way to set up Isso. It requires a lot more dependencies and effort:
 
-- Python 2.7 or 3.4+ (+ devel headers)
+- Python 3.5+ (+ devel headers)
 - Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
-- Node.js, `NPM <https://npmjs.org/>`__ and `Bower <http://bower.io/>`__
+- Node.js, `NPM <https://npmjs.org/>`__ and `Bower <http://bower.io/>`__ - *for frontend*
+- `sassc <https://github.com/sass/sassc>`_ for compiling
+  `.scss <https://sass-lang.com/>`_ - *for docs*
 
 Get a fresh copy of Isso:
 
@@ -208,12 +206,17 @@ Integration without optimization:
     <script src="/js/config.js"></script>
     <script data-main="/js/embed" src="/js/components/requirejs/require.js"></script>
 
-Optimization:
+Optimization - generate ``embed.(min|dev).js``:
 
 .. code-block:: sh
 
-    ~> npm install -g requirejs uglify-js jade
     ~> make js
+
+Generate docs:
+
+.. code-block:: sh
+
+    ~> make site
 
 .. _init-scripts:
 
@@ -224,15 +227,15 @@ Init scripts to run Isso as a service (check your distribution's documentation
 for your init-system; e.g. Debian uses SysVinit, Fedora uses systemd) if you
 don't use FastCGi or uWSGI:
 
--  systemd (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.service
--  SysVinit (Isso + Gunicorn): https://github.com/jgraichen/debian-isso/blob/master/debian/isso.init
+-  systemd (Isso + Gunicorn): https://salsa.debian.org/jelmer/isso/-/blob/master/debian/isso.service
+-  SysVinit (Isso + Gunicorn): https://salsa.debian.org/jelmer/isso/-/blob/master/debian/isso.init
 -  OpenBSD: https://gist.github.com/noqqe/7397719
 -  FreeBSD: https://gist.github.com/ckoepp/52f6f0262de04cee1b88ef4a441e276d
 -  Supervisor: https://github.com/posativ/isso/issues/47
 
 If you're writing your own init script, you can utilize ``start-stop-daemon``
 to run Isso in the background (Isso runs in the foreground usually). Below you
-find a very basic SysVinit script which you can use for inspiration:
+will find a very basic SysVinit script which you can use for inspiration:
 
 .. code-block:: sh
 

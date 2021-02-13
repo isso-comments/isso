@@ -2,7 +2,6 @@
 
 from __future__ import unicode_literals
 
-import sys
 import io
 import time
 import json
@@ -14,10 +13,7 @@ from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
-try:
-    from urllib.parse import quote
-except ImportError:
-    from urllib import quote
+from urllib.parse import quote
 
 import logging
 logger = logging.getLogger("isso")
@@ -27,13 +23,9 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso.compat import PY2K
 from isso import local
 
-if PY2K:
-    from thread import start_new_thread
-else:
-    from _thread import start_new_thread
+from _thread import start_new_thread
 
 
 class SMTPConnection(object):
@@ -49,19 +41,12 @@ class SMTPConnection(object):
                             timeout=self.conf.getint('timeout'))
 
         if self.conf.get('security') == 'starttls':
-            if sys.version_info >= (3, 4):
-                import ssl
-                self.client.starttls(context=ssl.create_default_context())
-            else:
-                self.client.starttls()
+            import ssl
+            self.client.starttls(context=ssl.create_default_context())
 
         username = self.conf.get('username')
         password = self.conf.get('password')
         if username and password:
-            if PY2K:
-                username = username.encode('ascii')
-                password = password.encode('ascii')
-
             self.client.login(username, password)
 
         return self.client
@@ -109,7 +94,7 @@ class SMTP(object):
         rv = io.StringIO()
 
         author = comment["author"] or "Anonymous"
-        if comment["email"]:
+        if admin and comment["email"]:
             author += " <%s>" % comment["email"]
 
         rv.write(author + " wrote:\n")
@@ -149,7 +134,10 @@ class SMTP(object):
     def notify_new(self, thread, comment):
         if self.admin_notify:
             body = self.format(thread, comment, None, admin=True)
-            self.sendmail(thread["title"], body, thread, comment)
+            subject = "New comment posted"
+            if thread['title']:
+                subject = "%s on %s" % (subject, thread["title"])
+            self.sendmail(subject, body, thread, comment)
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -175,6 +163,9 @@ class SMTP(object):
 
     def sendmail(self, subject, body, thread, comment, to=None):
         to = to or self.conf.get("to")
+        if not subject:
+            # Fallback, just in case as an empty subject does not work
+            subject = 'isso notification'
         if uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),

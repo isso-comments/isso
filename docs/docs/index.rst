@@ -2,7 +2,7 @@ Overview
 ========
 
 Welcome to Isso's documentation. This documentation will help you get started
-fast. If you get any problems when using Isso, you can find the answer in
+fast. If you run into any problems when using Isso, you can find the answer in
 troubleshooting guide or you can ask me on IRC or GitHub.
 
 Documentation overview:
@@ -40,7 +40,12 @@ third-party. Just like IntenseDebate, livefrye etc. When you embed Disqus, they
 can do anything with your readers (and probably mine Bitcoins, see the loading
 times).
 
-Isso is not the first open-source commenting server:
+Isso is not the only open-source commenting server:
+
+* `commento <https://commento.io/>`_, written in Go. Requires a
+  `postgresql <https://www.postgresql.org/>`_ database.
+
+* `Remark42 <https://remark42.com/docs/1.6/>`_, written in Go.
 
 * `talkatv <https://github.com/talkatv/talkatv>`_, written in Python.
   Unfortunately, talkatv's (read "talkative") development stalled. Neither

@@ -37,7 +37,9 @@ class Dummy:
         pass
 
 
-def curl(method, host, path): return Dummy()
+def curl(method, host, path):
+    return Dummy()
 
 
-def loads(data): return json.loads(data.decode('utf-8'))
+def loads(data):
+    return json.loads(data.decode('utf-8'))

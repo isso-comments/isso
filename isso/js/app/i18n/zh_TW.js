@@ -6,7 +6,7 @@ define({
     "postbox-preview": "預覽",
     "postbox-edit": "編輯",
     "postbox-submit": "送出",
-    "postbox-notification": "訂閱回复的電子郵件通知",
+    "postbox-notification": "訂閱回覆的電子郵件通知",
 
     "num-comments": "1 則留言\n{{ n }} 則留言",
     "no-comments": "尚無留言",

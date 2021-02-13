@@ -2,10 +2,12 @@
 
 from __future__ import unicode_literals
 
+from configparser import NoOptionError
+import collections
 import re
-import cgi
 import time
 import functools
+import json  # json.dumps to put URL in <script>
 
 from datetime import datetime, timedelta
 from itsdangerous import SignatureExpired, BadSignature
@@ -18,8 +20,6 @@ from werkzeug.routing import Rule
 from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
-from isso.compat import text_type as str
-
 from isso import utils, local
 from isso.utils import (http, parse,
                         JSONResponse as JSON, XMLResponse as XML,
@@ -29,17 +29,13 @@ from isso.utils.hash import sha1
 from isso.utils.hash import md5
 
 try:
-    from urlparse import urlparse
+    from cgi import escape
 except ImportError:
-    from urllib.parse import urlparse
-try:
-    from urllib import unquote
-except ImportError:
-    from urllib.parse import unquote
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import BytesIO as StringIO
+    from html import escape
+from urllib.parse import urlparse
+from urllib.parse import unquote
+from io import BytesIO as StringIO
+
 
 # from Django appearently, looks good to me *duck*
 __url_re = re.compile(
@@ -103,23 +99,24 @@ class API(object):
     ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
 
     VIEWS = [
-        ('fetch',       ('GET', '/')),
-        ('new',         ('POST', '/new')),
-        ('count',       ('GET', '/count')),
-        ('counts',      ('POST', '/count')),
-        ('feed',        ('GET', '/feed')),
-        ('view',        ('GET', '/id/<int:id>')),
-        ('edit',        ('PUT', '/id/<int:id>')),
-        ('delete',      ('DELETE', '/id/<int:id>')),
+        ('fetch', ('GET', '/')),
+        ('new', ('POST', '/new')),
+        ('count', ('GET', '/count')),
+        ('counts', ('POST', '/count')),
+        ('feed', ('GET', '/feed')),
+        ('latest', ('GET', '/latest')),
+        ('view', ('GET', '/id/<int:id>')),
+        ('edit', ('PUT', '/id/<int:id>')),
+        ('delete', ('DELETE', '/id/<int:id>')),
         ('unsubscribe', ('GET', '/id/<int:id>/unsubscribe/<string:email>/<string:key>')),
-        ('moderate',    ('GET',  '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('moderate',    ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
-        ('like',        ('POST', '/id/<int:id>/like')),
-        ('dislike',     ('POST', '/id/<int:id>/dislike')),
-        ('demo',        ('GET', '/demo')),
-        ('preview',     ('POST', '/preview')),
-        ('login',       ('POST', '/login')),
-        ('admin',       ('GET', '/admin'))
+        ('moderate', ('GET', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
+        ('like', ('POST', '/id/<int:id>/like')),
+        ('dislike', ('POST', '/id/<int:id>/dislike')),
+        ('demo', ('GET', '/demo')),
+        ('preview', ('POST', '/preview')),
+        ('login', ('POST', '/login')),
+        ('admin', ('GET', '/admin'))
     ]
 
     def __init__(self, isso, hasher):
@@ -131,6 +128,15 @@ class API(object):
 
         self.conf = isso.conf.section("general")
         self.moderated = isso.conf.getboolean("moderation", "enabled")
+        # this is similar to the wordpress setting "Comment author must have a previously approved comment"
+        try:
+            self.approve_if_email_previously_approved = isso.conf.getboolean("moderation", "approve-if-email-previously-approved")
+        except NoOptionError:
+            self.approve_if_email_previously_approved = False
+        try:
+            self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
+        except NoOptionError:
+            self.trusted_proxies = []
 
         self.guard = isso.db.guard
         self.threads = isso.db.threads
@@ -260,13 +266,13 @@ class API(object):
 
         for field in ("author", "email", "website"):
             if data.get(field) is not None:
-                data[field] = cgi.escape(data[field])
+                data[field] = escape(data[field], quote=False)
 
         if data.get("website"):
             data["website"] = normalize(data["website"])
 
         data['mode'] = 2 if self.moderated else 1
-        data['remote_addr'] = utils.anonymize(str(request.remote_addr))
+        data['remote_addr'] = self._remote_addr(request)
 
         with self.isso.lock:
             if uri not in self.threads:
@@ -293,6 +299,11 @@ class API(object):
             raise Forbidden(reason)
 
         with self.isso.lock:
+            # if email-based auto-moderation enabled, check for previously approved author
+            # right before approval.
+            if self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data['email']):
+                data['mode'] = 1
+
             rv = self.comments.add(uri, data)
 
         # notify extension, that the new comment has been successfully saved
@@ -321,6 +332,21 @@ class API(object):
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
+
+    def _remote_addr(self, request):
+        """Return the anonymized IP address of the requester.
+
+        Takes into consideration a potential X-Forwarded-For HTTP header
+        if a necessary server.trusted-proxies configuration entry is set.
+
+        Recipe source: https://stackoverflow.com/a/22936947/636849
+        """
+        remote_addr = request.remote_addr
+        if self.trusted_proxies:
+            route = request.access_route + [remote_addr]
+            remote_addr = next((addr for addr in reversed(route)
+                                if addr not in self.trusted_proxies), remote_addr)
+        return utils.anonymize(str(remote_addr))
 
     """
     @api {get} /id/:id view
@@ -589,6 +615,9 @@ class API(object):
                         xhr = new XMLHttpRequest;
                         xhr.open('POST', window.location.href);
                         xhr.send(null);
+                        xhr.onload = function() {
+                            window.location.href = "https://example.com/example-thread/#isso-13";
+                        };
                     }
                 &lt;/script&gt;
 
@@ -603,6 +632,8 @@ class API(object):
             raise Forbidden
 
         item = self.comments.get(id)
+        thread = self.threads.get(item['tid'])
+        link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
 
         if item is None:
             raise NotFound
@@ -617,8 +648,11 @@ class API(object):
                 "      xhr = new XMLHttpRequest;"
                 "      xhr.open('POST', window.location.href);"
                 "      xhr.send(null);"
+                "      xhr.onload = function() {"
+                "          window.location.href = %s;"
+                "      };"
                 "  }"
-                "</script>" % action.capitalize())
+                "</script>" % (action.capitalize(), json.dumps(link)))
 
             return Response(modal, 200, content_type="text/html")
 
@@ -627,7 +661,6 @@ class API(object):
                 return Response("Already activated", 200)
             with self.isso.lock:
                 self.comments.activate(id)
-            thread = self.threads.get(item['tid'])
             self.signal("comments.activate", thread, item)
             return Response("Yo", 200)
         elif action == "edit":
@@ -761,8 +794,6 @@ class API(object):
             root_list = []
         else:
             root_list = list(self.comments.fetch(**args))
-            if not root_list:
-                raise NotFound
 
         if root_id not in reply_counts:
             reply_counts[root_id] = 0
@@ -809,7 +840,7 @@ class API(object):
         if not self.conf.getboolean('gravatar'):
             return item
 
-        email = item['email'] or ""
+        email = item['email'] or item['author'] or ''
         email_md5_hash = md5(email)
 
         gravatar_url = self.conf.get('gravatar-url')
@@ -871,8 +902,7 @@ class API(object):
     @xhr
     def like(self, environ, request, id):
 
-        nv = self.comments.vote(
-            True, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(True, id, self._remote_addr(request))
         return JSON(nv, 200)
 
     """
@@ -898,8 +928,7 @@ class API(object):
     @xhr
     def dislike(self, environ, request, id):
 
-        nv = self.comments.vote(
-            False, id, utils.anonymize(str(request.remote_addr)))
+        nv = self.comments.vote(False, id, self._remote_addr(request))
         return JSON(nv, 200)
 
     # TODO: remove someday (replaced by :func:`counts`)
@@ -1068,7 +1097,8 @@ class API(object):
 
     def login(self, env, req):
         if not self.isso.conf.getboolean("admin", "enabled"):
-            return render_template('disabled.html')
+            isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+            return render_template('disabled.html', isso_host_script=isso_host_script)
         data = req.form
         password = self.isso.conf.get("admin", "password")
         if data['password'] and data['password'] == password:
@@ -1090,7 +1120,7 @@ class API(object):
     def admin(self, env, req):
         isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
         if not self.isso.conf.getboolean("admin", "enabled"):
-            return render_template('disabled.html')
+            return render_template('disabled.html', isso_host_script=isso_host_script)
         try:
             data = self.isso.unsign(req.cookies.get('admin-session', ''),
                                     max_age=60 * 60 * 24)
@@ -1100,8 +1130,8 @@ class API(object):
             return render_template('login.html', isso_host_script=isso_host_script)
         page_size = 100
         page = int(req.args.get('page', 0))
-        order_by = req.args.get('order_by', None)
-        asc = int(req.args.get('asc', 1))
+        order_by = req.args.get('order_by', 'created')
+        asc = int(req.args.get('asc', 0))
         mode = int(req.args.get('mode', 2))
         comments = self.comments.fetchall(mode=mode, page=page,
                                           limit=page_size,
@@ -1119,3 +1149,89 @@ class API(object):
                                counts=comment_mode_count,
                                order_by=order_by, asc=asc,
                                isso_host_script=isso_host_script)
+    """
+    @api {get} /latest latest
+    @apiGroup Comment
+    @apiDescription
+        Get the latest comments from the system, no matter which thread
+
+    @apiParam {number} limit
+        The quantity of last comments to retrieve
+
+    @apiExample {curl} Get the latest 5 comments
+        curl 'https://comments.example.com/latest?limit=5'
+
+    @apiUse commentResponse
+
+    @apiSuccessExample Example result:
+        [
+            {
+                "website": null,
+                "uri": "/some",
+                "author": null,
+                "parent": null,
+                "created": 1464912312.123416,
+                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+                "dislikes": 0,
+                "modified": null,
+                "mode": 1,
+                "id": 3,
+                "likes": 1
+            },
+            {
+                "website": null,
+                "uri": "/other",
+                "author": null,
+                "parent": null,
+                "created": 1464914341.312426,
+                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+                "dislikes": 0,
+                "modified": null,
+                "mode": 1,
+                "id": 4,
+                "likes": 0
+            }
+        ]
+    """
+
+    def latest(self, environ, request):
+        # if the feature is not allowed, don't present the endpoint
+        if not self.conf.getboolean("latest-enabled"):
+            return NotFound()
+
+        # get and check the limit
+        bad_limit_msg = "Query parameter 'limit' is mandatory (integer, >0)"
+        try:
+            limit = int(request.args['limit'])
+        except (KeyError, ValueError):
+            return BadRequest(bad_limit_msg)
+        if limit <= 0:
+            return BadRequest(bad_limit_msg)
+
+        # retrieve the latest N comments from the DB
+        all_comments_gen = self.comments.fetchall(limit=None, order_by='created', mode='1')
+        comments = collections.deque(all_comments_gen, maxlen=limit)
+
+        # prepare a special set of fields (except text which is rendered specifically)
+        fields = {
+            'author',
+            'created',
+            'dislikes',
+            'id',
+            'likes',
+            'mode',
+            'modified',
+            'parent',
+            'text',
+            'uri',
+            'website',
+        }
+
+        # process the retrieved comments and build results
+        result = []
+        for comment in comments:
+            processed = {key: comment[key] for key in fields}
+            processed['text'] = self.isso.render(comment['text'])
+            result.append(processed)
+
+        return JSON(result, 200)

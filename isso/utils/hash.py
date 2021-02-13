@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import codecs
 import hashlib
 
-from isso.compat import string_types, text_type as str
 
 try:
     from werkzeug.security import pbkdf2_bin as pbkdf2
@@ -57,7 +56,7 @@ class Hash(object):
     def uhash(self, val):
         """Calculate hash from unicode value and return hex value as unicode"""
 
-        if not isinstance(val, string_types):
+        if not isinstance(val, (str, )):
             raise _TypeError("val", "str", val)
 
         return codecs.encode(self.hash(val.encode("utf-8")), "hex_codec").decode("utf-8")

@@ -29,9 +29,10 @@ Sections covered in this document:
 .. contents::
     :local:
 
-
 General
 -------
+
+.. _configure-general:
 
 In this section, you configure most comment-related options such as database path,
 session key and hostname. Here are the default values for this section:
@@ -110,10 +111,16 @@ gravatar-url
     Url for gravatar images. The "{}" is where the email hash will be placed.
     Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
 
+latest-enabled
+    If True it will enable the ``/latest`` endpoint. Optional, defaults
+    to False.
+
 
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
+
+.. _configure-moderation:
 
 Moderation
 ----------
@@ -124,6 +131,7 @@ Enable moderation queue and handling of comments still in moderation queue
 
     [moderation]
     enabled = false
+    approve-if-email-previously-approved = false
     purge-after = 30d
 
 enabled
@@ -131,9 +139,18 @@ enabled
     Comments in moderation queue are not visible to other users until you
     activate them.
 
+approve-if-email-previously-approved
+    automatically approve comments by an email address if that address has
+    had a comment approved within the last 6 months. No ownership verification
+    is done on the entered email address. This means that if someone is able
+    to guess correctly the email address used by a previously approved author,
+    they will be able to have their new comment auto-approved.
+
 purge-after
     remove unprocessed comments in moderation queue after given time.
 
+
+.. _configure-server-block:
 
 Server
 ------
@@ -177,6 +194,13 @@ reload
 profile
     show 10 most time consuming function in Isso after each request. Do
     not use in production.
+
+trusted-proxies
+    an optional list of reverse proxies IPs behind which you have deployed
+    your Isso web service (e.g. `127.0.0.1`).
+    This allow for proper remote address resolution based on a
+    `X-Forwarded-For` HTTP header, which is important for the mechanism
+    forbiding several comment votes coming from the same subnet.
 
 .. _configure-smtp:
 
@@ -276,6 +300,8 @@ require-email
 
     Do not forget to configure the `client <client>`_ accordingly.
 
+.. _configure-markup:
+
 Markup
 ------
 
@@ -285,13 +311,23 @@ supported, but new languages are relatively easy to add.
 .. code-block:: ini
 
     [markup]
-    options = strikethrough, superscript, autolink
+    options = strikethrough, superscript, autolink, fenced-code
+    flags = skip-html, escape, hard-wrap
     allowed-elements =
     allowed-attributes =
 
 options
-    `Misaka-specific Markdown extensions <http://misaka.61924.nl/#api>`_, all
-    flags starting with `EXT_` can be used there, separated by comma.
+    `Misaka-specific Markdown extensions <https://misaka.61924.nl/#api>`_, all
+    extension flags can be used there, separated by comma, either by their name
+    or as ``EXT_``.
+
+    **Careful:** Misaka 1.0 used ``snake_case``, but 2.0 needs ``dashed-case``!
+
+flags
+    `Misaka-specific HTML rendering flags
+    <https://misaka.61924.nl/#html-render-flags>`_, all html rendering flags
+    can be used here, separated by comma, either by their name or as ``HTML_``.
+    Per Misaka's defaults, no flags are set.
 
 allowed-elements
     Additional HTML tags to allow in the generated output, comma-separated. By
@@ -357,6 +393,8 @@ limit
 
 Admin
 -----
+
+.. _configure-admin:
 
 Isso has an optional web administration interface that can be used to moderate
 comments. The interface is available under ``/admin`` on your isso URL.

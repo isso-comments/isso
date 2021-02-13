@@ -4,12 +4,10 @@ Advanced Migration
 In quickstart we saw you can import comments from Disqus or WordPress. But there
 are a many other comments system and you could be using one of them.
 
-Isso provides a way to import such comments, however it's up to you to :
+Isso provides a way to import such comments, however it's up to you to to:
 
 - dump comments
-- fit the data to the following JSON format
-
-.. code-block::
+- fit the data to the following JSON format::
 
     A list of threads, each item being a dict with the following data:
 
@@ -33,11 +31,12 @@ Isso provides a way to import such comments, however it's up to you to :
 Example:
 
 .. code-block:: json
+
     [
         {
             "id": "/blog/article1",
-            "title": "First article!"
-            comments": [
+            "title": "First article!",
+            "comments": [
                 {
                     "author": "James",
                     "created": "2018-11-28 17:24:23",

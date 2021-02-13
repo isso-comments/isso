@@ -57,11 +57,11 @@ from itsdangerous import URLSafeTimedSerializer
 from werkzeug.routing import Map
 from werkzeug.exceptions import HTTPException, InternalServerError
 
-from werkzeug.wsgi import SharedDataMiddleware
+from werkzeug.middleware.shared_data import SharedDataMiddleware
 from werkzeug.local import Local, LocalManager
 from werkzeug.serving import run_simple
-from werkzeug.contrib.fixers import ProxyFix
-from werkzeug.contrib.profiler import ProfilerMiddleware
+from werkzeug.middleware.proxy_fix import ProxyFix
+from werkzeug.middleware.profiler import ProfilerMiddleware
 
 local = Local()
 local_manager = LocalManager([local])
@@ -80,6 +80,14 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s: %(message)s")
 
 logger = logging.getLogger("isso")
+
+
+class ProxyFixCustom(ProxyFix):
+    def __init__(self, app):
+        # This is needed for werkzeug.wsgi.get_current_url called in isso/views/comments.py
+        # to work properly when isso is hosted under a sub-path
+        # cf. https://werkzeug.palletsprojects.com/en/1.0.x/middleware/proxy_fix/
+        super().__init__(app, x_prefix=1)
 
 
 class Isso(object):
@@ -112,6 +120,7 @@ class Isso(object):
         self.urls = Map()
 
         views.Info(self)
+        views.Metrics(self)
         comments.API(self, self.hasher)
 
     def render(self, text):
@@ -202,7 +211,7 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
                            allowed=("Origin", "Referer", "Content-Type"),
                            exposed=("X-Set-Cookie", "Date")))
 
-    wrapper.extend([wsgi.SubURI, ProxyFix])
+    wrapper.extend([wsgi.SubURI, ProxyFixCustom])
 
     if werkzeug.version.startswith("0.8"):
         wrapper.append(wsgi.LegacyWerkzeugMiddleware)

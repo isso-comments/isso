@@ -6,7 +6,6 @@ import unittest
 
 from isso import config
 
-from isso.compat import PY2K, string_types
 from isso.utils.hash import Hash, PBKDF2, new
 
 
@@ -22,9 +21,8 @@ class TestHasher(unittest.TestCase):
 
         self.assertRaises(TypeError, h.hash, "...")
         self.assertEqual(h.hash(b"..."), b"...")
-        self.assertIsInstance(h.uhash(u"..."), string_types)
+        self.assertIsInstance(h.uhash(u"..."), (str, ))
 
-    @unittest.skipIf(PY2K, "byte/str quirks")
     def test_uhash(self):
         h = Hash(b"", func=None)
         self.assertRaises(TypeError, h.uhash, b"...")

@@ -1,9 +1,15 @@
 # -*- encoding: utf-8 -*-
 
+import logging
 import time
 
 from isso.utils import Bloomfilter
-from isso.compat import buffer
+
+
+logger = logging.getLogger("isso")
+
+
+MAX_LIKES_AND_DISLIKES = 142
 
 
 class Comments:
@@ -63,7 +69,7 @@ class Comments:
             'FROM threads WHERE threads.uri = ?;'], (
             c.get('parent'),
             c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
-            c['text'], c.get('author'), c.get('email'), c.get('website'), buffer(
+            c['text'], c.get('author'), c.get('email'), c.get('website'), memoryview(
                 Bloomfilter(iterable=[c['remote_addr']]).array), c.get('notification'),
             uri)
         )
@@ -80,6 +86,25 @@ class Comments:
             'UPDATE comments SET',
             '    mode=1',
             'WHERE id=? AND mode=2'], (id, ))
+
+    def is_previously_approved_author(self, email):
+        """
+        Search for previously activated comments with this author email.
+        """
+
+        # if the user has not entered email, email is None, in which case we can't check if they have previous comments
+        if email is not None:
+            # search for any activated comments within the last 6 months by email
+            # this SQL should be one of the fastest ways of doing this check
+            # https://stackoverflow.com/questions/18114458/fastest-way-to-determine-if-record-exists
+            rv = self.db.execute([
+                'SELECT CASE WHEN EXISTS(',
+                '    select * from comments where email=? and mode=1 and ',
+                '    created > strftime("%s", DATETIME("now", "-6 month"))',
+                ') THEN 1 ELSE 0 END;'], (email,)).fetchone()
+            return rv[0] == 1
+        else:
+            return False
 
     def unsubscribe(self, email, id):
         """
@@ -261,20 +286,25 @@ class Comments:
         if rv is None:
             return None
 
+        operation_name = 'Upvote' if upvote else 'Downvote'
         likes, dislikes, voters = rv
-        if likes + dislikes >= 142:
-            return {'likes': likes, 'dislikes': dislikes}
+        if likes + dislikes >= MAX_LIKES_AND_DISLIKES:
+            message = '{} denied due to a "likes + dislikes" total too high ({} >= {})'.format(operation_name, likes + dislikes, MAX_LIKES_AND_DISLIKES)
+            logger.debug('Comments.vote(id=%s): %s', id, message)
+            return {'likes': likes, 'dislikes': dislikes, 'message': message}
 
         bf = Bloomfilter(bytearray(voters), likes + dislikes)
         if remote_addr in bf:
-            return {'likes': likes, 'dislikes': dislikes}
+            message = '{} denied because a vote has already been registered for this remote address: {}'.format(operation_name, remote_addr)
+            logger.debug('Comments.vote(id=%s): %s', id, message)
+            return {'likes': likes, 'dislikes': dislikes, 'message': message}
 
         bf.add(remote_addr)
         self.db.execute([
             'UPDATE comments SET',
             '    likes = likes + 1,' if upvote else 'dislikes = dislikes + 1,',
             '    voters = ?'
-            'WHERE id=?;'], (buffer(bf.array), id))
+            'WHERE id=?;'], (memoryview(bf.array), id))
 
         if upvote:
             return {'likes': likes + 1, 'dislikes': dislikes}

@@ -4,7 +4,7 @@ Deployment
 Isso ships with a built-in web server, which is useful for the initial setup
 and may be used in production for low-traffic sites (up to 20 requests per
 second). Running a "real" WSGI server supports nice things such as UNIX domain
-sockets, daemonization and solid HTTP handler while being more stable, secure
+sockets, daemonization and solid HTTP handler. WSGI servers are more stable, secure
 and web-scale than the built-in web server.
 
 * gevent_, coroutine-based network library
@@ -188,13 +188,17 @@ The Apache configuration will then be similar to the following:
     </VirtualHost>
 
 You will need to adjust the user and group according to your Apache installation and
-security policy. Be also aware that the directory containing the comments database must
+security policy. Be aware that the directory containing the comments database must
 be writable by the user or group running the WSGI daemon process: having a writable
 database only is not enough, since SQLite will need to create a lock file in the same
 directory.
 
 `mod_fastcgi <http://www.fastcgi.com/mod_fastcgi/docs/mod_fastcgi.html>`__
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can use this method if your hosting provider doesn't allow you to have long
+running processes. If FastCGI has not yet been configured in your server,
+please follow these steps:
 
 .. note:: This information may be incorrect, if you have more knowledge on how
    to deploy Python via `mod_fastcgi`, consider extending/correcting this section.
@@ -219,21 +223,30 @@ directory.
         </Location>
     </VirtualHost>
 
-Next, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
+Next, to run isso as a FastCGI script you'll need to install ``flup`` with
+PIP:
+
+.. code-block:: sh
+
+    $ pip install flup
+
+Finally, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
 
 .. code-block:: python
 
     #!/usr/bin/env python
     #: uncomment if you're using a virtualenv
     # import sys
-    # sys.insert(0, '<your_local_path>/lib/python2.7/site-packages')
+    # sys.path.insert(0, '<your_local_path>/lib/python3.<ver>/site-packages')
 
-    from isso import make_app
-    from isso.core import Config
+    from isso import make_app, dist, config
+    import os
 
     from flup.server.fcgi import WSGIServer
 
-    application = make_app(Config.load("/path/to/isso.cfg"))
+    application = make_app(config.load(
+            os.path.join(dist.location, dist.project_name, "defaults.ini"),
+            "/path/to/isso.cfg"))
     WSGIServer(application).run()
 
 `Openshift <http://openshift.com>`__

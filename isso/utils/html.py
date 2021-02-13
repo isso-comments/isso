@@ -1,9 +1,12 @@
 # -*- encoding: utf-8 -*-
 
 from __future__ import unicode_literals
+import html
 
 import bleach
 import misaka
+
+from configparser import NoOptionError
 
 
 class Sanitizer(object):
@@ -49,9 +52,9 @@ class Sanitizer(object):
 
 
 def Markdown(extensions=("strikethrough", "superscript", "autolink",
-                         "fenced-code")):
+                         "fenced-code"), flags=[]):
 
-    renderer = Unofficial()
+    renderer = Unofficial(flags=flags)
     md = misaka.Markdown(renderer, extensions=extensions)
 
     def inner(text):
@@ -72,15 +75,19 @@ class Unofficial(misaka.HtmlRenderer):
     """
 
     def blockcode(self, text, lang):
-        lang = ' class="{0}"'.format(lang) if lang else ''
-        return "<pre><code{1}>{0}</code></pre>\n".format(text, lang)
+        lang = ' class="{0}"'.format(html.escape(lang)) if lang else ''
+        return "<pre><code{1}>{0}</code></pre>\n".format(html.escape(text, False), lang)
 
 
 class Markup(object):
 
     def __init__(self, conf):
 
-        parser = Markdown(conf.getlist("options"))
+        try:
+            conf_flags = conf.getlist("flags")
+        except NoOptionError:
+            conf_flags = []
+        parser = Markdown(extensions=conf.getlist("options"), flags=conf_flags)
         sanitizer = Sanitizer(
             conf.getlist("allowed-elements"),
             conf.getlist("allowed-attributes"))

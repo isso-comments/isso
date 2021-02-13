@@ -41,6 +41,51 @@ english translation of the ``postbox-notification`` message, you could add:
 
 .. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/en.js
 
+Lazy-loading on scroll
+----------------------
+
+You can defer loading the ``embed.min.js`` script until the user has scrolled
+to the bottom of the page:
+
+.. code-block:: html
+
+    <script type="text/javascript">
+        // Lazy-load isso only when page end is in view
+        function loadIsso() {
+            var script = document.createElement("script");
+            script.setAttribute("type", "text/javascript");
+            script.setAttribute("src", "/prefix/js/embed.min.js");
+            // add relevant data-isso attributes here
+            script.setAttribute("data-isso", "/prefix/");
+            document.getElementsByTagName("head")[0].appendChild(script);
+        }
+        let offset = 50; // Start loading 50px before reaching bottom
+        function scrollBottomListener(ev) {
+            if ((window.scrollY + window.innerHeight)
+                    >= (document.documentElement.scrollHeight - offset)) {
+                loadIsso();
+                window.removeEventListener('scroll', scrollBottomListener);
+            }
+        }
+        window.onload = function() {
+          // If viewport >= page height, load immediately
+          if ((window.scrollY + window.innerHeight)
+                    >= (document.documentElement.scrollHeight - offset)) {
+              loadIsso();
+          } else {
+              window.addEventListener('scroll', scrollBottomListener);
+          }
+        }
+    </script>
+
+*Note that loading additional content only after user interaction is bad for
+SEO. Additionally, users could experience a "jank" effect.*
+
+Use lazy-loading only if you are desperately trying to save bandwidth. By
+specifying ``async`` in the ``<script`` tag, loading the Isso Javascript will
+not render-block anyway.
+
+
 data-isso
 ---------
 

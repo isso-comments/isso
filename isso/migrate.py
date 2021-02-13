@@ -15,7 +15,6 @@ from time import mktime, strptime, time
 from collections import defaultdict
 
 from isso.utils import anonymize
-from isso.compat import string_types
 
 try:
     input = raw_input
@@ -33,7 +32,7 @@ logger = logging.getLogger("isso")
 
 
 def strip(val):
-    if isinstance(val, string_types):
+    if isinstance(val, (str, )):
         return val.strip()
     return val
 
