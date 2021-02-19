@@ -9,6 +9,7 @@ preferably in the script tag which embeds the JS:
     <script data-isso="/prefix/"
             data-isso-id="thread-id"
             data-isso-css="true"
+            data-isso-css-url="null"
             data-isso-lang="ru"
             data-isso-reply-to-self="false"
             data-isso-require-author="false"
@@ -96,6 +97,16 @@ override the API location:
 .. code-block:: html
 
     <script data-isso="/isso" src="/path/to/embed.min.js"></script>
+
+data-isso-css-url
+-----------------
+
+Set URL from which to fetch ``isso.css``, e.g. from a CDN.
+Defaults to fetching from the API endpoint.
+
+.. code-block:: html
+
+    <script src="..." data-isso-css-url="/path/to/isso.css"></script>
 
 data-isso-css
 -------------

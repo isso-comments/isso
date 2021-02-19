@@ -3,7 +3,7 @@
  * Distributed under the MIT license
  */
 
-require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/css", "app/text/svg", "app/jade"], function(domready, config, i18n, api, isso, count, $, css, svg, jade) {
+require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/svg", "app/jade"], function(domready, config, i18n, api, isso, count, $, svg, jade) {
 
     "use strict";
 
@@ -20,10 +20,11 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
         heading = $.new("h4");
 
         if (config["css"] && $("style#isso-style") === null) {
-            var style = $.new("style");
+            var style = $.new("link");
             style.id = "isso-style";
+            style.rel ="stylesheet";
             style.type = "text/css";
-            style.textContent = css.inline;
+            style.href = config["css-url"] ? config["css-url"] : api.endpoint + "/css/isso.css";
             $("head").append(style);
         }
 

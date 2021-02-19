@@ -8,6 +8,10 @@ Changelog for Isso
 
 - Don't ignore missing configuration files.
   (Jelmer Vernooĳ)
+- Serve isso.css separately to avoid `style-src: unsafe-inline` CSP and allow
+  clients to override fetch location (#704, ix5):
+
+    data-isso-css-url="https://comments.example.org/css/isso.css"
 
 0.12.4 (2021-02-03)
 -------------------
