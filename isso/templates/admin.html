@@ -90,7 +90,8 @@
     <div class='text-wrapper'>
       <div class='isso-comment-header' role='meta'>
         {% if order_by != "tid" %}
-          <div>Thread: {{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</div><br />
+          <!-- TODO: Add host component to uri -->
+          <div>Thread: {{comment.title}} (<a href="https://{{comment.uri}}">{{comment.uri}}</a>)</div><br />
         {% endif %}
         {% if comment.author %}
           <span class='author' id="isso-author-{{comment.id}}">{{comment.author}}</span>
