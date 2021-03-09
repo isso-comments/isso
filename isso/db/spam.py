@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 import time
+from configparser import NoOptionError, NoSectionError
 
 
 class Guard:
@@ -9,7 +10,10 @@ class Guard:
 
         self.db = db
         self.conf = db.conf.section("guard")
-        self.max_age = db.conf.getint("general", "max-age")
+        try:
+            self.max_age = db.conf.getint("general", "max-age")
+        except (NoOptionError, NoSectionError):
+            self.max_age = None
 
     def validate(self, uri, comment):
 
