@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-0.12.5 (UNRELEASED)
+%(version)s (%(date)s)
 -------------------
 
 - Don't ignore missing configuration files.

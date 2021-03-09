@@ -15,7 +15,7 @@ elif (3, 0) <= sys.version_info < (3, 5):
 
 setup(
     name='isso',
-    version='0.12.4',
+    version='0.12.5',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
