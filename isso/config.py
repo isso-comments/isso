@@ -123,12 +123,14 @@ def load(default, user=None):
                    for option in cp.options(section))
 
     parser = new()
-    parser.read(default)
+    with open(default, 'r') as f:
+        parser.read_file(f)
 
     a = setify(parser)
 
     if user:
-        parser.read(user)
+        with open(user, 'r') as f:
+            parser.read_file(f)
 
     for item in setify(parser).difference(a):
         logger.warn("no such option: [%s] %s", *item)

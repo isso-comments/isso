@@ -1,6 +1,12 @@
 Changelog for Isso
 ==================
 
+0.12.5 (UNRELEASED)
+-------------------
+
+- Don't ignore missing configuration files.
+  (Jelmer Vernooĳ)
+
 0.12.4 (2021-02-03)
 -------------------
 
