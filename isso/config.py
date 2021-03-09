@@ -7,7 +7,7 @@ import logging
 import datetime
 
 from email.utils import parseaddr, formataddr
-from configparser import ConfigParser, NoOptionError, NoSectionError
+from configparser import ConfigParser, NoOptionError, NoSectionError, DuplicateSectionError
 
 logger = logging.getLogger("isso")
 
@@ -140,6 +140,10 @@ def load(default, user=None):
             logger.info("Your `session-key` has been stored in the "
                         "database itself, this option is now unused")
 
+    try:
+        parser.add_section('smtp')
+    except DuplicateSectionError:
+        pass
     try:
         fromaddr = parser.get("smtp", "from")
     except (NoOptionError, NoSectionError):
