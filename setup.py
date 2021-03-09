@@ -20,9 +20,6 @@ setup(
     author_email='info@posativ.org',
     packages=find_packages(),
     include_package_data=True,
-    package_data={
-        'isso': ['share/isso.conf'],
-    },
     zip_safe=False,
     url='https://github.com/posativ/isso/',
     license='MIT',
