@@ -2,6 +2,8 @@ Changelog for Isso
 ==================
 
 %(version)s (%(date)s)
+
+%(version)s (%(date)s)
 -------------------
 
 - Don't ignore missing configuration files.
