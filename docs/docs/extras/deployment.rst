@@ -107,13 +107,14 @@ isso distribution as `run.py`:
     from __future__ import unicode_literals
 
     import os
+    import pkg_resources
 
     from isso import make_app
     from isso import dist, config
 
     application = make_app(
     config.load(
-        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        pkg_resources.resource_filename('isso', 'defaults.ini'),
         "/path/to/isso.cfg"),
     multiprocessing=True)
 
@@ -128,13 +129,14 @@ of the virtualenv to the site-specific paths of Python:
     site.addsitedir("/path/to/isso_virtualenv")
 
     import os
+    import pkg_resources
 
     from isso import make_app
     from isso import dist, config
 
     application = make_app(
     config.load(
-        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        pkg_resources.resource_filename('isso', 'defaults.ini'),
         "/path/to/isso.cfg",
     multiprocessing=True)
 
@@ -148,6 +150,7 @@ the virtualenv have priority over system modules, the following script does the 
 
     import os
     import site
+    import pkg_resources
     import sys
 
     # Remember original sys.path.
@@ -169,7 +172,7 @@ the virtualenv have priority over system modules, the following script does the 
 
     application = make_app(
     config.load(
-        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        pkg_resources.resource_filename('isso', 'defaults.ini'),
         "/path/to/isso.cfg",
     multiprocessing=True)
 
@@ -241,12 +244,13 @@ Finally, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
 
     from isso import make_app, dist, config
     import os
+    import pkg_resources
 
     from flup.server.fcgi import WSGIServer
 
     application = make_app(config.load(
-            os.path.join(dist.location, dist.project_name, "defaults.ini"),
-            "/path/to/isso.cfg"))
+        pkg_resources.resource_filename('isso', 'defaults.ini'),
+        "/path/to/isso.cfg"))
     WSGIServer(application).run()
 
 `Openshift <http://openshift.com>`__

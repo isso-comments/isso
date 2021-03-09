@@ -243,7 +243,7 @@ def main():
 
     args = parser.parse_args()
     conf = config.load(
-        join(dist.location, dist.project_name, "defaults.ini"), args.conf)
+        pkg_resources.resource_filename('isso', 'defaults.ini'), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

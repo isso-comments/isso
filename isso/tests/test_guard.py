@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 import unittest
-import os
 import json
+import pkg_resources
 import tempfile
 
 from werkzeug import __version__
@@ -34,7 +34,8 @@ class TestGuard(unittest.TestCase):
     def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False,
                    require_email=False, require_author=False):
 
-        conf = config.load(os.path.join(dist.location, "share", "isso.conf"))
+        conf = config.load(
+            pkg_resources.resource_filename('isso', 'defaults.ini'))
         conf.set("general", "dbpath", self.path)
         conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")

@@ -7,6 +7,7 @@ import os
 import logging
 
 from glob import glob
+import pkg_resources
 
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.wrappers import Response
@@ -25,8 +26,7 @@ class Dispatcher(DispatcherMiddleware):
     def __init__(self, *confs):
         self.isso = {}
 
-        default = os.path.join(
-            dist.location, dist.project_name, "defaults.ini")
+        default = pkg_resources.resource_filename('isso', 'defaults.ini')
         for i, path in enumerate(confs):
             conf = config.load(default, path)
 

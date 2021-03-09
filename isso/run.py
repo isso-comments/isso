@@ -3,12 +3,13 @@
 from __future__ import unicode_literals
 
 import os
+import pkg_resources
 
 from isso import make_app
 from isso import dist, config
 
 application = make_app(
     config.load(
-        os.path.join(dist.location, dist.project_name, "defaults.ini"),
+        pkg_resources.resource_filename('isso', 'defaults.ini'),
         os.environ.get('ISSO_SETTINGS')),
     multiprocessing=True)
