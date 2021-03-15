@@ -18,3 +18,4 @@ Related projects
 * `wonderfall/isso Docker image <https://github.com/Wonderfall/docker-isso>`
 * `a grav plugin to integrate isso comments <https://github.com/Sommerregen/grav-plugin-jscomments>`
 * `a Pelican theme supporting isso comments <https://github.com/Lucas-C/pelican-mg>`
+* `a Sphinx extension to integrate isso comments <https://github.com/sphinx-notes/isso>`
