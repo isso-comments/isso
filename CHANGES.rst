@@ -12,6 +12,10 @@ Changelog for Isso
   clients to override fetch location (#704, ix5):
 
     data-isso-css-url="https://comments.example.org/css/isso.css"
+- New "samesite" option in [server] section to override SameSite header for
+  cookies. (#700, ix5)
+- Fallback for SameSite header depending on whether host is served over https
+  or http (#700, ix5)
 
 0.12.4 (2021-02-03)
 -------------------
