@@ -309,10 +309,9 @@ class API(object):
         # notify extension, that the new comment has been successfully saved
         self.signal("comments.new:after-save", thread, rv)
 
-        cookie = functools.partial(dump_cookie,
-                                   value=self.isso.sign(
-                                       [rv["id"], sha1(rv["text"])]),
-                                   max_age=self.conf.getint('max-age'))
+        cookie = self.create_cookie(
+            value=self.isso.sign([rv["id"], sha1(rv["text"])]),
+            max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
         rv["hash"] = self.hash(rv['email'] or rv['remote_addr'])
@@ -347,6 +346,24 @@ class API(object):
             remote_addr = next((addr for addr in reversed(route)
                                 if addr not in self.trusted_proxies), remote_addr)
         return utils.anonymize(str(remote_addr))
+
+    def create_cookie(self, **kwargs):
+        """
+        Setting cookies to SameSite=None requires "Secure" attribute.
+        For http-only, we need to override the dump_cookie() default SameSite=None
+        or the cookie will be rejected.
+        https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite#samesitenone_requires_secure
+        """
+        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+        samesite = self.isso.conf.get("server", "samesite")
+        if isso_host_script.startswith("https://"):
+            secure = True
+            samesite = samesite or "None"
+        else:
+            secure = False
+            samesite = samesite or "Lax"
+        return functools.partial(dump_cookie, **kwargs,
+                                 secure=secure, samesite=samesite)
 
     """
     @api {get} /id/:id view
@@ -458,10 +475,9 @@ class API(object):
 
         self.signal("comments.edit", rv)
 
-        cookie = functools.partial(dump_cookie,
-                                   value=self.isso.sign(
-                                       [rv["id"], sha1(rv["text"])]),
-                                   max_age=self.conf.getint('max-age'))
+        cookie = self.create_cookie(
+            value=self.isso.sign([rv["id"], sha1(rv["text"])]),
+            max_age=self.conf.getint('max-age'))
 
         rv["text"] = self.isso.render(rv["text"])
 
@@ -474,7 +490,7 @@ class API(object):
     @api {delete} '/id/:id' delete
     @apiGroup Comment
     @apiDescription
-        Delte an existing comment. Deleting a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
+        Delete an existing comment. Deleting a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
 
     @apiParam {number} id
         Id of the comment to delete.
@@ -518,7 +534,8 @@ class API(object):
         self.signal("comments.delete", id)
 
         resp = JSON(rv, 200)
-        cookie = functools.partial(dump_cookie, expires=0, max_age=0)
+        cookie = self.create_cookie(expires=0, max_age=0)
+
         resp.headers.add("Set-Cookie", cookie(str(id)))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % id))
         return resp
@@ -1107,9 +1124,8 @@ class API(object):
                 '/admin',
                 get_current_url(env, strip_querystring=True)
             ))
-            cookie = functools.partial(dump_cookie,
-                                       value=self.isso.sign({"logged": True}),
-                                       expires=datetime.now() + timedelta(1))
+            cookie = self.create_cookie(value=self.isso.sign({"logged": True}),
+                                        expires=datetime.now() + timedelta(1))
             response.headers.add("Set-Cookie", cookie("admin-session"))
             response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
             return response
