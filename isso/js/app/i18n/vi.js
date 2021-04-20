@@ -6,6 +6,7 @@ define({
     "postbox-preview": "Xem trước",
     "postbox-edit": "Sửa",
     "postbox-submit": "Gửi",
+    "postbox-notification": "Nhận thông báo email cho các bình luận phản hồi",
 
     "num-comments": "Một bình luận\n{{ n }} bình luận",
     "no-comments": "Chưa có bình luận nào",
