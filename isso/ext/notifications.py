@@ -13,10 +13,11 @@ from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
+from pathlib import Path
+from string import Template
 from urllib.parse import quote
 
 import logging
-logger = logging.getLogger("isso")
 
 try:
     import uwsgi
@@ -24,8 +25,14 @@ except ImportError:
     uwsgi = None
 
 from isso import local
+from isso.utils import http
+from isso.views.comments import isurl
 
 from _thread import start_new_thread
+
+
+# Globals
+logger = logging.getLogger("isso")
 
 
 class SMTPConnection(object):
@@ -224,3 +231,105 @@ class Stdout(object):
 
     def _activate_comment(self, thread, comment):
         logger.info("comment %(id)s activated" % thread)
+
+
+class WebHook(object):
+    def __init__(self, isso_instance: object):
+        # store isso instance
+        self.isso_instance = isso_instance
+        # retrieve relevant configuration
+        self.public_endpoint = isso_instance.conf.get(
+            section="server", option="public-endpoint"
+        ) or local("host")
+        webhook_conf_section = isso_instance.conf.section("webhook")
+        self.wh_url = webhook_conf_section.get("url")
+        self.wh_template = webhook_conf_section.get("template")
+
+        # check required settings
+        if not isurl(self.wh_url):
+            raise ValueError(
+                f"Web hook requires a valid URL. "
+                "The provided one is not correct: {self.wh_url}"
+            )
+
+        # check optional template
+        if not len(self.wh_template):
+            self.wh_template = None
+            logger.debug("No template provided.")
+        elif not Path(self.wh_template).is_file():
+            raise FileExistsError(f"Invalid web hook template path: {self.wh_template}")
+        else:
+            self.wh_template = Path(self.wh_template)
+
+    def __iter__(self):
+
+        yield "comments.new:after-save", self._new_comment
+
+    def _new_comment(self, thread: dict, comment: dict):
+
+        if self.wh_template:
+            post_data = self.format(thread, comment)
+        else:
+            post_data = {
+                "author": comment.get("author", "Anonymous"),
+                "author_email": comment.get("email"),
+                "text": comment.get("text"),
+            }
+            print(post_data)
+
+        self.send(post_data)
+
+    def comment_urls(self, thread: dict, comment: dict) -> tuple:
+
+        uri = "{}/id/{}".format(self.public_endpoint, comment.get("id"))
+        key = self.isso_instance.sign(comment.get("id"))
+
+        url_activate = "{}/activate/{}".format(uri, key)
+        url_delete = "{}/delete/{}".format(uri, key)
+        url_view = "{}#isso-{}".format(
+            local("origin") + thread.get("uri"), comment.get("id")
+        )
+
+        return url_activate, url_delete, url_view
+
+    def format(
+        self,
+        thread: dict,
+        comment: dict,
+    ) -> str:
+        # load template
+        with self.wh_template.open("r") as in_file:
+            tpl_json_data = json.load(in_file)
+        tpl_str = Template(json.dumps(tpl_json_data))
+        print(type(tpl_str))
+
+        # build URLs
+        comment_urls = self.comment_urls(thread, comment)
+
+        # substitute
+        out_msg = tpl_str.substitute(
+            AUTHOR_NAME=comment.get("author", "Anonymous"),
+            AUTHOR_EMAIL="<>".format(comment.get("email")),
+            AUTHOR_WEBSITE=comment.get("website"),
+            COMMENT_IP_ADDRESS=comment.get("remote_addr"),
+            COMMENT_TEXT=comment.get("text"),
+            COMMENT_URL_ACTIVATE=comment_urls[0],
+            COMMENT_URL_DELETE=comment_urls[1],
+            COMMENT_URL_VIEW=comment_urls[2],
+        )
+
+        return out_msg
+
+    def send(self, structured_msg: dict) -> bool:
+        """Send the structured message as a notification to the class webhook URL.
+
+        :param dict structured_msg: structured message to send
+
+        :rtype: bool
+        """
+        with http.curl("POST", self.wh_url, "/") as resp:
+            if resp:  # may be None if request failed
+                return resp.status
+
+        # if no error occurred
+        return True
