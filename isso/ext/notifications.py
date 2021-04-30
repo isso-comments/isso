@@ -248,8 +248,8 @@ class WebHook(object):
         # check required settings
         if not isurl(self.wh_url):
             raise ValueError(
-                f"Web hook requires a valid URL. "
-                "The provided one is not correct: {self.wh_url}"
+                "Web hook requires a valid URL. "
+                f"The provided one is not correct: {self.wh_url}"
             )
 
         # check optional template
