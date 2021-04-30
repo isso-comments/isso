@@ -249,7 +249,7 @@ class WebHook(object):
         if not isurl(self.wh_url):
             raise ValueError(
                 "Web hook requires a valid URL. "
-                f"The provided one is not correct: {self.wh_url}"
+                "The provided one is not correct: {}".format(self.wh_url)
             )
 
         # check optional template
@@ -257,7 +257,7 @@ class WebHook(object):
             self.wh_template = None
             logger.debug("No template provided.")
         elif not Path(self.wh_template).is_file():
-            raise FileExistsError(f"Invalid web hook template path: {self.wh_template}")
+            raise FileExistsError("Invalid web hook template path: {}".format(self.wh_template))
         else:
             self.wh_template = Path(self.wh_template)
 
