@@ -11,7 +11,7 @@ from werkzeug import __version__
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
-from isso import Isso, config, core, dist
+from isso import Isso, config, core
 from isso.utils import http
 
 from fixtures import curl, FakeIP
