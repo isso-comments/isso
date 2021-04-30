@@ -309,7 +309,7 @@ class WebHook(object):
         # substitute
         out_msg = tpl_str.substitute(
             AUTHOR_NAME=comment.get("author", "Anonymous"),
-            AUTHOR_EMAIL="<>".format(comment.get("email")),
+            AUTHOR_EMAIL="<{}>".format(comment.get("email")),
             AUTHOR_WEBSITE=comment.get("website"),
             COMMENT_IP_ADDRESS=comment.get("remote_addr"),
             COMMENT_TEXT=comment.get("text"),
