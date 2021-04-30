@@ -24,12 +24,12 @@ try:
 except ImportError:
     uwsgi = None
 
-from isso import local
-from isso.utils import http
+from isso import dist, local
 from isso.views.comments import isurl
 
 from _thread import start_new_thread
 
+from requests import Session
 
 # Globals
 logger = logging.getLogger("isso")
@@ -234,7 +234,18 @@ class Stdout(object):
 
 
 class WebHook(object):
+    """Notification handler for web hook.
+
+    :param isso_instance: Isso application instance. Used to get moderation key.
+    :type isso_instance: object
+
+    :raises ValueError: if the provided URL is not valid
+    :raises FileExistsError: if the provided JSON template doesn't exist
+    :raises TypeError: if the provided template file is not a JSON
+    """
+
     def __init__(self, isso_instance: object):
+        """Instanciate class."""
         # store isso instance
         self.isso_instance = isso_instance
         # retrieve relevant configuration
@@ -257,30 +268,57 @@ class WebHook(object):
             self.wh_template = None
             logger.debug("No template provided.")
         elif not Path(self.wh_template).is_file():
-            raise FileExistsError("Invalid web hook template path: {}".format(self.wh_template))
+            raise FileExistsError(
+                "Invalid web hook template path: {}".format(self.wh_template)
+            )
+        elif not Path(self.wh_template).suffix == ".json":
+            raise TypeError()(
+                "Template must be a JSON file: {}".format(self.wh_template)
+            )
         else:
             self.wh_template = Path(self.wh_template)
 
     def __iter__(self):
 
-        yield "comments.new:after-save", self._new_comment
+        yield "comments.new:after-save", self.new_comment
 
-    def _new_comment(self, thread: dict, comment: dict):
+    def new_comment(self, thread: dict, comment: dict):
+        """Triggered when a new comment is saved.
 
-        if self.wh_template:
-            post_data = self.format(thread, comment)
-        else:
-            post_data = {
-                "author": comment.get("author", "Anonymous"),
-                "author_email": comment.get("email"),
-                "text": comment.get("text"),
-            }
-            print(post_data)
+        :param thread: comment thread
+        :type thread: dict
+        :param comment: comment object
+        :type comment: dict
+        """
 
-        self.send(post_data)
+        try:
+            # get moderation URLs
+            moderation_urls = self.moderation_urls(thread, comment)
 
-    def comment_urls(self, thread: dict, comment: dict) -> tuple:
+            if self.wh_template:
+                post_data = self.render_template(thread, comment, moderation_urls)
+            else:
+                post_data = {
+                    "author": comment.get("author", "Anonymous"),
+                    "author_email": comment.get("email"),
+                    "text": comment.get("text"),
+                }
 
+            self.send(post_data)
+        except Exception as err:
+            logger.error(err)
+
+    def moderation_urls(self, thread: dict, comment: dict) -> tuple:
+        """Helper to build comment related URLs (deletion, activation, etc.).
+
+        :param thread: comment thread
+        :type thread: dict
+        :param comment: comment object
+        :type comment: dict
+
+        :return: tuple of URS in alpha order (activate, admin, delete, view)
+        :rtype: tuple
+        """
         uri = "{}/id/{}".format(self.public_endpoint, comment.get("id"))
         key = self.isso_instance.sign(comment.get("id"))
 
@@ -292,11 +330,21 @@ class WebHook(object):
 
         return url_activate, url_delete, url_view
 
-    def format(
-        self,
-        thread: dict,
-        comment: dict,
+    def render_template(
+        self, thread: dict, comment: dict, moderation_urls: tuple
     ) -> str:
+        """Format comment information as webhook payload filling the specified template.
+
+        :param thread: isso thread
+        :type thread: dict
+        :param comment: isso comment
+        :type comment: dict
+        :param moderation_urls: comment moderation URLs
+        :type comment: tuple
+
+        :return: formatted message from template
+        :rtype: str
+        """
         # load template
         with self.wh_template.open("r") as in_file:
             tpl_json_data = json.load(in_file)
@@ -309,27 +357,37 @@ class WebHook(object):
         # substitute
         out_msg = tpl_str.substitute(
             AUTHOR_NAME=comment.get("author", "Anonymous"),
-            AUTHOR_EMAIL="<{}>".format(comment.get("email")),
-            AUTHOR_WEBSITE=comment.get("website"),
+            AUTHOR_EMAIL="<{}>".format(comment.get("email", "")),
+            AUTHOR_WEBSITE=comment.get("website", ""),
             COMMENT_IP_ADDRESS=comment.get("remote_addr"),
             COMMENT_TEXT=comment.get("text"),
-            COMMENT_URL_ACTIVATE=comment_urls[0],
-            COMMENT_URL_DELETE=comment_urls[1],
-            COMMENT_URL_VIEW=comment_urls[2],
+            COMMENT_URL_ACTIVATE=moderation_urls[0],
+            COMMENT_URL_DELETE=moderation_urls[1],
+            COMMENT_URL_VIEW=moderation_urls[2],
         )
 
         return out_msg
 
-    def send(self, structured_msg: dict) -> bool:
+    def send(self, structured_msg: str) -> bool:
         """Send the structured message as a notification to the class webhook URL.
 
-        :param dict structured_msg: structured message to send
+        :param str structured_msg: structured message to send
 
         :rtype: bool
         """
-        with http.curl("POST", self.wh_url, "/") as resp:
-            if resp:  # may be None if request failed
-                return resp.status
+        with Session() as requests_session:
+
+            # send requests
+            response = requests_session.post(
+                url=self.wh_url,
+                data=structured_msg,
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "Isso/{0} (+https://posativ.org/isso)".format(
+                        dist.version
+                    ),
+                },
+            )
 
         # if no error occurred
         return True
