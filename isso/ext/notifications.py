@@ -28,7 +28,7 @@ from isso.views.comments import isurl
 def create_comment_action_url(uri, action, key):
     return uri + "/" + action + "/" + key
 
-from requests import Session
+from requests import HTTPError, Session
 
 # Globals
 logger = logging.getLogger("isso")
@@ -414,6 +414,16 @@ class WebHook(object):
                     ),
                 },
             )
+
+            try:
+                response.raise_for_status()
+                logger.info("Web hook sent to %s" % self.wh_url)
+            except HTTPError as err:
+                logger.error(
+                    "Something went wrong during POST request to the web hook. Trace: %s"
+                    % err
+                )
+                return False
 
         # if no error occurred
         return True
