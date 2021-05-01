@@ -282,13 +282,16 @@ class WebHook(object):
 
         yield "comments.new:after-save", self.new_comment
 
-    def new_comment(self, thread: dict, comment: dict):
+    def new_comment(self, thread: dict, comment: dict) -> bool:
         """Triggered when a new comment is saved.
 
         :param thread: comment thread
         :type thread: dict
         :param comment: comment object
         :type comment: dict
+
+        :return: True if eveythring went fine. False if not.
+        :rtype: bool
         """
 
         try:
@@ -299,14 +302,22 @@ class WebHook(object):
                 post_data = self.render_template(thread, comment, moderation_urls)
             else:
                 post_data = {
-                    "author": comment.get("author", "Anonymous"),
+                    "author_name": comment.get("author", "Anonymous"),
                     "author_email": comment.get("email"),
-                    "text": comment.get("text"),
+                    "author_website": comment.get("website"),
+                    "comment_ip_address": comment.get("remote_addr"),
+                    "comment_text": comment.get("text"),
+                    "comment_url_activate": moderation_urls[0],
+                    "comment_url_delete": moderation_urls[1],
+                    "comment_url_view": moderation_urls[2],
                 }
 
             self.send(post_data)
         except Exception as err:
             logger.error(err)
+            return False
+
+        return True
 
     def moderation_urls(self, thread: dict, comment: dict) -> tuple:
         """Helper to build comment related URLs (deletion, activation, etc.).
