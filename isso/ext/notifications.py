@@ -349,10 +349,6 @@ class WebHook(object):
         with self.wh_template.open("r") as in_file:
             tpl_json_data = json.load(in_file)
         tpl_str = Template(json.dumps(tpl_json_data))
-        print(type(tpl_str))
-
-        # build URLs
-        comment_urls = self.comment_urls(thread, comment)
 
         # substitute
         out_msg = tpl_str.substitute(
