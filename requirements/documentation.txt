@@ -1,0 +1,7 @@
+-r base.txt
+
+# Documentation
+# -------------
+sphinx>=3.2,<4.1
+sphinx-copybutton>=0.3,<0.4
+
