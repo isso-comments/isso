@@ -382,12 +382,15 @@ class WebHook(object):
 
         :rtype: bool
         """
+        # load the message to ensure encoding
+        msg_json = json.loads(structured_msg)
+
         with Session() as requests_session:
 
             # send requests
             response = requests_session.post(
                 url=self.wh_url,
-                data=structured_msg,
+                json=json.dumps(msg_json),
                 headers={
                     "Content-Type": "application/json",
                     "User-Agent": "Isso/{0} (+https://posativ.org/isso)".format(
