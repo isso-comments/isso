@@ -1,0 +1,8 @@
+ci-cd:
+  - .github/**/*
+
+dependencies:
+  - any: ["package.json", "requirements.txt", "requirements/*.txt"]
+
+documentation:
+  - docs/**/*
