@@ -31,3 +31,6 @@ jobs:
 
       - name: Make operations
         run: make init
+
+      - name: Build JS and CSS
+        run: make all
