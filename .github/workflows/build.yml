@@ -1,0 +1,33 @@
+name: " 📦 Packaging"
+
+on:
+  push:
+    branches: [master]
+    tags: "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v2
+
+      - name: Set up NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Cache NodeJS dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: System requirements
+        run: sudo apt install sassc
+
+      - name: Make operations
+        run: make init
