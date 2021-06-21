@@ -1,9 +1,17 @@
-name: " 📦 Packaging"
+name: "🎳 Tester"
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
+    paths:
+      - '**/*.py'
+      - '.github/workflows/build.yml'
     tags: "*"
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '**/*.py'
+      - '.github/workflows/build.yml'
 
 jobs:
   build:

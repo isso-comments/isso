@@ -1,14 +1,17 @@
 name: "🐍 Lint and Test"
 
 on:
-  pull_request:
-    branches: [ master ]
-    paths-ignore:
-      - "docs/**"
   push:
     branches: [ master ]
-    paths-ignore:
-      - "docs/**"
+    paths:
+      - '**/*.py'
+      - '.github/workflows/lint_tests.yml'
+    tags: "*"
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '**/*.py'
+      - '.github/workflows/lint_tests.yml'
 
 jobs:
   lint-py:
@@ -50,3 +53,37 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  tox-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+    - name: Cache project dependencies (pip)
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements/*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        python -m pip install -r requirements/base.txt
+        python -m pip install -r requirements/development.txt
+
+      - name: Run Tox
+        # Run tox using the version of Python in `PATH`
+        run: tox -e py
