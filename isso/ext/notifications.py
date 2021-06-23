@@ -13,19 +13,26 @@ from email.utils import formatdate
 from email.header import Header
 from email.mime.text import MIMEText
 
+from pathlib import Path
+from string import Template
 from urllib.parse import quote
 
 import logging
-logger = logging.getLogger("isso")
 
 try:
     import uwsgi
 except ImportError:
     uwsgi = None
 
-from isso import local
+from isso import dist, local
+from isso.views.comments import isurl
 
 from _thread import start_new_thread
+
+from requests import HTTPError, Session
+
+# Globals
+logger = logging.getLogger("isso")
 
 
 class SMTPConnection(object):
@@ -224,3 +231,183 @@ class Stdout(object):
 
     def _activate_comment(self, thread, comment):
         logger.info("comment %(id)s activated" % thread)
+
+
+class WebHook(object):
+    """Notification handler for web hook.
+
+    :param isso_instance: Isso application instance. Used to get moderation key.
+    :type isso_instance: object
+
+    :raises ValueError: if the provided URL is not valid
+    :raises FileExistsError: if the provided JSON template doesn't exist
+    :raises TypeError: if the provided template file is not a JSON
+    """
+
+    def __init__(self, isso_instance: object):
+        """Instanciate class."""
+        # store isso instance
+        self.isso_instance = isso_instance
+        # retrieve relevant configuration
+        self.public_endpoint = isso_instance.conf.get(
+            section="server", option="public-endpoint"
+        ) or local("host")
+        webhook_conf_section = isso_instance.conf.section("webhook")
+        self.wh_url = webhook_conf_section.get("url")
+        self.wh_template = webhook_conf_section.get("template")
+
+        # check required settings
+        if not isurl(self.wh_url):
+            raise ValueError(
+                "Web hook requires a valid URL. "
+                "The provided one is not correct: {}".format(self.wh_url)
+            )
+
+        # check optional template
+        if not len(self.wh_template):
+            self.wh_template = None
+            logger.debug("No template provided.")
+        elif not Path(self.wh_template).is_file():
+            raise FileExistsError(
+                "Invalid web hook template path: {}".format(self.wh_template)
+            )
+        elif not Path(self.wh_template).suffix == ".json":
+            raise TypeError()(
+                "Template must be a JSON file: {}".format(self.wh_template)
+            )
+        else:
+            self.wh_template = Path(self.wh_template)
+
+    def __iter__(self):
+
+        yield "comments.new:after-save", self.new_comment
+
+    def new_comment(self, thread: dict, comment: dict) -> bool:
+        """Triggered when a new comment is saved.
+
+        :param thread: comment thread
+        :type thread: dict
+        :param comment: comment object
+        :type comment: dict
+
+        :return: True if eveythring went fine. False if not.
+        :rtype: bool
+        """
+
+        try:
+            # get moderation URLs
+            moderation_urls = self.moderation_urls(thread, comment)
+
+            if self.wh_template:
+                post_data = self.render_template(thread, comment, moderation_urls)
+            else:
+                post_data = {
+                    "author_name": comment.get("author", "Anonymous"),
+                    "author_email": comment.get("email"),
+                    "author_website": comment.get("website"),
+                    "comment_ip_address": comment.get("remote_addr"),
+                    "comment_text": comment.get("text"),
+                    "comment_url_activate": moderation_urls[0],
+                    "comment_url_delete": moderation_urls[1],
+                    "comment_url_view": moderation_urls[2],
+                }
+
+            self.send(post_data)
+        except Exception as err:
+            logger.error(err)
+            return False
+
+        return True
+
+    def moderation_urls(self, thread: dict, comment: dict) -> tuple:
+        """Helper to build comment related URLs (deletion, activation, etc.).
+
+        :param thread: comment thread
+        :type thread: dict
+        :param comment: comment object
+        :type comment: dict
+
+        :return: tuple of URS in alpha order (activate, admin, delete, view)
+        :rtype: tuple
+        """
+        uri = "{}/id/{}".format(self.public_endpoint, comment.get("id"))
+        key = self.isso_instance.sign(comment.get("id"))
+
+        url_activate = "{}/activate/{}".format(uri, key)
+        url_delete = "{}/delete/{}".format(uri, key)
+        url_view = "{}#isso-{}".format(
+            local("origin") + thread.get("uri"), comment.get("id")
+        )
+
+        return url_activate, url_delete, url_view
+
+    def render_template(
+        self, thread: dict, comment: dict, moderation_urls: tuple
+    ) -> str:
+        """Format comment information as webhook payload filling the specified template.
+
+        :param thread: isso thread
+        :type thread: dict
+        :param comment: isso comment
+        :type comment: dict
+        :param moderation_urls: comment moderation URLs
+        :type comment: tuple
+
+        :return: formatted message from template
+        :rtype: str
+        """
+        # load template
+        with self.wh_template.open("r") as in_file:
+            tpl_json_data = json.load(in_file)
+        tpl_str = Template(json.dumps(tpl_json_data))
+
+        # substitute
+        out_msg = tpl_str.substitute(
+            AUTHOR_NAME=comment.get("author", "Anonymous"),
+            AUTHOR_EMAIL="<{}>".format(comment.get("email", "")),
+            AUTHOR_WEBSITE=comment.get("website", ""),
+            COMMENT_IP_ADDRESS=comment.get("remote_addr"),
+            COMMENT_TEXT=comment.get("text"),
+            COMMENT_URL_ACTIVATE=moderation_urls[0],
+            COMMENT_URL_DELETE=moderation_urls[1],
+            COMMENT_URL_VIEW=moderation_urls[2],
+        )
+
+        return out_msg
+
+    def send(self, structured_msg: str) -> bool:
+        """Send the structured message as a notification to the class webhook URL.
+
+        :param str structured_msg: structured message to send
+
+        :rtype: bool
+        """
+        # load the message to ensure encoding
+        msg_json = json.loads(structured_msg)
+
+        with Session() as requests_session:
+
+            # send requests
+            response = requests_session.post(
+                url=self.wh_url,
+                json=json.dumps(msg_json),
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "Isso/{0} (+https://posativ.org/isso)".format(
+                        dist.version
+                    ),
+                },
+            )
+
+            try:
+                response.raise_for_status()
+                logger.info("Web hook sent to %s" % self.wh_url)
+            except HTTPError as err:
+                logger.error(
+                    "Something went wrong during POST request to the web hook. Trace: %s"
+                    % err
+                )
+                return False
+
+        # if no error occurred
+        return True
