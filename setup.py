@@ -8,11 +8,6 @@ from setuptools import setup, find_packages
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
             'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9']
 
-if sys.version_info < (3, ):
-    raise SystemExit("Python 2 is not supported.")
-elif (3, 0) <= sys.version_info < (3, 5):
-    raise SystemExit("Python 3 versions < 3.5 are not supported.")
-
 setup(
     name='isso',
     version='0.12.5',
@@ -24,6 +19,7 @@ setup(
     url='https://github.com/posativ/isso/',
     license='MIT',
     description='lightweight Disqus alternative',
+    python_requires='>=3.5',
     classifiers=[
         "Development Status :: 4 - Beta",
         "Topic :: Internet",
@@ -36,7 +32,6 @@ setup(
         "Programming Language :: Python :: 3.8"
     ],
     install_requires=requires,
-    setup_requires=["cffi>=1.3.0"],
     entry_points={
         'console_scripts':
             ['isso = isso:main'],

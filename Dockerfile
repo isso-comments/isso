@@ -11,7 +11,7 @@ COPY --from=jsBuilder /src .
 RUN python3 -m venv /isso \
  && . /isso/bin/activate \
  && pip3 install --no-cache-dir --upgrade pip \
- && pip3 install --no-cache-dir gunicorn cffi flask \
+ && pip3 install --no-cache-dir gunicorn flask \
  && python setup.py install \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
