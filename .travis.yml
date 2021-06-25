@@ -20,6 +20,6 @@ script:
 notifications:
   irc:
     channels:
-      - "chat.freenode.net#isso"
+      - "irc.libera.chat#isso"
     on_success: change
     on_failure: always
