@@ -6,7 +6,7 @@ import os
 import pkg_resources
 
 from isso import make_app
-from isso import dist, config
+from isso import config
 
 application = make_app(
     config.load(
