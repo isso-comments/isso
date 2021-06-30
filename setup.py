@@ -6,7 +6,7 @@ import sys
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
-            'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9']
+            'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9', 'Flask']
 
 setup(
     name='isso',
