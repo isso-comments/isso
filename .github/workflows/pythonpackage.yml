@@ -13,20 +13,21 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python setup.py develop
-    - name: Style checks
-      run: |
-        python -m flakes
-    - name: Test suite run
-      run: |
-        make test
+    - name: Install isso dependencies
+      run: python setup.py develop
+    - name: Install test suite dependencies
+      run: pip3 install nose
+    - name: Run test suite
+      run: make test
       env:
         PYTHONHASHSEED: random
+    - name: Install style check dependencies
+      run: pip3 install flake8
+    - name: Run style check
+      run: make flakes
