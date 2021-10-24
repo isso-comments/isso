@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
-import sys
-
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
-            'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9']
+            'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9', 'Flask']
 
 setup(
     name='isso',
@@ -29,7 +27,8 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8"
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9"
     ],
     install_requires=requires,
     entry_points={

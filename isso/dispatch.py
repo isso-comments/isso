@@ -12,7 +12,7 @@ import pkg_resources
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.wrappers import Response
 
-from isso import dist, make_app, wsgi, config
+from isso import make_app, wsgi, config
 
 logger = logging.getLogger("isso")
 
