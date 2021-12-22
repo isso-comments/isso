@@ -368,13 +368,15 @@ class API(object):
     """
     @api {get} /id/:id view
     @apiGroup Comment
+    @apiDescription
+        View an existing comment, for the purpose of editing. Editing a comment is only possible for a short period of time after it was created and only if the requestor has a valid cookie for it. See the [isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
 
     @apiParam {number} id
         The id of the comment to view.
     @apiUse plainParam
 
     @apiExample {curl} View the comment with id 4:
-        curl 'https://comments.example.com/id/4'
+        curl 'https://comments.example.com/id/4' -b cookie.txt
 
     @apiUse commentResponse
 
@@ -398,6 +400,11 @@ class API(object):
         rv = self.comments.get(id)
         if rv is None:
             raise NotFound
+
+        try:
+            self.isso.unsign(request.cookies.get(str(id), ''))
+        except (SignatureExpired, BadSignature):
+            raise Forbidden
 
         for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
