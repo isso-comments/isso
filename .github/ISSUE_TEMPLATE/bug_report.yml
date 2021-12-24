@@ -1,0 +1,63 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: <Type in title here>"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report. Before opening a bug report, please research whether your issue or anything similar has already been reported.
+  - type: input
+    id: version
+    attributes:
+      label: Isso Version
+      description: What version of isso are you using? If you are using the latest version from git, please type in the commit SHA1
+      placeholder: 0.12.4
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: Which python version are you using?
+      placeholder: Python 3.7
+    validations:
+      required: true
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system
+      description: What Operating System are you using?
+      placeholder: Ubuntu 20.04
+  - type: input
+    id: webserver
+    attributes:
+      label: Web server
+      description: If you are using a web server to run Isso, which are you using?
+      placeholder: Apache 2.4
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce your issue?
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Isso configuration
+      description: Please copy and paste your isso configuration ("isso.cfg"). You should censor any private information such as email addresses and passwords. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
