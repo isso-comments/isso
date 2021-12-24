@@ -2,9 +2,6 @@
 
 from __future__ import division, unicode_literals
 
-import pkg_resources
-werkzeug = pkg_resources.get_distribution("werkzeug")
-
 import hashlib
 import json
 import os
@@ -102,10 +99,6 @@ class Bloomfilter:
 
 
 class JSONRequest(Request):
-
-    if werkzeug.version.startswith("0.8"):
-        def get_data(self, **kw):
-            return self.data.decode('utf-8')
 
     def get_json(self):
         try:

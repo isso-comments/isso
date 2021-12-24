@@ -6,17 +6,7 @@ import codecs
 import hashlib
 
 
-try:
-    from werkzeug.security import pbkdf2_bin as pbkdf2
-except ImportError:
-    try:
-        from passlib.utils.pbkdf2 import pbkdf2 as _pbkdf2
-
-        def pbkdf2(val, salt, iterations, dklen, func):
-            return _pbkdf2(val, salt, iterations, dklen, ("hmac-" + func).encode("utf-8"))
-    except ImportError:
-        raise ImportError("No PBKDF2 implementation found. Either upgrade "
-                          "to `werkzeug` 0.9 or install `passlib`.")
+from werkzeug.security import pbkdf2_bin as pbkdf2
 
 
 def _TypeError(name, expected, val):

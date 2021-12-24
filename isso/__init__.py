@@ -49,9 +49,6 @@ from os.path import dirname, join
 from argparse import ArgumentParser
 from functools import partial, reduce
 
-import pkg_resources
-werkzeug = pkg_resources.get_distribution("werkzeug")
-
 from itsdangerous import URLSafeTimedSerializer
 
 from werkzeug.routing import Map
@@ -212,9 +209,6 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
                            exposed=("X-Set-Cookie", "Date")))
 
     wrapper.extend([wsgi.SubURI, ProxyFixCustom])
-
-    if werkzeug.version.startswith("0.8"):
-        wrapper.append(wsgi.LegacyWerkzeugMiddleware)
 
     return reduce(lambda x, f: f(x), wrapper, isso)
 
