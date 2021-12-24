@@ -1,0 +1,27 @@
+name: Feature Request
+description: Request a feature
+title: "[FEATURE]: <Type in title here>"
+labels: ["feature", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to diligently document your feature request.
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: What is Isso's current behavior?
+      description: Also, please explain why that behavior should be changed.
+    validations:
+      required: true
+  - type: textarea
+    id: desired-behavior
+    attributes:
+      label: What would you like Isso to do differently?
+      description: Please get into detail of how you expect the feature or change to work.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        If you are willing to (help) develop it yourself, you can also open a [Pull Request](https://github.com/posativ/isso/pulls) with your desired changes!
