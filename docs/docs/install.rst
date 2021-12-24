@@ -79,7 +79,7 @@ Install from PyPi
 Requirements
 ^^^^^^^^^^^^
 
-- Python 2.7 or 3.4+ (+ devel headers)
+- Python 3.5+ (+ devel headers)
 - SQLite 3.3.8 or later
 - a working C compiler
 
@@ -168,9 +168,10 @@ way to set up Isso. It requires a lot more dependencies and effort:
 - Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
-- Node.js, `NPM <https://npmjs.org/>`__ - *for frontend*
-- `sassc <https://github.com/sass/sassc>`_ for compiling
-  `.scss <https://sass-lang.com/>`_ - *for docs*
+- Node.js, `NPM <https://npmjs.org/>`__ - *required for frontend*
+- `sphinx <http://www.sphinx-doc.org/>`_,
+  `sassc <https://github.com/sass/sassc>`_ (for compiling
+  `.scss <https://sass-lang.com/>`_ to css) - *optional - only for docs*
 
 Get a fresh copy of Isso:
 
@@ -186,14 +187,7 @@ To create a virtual environment (recommended), run:
     ~> virtualenv .
     ~> source ./bin/activate
 
-Install Isso and its dependencies:
-
-.. code-block:: sh
-
-    ~> python setup.py develop  # or `install`
-    ~> isso run
-
-Install JavaScript modules:
+Install JavaScript modules using ``npm``:
 
 .. code-block:: sh
 
@@ -204,6 +198,19 @@ Build JavaScript frontend code:
 .. code-block:: sh
 
     ~> make js
+
+Install Isso and its dependencies:
+
+.. code-block:: sh
+
+    ~> python setup.py develop  # or `pip install -e .`
+    ~> isso run
+
+Install `sphinx <http://www.sphinx-doc.org/>`_ for generating docs:
+
+.. code-block:: sh
+
+    ~> pip install sphinx
 
 Generate docs:
 
