@@ -1,0 +1,39 @@
+exclude: "node_modules|.venv|isso/tests"
+
+repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-executables-have-shebangs
+      - id: check-case-conflict
+      - id: check-yaml
+        args: [--unsafe]
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: fix-encoding-pragma
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        language: python
+        files: ^isso/.*\.py$
+        types: [python]
+        args: ["--config=setup.cfg", "--select=E9,F63,F7,F82"]
+
+# Specific part for https://pre-commit.ci
+ci:
+  autofix_prs: true
+  autoupdate_schedule: quarterly
+  skip: [
+    "check-hooks-apply"
+  ]
+  submodules: false
