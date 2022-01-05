@@ -50,7 +50,7 @@ setup(
                     "pre-commit>=2.15,<2.18",
                     "flake8>4,<4.1",
         ],
-    }
+    },
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
