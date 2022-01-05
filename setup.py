@@ -47,8 +47,8 @@ setup(
     install_requires=requires,
     extras_require={
         "dev": [
-                    "pre-commit>=2.15,<2.18",
-                    "flake8>4,<4.1",
+            "pre-commit>=2.15,<2.18",
+            "flake8>4,<4.1",
         ],
     },
     entry_points={
