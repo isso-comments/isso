@@ -54,6 +54,10 @@ class Sanitizer(object):
 def Markdown(extensions=("strikethrough", "superscript", "autolink",
                          "fenced-code"), flags=[]):
 
+    # Normalize render extensions for misaka 2.0, which uses `dashed-case`
+    # instead of `snake_case` (misaka 1.x) for options.
+    extensions = [x.replace("_", "-") for x in extensions]
+
     renderer = Unofficial(flags=flags)
     md = misaka.Markdown(renderer, extensions=extensions)
 

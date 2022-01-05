@@ -99,6 +99,23 @@ class TestHTML(unittest.TestCase):
                       ['<p><a href="http://example.org/" rel="nofollow noopener">http://example.org/</a> and sms:+1234567890</p>',
                        '<p><a rel="nofollow noopener" href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>'])
 
+    def test_sanitized_render_extensions(self):
+        """Options should be normalized from both dashed-case or snake_case (legacy)"""
+        conf = config.new({
+            "markup": {
+                "options": "no_intra_emphasis",  # Deliberately snake_case
+                "flags": "",
+                "allowed-elements": "",
+                "allowed-attributes": ""
+            }
+        })
+        renderer = html.Markup(conf.section("markup")).render
+        self.assertEqual(renderer("foo_bar_baz"), '<p>foo_bar_baz</p>')
+
+        conf.set("markup", "options", "no-intra-emphasis")  # dashed-case
+        renderer = html.Markup(conf.section("markup")).render
+        self.assertEqual(renderer("foo_bar_baz"), '<p>foo_bar_baz</p>')
+
     def test_code_blocks(self):
         convert = html.Markdown(extensions=('fenced-code',))
         examples = [
