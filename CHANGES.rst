@@ -16,6 +16,16 @@ Changelog for Isso
   cookies. (#700, ix5)
 - Fallback for SameSite header depending on whether host is served over https
   or http (#700, ix5)
+- Have client read out shared settings from server. (#311, pellenilsson)
+  This affects these settings for which ``data-isso-*`` values will be ignored:
+
+    [general]
+    reply-notifications
+    gravatar
+    [guard]
+    reply-to-self
+    require-author
+    require-email
 
 0.12.4 (2021-02-03)
 -------------------

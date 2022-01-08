@@ -95,8 +95,6 @@ reply-notifications
     It is highly recommended to also turn on moderation when enabling this
     setting, as Isso can otherwise be easily exploited for sending spam.
 
-    Do not forget to configure the client accordingly.
-
 log-file
     Log console messages to file instead of standard out.
 
@@ -297,19 +295,13 @@ reply-to-self
     the comment. After the editing timeframe is gone, commenters can reply to
     their own comments anyways.
 
-    Do not forget to configure the `client <client>`_ accordingly
-
 require-author
     force commenters to enter a value into the author field. No validation is
     performed on the provided value.
 
-    Do not forget to configure the `client <client>`_ accordingly.
-
 require-email
     force commenters to enter a value into the email field. No validation is
     performed on the provided value.
-
-    Do not forget to configure the `client <client>`_ accordingly.
 
 .. _configure-markup:
 
