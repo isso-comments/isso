@@ -7,6 +7,7 @@ RUN make init js
 # Second, create virtualenv
 FROM python:3.8-buster AS venvBuilder
 WORKDIR /src/
+ENV TOX_ENV=1
 COPY --from=jsBuilder /src .
 RUN python3 -m venv /isso \
  && . /isso/bin/activate \
