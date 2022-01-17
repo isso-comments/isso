@@ -48,7 +48,7 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
 
     function fetchComments() {
 
-        if ($('#isso-root').length == 0) {
+        if (!$('#isso-root')) {
             return;
         }
 
