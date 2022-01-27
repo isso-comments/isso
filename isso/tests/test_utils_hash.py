@@ -21,7 +21,7 @@ class TestHasher(unittest.TestCase):
 
         self.assertRaises(TypeError, h.hash, "...")
         self.assertEqual(h.hash(b"..."), b"...")
-        self.assertIsInstance(h.uhash(u"..."), (str, ))
+        self.assertIsInstance(h.uhash("..."), (str, ))
 
     def test_uhash(self):
         h = Hash(b"", func=None)
