@@ -78,9 +78,21 @@ class Section(object):
 class IssoParser(ConfigParser):
     """Parse INI-style configuration with some modifications for Isso.
 
-        * parse human-readable timedelta such as "15m" as "15 minutes"
-        * handle indented lines as "lists"
+        * Parse human-readable timedelta such as "15m" as "15 minutes"
+        * Handle indented lines as "lists"
+        * Disable string interpolation ('%s') for values
     """
+
+    def __init__(self, *args, **kwargs):
+        """Supply modified defaults to configparser.ConfigParser
+        https://docs.python.org/3.9/library/configparser.html#configparser.ConfigParser
+        allow_no_value=True: Allow empty config keys
+        interpolation=None:  Do not attempt to use python string interpolation on
+                             values. This is especially important for parsing
+                             passwords that might contain '%'
+        """
+        return super(IssoParser, self).__init__(
+            allow_no_value=True, interpolation=None, *args, **kwargs)
 
     def getint(self, section, key):
         try:
@@ -107,7 +119,7 @@ class IssoParser(ConfigParser):
 
 def new(options=None):
 
-    cp = IssoParser(allow_no_value=True)
+    cp = IssoParser()
 
     if options:
         cp.read_dict(options)
