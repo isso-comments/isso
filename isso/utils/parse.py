@@ -9,7 +9,7 @@ from urllib.parse import unquote
 import html5lib
 
 
-def thread(data, default=u"Untitled.", id=None):
+def thread(data, default="Untitled.", id=None):
     """
     Extract <h1> title from web page. The title is *probably* the text node,
     which is the nearest H1 node in context to an element with the `isso-thread` id.
