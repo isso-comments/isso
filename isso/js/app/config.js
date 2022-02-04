@@ -1,10 +1,11 @@
-define(function() {
+define(["app/utils"], function(utils) {
     "use strict";
 
     var config = {
         "css": true,
         "css-url": null,
-        "lang": (navigator.language || navigator.userLanguage).split("-")[0],
+        "lang": "",
+        "default-lang": "en",
         "reply-to-self": false,
         "require-email": false,
         "require-author": false,
@@ -40,6 +41,44 @@ define(function() {
     // split avatar-fg on whitespace
     config["avatar-fg"] = config["avatar-fg"].split(" ");
 
-    return config;
+    // create an array of normalized language codes from:
+    //   - config["lang"], if it is nonempty
+    //   - the first of navigator.languages, navigator.language, and
+    //     navigator.userLanguage that exists and has a nonempty value
+    //   - config["default-lang"]
+    //   - "en" as an ultimate fallback
+    // i18n.js will use the first code in this array for which we have
+    // a translation.
+    var languages = [];
+    var found_navlang = false;
+    if (config["lang"]) {
+        languages.push(utils.normalize_bcp47(config["lang"]));
+    }
+    if (navigator.languages) {
+        for (i = 0; i < navigator.languages.length; i++) {
+            if (navigator.languages[i]) {
+                found_navlang = true;
+                languages.push(utils.normalize_bcp47(navigator.languages[i]));
+            }
+        }
+    }
+    if (!found_navlang && navigator.language) {
+        found_navlang = true;
+        languages.push(utils.normalize_bcp47(navigator.language));
+    }
+    if (!found_navlang && navigator.userLanguage) {
+        found_navlang = true;
+        languages.push(utils.normalize_bcp47(navigator.userLanguage));
+    }
+    if (config["default-lang"]) {
+        languages.push(utils.normalize_bcp47(config["default-lang"]));
+    }
+    languages.push("en");
 
+    config["langs"] = languages;
+    // code outside this file should look only at langs
+    delete config["lang"];
+    delete config["default-lang"];
+
+    return config;
 });
