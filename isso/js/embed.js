@@ -41,8 +41,10 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
             feedLinkWrapper.appendChild(feedLink);
             isso_thread.append(feedLinkWrapper);
         }
+        // Note: Not appending the isso.Postbox here since it relies
+        // on the config object populated by elements fetched from the server,
+        // and the call to fetch those is in fetchComments()
         isso_thread.append(heading);
-        isso_thread.append(new isso.Postbox(null));
         isso_thread.append('<div id="isso-root"></div>');
     }
 
@@ -57,6 +59,19 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
             config["max-comments-top"],
             config["max-comments-nested"]).then(
             function (rv) {
+                for (var setting in rv.config) {
+                    if (setting in config && config[setting] != rv.config[setting]) {
+                        console.log("Isso: Client value '%s' for setting '%s' overridden by server value '%s'.\n" +
+                                    "Since Isso version 0.12.6, 'data-isso-%s' is only configured via the server " +
+                                    "to keep client and server in sync",
+                                    config[setting], setting, rv.config[setting], setting);
+                    }
+                    config[setting] = rv.config[setting]
+                }
+
+                // Finally, create Postbox with configs fetched from server
+                isso_thread.append(new isso.Postbox(null));
+
                 if (rv.total_replies === 0) {
                     heading.textContent = i18n.translate("no-comments");
                     return;

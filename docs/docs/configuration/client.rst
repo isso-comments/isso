@@ -11,10 +11,6 @@ preferably in the script tag which embeds the JS:
             data-isso-css="true"
             data-isso-css-url="null"
             data-isso-lang="ru"
-            data-isso-reply-to-self="false"
-            data-isso-require-author="false"
-            data-isso-require-email="false"
-            data-isso-reply-notifications="false"
             data-isso-max-comments-top="10"
             data-isso-max-comments-nested="5"
             data-isso-reveal-on-click="5"
@@ -148,26 +144,6 @@ be a BCP 47 language tag.  Defaults to "en".
 If you specify both ``data-isso-default-lang`` and ``data-isso-lang``,
 ``data-isso-lang`` takes precedence.
 
-data-isso-reply-to-self
------------------------
-
-Set to `true` when spam guard is configured with `reply-to-self = true`.
-
-data-isso-require-author
-------------------------
-
-Set to `true` when spam guard is configured with `require-author = true`.
-
-data-isso-require-email
------------------------
-
-Set to `true` when spam guard is configured with `require-email = true`.
-
-data-isso-reply-notifications
------------------------------
-
-Set to `true` when reply notifications is configured with `reply-notifications = true`.
-
 data-isso-max-comments-top and data-isso-max-comments-nested
 ------------------------------------------------------------
 
@@ -184,7 +160,9 @@ Number of comments to reveal on clicking the "X Hidden" link.
 data-isso-avatar
 ----------------
 
-Enable or disable avatar generation.
+Enable or disable avatar generation. Ignored if gravatar is enabled on
+server side, since gravatars will take precedence and disable avatar
+generation.
 
 data-isso-avatar-bg
 -------------------
@@ -198,14 +176,6 @@ Set avatar foreground color. Up to 8 colors are possible. The default color
 scheme is based in `this color palette <http://colrd.com/palette/19308/>`_.
 Multiple colors must be separated by space. If you use less than eight colors
 and not a multiple of 2, the color distribution is not even.
-
-data-isso-gravatar
-------------------
-
-Uses gravatar images instead of generating svg images. You have to set
-"data-isso-avatar" to **false** when you want to use this. Otherwise
-both the gravatar and avatar svg image will show up. Please also set
-option "gravatar" to **true** in the server configuration...
 
 data-isso-vote
 --------------
@@ -232,3 +202,38 @@ data-isso-feed
 Enable or disable the addition of a link to the feed for the comment
 thread. The link will only be valid if the appropriate setting, in
 ``[rss]`` section, is also enabled server-side.
+
+
+
+Deprecated Client Settings
+==========================
+
+In earlier versions the following settings had to mirror the
+corresponding settings in the server configuration, but they are now
+read out from the server automatically.
+
+data-isso-reply-to-self
+-----------------------
+
+Set to `true` when spam guard is configured with `reply-to-self = true`.
+
+data-isso-require-author
+------------------------
+
+Set to `true` when spam guard is configured with `require-author = true`.
+
+data-isso-require-email
+-----------------------
+
+Set to `true` when spam guard is configured with `require-email = true`.
+
+data-isso-reply-notifications
+-----------------------------
+
+Set to `true` when reply notifications is configured with `reply-notifications = true`.
+
+data-isso-gravatar
+------------------
+
+Set to `true` when gravatars are enabled with `gravatar = true` in the
+server configuration.

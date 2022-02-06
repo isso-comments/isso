@@ -18,6 +18,16 @@ Changelog for Isso
 
 - Fallback for SameSite header depending on whether host is served over https
   or http (#700, ix5)
+- Have client read out shared settings from server. (#311, pellenilsson)
+  This affects these settings for which ``data-isso-*`` values will be ignored:
+
+    [general]
+    reply-notifications
+    gravatar
+    [guard]
+    reply-to-self
+    require-author
+    require-email
 
 - Improved detection of browser-supplied language preferences (#521)
   Isso will now honor the newer `navigator.languages` global property

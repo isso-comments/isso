@@ -138,6 +138,17 @@ class API(object):
         except NoOptionError:
             self.trusted_proxies = []
 
+        # These configuration records can be read out by client
+        self.public_conf = {}
+        self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
+        self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
+        self.public_conf["require-author"] = isso.conf.getboolean("guard", "require-author")
+        self.public_conf["reply-notifications"] = isso.conf.getboolean("general", "reply-notifications")
+        self.public_conf["gravatar"] = isso.conf.getboolean("general", "gravatar")
+
+        if self.public_conf["gravatar"]:
+            self.public_conf["avatar"] = False
+
         self.guard = isso.db.guard
         self.threads = isso.db.threads
         self.comments = isso.db.comments
@@ -833,7 +844,8 @@ class API(object):
             'id': root_id,
             'total_replies': reply_counts[root_id],
             'hidden_replies': reply_counts[root_id] - len(root_list),
-            'replies': self._process_fetched_list(root_list, plain)
+            'replies': self._process_fetched_list(root_list, plain),
+            'config': self.public_conf
         }
         # We are only checking for one level deep comments
         if root_id is None:
