@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:wp="http://wordpress.org/export/1.0/">
+    <!-- This WXR dump is incomplete! It only contains elements needed for an
+         import, a few are unused yet, but eventually useful later.
+
+         The <item> node is derived from a sort-of real-world WordPress blog,
+         but modified to test various things.
+    -->
+    <channel>
+        <item>
+            <title>Hello, World…</title>
+            <link>http://example.tld/2014/test/</link>
+            <pubDate>Tue, 14 Jan 2014 17:31:03 +0000</pubDate>
+            <dc:creator><![CDATA[Tester]]></dc:creator>
+            <wp:post_id>18</wp:post_id>
+            <wp:post_date>2014-01-14 17:31:03</wp:post_date>
+            <wp:post_date_gmt>2014-01-14 17:31:03</wp:post_date_gmt>
+            <wp:comment_status>open</wp:comment_status>
+            <wp:post_name>test</wp:post_name>
+            <wp:status>publish</wp:status>
+            <wp:post_type>post</wp:post_type>
+            <wp:comment>
+                <wp:comment_id>2</wp:comment_id>
+                <wp:comment_author><![CDATA[Ohai]]></wp:comment_author>
+                <wp:comment_author_email>test@example.org
+                </wp:comment_author_email>
+                <wp:comment_author_url>http://example.tld/</wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:82.119.20.0</wp:comment_author_IP>
+                <wp:comment_date>2014-01-14 17:32:12</wp:comment_date>
+                <wp:comment_date_gmt>2014-01-14 17:32:12</wp:comment_date_gmt>
+                <wp:comment_content>
+                    <![CDATA[Erster!1]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+
+                <!-- what's that? -->
+                <wp:comment_type></wp:comment_type>
+
+                <wp:comment_parent>0</wp:comment_parent>
+                <wp:comment_user_id>0</wp:comment_user_id>
+            </wp:comment>
+            <wp:comment>
+                <wp:comment_id>6</wp:comment_id>
+                <wp:comment_author><![CDATA[Tester]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date>2014-04-29 15:21:27</wp:comment_date>
+                <wp:comment_date_gmt>2014-04-29 15:21:27</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[Zweiter.]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>0</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+            <wp:comment>
+                <wp:comment_id>7</wp:comment_id>
+                <wp:comment_author><![CDATA[Tester]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date_gmt>2014-04-29 15:21:35</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[Drölfter!]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_parent>6</wp:comment_parent>
+            </wp:comment>
+            <wp:comment>
+                <wp:comment_id>8</wp:comment_id>
+                <wp:comment_author><![CDATA[Tester]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date>2014-04-29 15:21:45</wp:comment_date>
+                <wp:comment_date_gmt>2014-04-29 15:21:45</wp:comment_date_gmt>
+                <wp:comment_content>
+                    <![CDATA[Yet another reply.]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>7</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+            <wp:comment>
+                <wp:comment_id>9</wp:comment_id>
+                <wp:comment_author><![CDATA[Tester]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date>2014-04-29 15:21:52</wp:comment_date>
+                <wp:comment_date_gmt>2014-04-29 15:21:52</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[...]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>7</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+            <wp:comment>
+                <wp:comment_id>10</wp:comment_id>
+                <wp:comment_author><![CDATA[Letzter :/]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date>2014-04-29 15:21:56</wp:comment_date>
+                <wp:comment_date_gmt>2014-04-29 15:21:56</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[...]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>0</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+        </item>
+
+        <!-- handle ?p=X urls -->
+        <item>
+            <title>...</title>
+            <link>http://example.tld/?p=4</link>
+             <wp:comment>
+                <wp:comment_id>11</wp:comment_id>
+                <wp:comment_author><![CDATA[Anonymous]]></wp:comment_author>
+                <wp:comment_author_email>info@posativ.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
+                <wp:comment_date>2014-04-29 15:21:56</wp:comment_date>
+                <wp:comment_date_gmt>2014-04-29 15:21:57</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[...]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>0</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+        </item>
+        <item>
+            <title>No comments</title>
+            <link>http://example.tld/?p=6</link>
+        </item>
+    </channel>
+</rss>

@@ -1,0 +1,19 @@
+include man/man1/isso.1
+include man/man5/isso.conf.5
+
+include share/isso.conf
+
+include isso/js/embed.min.js
+include isso/js/embed.dev.js
+include isso/js/count.min.js
+include isso/js/count.dev.js
+include isso/js/admin.js
+
+include isso/defaults.ini
+
+include isso/templates/admin.html
+include isso/templates/disabled.html
+include isso/templates/login.html
+include isso/css/admin.css
+include isso/css/isso.css
+include isso/img/isso.svg

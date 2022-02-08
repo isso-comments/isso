@@ -1,0 +1,85 @@
+---
+
+- name: Provision development server
+  hosts: all
+  sudo: true
+  tasks:
+
+    - name: Apt | Add nodesource keys
+      apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key state=present
+
+    - name: Apt | Add nodesource sources list deb
+      apt_repository: repo='deb https://deb.nodesource.com/node {{ ansible_distribution_release }} main' state=present
+
+    - name: Apt | Add nodesource sources list deb src
+      apt_repository: repo='deb-src https://deb.nodesource.com/node {{ ansible_distribution_release }} main' state=present
+
+    - name: Apt | Install packages
+      apt: pkg={{ item }} state=latest update_cache=true
+      with_items:
+        - build-essential
+        - curl
+        - htop
+        - vim
+        - git
+        - python-dev
+        - python-software-properties
+        - python-setuptools
+        - python-pip
+        - nginx
+        - uwsgi
+        - uwsgi-plugin-python
+        - supervisor
+        - sqlite3
+        - nodejs
+        - libffi-dev
+
+    - name: NPM | Install packages
+      npm: name={{ item }} global=yes
+      with_items:
+        - bower
+        - requirejs
+        - uglify-js
+        - jade
+
+    - name: Python | Install egg
+      shell: cd /vagrant; python setup.py develop
+
+    - name: Make
+      shell: cd /vagrant; {{ item }}
+      with_items:
+        - make init
+        - make js
+
+    - name: Spool | Create directory
+      file: path=/var/isso/spool state=directory mode=0777
+
+    - name: uwsgi | Deploy configuration
+      copy: src=files/uwsgi.ini dest=/etc/uwsgi/apps-available/isso.ini
+
+    - name: uwsgi | Enable app
+      file: src=/etc/uwsgi/apps-available/isso.ini dest=/etc/uwsgi/apps-enabled/isso.ini state=link
+
+    - name: uwsgi | Restart service daemon
+      service: name=uwsgi state=restarted enabled=yes
+
+    - name: uwsgi | Chmod logfile
+      file: path=/var/log/uwsgi/uwsgi.log state=touch mode="a+r"
+
+    - name: nginx | Deploy nginx.conf
+      copy: src=files/nginx.conf dest=/etc/nginx/nginx.conf
+
+    - name: nginx | Delete default vhost
+      action: file path=/etc/nginx/sites-enabled/default state=absent
+
+    - name: nginx | Deploy vhost config
+      copy: src=files/nginx.vhost.conf dest=/etc/nginx/sites-available/isso.conf
+
+    - name: nginx | Enable vhost
+      file: src=/etc/nginx/sites-available/isso.conf dest=/etc/nginx/sites-enabled/000-isso state=link
+
+    - name: nginx | Chmod logfile
+      file: path=/var/log/nginx mode="a+rx" state=directory recurse=true
+
+    - name: nginx | Restart service daemon
+      service: name=nginx state=restarted enabled=yes

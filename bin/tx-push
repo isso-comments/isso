@@ -1,0 +1,34 @@
+#!/usr/bin/env fish
+
+set TRANSIFEX "https://www.transifex.com/api/2"
+
+if [ (count $argv) -ne 1 ]
+    echo "tx-push FILE"
+    exit 2
+end
+
+if [ ! -f ~/.transifexrc ]
+    echo "no ~/.transifexrc found"
+    exit 1
+end
+
+set user (cat ~/.transifexrc | grep -E "^username" | awk -F " ?= ?" '{ print $2 }')
+set pass (cat ~/.transifexrc | grep -E "^password" | awk -F " ?= ?" '{ print $2 }')
+
+set lang (echo $argv | cut -d / -f 5 | cut -d . -f 1)
+set trans (mktemp -t tx.XXX)
+
+if [ $lang = "en" ]
+    set url "$TRANSIFEX/project/isso/resource/js/content/"
+else
+    set url "$TRANSIFEX/project/isso/resource/js/translation/$lang/"
+end
+
+printf '{"content":' > $trans
+cat $argv \
+ | sed "s,^define(,,g;\$ s,);,,g" \
+ | python -c 'import json,sys; print json.dumps(sys.stdin.read())' \
+ >> $trans
+printf '}' >> $trans
+
+curl -L -u $user:$pass -XPUT $url -H "Content-Type: application/json" -d @$trans

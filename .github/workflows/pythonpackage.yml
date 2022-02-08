@@ -1,0 +1,33 @@
+name: Python package
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+      fail-fast: false
+
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install isso dependencies
+      run: python setup.py develop
+    - name: Install test suite dependencies
+      run: pip3 install nose
+    - name: Run test suite
+      run: make test
+      env:
+        PYTHONHASHSEED: random
+    - name: Install style check dependencies
+      run: pip3 install flake8
+    - name: Run style check
+      run: make flakes
