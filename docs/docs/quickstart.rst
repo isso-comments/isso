@@ -19,7 +19,7 @@ sane defaults.
 
     [general]
     ; database location, check permissions, automatically created if it
-    does not exist
+    ; does not exist
     dbpath = /var/lib/isso/comments.db
     ; your website or blog (not the location of Isso!)
     host = http://example.tld/
