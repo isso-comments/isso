@@ -22,7 +22,7 @@ jobs:
     - name: Install isso dependencies
       run: python setup.py develop
     - name: Install test suite dependencies
-      run: pip3 install nose
+      run: pip3 install pytest
     - name: Run test suite
       run: make test
       env:
