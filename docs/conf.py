@@ -63,8 +63,8 @@ source_suffix = '.rst'
 master_doc = 'docs/index'
 
 # General information about the project.
-project = u'Isso'
-copyright = u'2016, Martin Zimmermann'
+project = 'Isso'
+copyright = '2022, Martin Zimmermann & contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -214,8 +214,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'Isso.tex', u'Isso Documentation',
-     u'Martin Zimmermann', 'manual'),
+    ('index', 'Isso.tex', 'Isso Documentation',
+     'Martin Zimmermann', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -244,10 +244,10 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('docs/man/index', 'isso', u'a Disqus alternative',
-     [u'Martin Zimmermann'], 1),
-    ('docs/configuration/server', 'isso.conf', u'server configuration',
-     [u'Martin Zimmermann'], 5)
+    ('docs/man/index', 'isso', 'a Disqus alternative',
+     ['Martin Zimmermann'], 1),
+    ('docs/configuration/server', 'isso.conf', 'server configuration',
+     ['Martin Zimmermann'], 5)
 ]
 
 # If true, show URL addresses after external links.
@@ -260,8 +260,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'Isso', u'Isso Documentation',
-     u'Martin Zimmermann', 'Isso', 'a commenting server similar to Disqus',
+    ('index', 'Isso', 'Isso Documentation',
+     'Martin Zimmermann', 'Isso', 'a commenting server similar to Disqus',
      'Miscellaneous'),
 ]
 
