@@ -9,6 +9,7 @@ from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
             'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9', 'Flask']
+tests_require = ['pytest', 'pytest-cov']
 
 
 class NpmBuildCommand(setuptools.command.build_py.build_py):
@@ -45,6 +46,7 @@ setup(
         "Programming Language :: Python :: 3.9"
     ],
     install_requires=requires,
+    tests_require=tests_require,
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
