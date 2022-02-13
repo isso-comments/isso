@@ -1,9 +1,8 @@
-
-from __future__ import unicode_literals
+# -*- encoding: utf-8 -*-
 
 import json
-import tempfile
 import pkg_resources
+import tempfile
 import unittest
 
 from werkzeug.wrappers import Response

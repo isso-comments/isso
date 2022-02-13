@@ -1,14 +1,12 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import unicode_literals
-
-import os
 import json
+import os
+import pkg_resources
 import re
 import tempfile
 import unittest
 
-import pkg_resources
 from urllib.parse import urlencode
 
 from werkzeug.wrappers import Response

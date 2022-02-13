@@ -1,40 +1,32 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import unicode_literals
-
-from configparser import NoOptionError
 import collections
 import re
 import time
 import functools
 import json  # json.dumps to put URL in <script>
 
+from configparser import NoOptionError
 from datetime import datetime, timedelta
-from itsdangerous import SignatureExpired, BadSignature
+from html import escape
+from io import BytesIO as StringIO
+from urllib.parse import unquote, urlparse
 from xml.etree import ElementTree as ET
 
-from werkzeug.http import dump_cookie
-from werkzeug.wsgi import get_current_url
-from werkzeug.utils import redirect
-from werkzeug.routing import Rule
-from werkzeug.wrappers import Response
+from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
+from werkzeug.http import dump_cookie
+from werkzeug.routing import Rule
+from werkzeug.utils import redirect
+from werkzeug.wrappers import Response
+from werkzeug.wsgi import get_current_url
 
 from isso import utils, local
 from isso.utils import (http, parse,
                         JSONResponse as JSON, XMLResponse as XML,
                         render_template)
+from isso.utils.hash import md5, sha1
 from isso.views import requires
-from isso.utils.hash import sha1
-from isso.utils.hash import md5
-
-try:
-    from cgi import escape
-except ImportError:
-    from html import escape
-from urllib.parse import urlparse
-from urllib.parse import unquote
-from io import BytesIO as StringIO
 
 
 # from Django appearently, looks good to me *duck*

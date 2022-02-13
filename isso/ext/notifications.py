@@ -1,18 +1,15 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import io
-import time
 import json
-
-import socket
 import smtplib
+import socket
+import time
 
-from email.utils import formatdate
+from _thread import start_new_thread
 from email.header import Header
 from email.mime.text import MIMEText
-
+from email.utils import formatdate
 from urllib.parse import quote
 
 import logging
@@ -24,8 +21,6 @@ except ImportError:
     uwsgi = None
 
 from isso import local
-
-from _thread import start_new_thread
 
 
 class SMTPConnection(object):

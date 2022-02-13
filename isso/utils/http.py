@@ -2,12 +2,9 @@
 
 import socket
 
-try:
-    import httplib
-    from urlparse import urlparse
-except ImportError:
-    import http.client as httplib
-    from urllib.parse import urlparse
+import http.client as httplib
+
+from urllib.parse import urlparse
 
 from isso import dist
 from isso.wsgi import urlsplit

@@ -1,11 +1,9 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import unicode_literals
-
-import unittest
 import json
 import pkg_resources
 import tempfile
+import unittest
 
 from werkzeug import __version__
 from werkzeug.test import Client

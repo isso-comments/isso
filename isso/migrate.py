@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import division, print_function, unicode_literals
-
 import functools
 import io
 import json
@@ -11,22 +9,12 @@ import re
 import sys
 import textwrap
 
-from time import mktime, strptime, time
 from collections import defaultdict
+from time import mktime, strptime, time
+from urllib.parse import urlparse
+from xml.etree import ElementTree
 
 from isso.utils import anonymize
-
-try:
-    input = raw_input
-except NameError:
-    pass
-
-try:
-    from urlparse import urlparse
-except ImportError:
-    from urllib.parse import urlparse
-
-from xml.etree import ElementTree
 
 logger = logging.getLogger("isso")
 

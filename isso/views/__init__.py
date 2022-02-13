@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import pkg_resources
 dist = pkg_resources.get_distribution("isso")
 

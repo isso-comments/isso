@@ -1,10 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import codecs
 import hashlib
-
 
 from werkzeug.security import pbkdf2_bin as pbkdf2
 

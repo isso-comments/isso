@@ -22,8 +22,6 @@ can then be fed into isso:
     isso -c /path/to/isso.cfg import -t generic out.json
 """
 
-from __future__ import unicode_literals
-
 import json
 
 import feedparser
