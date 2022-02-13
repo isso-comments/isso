@@ -1,0 +1,22 @@
+name: sphinx documentation
+
+on:
+  push:
+    paths:
+      - "docs/**"
+  pull_request:
+    paths:
+      - "docs/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Installing Dependencies
+        run: sudo apt update && sudo apt install python3-sphinx sassc
+
+      - name: Check docs
+        # TODO: -W turns warnings into errors
+        run: make site
