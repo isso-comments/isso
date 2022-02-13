@@ -40,7 +40,7 @@ init:
 	npm install
 
 flakes:
-	flake8 isso/ --count --max-line-length=127 --show-source --statistics
+	flake8 isso/ contrib/ --count --max-line-length=127 --show-source --statistics
 
 # Note: It doesn't make sense to split up configs by output file with
 # webpack, just run everything at once
