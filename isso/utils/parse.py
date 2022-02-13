@@ -1,12 +1,9 @@
-
-from __future__ import print_function, unicode_literals
-
-from itertools import chain
-
-
-from urllib.parse import unquote
+# -*- encoding: utf-8 -*-
 
 import html5lib
+
+from itertools import chain
+from urllib.parse import unquote
 
 
 def thread(data, default="Untitled.", id=None):

@@ -1,7 +1,7 @@
 Releasing steps
 ===============
 
-* Run ``python3 setup.py nosetests``
+* Run ``make test``
 * Update version number in ``setup.py`` and ``CHANGES.rst``
 * ``git commit -m "Preparing ${VERSION}" setup.py CHANGES.rst``
 * ``git tag -as ${VERSION}``

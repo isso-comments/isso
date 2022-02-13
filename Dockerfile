@@ -7,7 +7,10 @@ RUN make init js
 # Second, create virtualenv
 FROM python:3.8-buster AS venvBuilder
 WORKDIR /src/
-ENV TOX_ENV=1
+# Set TOX_ENV_NAME in order for the "build_py" command in setup.py to skip
+# building Javascript artifacts as they have already been created by the
+# "jsBuilder" step.
+ENV TOX_ENV_NAME=1
 COPY --from=jsBuilder /src .
 RUN python3 -m venv /isso \
  && . /isso/bin/activate \

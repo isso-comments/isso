@@ -25,8 +25,6 @@
 #
 # Isso – a lightweight Disqus alternative
 
-from __future__ import print_function, unicode_literals
-
 import pkg_resources
 dist = pkg_resources.get_distribution("isso")
 
@@ -108,7 +106,7 @@ class Isso(object):
             elif backend in ("smtp", "SMTP"):
                 smtp_backend = True
             else:
-                logger.warn("unknown notification backend '%s'", backend)
+                logger.warning("unknown notification backend '%s'", backend)
         if smtp_backend or conf.getboolean("general", "reply-notifications"):
             subscribers.append(SMTP(self))
 
@@ -186,9 +184,9 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
                 logger.info("connected to %s", host)
                 break
     else:
-        logger.warn("unable to connect to your website, Isso will probably not "
-                    "work correctly. Please make sure, Isso can reach your "
-                    "website via HTTP(S).")
+        logger.warning("unable to connect to your website, Isso will probably not "
+                       "work correctly. Please make sure, Isso can reach your "
+                       "website via HTTP(S).")
 
     wrapper = [local_manager.make_middleware]
 

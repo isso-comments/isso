@@ -1,8 +1,7 @@
 # -*- encoding: utf-8 -*-
 
-from __future__ import division, unicode_literals
-
 import hashlib
+import ipaddress
 import json
 import os
 
@@ -12,11 +11,6 @@ from werkzeug.wrappers import Response
 from werkzeug.exceptions import BadRequest
 
 from isso.wsgi import Request
-
-try:
-    import ipaddress
-except ImportError:
-    import ipaddr as ipaddress
 
 
 def anonymize(remote_addr):

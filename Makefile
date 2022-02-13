@@ -1,7 +1,11 @@
 # INSTALLATION:
-# pip install sphinx
-# apt install sassc
-# make init
+# Docs:
+#   pip install sphinx
+#   apt install sassc
+# Python unit tests:
+#   pip install pytest pytest-cov
+# Javascript frontend client:
+#   make init
 
 ISSO_JS_SRC := $(shell find isso/js/app -type f) \
 	       $(shell ls isso/js/*.js | grep -vE "(min|dev)") \
@@ -40,7 +44,7 @@ init:
 	npm install
 
 flakes:
-	flake8 . --count --max-line-length=127 --show-source --statistics
+	flake8 isso/ --count --max-line-length=127 --show-source --statistics
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	$(RJS) -o isso/js/build.$*.js out=$@
@@ -65,10 +69,10 @@ ${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
 site: $(DOCS_HTML_DST)
 
 coverage: $(ISSO_PY_SRC)
-	nosetests --with-doctest --with-coverage --cover-package=isso --cover-html isso/
+	pytest --doctest-modules --cov=isso --cov-report=html isso/
 
 test: $($ISSO_PY_SRC)
-	python3 setup.py nosetests
+	pytest --doctest-modules isso/
 
 clean:
 	rm -f $(DOCS_MAN_DST) $(DOCS_CSS_DST) $(ISSO_JS_DST)
