@@ -16,7 +16,8 @@ class NpmBuildCommand(setuptools.command.build_py.build_py):
     """Prefix Python build with node-based asset build"""
 
     def run(self):
-        if 'TOX_ENV' not in os.environ:
+        # https://tox.wiki/en/latest/config.html#injected-environment-variables
+        if 'TOX_ENV_NAME' not in os.environ:
             subprocess.check_call(['make', 'init', 'js'])
         setuptools.command.build_py.build_py.run(self)
 
