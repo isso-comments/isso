@@ -123,7 +123,7 @@
         {% if comment.mode == 4 %}
           <strong>HIDDEN</strong>. Original text: <br />
         {% endif %}
-        <div id="isso-text-{{comment.id}}"><pre>{{comment.text}}</pre></div>
+        <pre id="isso-text-{{comment.id}}">{{comment.text}}</pre>
       </div>
       <div class='isso-comment-footer'>
         {% if conf.votes and comment.likes - comment.dislikes != 0 %}
