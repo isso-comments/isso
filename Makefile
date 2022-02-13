@@ -44,7 +44,7 @@ init:
 	npm install
 
 flakes:
-	flake8 . --count --max-line-length=127 --show-source --statistics
+	flake8 isso/ --count --max-line-length=127 --show-source --statistics
 
 isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
 	$(RJS) -o isso/js/build.$*.js out=$@
