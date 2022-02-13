@@ -143,11 +143,11 @@ def load(default, user=None):
             parser.read_file(f)
 
     for item in setify(parser).difference(a):
-        logger.warn("no such option: [%s] %s", *item)
+        logger.warning("no such option: [%s] %s", *item)
         if item in (("server", "host"), ("server", "port")):
-            logger.warn("use `listen = http://$host:$port` instead")
+            logger.warning("use `listen = http://$host:$port` instead")
         if item == ("smtp", "ssl"):
-            logger.warn("use `security = none | starttls | ssl` instead")
+            logger.warning("use `security = none | starttls | ssl` instead")
         if item == ("general", "session-key"):
             logger.info("Your `session-key` has been stored in the "
                         "database itself, this option is now unused")

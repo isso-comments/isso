@@ -29,7 +29,7 @@ class Dispatcher(DispatcherMiddleware):
             conf = config.load(default, path)
 
             if not conf.get("general", "name"):
-                logger.warn("unable to dispatch %r, no 'name' set", confs[i])
+                logger.warning("unable to dispatch %r, no 'name' set", confs[i])
                 continue
 
             self.isso["/" + conf.get("general", "name")] = make_app(conf)

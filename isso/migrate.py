@@ -164,7 +164,7 @@ class WordPress(object):
                 self.ns = WordPress.ns.replace("1.0", m.group(1))
                 break
         else:
-            logger.warn("No WXR namespace found, assuming 1.0")
+            logger.warning("No WXR namespace found, assuming 1.0")
 
     def insert(self, thread):
 
