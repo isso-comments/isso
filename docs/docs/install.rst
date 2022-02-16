@@ -88,13 +88,13 @@ For Debian/Ubuntu just `copy and paste
 
 .. code-block:: sh
 
-    ~> sudo apt-get install python-dev sqlite3 build-essential
+    ~> sudo apt-get install python3-dev sqlite3 build-essential
 
 Similar for Fedora (and derivates):
 
 .. code-block:: sh
 
-    ~> sudo yum install python-devel sqlite
+    ~> sudo yum install python3-devel sqlite
     ~> sudo yum groupinstall “Development Tools”
 
 Installation
