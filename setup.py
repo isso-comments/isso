@@ -1,26 +1,11 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
-import os
-import setuptools.command.build_py
-import subprocess
-
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
             'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9', 'Flask']
 tests_require = ['pytest', 'pytest-cov']
-
-
-class NpmBuildCommand(setuptools.command.build_py.build_py):
-    """Prefix Python build with node-based asset build"""
-
-    def run(self):
-        # https://tox.wiki/en/latest/config.html#injected-environment-variables
-        if 'TOX_ENV_NAME' not in os.environ:
-            subprocess.check_call(['make', 'init', 'js'])
-        setuptools.command.build_py.build_py.run(self)
-
 
 setup(
     name='isso',
@@ -51,8 +36,5 @@ setup(
     entry_points={
         'console_scripts':
             ['isso = isso:main'],
-    },
-    cmdclass={
-        'build_py': NpmBuildCommand,
     },
 )
