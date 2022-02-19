@@ -604,6 +604,42 @@ class TestModeratedComments(unittest.TestCase):
         self.app.db.comments.activate(1)
         self.assertEqual(self.client.get('/?uri=test').status_code, 200)
 
+    def testModerateComment(self):
+
+        id_ = 1
+        signed = self.app.sign(id_)
+
+        # Create new comment, should have mode=2 (pending moderation)
+        rv = self.client.post(
+            '/new?uri=/moderated', data=json.dumps({"text": "..."}))
+        self.assertEqual(rv.status_code, 202)
+        self.assertEqual(self.client.get('/id/1').status_code, 200)
+        self.assertEqual(self.app.db.comments.get(id_)["mode"], 2)
+        self.assertEqual(self.app.db.comments.get(id_)["text"], "...")
+
+        # Activate comment
+        action = "activate"
+        rv_activated = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
+        self.assertEqual(rv_activated.status_code, 200)
+        self.assertEqual(rv_activated.data, b"Yo")
+
+        # Activating should be idempotent
+        rv_activated = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
+        self.assertEqual(rv_activated.status_code, 200)
+        self.assertEqual(rv_activated.data, b"Already activated")
+
+        # Comment should have mode=1 (activated)
+        self.assertEqual(self.app.db.comments.get(id_)["mode"], 1)
+
+        # Delete comment
+        action = "delete"
+        rv_deleted = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
+        self.assertEqual(rv_deleted.status_code, 200)
+        self.assertEqual(rv_deleted.data, b"Yo")
+
+        # Comment should no longer exist
+        self.assertEqual(self.app.db.comments.get(id_), None)
+
 
 class TestPurgeComments(unittest.TestCase):
 
