@@ -9,7 +9,7 @@ Changelog for Isso
 - Don't ignore missing configuration files.
   (Jelmer Vernooĳ)
 
-- Serve isso.css separately to avoid `style-src: unsafe-inline` CSP and allow
+- Serve isso.css separately to avoid ``style-src: unsafe-inline`` CSP and allow
   clients to override fetch location (#704, ix5):
     data-isso-css-url="https://comments.example.org/css/isso.css"
 
@@ -18,6 +18,7 @@ Changelog for Isso
 
 - Fallback for SameSite header depending on whether host is served over https
   or http (#700, ix5)
+
 - Have client read out shared settings from server. (#311, pellenilsson)
   This affects these settings for which ``data-isso-*`` values will be ignored:
 
@@ -30,12 +31,15 @@ Changelog for Isso
     require-email
 
 - Improved detection of browser-supplied language preferences (#521)
-  Isso will now honor the newer `navigator.languages` global property
-  as well as `navigator.language` and `navigator.userLanguage`.
-  There is a new configuration property `data-isso-default-lang`
+  Isso will now honor the newer ``navigator.languages`` global property
+  as well as ``navigator.language`` and ``navigator.userLanguage``.
+  There is a new configuration property ``data-isso-default-lang``
   that specifies the language to use (instead of English) when none
-  of these is available.  (The existing `data-isso-lang` *overrides*
+  of these is available.  (The existing ``data-isso-lang`` *overrides*
   browser-supplied language preferences.)
+
+- Remove ``ISSO_CORS_ORIGIN`` environ variable, which never worked at all
+  (#803, ix5)
 
 0.12.4 (2021-02-03)
 -------------------
