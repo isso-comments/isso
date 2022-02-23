@@ -72,8 +72,6 @@ def origin(hosts):
     hosts = [urlsplit(h) for h in hosts]
 
     def func(environ):
-        if 'ISSO_CORS_ORIGIN' in environ:
-            return environ['ISSO_CORS_ORIGIN']
 
         if not hosts:
             return "http://invalid.local"
