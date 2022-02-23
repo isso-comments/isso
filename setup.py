@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 from pathlib import Path
+from re import sub as re_sub
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
@@ -11,6 +12,9 @@ tests_require = ['pytest', 'pytest-cov']
 # https://packaging.python.org/en/latest/guides/making-a-pypi-friendly-readme/
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
+# Filter out "License" section since license already displayed in PyPi sidebar
+# Remember to keep this in sync with changes to README!
+long_description = re_sub(r"\n## License\n.*LICENSE.*\n", "", long_description)
 
 setup(
     name='isso',
