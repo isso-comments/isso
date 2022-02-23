@@ -135,3 +135,10 @@ a {
 .hidden {
   display: none;
 }
+.text-wrapper .text {
+    margin: 0.5em 0;
+}
+.text-wrapper .text textarea {
+    width: 100%;
+    margin-top: 1em;
+}

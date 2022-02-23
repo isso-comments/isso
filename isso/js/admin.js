@@ -72,10 +72,25 @@ function set_editable(elt_id) {
 function start_edit(com_id) {
     var editable_elements = ['isso-author-' + com_id,
                              'isso-email-' + com_id,
-                             'isso-website-' + com_id,
-                             'isso-text-' + com_id];
+                             'isso-website-' + com_id];
     for (var idx=0; idx <= editable_elements.length; idx++) {
         set_editable(editable_elements[idx]);
+    }
+    // Append a <textarea> to edit comment text inside <pre>
+    // This preserves original formatting as contentEditable is hard to wrange
+    var elt = document.getElementById('isso-text-' + com_id);
+    if (elt) {
+        elt.dataset['originContent'] = elt.innerHTML;
+        var textarea = document.createElement("textarea");
+        textarea.id = 'isso-text-' + com_id + "-textarea";
+        textarea.value = elt.dataset['originContent'];
+        textarea.classList.add("editable");
+        // Set row size, but not larger than 40
+        // TODO: Make textarea grow with input
+        // Idea: https://css-tricks.com/auto-growing-inputs-textareas/
+        textarea.rows = Math.min(elt.textContent.split('\n').length, 40)
+        elt.innerHTML = ""
+        elt.appendChild(textarea);
     }
     document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
@@ -84,10 +99,16 @@ function start_edit(com_id) {
 function stop_edit(com_id, save_changes) {
     var editable_elements = ['isso-author-' + com_id,
                              'isso-email-' + com_id,
-                             'isso-website-' + com_id,
-                             'isso-text-' + com_id];
+                             'isso-website-' + com_id];
     for (var idx=0; idx <= editable_elements.length; idx++) {
       unset_editable(editable_elements[idx], save_changes);
+    }
+    var elt = document.getElementById('isso-text-' + com_id);
+    var textarea = document.getElementById('isso-text-' + com_id + "-textarea");
+    if (elt && textarea) {
+        elt.innerHTML = save_changes ? textarea.value : elt.dataset['originContent'];
+        delete elt.dataset['originContent'];
+        elt.classList.remove("editable");
     }
     document.getElementById('edit-btn-' + com_id).classList.toggle('hidden');
     document.getElementById('stop-edit-btn-' + com_id).classList.toggle('hidden');
@@ -97,7 +118,9 @@ function send_edit(com_id, hash, isso_host_script) {
     var author = document.getElementById('isso-author-' + com_id).textContent;
     var email = document.getElementById('isso-email-' + com_id).textContent;
     var website = document.getElementById('isso-website-' + com_id).textContent;
-    var comment = document.getElementById('isso-text-' + com_id).textContent;
+    // Need to use element.value instead of textContent for <textarea>, else
+    // only the initial contents will be fetched
+    var comment = document.getElementById('isso-text-' + com_id + "-textarea").value;
     edit(com_id, hash, author, email, website, comment, isso_host_script);
     stop_edit(com_id, true);
 }
