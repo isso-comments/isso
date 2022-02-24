@@ -649,7 +649,7 @@ class API(object):
                 &lt;/script&gt;
 
     @apiSuccessExample Using POST:
-        Yo
+        Comment has been deleted
     """
 
     def moderate(self, environ, request, id, action, key):
@@ -689,7 +689,7 @@ class API(object):
             with self.isso.lock:
                 self.comments.activate(id)
             self.signal("comments.activate", thread, item)
-            return Response("Yo", 200)
+            return Response("Comment has been activated", 200)
         elif action == "edit":
             data = request.get_json()
             with self.isso.lock:
@@ -704,7 +704,7 @@ class API(object):
             self.cache.delete(
                 'hash', (item['email'] or item['remote_addr']).encode('utf-8'))
             self.signal("comments.delete", id)
-            return Response("Yo", 200)
+            return Response("Comment has been deleted", 200)
 
         """
         @api {get} / get comments

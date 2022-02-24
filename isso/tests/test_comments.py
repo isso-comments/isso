@@ -621,7 +621,7 @@ class TestModeratedComments(unittest.TestCase):
         action = "activate"
         rv_activated = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
         self.assertEqual(rv_activated.status_code, 200)
-        self.assertEqual(rv_activated.data, b"Yo")
+        self.assertEqual(rv_activated.data, b"Comment has been activated")
 
         # Activating should be idempotent
         rv_activated = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
@@ -635,7 +635,7 @@ class TestModeratedComments(unittest.TestCase):
         action = "delete"
         rv_deleted = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
         self.assertEqual(rv_deleted.status_code, 200)
-        self.assertEqual(rv_deleted.data, b"Yo")
+        self.assertEqual(rv_deleted.data, b"Comment has been deleted")
 
         # Comment should no longer exist
         self.assertEqual(self.app.db.comments.get(id_), None)
