@@ -18,6 +18,7 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
     function init() {
         isso_thread = $('#isso-thread');
         heading = $.new("h4");
+        heading.id = "isso-counter";
 
         if (config["css"] && $("style#isso-style") === null) {
             var style = $.new("link");

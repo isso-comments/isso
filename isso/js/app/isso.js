@@ -107,6 +107,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 $(".textarea", el).blur();
                 insert(comment, true);
 
+                update_counter();
+
                 if (parent !== null) {
                     el.onsuccess();
                 }
@@ -117,6 +119,15 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
         return el;
     };
+
+    /* Lightweight method of updating the #isso-thread <h4> heading without
+     * crawling all page links */
+    var update_counter = function() {
+        console.log("Updating comment counter");
+        api.count([location.pathname, ]).then(function(rv) {
+            $('h4#isso-counter').textContent = i18n.pluralize("num-comments", rv[0]);
+        });
+    }
 
     var insert_loader = function(comment, lastcreated) {
         var entrypoint;
@@ -340,6 +351,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                         $("a.delete", footer).remove();
                     }
                     del.textContent = i18n.translate("comment-delete");
+                    update_counter();
                 });
             }
         );
