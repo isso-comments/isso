@@ -631,6 +631,13 @@ class TestModeratedComments(unittest.TestCase):
         # Comment should have mode=1 (activated)
         self.assertEqual(self.app.db.comments.get(id_)["mode"], 1)
 
+        # Edit comment
+        action = "edit"
+        rv_edit = self.client.post('/id/%d/%s/%s' % (id_, action, signed), data=json.dumps({"text": "new text"}))
+        self.assertEqual(rv_edit.status_code, 200)
+        self.assertEqual(json.loads(rv_edit.data)["id"], id_)
+        self.assertEqual(self.app.db.comments.get(id_)["text"], "new text")
+
         # Delete comment
         action = "delete"
         rv_deleted = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
