@@ -117,5 +117,11 @@ In chronological order:
   * Update Polish translation
   * Redirect to comment after moderation
 
+* fliiiix <l33t.name>
+  * Import disqus posts without Email
+  * Import disqus post without IP
+  * Fixing minor code inconsistencies
+  * Testing for moderation and unsubscribe
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]
