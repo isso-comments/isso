@@ -617,6 +617,13 @@ class TestModeratedComments(unittest.TestCase):
         self.assertEqual(self.app.db.comments.get(id_)["mode"], 2)
         self.assertEqual(self.app.db.comments.get(id_)["text"], "...")
 
+        # GET should return some html form
+        action = "activate"
+        rv_activate_get = self.client.get('/id/%d/%s/%s' % (id_, action, signed))
+        self.assertEqual(rv_activate_get.status_code, 200)
+        self.assertIn(b"Activate: Are you sure?", rv_activate_get.data)
+        self.assertIn(b"http://invalid.local/moderated#isso-1", rv_activate_get.data)
+
         # Activate comment
         action = "activate"
         rv_activated = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
