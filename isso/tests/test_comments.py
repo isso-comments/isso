@@ -660,6 +660,43 @@ class TestModeratedComments(unittest.TestCase):
         self.assertEqual(self.app.db.comments.get(id_), None)
 
 
+class TestUnsubscribe(unittest.TestCase):
+
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        conf = config.load(
+            pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf.set("general", "dbpath", self.path)
+        conf.set("moderation", "enabled", "true")
+        conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        self.client = JSONClient(self.app, Response)
+
+        # add default comment
+        rv = self.client.post(
+            '/new?uri=test', data=json.dumps({"text": "..."}))
+        self.assertEqual(rv.status_code, 202)
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def testUnsubscribe(self):
+        id_ = 1
+        email = "test@test.example"
+        key = self.app.sign(('unsubscribe', email))
+
+        # GET should return some html form
+        rv_unsubscribe_get = self.client.get('/id/%d/unsubscribe/%s/%s' % (id_, email, key))
+        self.assertEqual(rv_unsubscribe_get.status_code, 200)
+        self.assertIn(b"Successfully unsubscribed", rv_unsubscribe_get.data)
+
+
 class TestPurgeComments(unittest.TestCase):
 
     def setUp(self):
