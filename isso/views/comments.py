@@ -624,7 +624,7 @@ class API(object):
 
     @apiParam {number} id
         The id of the comment to moderate.
-    @apiParam {string=activate,delete} action
+    @apiParam {string=activate,edit,delete} action
         `activate` to publish the comment (change its mode to `1`).
         `delete` to delete the comment
     @apiParam {string} key
