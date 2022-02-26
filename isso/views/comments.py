@@ -584,6 +584,9 @@ class API(object):
         except (BadSignature, SignatureExpired):
             raise Forbidden
 
+        if not isinstance(rv, list) or len(rv) != 2:
+            raise Forbidden
+
         if rv[0] != 'unsubscribe' or rv[1] != email:
             raise Forbidden
 

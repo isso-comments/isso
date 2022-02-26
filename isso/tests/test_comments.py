@@ -696,6 +696,16 @@ class TestUnsubscribe(unittest.TestCase):
         self.assertEqual(rv_unsubscribe_get.status_code, 200)
         self.assertIn(b"Successfully unsubscribed", rv_unsubscribe_get.data)
 
+        # Incomplete key should fail
+        key = self.app.sign(['unsubscribe'])
+        rv_incomplete_key = self.client.get('/id/%d/unsubscribe/%s/%s' % (id_, email, key))
+        self.assertEqual(rv_incomplete_key.status_code, 403)
+
+        # Wrong key type should fail
+        key = self.app.sign(1)
+        rv_wrong_key_type = self.client.get('/id/%d/unsubscribe/%s/%s' % (id_, email, key))
+        self.assertEqual(rv_wrong_key_type.status_code, 403)
+
 
 class TestPurgeComments(unittest.TestCase):
 
