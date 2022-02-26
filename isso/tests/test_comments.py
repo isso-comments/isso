@@ -638,6 +638,11 @@ class TestModeratedComments(unittest.TestCase):
         self.assertEqual(json.loads(rv_edit.data)["id"], id_)
         self.assertEqual(self.app.db.comments.get(id_)["text"], "new text")
 
+        # Wrong action on comment is handled by the routing
+        action = "foo"
+        rv_wrong_action = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
+        self.assertEqual(rv_wrong_action.status_code, 404)
+
         # Delete comment
         action = "delete"
         rv_deleted = self.client.post('/id/%d/%s/%s' % (id_, action, signed))
