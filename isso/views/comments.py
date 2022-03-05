@@ -551,7 +551,7 @@ class API(object):
         return resp
 
     """
-    @api {get} /id/:id/:email/key unsubscribe
+    @api {get} /id/:id/unsubscribe/:email/key unsubscribe
     @apiGroup Comment
     @apiDescription
         Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
@@ -561,7 +561,7 @@ class API(object):
     @apiParam {string} email
         The email address of the subscriber.
     @apiParam {string} key
-        The key to authenticate the subscriber. Containing a list with the keyword unsubscribe and the email ['unsubscribe', email].
+        The key to authenticate the subscriber.
 
     @apiExample {curl} Unsubscribe Alice from replies to comment with id 13:
         curl -X GET 'https://comments.example.com/id/13/unsubscribe/alice@example.com/WyJ1bnN1YnNjcmliZSIsImFsaWNlQGV4YW1wbGUuY29tIl0.DdcH9w.Wxou-l22ySLFkKUs7RUHnoM8Kos'
