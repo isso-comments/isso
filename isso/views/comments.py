@@ -551,7 +551,7 @@ class API(object):
         return resp
 
     """
-    @api {get} /id/:id/:email/key unsubscribe
+    @api {get} /id/:id/unsubscribe/:email/key unsubscribe
     @apiGroup Comment
     @apiDescription
         Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
@@ -569,17 +569,11 @@ class API(object):
     @apiSuccessExample {html} Using GET:
         &lt;!DOCTYPE html&gt;
         &lt;html&gt;
-            &lt;head&gt;
-                &lt;script&gt;
-                    if (confirm('Delete: Are you sure?')) {
-                        xhr = new XMLHttpRequest;
-                        xhr.open('POST', window.location.href);
-                        xhr.send(null);
-                    }
-                &lt;/script&gt;
-
-    @apiSuccessExample Using POST:
-        Yo
+            &lt;head&gtSuccessfully unsubscribed&lt;/head&gt;
+            &lt;body&gt;
+              &lt;p&gt;You have been unsubscribed from replies in the given conversation.&lt;/p&gt;
+            &lt;/body&gt;
+        &lt;/html&gt;
     """
 
     def unsubscribe(self, environ, request, id, email, key):
@@ -588,6 +582,9 @@ class API(object):
         try:
             rv = self.isso.unsign(key, max_age=2**32)
         except (BadSignature, SignatureExpired):
+            raise Forbidden
+
+        if not isinstance(rv, list) or len(rv) != 2:
             raise Forbidden
 
         if rv[0] != 'unsubscribe' or rv[1] != email:
@@ -624,7 +621,7 @@ class API(object):
 
     @apiParam {number} id
         The id of the comment to moderate.
-    @apiParam {string=activate,delete} action
+    @apiParam {string=activate,edit,delete} action
         `activate` to publish the comment (change its mode to `1`).
         `delete` to delete the comment
     @apiParam {string} key
@@ -649,7 +646,7 @@ class API(object):
                 &lt;/script&gt;
 
     @apiSuccessExample Using POST:
-        Yo
+        Comment has been deleted
     """
 
     def moderate(self, environ, request, id, action, key):
@@ -689,7 +686,7 @@ class API(object):
             with self.isso.lock:
                 self.comments.activate(id)
             self.signal("comments.activate", thread, item)
-            return Response("Yo", 200)
+            return Response("Comment has been activated", 200)
         elif action == "edit":
             data = request.get_json()
             with self.isso.lock:
@@ -704,7 +701,7 @@ class API(object):
             self.cache.delete(
                 'hash', (item['email'] or item['remote_addr']).encode('utf-8'))
             self.signal("comments.delete", id)
-            return Response("Yo", 200)
+            return Response("Comment has been deleted", 200)
 
         """
         @api {get} / get comments
