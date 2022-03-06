@@ -3,11 +3,8 @@ Changelog for Isso
 
 %(version)s (%(date)s)
 
-%(version)s (%(date)s)
+0.12.6 (2022-03-06)
 -------------------
-
-- Don't ignore missing configuration files.
-  (Jelmer Vernooĳ)
 
 - Serve isso.css separately to avoid ``style-src: unsafe-inline`` CSP and allow
   clients to override fetch location (#704, ix5):
@@ -40,6 +37,12 @@ Changelog for Isso
 
 - Remove ``ISSO_CORS_ORIGIN`` environ variable, which never worked at all
   (#803, ix5)
+
+0.12.5 (2021-03-09)
+-------------------
+
+- Don't ignore missing configuration files.
+  (Jelmer Vernooĳ)
 
 0.12.4 (2021-02-03)
 -------------------
