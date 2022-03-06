@@ -3,6 +3,9 @@ Changelog for Isso
 
 %(version)s (%(date)s)
 
+- Drop support for outdated Python version 3.5
+  (#808, l33tname)
+
 0.12.6 (2022-03-06)
 -------------------
 
