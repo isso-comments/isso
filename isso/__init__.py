@@ -177,6 +177,10 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     isso = App(conf)
 
+    if not any(conf.getiter("general", "host")):
+        logger.error("No website(s) configured, Isso won't work.")
+        sys.exit(1)
+
     # check HTTP server connection
     for host in conf.getiter("general", "host"):
         with http.curl('HEAD', host, '/', 5) as resp:
@@ -259,10 +263,6 @@ def main():
 
         logger.propagate = False
         logging.getLogger("werkzeug").propagate = False
-
-    if not any(conf.getiter("general", "host")):
-        logger.error("No website(s) configured, Isso won't work.")
-        sys.exit(1)
 
     if conf.get("server", "listen").startswith("http://"):
         host, port, _ = urlsplit(conf.get("server", "listen"))
