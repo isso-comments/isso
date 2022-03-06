@@ -3,7 +3,7 @@ name: Python package
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -13,8 +13,10 @@ jobs:
       fail-fast: false
 
     steps:
+
     - name: Check out repository code
       uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v2
       with:
@@ -23,11 +25,14 @@ jobs:
       run: python setup.py develop
     - name: Install test suite dependencies
       run: pip3 install pytest
+
     - name: Run test suite
       run: make test
       env:
         PYTHONHASHSEED: random
+
     - name: Install style check dependencies
       run: pip3 install flake8
+
     - name: Run style check
       run: make flakes
