@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "docs/**"
+      - ".github/workflows/documentation.yml"
   pull_request:
     paths:
       - "docs/**"
+      - ".github/workflows/documentation.yml"
 
 jobs:
   check:
