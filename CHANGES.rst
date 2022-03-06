@@ -50,7 +50,7 @@ Changelog for Isso
 - Require Python >= 3.5, for consistency with werkzeug.
   (#698, Stefan Gehn)
 
-- Use npm for pacakge installation.
+- Use npm for package installation.
   (#695, Stefan Gehn)
 
 - Use sassc. (Stefan Gehn)
@@ -314,7 +314,7 @@ Translations:
 
   This is a quite serious issue. For the identicon, an expensive hash is used
   to avoid the leakage of personal information like a real email address. A
-  `git blame` reveals, the email has been unintenionally exposed since the very
+  `git blame` reveals, the email has been unintentionally exposed since the very
   first release of Isso :-/
 
   The testsuite now contains a dedicated test to prevent this error in the
