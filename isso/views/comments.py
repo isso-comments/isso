@@ -551,7 +551,7 @@ class API(object):
         return resp
 
     """
-    @api {get} /id/:id/unsubscribe/:email/key unsubscribe
+    @api {get} /id/:id/unsubscribe/:email/:key unsubscribe
     @apiGroup Comment
     @apiDescription
         Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
@@ -612,7 +612,7 @@ class API(object):
         return Response(modal, 200, content_type="text/html")
 
     """
-    @api {post} /id/:id/:action/key moderate
+    @api {post} /id/:id/:action/:key moderate
     @apiGroup Comment
     @apiDescription
         Publish or delete a comment that is in the moderation queue (mode `2`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
