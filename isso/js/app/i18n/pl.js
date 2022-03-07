@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Tutaj wpisz komentarz (co najmniej 3 znaki)",
     "postbox-author": "Imię/nick (opcjonalnie)",
     "postbox-email": "E-mail (opcjonalnie)",
@@ -31,4 +31,4 @@ define({
     "date-week": "w ubiegłym tygodniu\n{{ n }} tygodnie temu\n{{ n }} tygodni temu",
     "date-month": "w ubiegłym miesiącu\n{{ n }} miesiące temu\n{{ n }} miesięcy temu",
     "date-year": "w ubiegłym roku\n{{ n }} lata temu\n{{ n }} lat temu"
-});
+};

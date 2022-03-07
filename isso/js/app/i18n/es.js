@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Escriba su comentario aquí (al menos 3 caracteres)",
     "postbox-author": "Nombre (opcional)",
     "postbox-email": "E-mail (opcional)",
@@ -26,4 +26,4 @@ define({
     "date-week": "la semana pasada\nhace {{ n }} semanas",
     "date-month": "el mes pasado\nhace {{ n }} meses",
     "date-year": "el año pasado\nhace {{ n }} años"
-});
+};

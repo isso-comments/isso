@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "在此輸入留言 (至少 3 個字元)",
     "postbox-author": "名稱 (非必填)",
     "postbox-email": "電子信箱 (非必填)",
@@ -30,4 +30,4 @@ define({
     "date-week": "上週\n{{ n }} 週前",
     "date-month": "上個月\n{{ n }} 個月前",
     "date-year": "去年\n{{ n }} 年前"
-});
+};

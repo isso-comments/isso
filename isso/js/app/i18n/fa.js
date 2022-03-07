@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "نظر خود را اینجا بنویسید (حداقل سه نویسه)",
     "postbox-author": "اسم (اختیاری)",
     "postbox-email": "ایمیل (اختیاری)",
@@ -29,4 +29,4 @@ define({
     "date-week": "یک هفته پیش\n{{ n }} هفته پیش",
     "date-month": "یک ماه پیش\n{{ n }} ماه پیش",
     "date-year": "یک سال پیش\n{{ n }} سال پیش"
-});
+};

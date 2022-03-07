@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Sem napiště svůj komentář (nejméně 3 znaky)",
     "postbox-author": "Jméno (nepovinné)",
     "postbox-email": "E-mail (nepovinný)",
@@ -26,4 +26,4 @@ define({
     "date-week": "minulý týden\npřed {{ n }} týdny",
     "date-month": "minulý měsíc\npřed {{ n }} měsíci",
     "date-year": "minulý rok\npřed {{ n }} lety"
-});
+};

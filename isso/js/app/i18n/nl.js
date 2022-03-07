@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Typ reactie hier (minstens 3 karakters)",
     "postbox-author": "Naam (optioneel)",
     "postbox-email": "E-mail (optioneel)",
@@ -26,4 +26,4 @@ define({
     "date-week": "vorige week\n{{ n }} weken geleden",
     "date-month": "vorige maand\n{{ n }} maanden geleden",
     "date-year": "vorig jaar\n{{ n }} jaar geleden"
-});
+};

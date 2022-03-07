@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Hozzászólást ide írd be (legalább 3 betűt)",
     "postbox-author": "Név (nem kötelező)",
     "postbox-email": "Email (nem kötelező)",
@@ -26,4 +26,4 @@ define({
     "date-week": "múlt héten\n{{ n }} hete",
     "date-month": "múlt hónapban\n{{ n }} hónapja",
     "date-year": "tavaly\n{{ n }} éve"
-});
+};
