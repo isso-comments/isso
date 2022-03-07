@@ -1,4 +1,3 @@
-define(function() {
     "use strict";
 
     var Offset = function() {
@@ -14,8 +13,8 @@ define(function() {
             function(a, b) { return a + b; }) / this.values.length);
     };
 
-    return {
-        offset: new Offset()
-    };
+var offset = new Offset();
 
-});
+module.exports = {
+    offset: offset,
+}

@@ -8,11 +8,11 @@
 #   make init
 
 ISSO_JS_SRC := $(shell find isso/js/app -type f) \
-	       $(shell ls isso/js/*.js | grep -vE "(min|dev)") \
-	       isso/js/lib/requirejs-jade/jade.js
+	       $(shell ls isso/js/*.js | grep -vE "(min|dev)")
 
 ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js \
-	       isso/js/count.min.js isso/js/count.dev.js
+	       isso/js/count.min.js isso/js/count.dev.js \
+	       isso/js/count.dev.js.map isso/js/embed.dev.js.map
 
 ISSO_CSS := isso/css/isso.css
 
@@ -34,8 +34,6 @@ DOCS_MAN_DST := man/man1/isso.1 man/man5/isso.conf.5
 
 DOCS_HTML_DST := docs/_build/html
 
-RJS = npx --no-install r.js
-
 SASS = sassc
 
 all: man js site
@@ -46,12 +44,15 @@ init:
 flakes:
 	flake8 isso/ --count --max-line-length=127 --show-source --statistics
 
-isso/js/%.min.js: $(ISSO_JS_SRC) $(ISSO_CSS)
-	$(RJS) -o isso/js/build.$*.js out=$@
+# Note: It doesn't make sense to split up configs by output file with
+# webpack, just run everything at once
+isso/js/%.min.js: $(ISSO_JS_SRC)
+	npm run build-prod
 
-isso/js/%.dev.js: $(ISSO_JS_SRC) $(ISSO_CSS)
-	$(RJS) -o isso/js/build.$*.js optimize="none" out=$@
+isso/js/%.dev.js: $(ISSO_JS_SRC)
+	npm run build-dev
 
+# Note: No need to depend on css sources since they are no longer inlined
 js: $(ISSO_JS_DST)
 
 man: $(DOCS_RST_SRC)

@@ -1,5 +1,3 @@
-define(function() {
-
     "use strict";
 
     function Element(node) {
@@ -223,5 +221,4 @@ define(function() {
         Array.prototype.forEach.call(document.getElementsByTagName(tag), func);
     };
 
-    return DOM;
-});
+module.exports = DOM;

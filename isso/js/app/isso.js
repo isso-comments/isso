@@ -1,7 +1,13 @@
 /* Isso – Ich schrei sonst!
- */
-define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib/identicons", "app/globals"],
-    function($, utils, config, api, jade, i18n, identicons, globals) {
+*/
+const $ = require("app/dom");
+const utils = require("app/utils");
+const config = require("app/config");
+const api = require("app/api");
+const template = require("app/template");
+const i18n = require("app/i18n");
+const identicons = require("app/lib/identicons");
+const globals = require("app/globals");
 
     "use strict";
 
@@ -29,7 +35,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
     var Postbox = function(parent) {
 
         var localStorage = utils.localStorageImpl,
-            el = $.htmlify(jade.render("postbox", {
+            el = $.htmlify(template.render("postbox", {
             "author":  JSON.parse(localStorage.getItem("author")),
             "email":   JSON.parse(localStorage.getItem("email")),
             "website": JSON.parse(localStorage.getItem("website")),
@@ -148,7 +154,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             entrypoint = $("#isso-" + comment.id + " > .text-wrapper > .isso-follow-up");
             comment.name = comment.id;
         }
-        var el = $.htmlify(jade.render("comment-loader", {"comment": comment}));
+        var el = $.htmlify(template.render("comment-loader", {"comment": comment}));
 
         entrypoint.append(el);
 
@@ -182,7 +188,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
     };
 
     var insert = function(comment, scrollIntoView) {
-        var el = $.htmlify(jade.render("comment", {"comment": comment}));
+        var el = $.htmlify(template.render("comment", {"comment": comment}));
 
         // update datetime every 60 seconds
         var refresh = function() {
@@ -409,9 +415,8 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
     };
 
-    return {
-        insert: insert,
-        insert_loader: insert_loader,
-        Postbox: Postbox
-    };
-});
+module.exports = {
+    insert: insert,
+    insert_loader: insert_loader,
+    Postbox: Postbox,
+};

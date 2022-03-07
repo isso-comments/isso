@@ -3,14 +3,22 @@
  * Distributed under the MIT license
  */
 
-require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/count", "app/dom", "app/text/svg", "app/jade"], function(domready, config, i18n, api, isso, count, $, svg, jade) {
+const domready = require("app/lib/ready");
+const config = require("app/config");
+const i18n = require("app/i18n");
+const api = require("app/api");
+const isso = require("app/isso");
+const count = require("app/count");
+const $ = require("app/dom");
+const svg = require("app/svg");
+const template = require("app/template");
 
     "use strict";
 
-    jade.set("conf", config);
-    jade.set("i18n", i18n.translate);
-    jade.set("pluralize", i18n.pluralize);
-    jade.set("svg", svg);
+    template.set("conf", config);
+    template.set("i18n", i18n.translate);
+    template.set("pluralize", i18n.pluralize);
+    template.set("svg", svg);
 
     var isso_thread;
     var heading;
@@ -112,5 +120,3 @@ require(["app/lib/ready", "app/config", "app/i18n", "app/api", "app/isso", "app/
         init: init,
         fetchComments: fetchComments
     };
-
-});

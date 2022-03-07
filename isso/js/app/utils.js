@@ -1,4 +1,3 @@
-define(function() {
     "use strict";
 
     // return `cookie` string if set
@@ -93,12 +92,11 @@ define(function() {
         })({});
     }
 
-    return {
-        cookie: cookie,
-        detext: detext,
-        localStorageImpl: localStorageImpl,
-        normalize_bcp47: normalize_bcp47,
-        pad: pad,
-        text: text
-    };
-});
+module.exports = {
+    cookie: cookie,
+    detext: detext,
+    localStorageImpl: localStorageImpl,
+    normalize_bcp47: normalize_bcp47,
+    pad: pad,
+    text: text,
+};

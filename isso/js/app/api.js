@@ -1,4 +1,5 @@
-define(["app/lib/promise", "app/globals"], function(Q, globals) {
+const Q = require("app/lib/promise");
+const globals = require("app/globals");
 
     "use strict";
 
@@ -209,19 +210,17 @@ define(["app/lib/promise", "app/globals"], function(Q, globals) {
         return deferred.promise;
     };
 
-    return {
-        endpoint: endpoint,
-        salt: salt,
-
-        create: create,
-        modify: modify,
-        remove: remove,
-        view: view,
-        fetch: fetch,
-        count: count,
-        like: like,
-        dislike: dislike,
-        feed: feed,
-        preview: preview
-    };
-});
+module.exports = {
+    endpoint: endpoint,
+    salt: salt,
+    create: create,
+    modify: modify,
+    remove: remove,
+    view: view,
+    fetch: fetch,
+    count: count,
+    like: like,
+    dislike: dislike,
+    feed: feed,
+    preview: preview,
+};

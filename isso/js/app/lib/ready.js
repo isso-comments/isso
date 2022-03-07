@@ -1,5 +1,3 @@
-define(function() {
-
     "use strict";
 
     var loaded = false;
@@ -23,6 +21,4 @@ define(function() {
         }
     };
 
-    return domready;
-
-});
+module.exports = domready;

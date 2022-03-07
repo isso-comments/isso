@@ -1,5 +1,8 @@
-define(["app/api", "app/dom", "app/i18n"], function(api, $, i18n) {
-    return function() {
+const api = require("app/api");
+const $ = require("app/dom");
+const i18n = require("app/i18n");
+
+module.exports = function () {
 
         var objs = {};
 
@@ -34,4 +37,3 @@ define(["app/api", "app/dom", "app/i18n"], function(api, $, i18n) {
             }
         });
     };
-});

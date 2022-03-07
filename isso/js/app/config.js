@@ -1,4 +1,5 @@
-define(["app/utils"], function(utils) {
+const utils = require("app/utils");
+
     "use strict";
 
     var config = {
@@ -80,5 +81,4 @@ define(["app/utils"], function(utils) {
     delete config["lang"];
     delete config["default-lang"];
 
-    return config;
-});
+module.exports = config;

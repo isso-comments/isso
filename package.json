@@ -5,10 +5,16 @@
   "license": "MIT",
   "repository": "github:posativ/isso",
   "dependencies": {},
+  "scripts": {
+    "build-dev": "webpack --config isso/js/webpack.config.js --config-name dev",
+    "watch-dev": "webpack --config isso/js/webpack.config.js --config-name dev --watch",
+    "build-prod": "webpack --config isso/js/webpack.config.js --merge --config-name dev --config-name prod"
+  },
   "devDependencies": {
-    "almond": "^0.3.3",
-    "jade": "^1.5.0",
-    "requirejs": "^2.3.6",
-    "requirejs-text": "^2.0.15"
+    "pug": "^2.0.4",
+    "pug-loader": "^2.4.0",
+    "pug-runtime": "^3.0.1",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2"
   }
 }

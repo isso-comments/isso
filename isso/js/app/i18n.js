@@ -1,9 +1,32 @@
-define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
-        "app/i18n/de", "app/i18n/en", "app/i18n/fa", "app/i18n/fi",
-        "app/i18n/fr", "app/i18n/hr",  "app/i18n/hu", "app/i18n/ru", "app/i18n/it", "app/i18n/ko",
-        "app/i18n/eo", "app/i18n/oc", "app/i18n/pl", "app/i18n/pt_BR", "app/i18n/pt_PT", "app/i18n/sk", "app/i18n/sv", "app/i18n/nl", "app/i18n/el_GR",
-        "app/i18n/es", "app/i18n/vi", "app/i18n/zh_CN", "app/i18n/zh_CN", "app/i18n/zh_TW"],
-        function(config, bg, cs, da, de, en, fa, fi, fr, hr, hu, ru, it, ko, eo, oc, pl, pt_BR, pt_PT, sk, sv, nl, el, es, vi, zh, zh_CN, zh_TW) {
+const config = require("app/config");
+
+const bg = require("app/i18n/bg");
+const cs = require("app/i18n/cs");
+const da = require("app/i18n/da");
+const de = require("app/i18n/de");
+const en = require("app/i18n/en");
+const fa = require("app/i18n/fa");
+const fi = require("app/i18n/fi");
+const fr = require("app/i18n/fr");
+const hr = require("app/i18n/hr");
+const hu = require("app/i18n/hu");
+const ru = require("app/i18n/ru");
+const it = require("app/i18n/it");
+const ko = require("app/i18n/ko");
+const eo = require("app/i18n/eo");
+const oc = require("app/i18n/oc");
+const pl = require("app/i18n/pl");
+const pt_BR = require("app/i18n/pt_BR");
+const pt_PT = require("app/i18n/pt_PT");
+const sk = require("app/i18n/sk");
+const sv = require("app/i18n/sv");
+const nl = require("app/i18n/nl");
+const el = require("app/i18n/el_GR");
+const es = require("app/i18n/es");
+const vi = require("app/i18n/vi");
+const zh = require("app/i18n/zh_CN");
+const zh_CN = require("app/i18n/zh_CN");
+const zh_TW = require("app/i18n/zh_TW");
 
     "use strict";
 
@@ -178,10 +201,9 @@ define(["app/config", "app/i18n/bg", "app/i18n/cs", "app/i18n/da",
                                pluralize("date-year", Math.floor(days / 365.25));
     };
 
-    return {
-        ago: ago,
-        lang: lang,
-        translate: translate,
-        pluralize: pluralize
-    };
-});
+module.exports = {
+    ago: ago,
+    lang: lang,
+    translate: translate,
+    pluralize: pluralize,
+};

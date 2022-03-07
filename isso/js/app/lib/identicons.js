@@ -4,7 +4,7 @@
 
   Inspired by http://codepen.io/gschier/pen/GLvAy
 */
-define(["app/lib/promise"], function(Q) {
+const Q = require("app/lib/promise");
 
     "use strict";
 
@@ -89,8 +89,7 @@ define(["app/lib/promise"], function(Q) {
         return el;
     };
 
-    return {
-        generate: generateIdenticon,
-        blank: generateBlank
-    };
-});
+module.exports = {
+    generate: generateIdenticon,
+    blank: generateBlank,
+};
