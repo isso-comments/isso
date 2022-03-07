@@ -4,7 +4,7 @@
 
   Inspired by http://codepen.io/gschier/pen/GLvAy
 */
-define(["app/lib/promise", "app/config"], function(Q, config) {
+define(["app/lib/promise"], function(Q) {
 
     "use strict";
 
@@ -33,7 +33,7 @@ define(["app/lib/promise", "app/config"], function(Q, config) {
     /**
      * Pick random squares to fill in.
      */
-    var generateIdenticon = function(key, padding, size) {
+    var generateIdenticon = function(key, padding, size, config) {
 
         var svg =  document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("version", "1.1");
@@ -74,7 +74,8 @@ define(["app/lib/promise", "app/config"], function(Q, config) {
         return svg;
     };
 
-    var generateBlank = function(height, width) {
+    /* TODO: This function is currently unused and should be removed */
+    var generateBlank = function(height, width, config) {
 
         var blank = parseInt([
             0, 1, 1, 1, 1,
@@ -82,7 +83,7 @@ define(["app/lib/promise", "app/config"], function(Q, config) {
             1, 1, 1, 1, 1, /* purple: */ 0, 1, 0
         ].join(""), 2).toString(16);
 
-        var el = generateIdenticon(blank, height, width);
+        var el = generateIdenticon(blank, height, width, config);
         el.setAttribute("className", "blank"); // IE10 does not support classList on SVG elements, duh.
 
         return el;

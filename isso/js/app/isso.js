@@ -1,9 +1,30 @@
 /* Isso – Ich schrei sonst!
  */
-define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib", "app/globals"],
-    function($, utils, config, api, jade, i18n, lib, globals) {
+define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n", "app/lib/identicons", "app/globals"],
+    function($, utils, config, api, jade, i18n, identicons, globals) {
 
     "use strict";
+
+    var editorify = function(el) {
+        el = $.htmlify(el);
+        el.setAttribute("contentEditable", true);
+
+        el.on("focus", function() {
+            if (el.classList.contains("placeholder")) {
+                el.innerHTML = "";
+                el.classList.remove("placeholder");
+            }
+        });
+
+        el.on("blur", function() {
+            if (el.textContent.length === 0) {
+                el.textContent = i18n.translate("postbox-text");
+                el.classList.add("placeholder");
+            }
+        });
+
+        return el;
+    }
 
     var Postbox = function(parent) {
 
@@ -113,7 +134,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
             });
         });
 
-        lib.editorify($(".textarea", el));
+        editorify($(".textarea", el));
 
         return el;
     };
@@ -174,7 +195,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
         refresh();
 
         if (config["avatar"]) {
-            $("div.avatar > svg", el).replace(lib.identicons.generate(comment.hash, 4, 48));
+            $("div.avatar > svg", el).replace(identicons.generate(comment.hash, 4, 48, config));
         }
 
         var entrypoint;
@@ -214,7 +235,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                 // Eg. -5,5,15
                 voteLevels = voteLevels.split(',');
             }
-            
+
             // update vote counter
             var votes = function (value) {
                 var span = $("span.votes", footer);
@@ -252,7 +273,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
                     votes(rv.likes - rv.dislikes);
                 });
             });
-            
+
             votes(comment.likes - comment.dislikes);
         }
 
@@ -269,7 +290,7 @@ define(["app/dom", "app/utils", "app/config", "app/api", "app/jade", "app/i18n",
 
                 toggler.canceled = false;
                 api.view(comment.id, 1).then(function(rv) {
-                    var textarea = lib.editorify($.new("div.textarea"));
+                    var textarea = editorify($.new("div.textarea"));
 
                     textarea.innerHTML = utils.detext(rv.text);
                     textarea.focus();
