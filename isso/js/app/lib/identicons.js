@@ -6,88 +6,88 @@
 */
 const Q = require("app/lib/promise");
 
-    "use strict";
+"use strict";
 
-    // Number of squares width and height
-    var GRID = 5;
+// Number of squares width and height
+var GRID = 5;
 
-    var pad = function(n, width) {
-        return n.length >= width ? n : new Array(width - n.length + 1).join("0") + n;
-    };
+var pad = function(n, width) {
+    return n.length >= width ? n : new Array(width - n.length + 1).join("0") + n;
+};
 
-    /**
-     * Fill in a square on the canvas.
-     */
-    var fill = function(svg, x, y, padding, size, color) {
-        var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+/**
+ * Fill in a square on the canvas.
+ */
+var fill = function(svg, x, y, padding, size, color) {
+    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 
-        rect.setAttribute("x", padding + x * size);
-        rect.setAttribute("y", padding + y * size);
-        rect.setAttribute("width", size);
-        rect.setAttribute("height", size);
-        rect.setAttribute("style", "fill: " + color);
+    rect.setAttribute("x", padding + x * size);
+    rect.setAttribute("y", padding + y * size);
+    rect.setAttribute("width", size);
+    rect.setAttribute("height", size);
+    rect.setAttribute("style", "fill: " + color);
 
-        svg.appendChild(rect);
-    };
+    svg.appendChild(rect);
+};
 
-    /**
-     * Pick random squares to fill in.
-     */
-    var generateIdenticon = function(key, padding, size, config) {
+/**
+ * Pick random squares to fill in.
+ */
+var generateIdenticon = function(key, padding, size, config) {
 
-        var svg =  document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("version", "1.1");
-        svg.setAttribute("viewBox", "0 0 " + size + " " + size);
-        svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
-        svg.setAttribute("shape-rendering", "crispEdges");
-        fill(svg, 0, 0, 0, size + 2*padding, config["avatar-bg"]);
+    var svg =  document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("version", "1.1");
+    svg.setAttribute("viewBox", "0 0 " + size + " " + size);
+    svg.setAttribute("preserveAspectRatio", "xMinYMin meet");
+    svg.setAttribute("shape-rendering", "crispEdges");
+    fill(svg, 0, 0, 0, size + 2*padding, config["avatar-bg"]);
 
-        if (typeof key === null) {
-            return svg;
-        }
-
-        Q.when(key, function(key) {
-            var hash = pad((parseInt(key.substr(-16), 16) % Math.pow(2, 18)).toString(2), 18),
-                index = 0;
-
-            svg.setAttribute("data-hash", key);
-
-            var i = parseInt(hash.substring(hash.length - 3, hash.length), 2),
-                color = config["avatar-fg"][i % config["avatar-fg"].length];
-
-            for (var x=0; x<Math.ceil(GRID/2); x++) {
-                for (var y=0; y<GRID; y++) {
-
-                    if (hash.charAt(index) === "1") {
-                        fill(svg, x, y, padding, 8, color);
-
-                        // fill right sight symmetrically
-                        if (x < Math.floor(GRID/2)) {
-                            fill(svg, (GRID-1) - x, y, padding, 8, color);
-                        }
-                    }
-                    index++;
-                }
-            }
-        });
-
+    if (typeof key === null) {
         return svg;
-    };
+    }
 
-    /* TODO: This function is currently unused and should be removed */
-    var generateBlank = function(height, width, config) {
+    Q.when(key, function(key) {
+        var hash = pad((parseInt(key.substr(-16), 16) % Math.pow(2, 18)).toString(2), 18),
+            index = 0;
 
-        var blank = parseInt([
-            0, 1, 1, 1, 1,
-            1, 0, 1, 1, 0,
-            1, 1, 1, 1, 1, /* purple: */ 0, 1, 0
-        ].join(""), 2).toString(16);
+        svg.setAttribute("data-hash", key);
 
-        var el = generateIdenticon(blank, height, width, config);
-        el.setAttribute("className", "blank"); // IE10 does not support classList on SVG elements, duh.
+        var i = parseInt(hash.substring(hash.length - 3, hash.length), 2),
+            color = config["avatar-fg"][i % config["avatar-fg"].length];
 
-        return el;
-    };
+        for (var x=0; x<Math.ceil(GRID/2); x++) {
+            for (var y=0; y<GRID; y++) {
+
+                if (hash.charAt(index) === "1") {
+                    fill(svg, x, y, padding, 8, color);
+
+                    // fill right sight symmetrically
+                    if (x < Math.floor(GRID/2)) {
+                        fill(svg, (GRID-1) - x, y, padding, 8, color);
+                    }
+                }
+                index++;
+            }
+        }
+    });
+
+    return svg;
+};
+
+/* TODO: This function is currently unused and should be removed */
+var generateBlank = function(height, width, config) {
+
+    var blank = parseInt([
+        0, 1, 1, 1, 1,
+        1, 0, 1, 1, 0,
+        1, 1, 1, 1, 1, /* purple: */ 0, 1, 0
+    ].join(""), 2).toString(16);
+
+    var el = generateIdenticon(blank, height, width, config);
+    el.setAttribute("className", "blank"); // IE10 does not support classList on SVG elements, duh.
+
+    return el;
+};
 
 module.exports = {
     generate: generateIdenticon,

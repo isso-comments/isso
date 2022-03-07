@@ -24,78 +24,78 @@ const tt_comment_loader = require("pug!app/templates/comment-loader.pug");
  *   https://pugjs.org/language/case.html
  */
 
-    "use strict";
+"use strict";
 
-    var globals = {},
-        templates = {};
+var globals = {},
+    templates = {};
 
-    var load = function(name, js) {
-        templates[name] = (function(pug) {
-                var fn;
-                if (js.compiled) {
-                    return js(pug);
-                }
-                eval("fn = " + js);
-                return fn;
-            })(runtime);
-    };
-
-    var set = function(name, value) {
-        globals[name] = value;
-    };
-
-    load("postbox", tt_postbox);
-    load("comment", tt_comment);
-    load("comment-loader", tt_comment_loader);
-
-    set("bool", function(arg) { return arg ? true : false; });
-    set("humanize", function(date) {
-        if (typeof date !== "object") {
-            date = new Date(parseInt(date, 10) * 1000);
-        }
-
-        return date.toString();
-    });
-    set("datetime", function(date) {
-        if (typeof date !== "object") {
-            date = new Date(parseInt(date, 10) * 1000);
-        }
-
-        return [
-            date.getUTCFullYear(),
-            utils.pad(date.getUTCMonth(), 2),
-            utils.pad(date.getUTCDay(), 2)
-        ].join("-") + "T" + [
-            utils.pad(date.getUTCHours(), 2),
-            utils.pad(date.getUTCMinutes(), 2),
-            utils.pad(date.getUTCSeconds(), 2)
-        ].join(":") + "Z";
-    });
-
-    var render = function(name, locals) {
-        var rv, t = templates[name];
-        if (! t) {
-            throw new Error("Template not found: '" + name + "'");
-        }
-
-        locals = locals || {};
-
-        var keys = [];
-        for (var key in locals) {
-            if (locals.hasOwnProperty(key) && !globals.hasOwnProperty(key)) {
-                keys.push(key);
-                globals[key] = locals[key];
+var load = function(name, js) {
+    templates[name] = (function(pug) {
+            var fn;
+            if (js.compiled) {
+                return js(pug);
             }
+            eval("fn = " + js);
+            return fn;
+        })(runtime);
+};
+
+var set = function(name, value) {
+    globals[name] = value;
+};
+
+load("postbox", tt_postbox);
+load("comment", tt_comment);
+load("comment-loader", tt_comment_loader);
+
+set("bool", function(arg) { return arg ? true : false; });
+set("humanize", function(date) {
+    if (typeof date !== "object") {
+        date = new Date(parseInt(date, 10) * 1000);
+    }
+
+    return date.toString();
+});
+set("datetime", function(date) {
+    if (typeof date !== "object") {
+        date = new Date(parseInt(date, 10) * 1000);
+    }
+
+    return [
+        date.getUTCFullYear(),
+        utils.pad(date.getUTCMonth(), 2),
+        utils.pad(date.getUTCDay(), 2)
+    ].join("-") + "T" + [
+        utils.pad(date.getUTCHours(), 2),
+        utils.pad(date.getUTCMinutes(), 2),
+        utils.pad(date.getUTCSeconds(), 2)
+    ].join(":") + "Z";
+});
+
+var render = function(name, locals) {
+    var rv, t = templates[name];
+    if (! t) {
+        throw new Error("Template not found: '" + name + "'");
+    }
+
+    locals = locals || {};
+
+    var keys = [];
+    for (var key in locals) {
+        if (locals.hasOwnProperty(key) && !globals.hasOwnProperty(key)) {
+            keys.push(key);
+            globals[key] = locals[key];
         }
+    }
 
-        rv = templates[name](globals);
+    rv = templates[name](globals);
 
-        for (var i = 0; i < keys.length; i++) {
-            delete globals[keys[i]];
-        }
+    for (var i = 0; i < keys.length; i++) {
+        delete globals[keys[i]];
+    }
 
-        return rv;
-    };
+    return rv;
+};
 
 module.exports = {
     set: set,
