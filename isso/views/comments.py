@@ -29,7 +29,7 @@ from isso.utils.hash import md5, sha1
 from isso.views import requires
 
 
-# from Django appearently, looks good to me *duck*
+# from Django apparently, looks good to me *duck*
 __url_re = re.compile(
     r'^'
     r'(https?://)?'
@@ -183,7 +183,7 @@ class API(object):
     """
     @apiDefine plainParam
     @apiParam {number=0,1} [plain]
-        Iff set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
+        If set to `1`, the plain text entered by the user will be returned in the comments’ `text` attribute (instead of the rendered markdown).
     """
     """
     @apiDefine commentResponse
@@ -229,7 +229,7 @@ class API(object):
     @apiParam {string} [website]
         The comment’s author’s website’s url.
     @apiParam {number} [parent]
-        The parent comment’s id iff the new comment is a response to an existing comment.
+        The parent comment’s id if the new comment is a response to an existing comment.
 
     @apiExample {curl} Create a reply to comment with id 15:
         curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json' -c cookie.txt
@@ -551,7 +551,7 @@ class API(object):
         return resp
 
     """
-    @api {get} /id/:id/unsubscribe/:email/key unsubscribe
+    @api {get} /id/:id/unsubscribe/:email/:key unsubscribe
     @apiGroup Comment
     @apiDescription
         Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
@@ -612,7 +612,7 @@ class API(object):
         return Response(modal, 200, content_type="text/html")
 
     """
-    @api {post} /id/:id/:action/key moderate
+    @api {post} /id/:id/:action/:key moderate
     @apiGroup Comment
     @apiDescription
         Publish or delete a comment that is in the moderation queue (mode `2`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
@@ -716,7 +716,7 @@ class API(object):
         @apiParam {number} [limit]
             The maximum number of returned top-level comments. Omit for unlimited results.
         @apiParam {number} [nested_limit]
-            The maximum number of returned nested comments per commint. Omit for unlimited results.
+            The maximum number of returned nested comments per comment. Omit for unlimited results.
         @apiParam {number} [after]
             Includes only comments were added after the provided UNIX timestamp.
 
@@ -725,13 +725,13 @@ class API(object):
         @apiSuccess {Object[]} replies
             The list of comments. Each comment also has the `total_replies`, `replies`, `id` and `hidden_replies` properties to represent nested comments.
         @apiSuccess {number} id
-            Id of the comment `replies` is the list of replies of. `null` for the list of toplevel comments.
+            Id of the comment `replies` is the list of replies of. `null` for the list of top-level comments.
         @apiSuccess {number} hidden_replies
-            The number of comments that were ommited from the results because of the `limit` request parameter. Usually, this will be `total_replies` - `limit`.
+            The number of comments that were omitted from the results because of the `limit` request parameter. Usually, this will be `total_replies` - `limit`.
 
         @apiExample {curl} Get 2 comments with 5 responses:
             curl 'https://comments.example.com/?uri=/thread/&limit=2&nested_limit=5'
-        @apiSuccessExample Example reponse:
+        @apiSuccessExample Example response:
             {
               "total_replies": 14,
               "replies": [
@@ -971,7 +971,7 @@ class API(object):
     @api {post} /count count comments
     @apiGroup Thread
     @apiDescription
-        Counts the number of comments on multiple threads. The requestor provides a list of thread uris. The number of comments on each thread is returned as a list, in the same order as the threads were requested. The counts include comments that are reponses to comments.
+        Counts the number of comments on multiple threads. The requestor provides a list of thread uris. The number of comments on each thread is returned as a list, in the same order as the threads were requested. The counts include comments that are responses to comments.
 
     @apiExample {curl} get the count of 5 threads:
         curl 'https://comments.example.com/count' -d '["/blog/firstPost.html", "/blog/controversalPost.html", "/blog/howToCode.html",    "/blog/boringPost.html", "/blog/isso.html"]
