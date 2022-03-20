@@ -1,5 +1,6 @@
-require(["app/lib/ready", "app/count"], function(domready, count) {
-    domready(function() {
-        count();
-    });
+const domready = require("app/lib/ready");
+const count = require("app/count");
+
+domready(function() {
+    count();
 });

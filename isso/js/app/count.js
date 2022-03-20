@@ -1,37 +1,39 @@
-define(["app/api", "app/dom", "app/i18n"], function(api, $, i18n) {
-    return function() {
+const api = require("app/api");
+const $ = require("app/dom");
+const i18n = require("app/i18n");
 
-        var objs = {};
+module.exports = function () {
 
-        $.each("a", function(el) {
-            if (! el.href.match || ! el.href.match(/#isso-thread$/)) {
-                return;
-            }
+    var objs = {};
 
-            var tid = el.getAttribute("data-isso-id") ||
-                      el.href.match(/^(.+)#isso-thread$/)[1]
-                             .replace(/^.*\/\/[^\/]+/, '');
+    $.each("a", function(el) {
+        if (! el.href.match || ! el.href.match(/#isso-thread$/)) {
+            return;
+        }
 
-            if (tid in objs) {
-                objs[tid].push(el);
-            } else {
-                objs[tid] = [el];
-            }
-        });
+        var tid = el.getAttribute("data-isso-id") ||
+                  el.href.match(/^(.+)#isso-thread$/)[1]
+                         .replace(/^.*\/\/[^\/]+/, '');
 
-        var urls = Object.keys(objs);
+        if (tid in objs) {
+            objs[tid].push(el);
+        } else {
+            objs[tid] = [el];
+        }
+    });
 
-        api.count(urls).then(function(rv) {
-            for (var key in objs) {
-                if (objs.hasOwnProperty(key)) {
+    var urls = Object.keys(objs);
 
-                    var index = urls.indexOf(key);
+    api.count(urls).then(function(rv) {
+        for (var key in objs) {
+            if (objs.hasOwnProperty(key)) {
 
-                    for (var i = 0; i < objs[key].length; i++) {
-                        objs[key][i].textContent = i18n.pluralize("num-comments", rv[index]);
-                    }
+                var index = urls.indexOf(key);
+
+                for (var i = 0; i < objs[key].length; i++) {
+                    objs[key][i].textContent = i18n.pluralize("num-comments", rv[index]);
                 }
             }
-        });
-    };
-});
+        }
+    });
+};

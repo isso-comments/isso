@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Kirjoita kommentti tähän (vähintään 3 merkkiä)",
     "postbox-author": "Nimi (valinnainen)",
     "postbox-email": "Sähköposti (valinnainen)",
@@ -29,4 +29,4 @@ define({
     "date-week": "viime viikolla\n{{ n }} viikkoa sitten",
     "date-month": "viime kuussa\n{{ n }} kuukautta sitten",
     "date-year": "viime vuonna\n{{ n }} vuotta sitten"
-});
+};

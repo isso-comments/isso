@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Napiši komentar ovdje (najmanje 3 znaka)",
     "postbox-author": "Ime (neobavezno)",
     "postbox-email": "E-mail (neobavezno)",
@@ -26,4 +26,4 @@ define({
     "date-week": "prošli tjedan\nprije {{ n }} tjedana",
     "date-month": "prošli mjesec\nprije {{ n }} mjeseci",
     "date-year": "prošle godine\nprije {{ n }} godina"
-});
+};

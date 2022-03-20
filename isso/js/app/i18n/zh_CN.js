@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "在此输入评论 (最少 3 个字符)",
     "postbox-author": "名字 (可选)",
     "postbox-email": "电子邮箱 (可选)",
@@ -30,4 +30,4 @@ define({
     "date-week": "上周\n{{ n }} 周前",
     "date-month": "上个月\n{{ n }} 个月前",
     "date-year": "去年\n{{ n }} 年前"
-});
+};

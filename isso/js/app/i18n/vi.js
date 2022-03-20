@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Nhập bình luận tại đây (tối thiểu 3 ký tự)",
     "postbox-author": "Tên (tùy chọn)",
     "postbox-email": "E-mail (tùy chọn)",
@@ -30,4 +30,4 @@ define({
     "date-week": "Tuần qua\n{{ n }} tuần trước",
     "date-month": "Tháng trước\n{{ n }} tháng trước",
     "date-year": "Năm trước\n{{ n }} năm trước"
-});
+};

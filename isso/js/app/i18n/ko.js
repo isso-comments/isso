@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "여기에 댓글을 입력해주세요(최소 3문자 이상)",
     "postbox-author": "이름 (선택)",
     "postbox-email": "이메일 (선택)",
@@ -31,4 +31,4 @@ define({
     "date-week": "저번 주\n{{ n }} 주 전",
     "date-month": "저번 달\n{{ n }} 개월 전",
     "date-year": "작년\n{{ n }} 년 전"
-});
+};

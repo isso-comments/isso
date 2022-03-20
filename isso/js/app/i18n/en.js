@@ -1,4 +1,4 @@
-define({
+module.exports = {
     "postbox-text": "Type Comment Here (at least 3 chars)",
     "postbox-author": "Name (optional)",
     "postbox-email": "E-mail (optional)",
@@ -31,4 +31,4 @@ define({
     "date-week": "last week\n{{ n }} weeks ago",
     "date-month": "last month\n{{ n }} months ago",
     "date-year": "last year\n{{ n }} years ago"
-});
+};

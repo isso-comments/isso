@@ -22,6 +22,7 @@
 /isso/js/embed.dev.js
 /isso/js/count.min.js
 /isso/js/count.dev.js
+/isso/js/**/*.map
 
 /docs/_build
 /docs/_static/css/site.css

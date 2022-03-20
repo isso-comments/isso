@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Skriv din kommentar här (minst 3 tecken)",
     "postbox-author": "Namn (frivilligt)",
     "postbox-email": "E-mail (frivilligt)",
@@ -26,4 +26,4 @@ define({
     "date-week": "förra veckan\n{{ n }} veckor sedan",
     "date-month": "förra månaden\n{{ n }} månader sedan",
     "date-year": "förra året\n{{ n }} år sedan"
-});
+};

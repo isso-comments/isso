@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Yorumunuzu buraya yazın (en az üç karakter)",
     "postbox-author": "İsim (zorunlu değil)",
     "postbox-email": "E-posta (zorunlu değil)",
@@ -31,4 +31,4 @@ define({
     "date-week": "geçen hafta\n{{ n }} hafta önce",
     "date-month": "geçen ay\n{{ n }} ay önce",
     "date-year": "geçen yıl\n{{ n }} yıl önce"
-});
+};

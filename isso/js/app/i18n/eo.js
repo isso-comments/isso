@@ -1,4 +1,4 @@
-define({
+module.exports= {
     "postbox-text": "Tajpu komenton ĉi-tie (almenaŭ 3 signoj)",
     "postbox-author": "Nomo (malnepra)",
     "postbox-email": "Retadreso (malnepra)",
@@ -26,4 +26,4 @@ define({
     "date-week": "lasta semajno\nantaŭ {{ n }} semajnoj",
     "date-month": "lasta monato\nantaŭ {{ n }} monatoj",
     "date-year": "lasta jaro\nantaŭ {{ n }} jaroj"
-});
+};
