@@ -16,16 +16,16 @@ var editorify = function(el) {
     el.setAttribute("contentEditable", true);
 
     el.on("focus", function() {
-        if (el.classList.contains("placeholder")) {
+        if (el.classList.contains("isso-placeholder")) {
             el.innerHTML = "";
-            el.classList.remove("placeholder");
+            el.classList.remove("isso-placeholder");
         }
     });
 
     el.on("blur", function() {
         if (el.textContent.length === 0) {
             el.textContent = i18n.translate("postbox-text");
-            el.classList.add("placeholder");
+            el.classList.add("isso-placeholder");
         }
     });
 
@@ -46,10 +46,10 @@ var Postbox = function(parent) {
     el.onsuccess = function() {};
 
     el.validate = function() {
-        if (utils.text($(".textarea", this).innerHTML).length < 3 ||
-            $(".textarea", this).classList.contains("placeholder"))
+        if (utils.text($(".isso-textarea", this).innerHTML).length < 3 ||
+            $(".isso-textarea", this).classList.contains("isso-placeholder"))
         {
-            $(".textarea", this).focus();
+            $(".isso-textarea", this).focus();
             return false;
         }
         if (config["require-email"] &&
@@ -70,9 +70,9 @@ var Postbox = function(parent) {
     // only display notification checkbox if email is filled in
     var email_edit = function() {
         if (config["reply-notifications"] && $("[name='email']", el).value.length > 0) {
-            $(".notification-section", el).show();
+            $(".isso-notification-section", el).show();
         } else {
-            $(".notification-section", el).hide();
+            $(".isso-notification-section", el).hide();
         }
     };
     $("[name='email']", el).on("input", email_edit);
@@ -92,20 +92,20 @@ var Postbox = function(parent) {
 
     // preview function
     $("[name='preview']", el).on("click", function() {
-        api.preview(utils.text($(".textarea", el).innerHTML)).then(
+        api.preview(utils.text($(".isso-textarea", el).innerHTML)).then(
             function(html) {
                 $(".preview .text", el).innerHTML = html;
-                el.classList.add('preview-mode');
+                el.classList.add('isso-preview-mode');
             });
     });
 
     // edit function
     var edit = function() {
-        $(".preview .text", el).innerHTML = '';
-        el.classList.remove('preview-mode');
+        $(".isso-preview .isso-text", el).innerHTML = '';
+        el.classList.remove('isso-preview-mode');
     };
     $("[name='edit']", el).on("click", edit);
-    $(".preview", el).on("click", edit);
+    $(".isso-preview", el).on("click", edit);
 
     // submit form, initialize optional fields with `null` and reset form.
     // If replied to a comment, remove form completely.
@@ -125,13 +125,13 @@ var Postbox = function(parent) {
 
         api.create($("#isso-thread").getAttribute("data-isso-id"), {
             author: author, email: email, website: website,
-            text: utils.text($(".textarea", el).innerHTML),
+            text: utils.text($(".isso-textarea", el).innerHTML),
             parent: parent || null,
             title: $("#isso-thread").getAttribute("data-title") || null,
             notification: $("[name=notification]", el).checked() ? 1 : 0,
         }).then(function(comment) {
-            $(".textarea", el).innerHTML = "";
-            $(".textarea", el).blur();
+            $(".isso-textarea", el).innerHTML = "";
+            $(".isso-textarea", el).blur();
             insert(comment, true);
 
             if (parent !== null) {
@@ -140,7 +140,7 @@ var Postbox = function(parent) {
         });
     });
 
-    editorify($(".textarea", el));
+    editorify($(".isso-textarea", el));
 
     return el;
 };
@@ -151,14 +151,14 @@ var insert_loader = function(comment, lastcreated) {
         entrypoint = $("#isso-root");
         comment.name = 'null';
     } else {
-        entrypoint = $("#isso-" + comment.id + " > .text-wrapper > .isso-follow-up");
+        entrypoint = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-follow-up");
         comment.name = comment.id;
     }
     var el = $.htmlify(template.render("comment-loader", {"comment": comment}));
 
     entrypoint.append(el);
 
-    $("a.load_hidden", el).on("click", function() {
+    $("a.isso-load-hidden", el).on("click", function() {
         el.remove();
         api.fetch($("#isso-thread").getAttribute("data-isso-id"),
             config["reveal-on-click"], config["max-comments-nested"],
@@ -192,7 +192,7 @@ var insert = function(comment, scrollIntoView) {
 
     // update datetime every 60 seconds
     var refresh = function() {
-        $(".permalink > time", el).textContent = i18n.ago(
+        $(".isso-permalink > time", el).textContent = i18n.ago(
             globals.offset.localTime(), new Date(parseInt(comment.created, 10) * 1000));
         setTimeout(refresh, 60*1000);
     };
@@ -201,14 +201,14 @@ var insert = function(comment, scrollIntoView) {
     refresh();
 
     if (config["avatar"]) {
-        $("div.avatar > svg", el).replace(identicons.generate(comment.hash, 4, 48, config));
+        $(".isso-avatar > svg", el).replace(identicons.generate(comment.hash, 4, 48, config));
     }
 
     var entrypoint;
     if (comment.parent === null) {
         entrypoint = $("#isso-root");
     } else {
-        entrypoint = $("#isso-" + comment.parent + " > .text-wrapper > .isso-follow-up");
+        entrypoint = $("#isso-" + comment.parent + " > .isso-text-wrapper > .isso-follow-up");
     }
 
     entrypoint.append(el);
@@ -217,21 +217,21 @@ var insert = function(comment, scrollIntoView) {
         el.scrollIntoView();
     }
 
-    var footer = $("#isso-" + comment.id + " > .text-wrapper > .isso-comment-footer"),
-        header = $("#isso-" + comment.id + " > .text-wrapper > .isso-comment-header"),
-        text   = $("#isso-" + comment.id + " > .text-wrapper > .text");
+    var footer = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-comment-footer"),
+        header = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-comment-header"),
+        text   = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-text");
 
     var form = null;  // XXX: probably a good place for a closure
-    $("a.reply", footer).toggle("click",
+    $("a.isso-reply", footer).toggle("click",
         function(toggler) {
             form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
             form.onsuccess = function() { toggler.next(); };
-            $(".textarea", form).focus();
-            $("a.reply", footer).textContent = i18n.translate("comment-close");
+            $(".isso-textarea", form).focus();
+            $("a.isso-reply", footer).textContent = i18n.translate("comment-close");
         },
         function() {
             form.remove();
-            $("a.reply", footer).textContent = i18n.translate("comment-reply");
+            $("a.isso-reply", footer).textContent = i18n.translate("comment-reply");
         }
     );
 
@@ -244,9 +244,9 @@ var insert = function(comment, scrollIntoView) {
 
         // update vote counter
         var votes = function (value) {
-            var span = $("span.votes", footer);
+            var span = $("span.isso-votes", footer);
             if (span === null) {
-                footer.prepend($.new("span.votes", value));
+                footer.prepend($.new("span.isso-votes", value));
             } else {
                 span.textContent = value;
             }
@@ -268,13 +268,13 @@ var insert = function(comment, scrollIntoView) {
             }
         };
 
-        $("a.upvote", footer).on("click", function () {
+        $("a.isso-upvote", footer).on("click", function () {
             api.like(comment.id).then(function (rv) {
                 votes(rv.likes - rv.dislikes);
             });
         });
 
-        $("a.downvote", footer).on("click", function () {
+        $("a.isso-downvote", footer).on("click", function () {
             api.dislike(comment.id).then(function (rv) {
                 votes(rv.likes - rv.dislikes);
             });
@@ -283,26 +283,26 @@ var insert = function(comment, scrollIntoView) {
         votes(comment.likes - comment.dislikes);
     }
 
-    $("a.edit", footer).toggle("click",
+    $("a.isso-edit", footer).toggle("click",
         function(toggler) {
-            var edit = $("a.edit", footer);
-            var avatar = config["avatar"] || config["gravatar"] ? $(".avatar", el, false)[0] : null;
+            var edit = $("a.isso-edit", footer);
+            var avatar = config["avatar"] || config["gravatar"] ? $(".isso-avatar", el, false)[0] : null;
 
             edit.textContent = i18n.translate("comment-save");
-            edit.insertAfter($.new("a.cancel", i18n.translate("comment-cancel"))).on("click", function() {
+            edit.insertAfter($.new("a.isso-cancel", i18n.translate("comment-cancel"))).on("click", function() {
                 toggler.canceled = true;
                 toggler.next();
             });
 
             toggler.canceled = false;
             api.view(comment.id, 1).then(function(rv) {
-                var textarea = editorify($.new("div.textarea"));
+                var textarea = editorify($.new("div.isso-textarea"));
 
                 textarea.innerHTML = utils.detext(rv.text);
                 textarea.focus();
 
-                text.classList.remove("text");
-                text.classList.add("textarea-wrapper");
+                text.classList.remove("isso-text");
+                text.classList.add("isso-textarea-wrapper");
 
                 text.textContent = "";
                 text.append(textarea);
@@ -313,8 +313,8 @@ var insert = function(comment, scrollIntoView) {
             }
         },
         function(toggler) {
-            var textarea = $(".textarea", text);
-            var avatar = config["avatar"] || config["gravatar"] ? $(".avatar", el, false)[0] : null;
+            var textarea = $(".isso-textarea", text);
+            var avatar = config["avatar"] || config["gravatar"] ? $(".isso-avatar", el, false)[0] : null;
 
             if (! toggler.canceled && textarea !== null) {
                 if (utils.text(textarea.innerHTML).length < 3) {
@@ -331,21 +331,21 @@ var insert = function(comment, scrollIntoView) {
                 text.innerHTML = comment.text;
             }
 
-            text.classList.remove("textarea-wrapper");
-            text.classList.add("text");
+            text.classList.remove("isso-textarea-wrapper");
+            text.classList.add("isso-text");
 
             if (avatar !== null) {
                 avatar.show();
             }
 
-            $("a.cancel", footer).remove();
-            $("a.edit", footer).textContent = i18n.translate("comment-edit");
+            $("a.isso-cancel", footer).remove();
+            $("a.isso-edit", footer).textContent = i18n.translate("comment-edit");
         }
     );
 
-    $("a.delete", footer).toggle("click",
+    $("a.isso-delete", footer).toggle("click",
         function(toggler) {
-            var del = $("a.delete", footer);
+            var del = $("a.isso-delete", footer);
             var state = ! toggler.state;
 
             del.textContent = i18n.translate("comment-confirm");
@@ -356,15 +356,15 @@ var insert = function(comment, scrollIntoView) {
             });
         },
         function() {
-            var del = $("a.delete", footer);
+            var del = $("a.isso-delete", footer);
             api.remove(comment.id).then(function(rv) {
                 if (rv) {
                     el.remove();
                 } else {
-                    $("span.note", header).textContent = i18n.translate("comment-deleted");
+                    $("span.isso-note", header).textContent = i18n.translate("comment-deleted");
                     text.innerHTML = "<p>&nbsp;</p>";
-                    $("a.edit", footer).remove();
-                    $("a.delete", footer).remove();
+                    $("a.isso-edit", footer).remove();
+                    $("a.isso-delete", footer).remove();
                 }
                 del.textContent = i18n.translate("comment-delete");
             });
@@ -382,8 +382,8 @@ var insert = function(comment, scrollIntoView) {
         }
     };
 
-    clear("a.edit");
-    clear("a.delete");
+    clear("a.isso-edit");
+    clear("a.isso-delete");
 
     // show direct reply to own comment when cookie is max aged
     var show = function(el) {
@@ -395,7 +395,7 @@ var insert = function(comment, scrollIntoView) {
     };
 
     if (! config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
-        show($("a.reply", footer).detach());
+        show($("a.isso-reply", footer).detach());
     }
 
     if(comment.hasOwnProperty('replies')) {
