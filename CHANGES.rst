@@ -3,6 +3,12 @@ Changelog for Isso
 
 %(version)s (%(date)s)
 
+0.12.6.1 (2022-03-20)
+---------------------
+
+- Hotfix release to restore position of Postbox before comments
+  (#815, ix5)
+
 0.12.6 (2022-03-06)
 -------------------
 
