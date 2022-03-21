@@ -88,8 +88,6 @@ instance/
 
 # Sphinx documentation
 docs/_build/
-# Generated CSS from SASS
-/docs/_static/css/site.css
 
 # PyBuilder
 target/
