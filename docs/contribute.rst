@@ -18,6 +18,8 @@ master. I'll cherry-pick/backport the fix onto the current legacy
 Report issues
 -------------
 
+.. _contribute-report-issues:
+
 - **Disqus import fails** – if ``isso import /path/to/disqus.xml`` fails,
   please do *NOT* attach the raw dump file to GH:Issues. Please anonymize all
   IP addresses inside the ``<ipAddress>`` tag first, as second step, replace
@@ -33,15 +35,17 @@ Report issues
 Translations
 ------------
 
+.. _contribute-translations:
+
 Isso supports multiple languages and it is fairly easy to add new translations.
-You can either use the `english translation file`__ or use Transifex_. Contact
-me on IRC (@posativ) if you want to be the main contributor for a language.
+You can use the `english translation file`__ and `other translations`__ as a referece and open a Pull
+Request.
 
 You may notice some "weird" newlines in translations -- that's the separator
 for pluralforms_ in the templating engine.
 
 .. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/en.js
-.. _Transifex: https://www.transifex.com/projects/p/isso/
+.. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/
 .. _pluralforms: http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms
 
 Where I need help.
