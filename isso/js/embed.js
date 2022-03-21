@@ -62,7 +62,8 @@ function fetchComments() {
         return;
     }
 
-    $('#isso-root').textContent = '';
+    var isso_root = $('#isso-root');
+    isso_root.textContent = '';
     api.fetch(isso_thread.getAttribute("data-isso-id") || location.pathname,
         config["max-comments-top"],
         config["max-comments-nested"]).then(
@@ -77,8 +78,9 @@ function fetchComments() {
                 config[setting] = rv.config[setting]
             }
 
-            // Finally, create Postbox with configs fetched from server
-            isso_thread.append(new isso.Postbox(null));
+            // Note: isso.Postbox relies on the config object populated by elements
+            // fetched from the server, so it cannot be created in init()
+            isso_root.prepend(new isso.Postbox(null));
 
             if (rv.total_replies === 0) {
                 heading.textContent = i18n.translate("no-comments");
