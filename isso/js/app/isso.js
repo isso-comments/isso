@@ -36,9 +36,9 @@ var Postbox = function(parent) {
 
     var localStorage = utils.localStorageImpl,
         el = $.htmlify(template.render("postbox", {
-        "author":  JSON.parse(localStorage.getItem("author")),
-        "email":   JSON.parse(localStorage.getItem("email")),
-        "website": JSON.parse(localStorage.getItem("website")),
+        "author":  JSON.parse(localStorage.getItem("isso-author")),
+        "email":   JSON.parse(localStorage.getItem("isso-email")),
+        "website": JSON.parse(localStorage.getItem("isso-website")),
         "preview": ''
     }));
 
@@ -119,9 +119,9 @@ var Postbox = function(parent) {
             email = $("[name=email]", el).value || null,
             website = $("[name=website]", el).value || null;
 
-        localStorage.setItem("author", JSON.stringify(author));
-        localStorage.setItem("email", JSON.stringify(email));
-        localStorage.setItem("website", JSON.stringify(website));
+        localStorage.setItem("isso-author", JSON.stringify(author));
+        localStorage.setItem("isso-email", JSON.stringify(email));
+        localStorage.setItem("isso-website", JSON.stringify(website));
 
         api.create($("#isso-thread").getAttribute("data-isso-id"), {
             author: author, email: email, website: website,
