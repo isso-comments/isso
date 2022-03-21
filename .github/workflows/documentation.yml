@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "docs/**"
+      - ".github/workflows/documentation.yml"
   pull_request:
     paths:
       - "docs/**"
+      - ".github/workflows/documentation.yml"
 
 jobs:
   check:
@@ -15,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Installing Dependencies
-        run: sudo apt update && sudo apt install python3-sphinx sassc
+        run: sudo apt install python3-sphinx sassc
 
       - name: Check docs
         # TODO: -W turns warnings into errors

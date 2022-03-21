@@ -3,7 +3,7 @@ name: Python package
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -13,21 +13,91 @@ jobs:
       fail-fast: false
 
     steps:
+
     - name: Check out repository code
       uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        # Dependencies are in setup.py, so use it as cache key
+        cache-dependency-path: 'setup.py'
+
     - name: Install isso dependencies
-      run: python setup.py develop
+      # Use pip instead of python setup.py develop to get caching from
+      # "setup-python" action
+      run: pip install -e .
+
     - name: Install test suite dependencies
-      run: pip3 install pytest
+      run: pip install pytest
+
     - name: Run test suite
       run: make test
       env:
         PYTHONHASHSEED: random
+
     - name: Install style check dependencies
-      run: pip3 install flake8
+      run: pip install flake8
+
     - name: Run style check
       run: make flakes
+
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # Use only lowest and highest supported python versions for now,
+        # to speed up CI runs
+        python-version: [3.6, "3.10"]
+        node-version: [16]
+      fail-fast: false
+
+    steps:
+
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        # Dependencies are in setup.py, so use it as cache key
+        cache-dependency-path: 'setup.py'
+
+    - name: Set up NodeJS ${{ matrix.node-version }} on ${{ matrix.os }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: package.json
+
+    - name: Install Javascript dependencies using npm
+      run: make init
+
+    - name: Create Javascript artifacts (but skip manpages)
+      run: make js
+
+    - name: Generate Isso package
+      id: generate-package
+      run: |
+        python setup.py sdist
+        echo "::set-output name=package_file::$(ls dist/)"
+
+    - name: Install generated Isso package
+      run: pip install dist/${{ steps.generate-package.outputs.package_file }}
+
+    - name: Archive and upload generated package
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.os }}-python-${{ matrix.python-version }}-${{ steps.generate-package.outputs.package_file }}
+        path: dist/${{ steps.generate-package.outputs.package_file }}
+
+    - name: Clean up Isso package from site-packages
+      # This ensures it isn't accidentally restored by the "setup-python"
+      # action
+      run: pip uninstall --y isso
