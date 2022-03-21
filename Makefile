@@ -30,13 +30,11 @@ DOCS_CSS_DEP := $(shell find docs/_static/css/neat -type f) \
 
 DOCS_CSS_DST := docs/_static/css/site.css
 
-DOCS_MAN_DST := man/man1/isso.1 man/man5/isso.conf.5
-
 DOCS_HTML_DST := docs/_build/html
 
 SASS = sassc
 
-all: man js site
+all: js site
 
 init:
 	npm install
@@ -55,12 +53,6 @@ isso/js/%.dev.js: $(ISSO_JS_SRC)
 # Note: No need to depend on css sources since they are no longer inlined
 js: $(ISSO_JS_DST)
 
-man: $(DOCS_RST_SRC)
-	sphinx-build -b man docs/ man/
-	mkdir -p man/man1/ man/man5
-	mv man/isso.1 man/man1/isso.1
-	mv man/isso.conf.5 man/man5/isso.conf.5
-
 ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
 	$(SASS) $(DOCS_CSS_SRC) $@
 
@@ -76,8 +68,8 @@ test: $($ISSO_PY_SRC)
 	pytest --doctest-modules isso/
 
 clean:
-	rm -f $(DOCS_MAN_DST) $(ISSO_JS_DST)
+	rm -f $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
 
-.PHONY: clean site man init js coverage test
+.PHONY: clean site init js coverage test
 
