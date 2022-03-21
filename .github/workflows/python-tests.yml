@@ -1,6 +1,22 @@
-name: Python package
+name: Python tests
 
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - "Makefile"
+      - "setup.py"
+      - "setup.cfg"
+      - "contrib/**.py"
+      - "isso/**.py"
+      - ".github/workflows/python-tests.yml"
+  pull_request:
+    paths:
+      - "Makefile"
+      - "setup.py"
+      - "setup.cfg"
+      - "contrib/**.py"
+      - "isso/js/**.py"
+      - ".github/workflows/python-tests.yml"
 
 jobs:
   test:

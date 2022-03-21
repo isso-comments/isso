@@ -1,6 +1,15 @@
 name: Python package
 
-on: [push, pull_request]
+on:
+  # Always build installable package
+  push:
+    paths:
+      - "**"
+      - ".github/workflows/python-package.yml"
+  pull_request:
+    paths:
+      - "**"
+      - ".github/workflows/python-package.yml"
 
 jobs:
   build:
