@@ -64,7 +64,7 @@ man: $(DOCS_RST_SRC)
 ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
 	$(SASS) $(DOCS_CSS_SRC) $@
 
-${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
+${DOCS_HTML_DST}: $(DOCS_RST_SRC)
 	sphinx-build -b dirhtml docs/ $@
 
 site: $(DOCS_HTML_DST)
@@ -76,7 +76,7 @@ test: $($ISSO_PY_SRC)
 	pytest --doctest-modules isso/
 
 clean:
-	rm -f $(DOCS_MAN_DST) $(DOCS_CSS_DST) $(ISSO_JS_DST)
+	rm -f $(DOCS_MAN_DST) $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
 
 .PHONY: clean site man init js coverage test
