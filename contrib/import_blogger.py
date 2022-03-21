@@ -23,9 +23,16 @@ can then be fed into isso:
 """
 
 import json
-
-import feedparser
 import time
+
+try:
+    import feedparser
+except ImportError:
+    print("Error: Package feedparser not installed! You can install it via "
+          "'pip install feedparser' inside your virtualenv.")
+    import sys
+    sys.exit(1)
+
 from urllib.parse import urlparse
 
 
