@@ -30,14 +30,6 @@ module.exports = [
                 maxChunks: 1,
             }),
         ],
-        /* For using `require('pug!path/to/mytemplate.pug')`
-         * https://webpack.js.org/configuration/resolve/#resolveloader
-         */
-        resolveLoader: {
-            alias: {
-                'pug': 'pug-loader',
-            },
-        },
         /* https://webpack.js.org/guides/asset-modules/ */
         module: {
           rules: [

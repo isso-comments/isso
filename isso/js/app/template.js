@@ -1,52 +1,25 @@
-const runtime = require("pug-runtime");
 const utils = require("app/utils");
 
-/* TODO: Get rid of pug-loader entirely
-  pug-loader allows one simplify loading the templates, loading them as
-  "modules" right inside the require module loading syntax.
-  So one can do require("pug!path/to/templates/xyz.pug") instead of figuring
-  out how to load templates from disk. This "loader" needs to be configured in
-  webpack.
-
-  However, using pug-loader pulls in another dependency, and, most importantly,
-  clashes with Jest testing (Jest is not able to recognize this loader syntax).
-*/
-
-const tt_postbox = require("pug!app/templates/postbox.pug");
-const tt_comment = require("pug!app/templates/comment.pug");
-const tt_comment_loader = require("pug!app/templates/comment-loader.pug");
-
-/* Notes:
- * - `!=` means to use the string/var as-is, unescaped.
- *   See https://pugjs.org/language/attributes.html#unescaped-attributes
- *   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
- * - "pluralize" logic could be swapped for "case" logic?
- *   https://pugjs.org/language/case.html
- */
+const tmpl_postbox = require("app/templates/postbox");
+const tmpl_comment = require("app/templates/comment");
+const tmpl_comment_loader = require("app/templates/comment-loader");
 
 "use strict";
 
 var globals = {},
     templates = {};
 
-var load = function(name, js) {
-    templates[name] = (function(pug) {
-            var fn;
-            if (js.compiled) {
-                return js(pug);
-            }
-            eval("fn = " + js);
-            return fn;
-        })(runtime);
+var load_tmpl = function(name, tmpl) {
+    templates[name] = tmpl;
 };
 
 var set = function(name, value) {
     globals[name] = value;
 };
 
-load("postbox", tt_postbox);
-load("comment", tt_comment);
-load("comment-loader", tt_comment_loader);
+load_tmpl("postbox", tmpl_postbox);
+load_tmpl("comment", tmpl_comment);
+load_tmpl("comment-loader", tmpl_comment_loader);
 
 set("bool", function(arg) { return arg ? true : false; });
 set("humanize", function(date) {
@@ -89,6 +62,12 @@ var render = function(name, locals) {
     }
 
     rv = templates[name](globals);
+
+    // These are all needed, else DOM.htmlify will fail to create the element!
+    // Strip newlines rendered from template literals
+    rv = rv.replace(/\r?\n|\r/g, " ");
+    // Trim whitespace
+    rv = rv.trim();
 
     for (var i = 0; i < keys.length; i++) {
         delete globals[keys[i]];
