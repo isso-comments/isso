@@ -130,7 +130,9 @@ Now, you embed Isso to your website:
     <script data-isso="//comments.example.tld/"
             src="//comments.example.tld/js/embed.min.js"></script>
 
-    <section id="isso-thread"></section>
+    <section id="isso-thread">
+        <noscript>Javascript needs to be activated to view comments.</noscript>
+    </section>
 
 Note, that `data-isso` is optional, but when a website includes a script using
 ``async`` it is no longer possible to determine the script's external URL.
