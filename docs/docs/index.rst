@@ -36,29 +36,24 @@ What's wrong with Disqus?
 -------------------------
 
 No anonymous comments (IP address, email and name recorded), hosted in the USA,
-third-party. Just like IntenseDebate, livefrye etc. When you embed Disqus, they
+third-party. Just like IntenseDebate etc. When you embed Disqus, they
 can do anything with your readers (and probably mine Bitcoins, see the loading
 times).
 
-Isso is not the only open-source commenting server:
+Other options
+-------------
 
-* `commento <https://commento.io/>`_, written in Go. Requires a
-  `postgresql <https://www.postgresql.org/>`_ database.
+Isso is not the only open-source commenting server. You can find an overview at
+`lisakov.com: Open source comments <https://lisakov.com/projects/open-source-comments/>`_.
 
-* `Remark42 <https://remark42.com/docs/1.6/>`_, written in Go.
+Some popular options are:
 
-* `talkatv <https://github.com/talkatv/talkatv>`_, written in Python.
-  Unfortunately, talkatv's (read "talkative") development stalled. Neither
-  anonymous nor threaded comments.
+* `Commento <https://commento.io/>`_, written in Go. Requires a
+  `PostgreSQL <https://www.postgresql.org/>`_ database.
 
-* `Juvia <https://github.com/phusion/juvia>`_, written in Ruby (on Rails).
-  No threaded comments, nice administration webinterface, but... yeah... Ruby.
+* `Remark42 <https://remark42.com/>`_, written in Go.
 
-* `Tildehash.com <http://www.tildehash.com/?article=why-im-reinventing-disqus>`_,
-  written in PHP__ (compare to Python__). Did I forgot something?
+* `Staticman <https://staticman.net/>`_, written in Node.js. Adds comments
+  directly to repository of static sites.
 
-* `Unobtrusive, self-hosted comments <http://stackoverflow.com/q/2053217>`_,
-  discussion on StackOverflow.
-
-.. __: http://www.cvedetails.com/vendor/74/PHP.html
-.. __: http://www.cvedetails.com/vendor/10210/Python.html
+* `schnack <https://schnack.cool/>`_, written in Node.js.
