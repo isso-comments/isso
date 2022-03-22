@@ -65,20 +65,15 @@ jobs:
       run: npm install
 
     - name: Create Javascript client files
-      id: generate-client-files
-      run: |
-        make js
-        echo "::set-output name=client_min_files::$(ls isso/js/*.min.js)"
-        echo "::set-output name=client_dev_files::$(ls isso/js/*.dev.js{,.map})"
+      run: make js
 
     - name: Archive and upload generated minified client files
       uses: actions/upload-artifact@v3
       with:
-        name: client-minified
-        path: ${{ steps.generate-client-files.outputs.client_min_files }}
-
-    - name: Archive and upload generated development client files
-      uses: actions/upload-artifact@v3
-      with:
-        name: client-dev
-        path: ${{ steps.generate-client-files.outputs.client_dev_files }}
+        name: client-js-files
+        path: |
+          isso/js/embed.*.js
+          isso/js/count.*.js
+          isso/js/embed.dev.js.map
+          isso/js/count.dev.js.map
+        if-no-files-found: error
