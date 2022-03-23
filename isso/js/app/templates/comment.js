@@ -1,6 +1,13 @@
 var html = function (globals) {
-  // De-structure globals dict
-  ({i18n, comment, conf, datetime, humanize, svg} = {...globals});
+  var i18n = globals.i18n;
+  var comment = globals.comment;
+  var conf = globals.conf;
+  var datetime = globals.datetime;
+  var humanize = globals.humanize;
+  var svg = globals.svg;
+
+  var author = comment.author ? comment.author : i18n('comment-anonymous');
+
   return "" +
 "<div class='isso-comment' id='isso-" + comment.id + "'>"
 + (conf.gravatar ? "<div class='avatar'><img src='" + comment.gravatar_image + "'></div>" : '')
@@ -8,10 +15,8 @@ var html = function (globals) {
 + "<div class='text-wrapper'>"
   + "<div class='isso-comment-header' role='meta'>"
     + (comment.website
-        ? "<a class='author' href='" + comment.website + "' rel='nofollow'>"
-             + (comment.author ? comment.author : i18n('comment-anonymous')) + "</a>"
-        : "<span class='author'>"
-             + (comment.author  ? comment.author : i18n('comment-anonymous')) + "</span>")
+        ? "<a class='author' href='" + comment.website + "' rel='nofollow'>" + author + "</a>"
+        : "<span class='author'>" + author + "</span>")
      + "<span class='spacer'>&bull;</span>"
      + "<a class='permalink' href='#isso-" + comment.id + "'>"
        + "<time title='" + humanize(comment.created) + "' datetime='" + datetime(comment.created) + "'>" + humanize(comment.created) + "</time>"
