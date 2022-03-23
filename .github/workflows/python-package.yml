@@ -1,14 +1,16 @@
 name: Python package
 
 on:
-  # Always build installable package
+  # Always build installable package, except for docs changes
   push:
     paths:
-      - "**"
+      - "./**"
+      - "!docs/"
       - ".github/workflows/python-package.yml"
   pull_request:
     paths:
-      - "**"
+      - "./**"
+      - "!docs/"
       - ".github/workflows/python-package.yml"
 
 jobs:
