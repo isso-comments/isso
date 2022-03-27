@@ -15,6 +15,10 @@ module.exports = [
         mode: 'development',
         /* https://webpack.js.org/configuration/devtool/ */
         devtool: 'source-map',
+        /* Instruct webpack to emit ES5-compatible syntax for not-so-recent (pre-2017) browsers
+         * Note: Both 'web' and 'es5' are needed!
+         * https://webpack.js.org/configuration/target/ */
+        target: ['web', 'es5'],
         /* https://webpack.js.org/configuration/resolve/#resolvemodules */
         resolve: {
             /* Allow omission of `isso/js` path */
