@@ -3,15 +3,15 @@
  * Distributed under the MIT license
  */
 
-const domready = require("app/lib/ready");
-const config = require("app/config");
-const i18n = require("app/i18n");
-const api = require("app/api");
-const isso = require("app/isso");
-const count = require("app/count");
-const $ = require("app/dom");
-const svg = require("app/svg");
-const template = require("app/template");
+var domready = require("app/lib/ready");
+var config = require("app/config");
+var i18n = require("app/i18n");
+var api = require("app/api");
+var isso = require("app/isso");
+var count = require("app/count");
+var $ = require("app/dom");
+var svg = require("app/svg");
+var template = require("app/template");
 
 "use strict";
 

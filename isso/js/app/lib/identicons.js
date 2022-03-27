@@ -4,7 +4,7 @@
 
   Inspired by http://codepen.io/gschier/pen/GLvAy
 */
-const Q = require("app/lib/promise");
+var Q = require("app/lib/promise");
 
 "use strict";
 

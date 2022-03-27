@@ -1,5 +1,5 @@
-const Q = require("app/lib/promise");
-const globals = require("app/globals");
+var Q = require("app/lib/promise");
+var globals = require("app/globals");
 
 "use strict";
 

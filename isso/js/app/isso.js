@@ -1,13 +1,13 @@
 /* Isso – Ich schrei sonst!
 */
-const $ = require("app/dom");
-const utils = require("app/utils");
-const config = require("app/config");
-const api = require("app/api");
-const template = require("app/template");
-const i18n = require("app/i18n");
-const identicons = require("app/lib/identicons");
-const globals = require("app/globals");
+var $ = require("app/dom");
+var utils = require("app/utils");
+var config = require("app/config");
+var api = require("app/api");
+var template = require("app/template");
+var i18n = require("app/i18n");
+var identicons = require("app/lib/identicons");
+var globals = require("app/globals");
 
 "use strict";
 
