@@ -1,6 +1,4 @@
 const path = require('path');
-/* Needed for LimitChunkCountPlugin */
-const webpack = require('webpack');
 
 module.exports = [
     {
@@ -23,13 +21,6 @@ module.exports = [
                 'node_modules',
             ],
         },
-        plugins: [
-            /* Disable splitting *.(dev|min).js into multiple chunked js files
-             * https://stackoverflow.com/questions/62048737/how-do-i-disable-webpack-4-code-splitting#62092571 */
-            new webpack.optimize.LimitChunkCountPlugin({
-                maxChunks: 1,
-            }),
-        ],
         /* https://webpack.js.org/guides/asset-modules/ */
         module: {
           rules: [
@@ -44,7 +35,6 @@ module.exports = [
         output: {
             filename: '[name].dev.js',
             path: path.resolve(__dirname),
-            //clean: true, // what does this do?
         },
     },
     {
