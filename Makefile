@@ -61,7 +61,8 @@ ${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
 site: $(DOCS_HTML_DST)
 
 coverage: $(ISSO_PY_SRC)
-	pytest --doctest-modules --cov=isso --cov-report=html isso/
+	coverage run --omit='*/tests/*' --source isso -m pytest
+	coverage report --omit='*/tests/*'
 
 test: $($ISSO_PY_SRC)
 	pytest --doctest-modules isso/
