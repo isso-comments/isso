@@ -1,12 +1,10 @@
-include share/isso.conf
-
 include isso/js/embed.min.js
 include isso/js/embed.dev.js
 include isso/js/count.min.js
 include isso/js/count.dev.js
 include isso/js/admin.js
 
-include isso/defaults.ini
+include isso/isso.cfg
 
 include isso/templates/admin.html
 include isso/templates/disabled.html

@@ -2,7 +2,6 @@
 
 import json
 import os
-import pkg_resources
 import re
 import tempfile
 import unittest
@@ -11,7 +10,7 @@ from urllib.parse import urlencode
 
 from werkzeug.wrappers import Response
 
-from isso import Isso, core, config, dist
+from isso import Isso, core, config
 from isso.utils import http
 from isso.views import comments
 
@@ -23,8 +22,7 @@ class TestComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = config.load(
-            pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
@@ -508,7 +506,7 @@ class TestHostDependent(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = config.load(os.path.join(dist.location, dist.project_name, "defaults.ini"))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         self.conf = conf
 
@@ -572,8 +570,7 @@ class TestModeratedComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = config.load(
-            pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
@@ -664,8 +661,7 @@ class TestUnsubscribe(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = config.load(
-            pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
@@ -711,8 +707,7 @@ class TestPurgeComments(unittest.TestCase):
 
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
-        conf = config.load(
-            pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")

@@ -2,7 +2,6 @@
 
 import os
 import sys
-import pkg_resources
 
 from isso import config, make_app
 
@@ -16,6 +15,6 @@ if "pytest" in sys.modules:
 
 application = make_app(
     config.load(
-        pkg_resources.resource_filename('isso', 'defaults.ini'),
+        config.default_file(),
         os.environ.get('ISSO_SETTINGS')),
     multiprocessing=True)

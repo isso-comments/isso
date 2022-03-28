@@ -222,8 +222,8 @@ def main():
 
     parser.add_argument('--version', action='version',
                         version='%(prog)s ' + dist.version)
-    parser.add_argument("-c", dest="conf", default="/etc/isso.conf",
-                        metavar="/etc/isso.conf", help="set configuration file")
+    parser.add_argument("-c", dest="conf", default="/etc/isso.cfg",
+                        metavar="/etc/isso.cfg", help="set configuration file")
 
     imprt = subparser.add_parser('import', help="import Disqus XML export")
     imprt.add_argument("dump", metavar="FILE")
@@ -238,8 +238,7 @@ def main():
     subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = config.load(
-        pkg_resources.resource_filename('isso', 'defaults.ini'), args.conf)
+    conf = config.load(config.default_file(), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

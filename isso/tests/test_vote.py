@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import json
-import pkg_resources
 import tempfile
 import unittest
 
@@ -21,7 +20,7 @@ class TestVote(unittest.TestCase):
 
     def makeClient(self, ip):
 
-        conf = config.load(pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
