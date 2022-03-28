@@ -378,6 +378,19 @@ main {
         margin-right: 2em;
       }
     }
+
+    // "Edit on Github" link
+    .vcs-edit {
+        font-size: 1.16em;
+        line-height: 1.16em;
+        float: right;
+        & img {
+          height: 20px;
+          width: 20px;
+          margin-right: 0.2em;
+          vertical-align: top;
+        }
+    }
   }
 
   a {
