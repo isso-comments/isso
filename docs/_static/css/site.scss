@@ -1,6 +1,9 @@
 @import "bourbon/bourbon";
 @import "neat/neat";
 
+// Override bourbon _grid.scss
+$max-width: em(1280); // Max-width of the outer container, divided by 16
+
 $blue: #00aac2;
 $text: #2f2f2f;
 $muted-grey: #151515;
