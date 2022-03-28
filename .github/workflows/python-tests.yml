@@ -47,7 +47,7 @@ jobs:
       run: pip install -e .
 
     - name: Install test suite dependencies
-      run: pip install pytest
+      run: pip install pytest pytest-cov
 
     - name: Run test suite
       run: make test
@@ -59,3 +59,8 @@ jobs:
 
     - name: Run style check
       run: make flakes
+
+    - name: Run coverage check, fail if <70%
+      run: |
+        make coverage
+        coverage report --fail-under 70
