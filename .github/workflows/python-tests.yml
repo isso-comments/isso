@@ -54,6 +54,37 @@ jobs:
       env:
         PYTHONHASHSEED: random
 
+  lint:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Use only single build env for linting
+        os: [ubuntu-latest]
+        python-version: ["3.10"]
+      fail-fast: false
+
+    steps:
+
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }} on ${{ matrix.os }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        # Dependencies are in setup.py, so use it as cache key
+        cache-dependency-path: 'setup.py'
+
+    - name: Install isso dependencies
+      # Use pip instead of python setup.py develop to get caching from
+      # "setup-python" action
+      run: pip install -e .
+
+    - name: Install test suite dependencies
+      run: pip install pytest pytest-cov
+
     - name: Install style check dependencies
       run: pip install flake8
 
