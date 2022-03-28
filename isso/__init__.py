@@ -238,8 +238,7 @@ def main():
     subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = config.load(
-        pkg_resources.resource_filename('isso', 'defaults.ini'), args.conf)
+    conf = config.load(config.default_file(), args.conf)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")

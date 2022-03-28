@@ -1,13 +1,16 @@
 # -*- encoding: utf-8 -*-
 
-import re
-import logging
 import datetime
+import logging
+import pkg_resources
+import re
 
 from email.utils import parseaddr, formataddr
 from configparser import ConfigParser, NoOptionError, NoSectionError, DuplicateSectionError
 
 logger = logging.getLogger("isso")
+
+default_config_file = pkg_resources.resource_filename('isso', 'defaults.ini')
 
 
 def timedelta(string):
@@ -113,6 +116,10 @@ class IssoParser(ConfigParser):
 
     def section(self, section):
         return Section(self, section)
+
+
+def default_file():
+    return default_config_file
 
 
 def new(options=None):

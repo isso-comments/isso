@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 import json
-import pkg_resources
 import tempfile
 import unittest
 
@@ -32,8 +31,7 @@ class TestGuard(unittest.TestCase):
     def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False,
                    require_email=False, require_author=False):
 
-        conf = config.load(
-            pkg_resources.resource_filename('isso', 'defaults.ini'))
+        conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("hash", "algorithm", "none")
         conf.set("guard", "enabled", "true")
