@@ -21,7 +21,7 @@ ISSO_PY_SRC := $(shell git ls-files | grep -E "^isso/.+.py$$")
 DOCS_RST_SRC := $(shell find docs/ -type f -name '*.rst') \
 		$(wildcard docs/_isso/*) \
 	        docs/index.html docs/conf.py docs/docutils.conf \
-		share/isso.conf
+		share/isso.cfg
 
 DOCS_CSS_SRC := docs/_static/css/site.scss
 

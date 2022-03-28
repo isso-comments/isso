@@ -1,4 +1,4 @@
-include share/isso.conf
+include share/isso.cfg
 
 include isso/js/embed.min.js
 include isso/js/embed.dev.js
