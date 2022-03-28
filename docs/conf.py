@@ -195,3 +195,10 @@ html_use_index = False
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'Issodoc'
+
+html_context = {
+  'display_github': True,
+  'github_user': 'posativ',
+  'github_repo': 'isso',
+  'github_version': 'master/docs/',
+}

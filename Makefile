@@ -56,7 +56,7 @@ js: $(ISSO_JS_DST)
 ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
 	$(SASS) $(DOCS_CSS_SRC) $@
 
-${DOCS_HTML_DST}: $(DOCS_RST_SRC)
+${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
 	sphinx-build -b dirhtml docs/ $@
 
 site: $(DOCS_HTML_DST)

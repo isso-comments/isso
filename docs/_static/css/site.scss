@@ -1,8 +1,12 @@
 @import "bourbon/bourbon";
 @import "neat/neat";
 
+// Override bourbon _grid.scss
+$max-width: em(1280); // Max-width of the outer container, divided by 16
+
 $blue: #00aac2;
-$text: #5c5c5c;
+$text: #2f2f2f;
+$muted-grey: #151515;
 
 * {
   margin: 0;
@@ -19,7 +23,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 body {
-  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-family: sans-serif;
   color: black;
 }
 
@@ -45,7 +50,7 @@ body {
   padding-bottom: 1em;
 
   a, a:visited {
-    color: #4d4c4c;
+    color: $muted-grey;
     text-decoration: none;
   }
 
@@ -81,11 +86,11 @@ body {
         float: right;
         margin-left: 2em;
 
-        font-weight: 300;
+        font-weight: bold;
         text-transform: uppercase;
 
-        color: #444;
-        letter-spacing: 0.05em;
+        color: $muted-grey;
+        letter-spacing: 0.1em;
       }
     }
   }
@@ -101,7 +106,9 @@ body {
 
     h1 {
       color: #555;
-      font: 300 35px Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: 35px;
+      font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
       text-shadow: 1px 0 #c0c0c0;
       letter-spacing: 0.05em;
     }
@@ -191,11 +198,13 @@ main {
     li {
       list-style-type: none;
     }
+  }
 
-    .search {
-      input {
-        padding: 0.1em 0.4em;
-      }
+  .search {
+    input {
+      padding: 0.1em 0.4em;
+      margin-top: 0.3em;
+      max-width: 100%;
     }
   }
 
@@ -234,6 +243,7 @@ main {
       color: $blue;
       font-weight: bold;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     ul {
@@ -253,7 +263,7 @@ main {
       padding-top: 0.25em;
       padding-bottom: 0.25em;
 
-      font-weight: 300;
+      font-weight: normal;
       list-style-type: none;
 
       a {
@@ -269,12 +279,28 @@ main {
         font-weight: bold;
       }
     }
+
+    #searchbox {
+        color: $text;
+
+        h2 {
+            color: $blue;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+
+            /* Disable '»' */
+            &:before {
+                content: "";
+            }
+        }
+    }
   }
 
   .docs {
     @include span-columns(4 of 5);
 
-    font-size: 15px;
+    font-size: 16px;
     color: $text;
 
     h2, h3, h4 {
@@ -354,6 +380,19 @@ main {
         margin-left: 2em;
         margin-right: 2em;
       }
+    }
+
+    // "Edit on Github" link
+    .vcs-edit {
+        font-size: 1.16em;
+        line-height: 1.16em;
+        float: right;
+        & img {
+          height: 20px;
+          width: 20px;
+          margin-right: 0.2em;
+          vertical-align: top;
+        }
     }
   }
 

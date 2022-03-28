@@ -16,7 +16,8 @@ h1, h2, h3, h4, h5, h6 {
   font-style: normal; }
 
 body {
-  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-family: sans-serif;
   color: black; }
 
 .wrapper {
@@ -33,7 +34,7 @@ body {
 
 .header {
   *zoom: 1;
-  max-width: 68em;
+  max-width: 80em;
   margin-left: auto;
   margin-right: auto;
   padding-top: 1em;
@@ -44,7 +45,7 @@ body {
   .header:after {
     clear: both; }
   .header a, .header a:visited {
-    color: #4d4c4c;
+    color: #151515;
     text-decoration: none; }
   .header header {
     display: block;
@@ -76,17 +77,17 @@ body {
         display: block;
         float: right;
         margin-left: 2em;
-        font-weight: 300;
+        font-weight: bold;
         text-transform: uppercase;
-        color: #444;
-        letter-spacing: 0.05em; }
+        color: #151515;
+        letter-spacing: 0.1em; }
 
 .outer {
   background-color: #eeeeee;
   box-shadow: inset 0 0 0.5em #c0c0c0; }
   .outer header {
     *zoom: 1;
-    max-width: 68em;
+    max-width: 80em;
     margin-left: auto;
     margin-right: auto;
     padding: 1em 0; }
@@ -97,12 +98,14 @@ body {
       clear: both; }
     .outer header h1 {
       color: #555;
-      font: 300 35px Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: 35px;
+      font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
       text-shadow: 1px 0 #c0c0c0;
       letter-spacing: 0.05em; }
   .outer footer {
     *zoom: 1;
-    max-width: 68em;
+    max-width: 80em;
     margin-left: auto;
     margin-right: auto; }
     .outer footer:before, .outer footer:after {
@@ -112,7 +115,7 @@ body {
       clear: both; }
   .outer .index {
     *zoom: 1;
-    max-width: 68em;
+    max-width: 80em;
     margin-left: auto;
     margin-right: auto;
     padding: 1em; }
@@ -149,7 +152,7 @@ body {
           font-size: 18px;
           color: black; }
         .outer .index ul li p {
-          color: #5c5c5c; }
+          color: #2f2f2f; }
         .outer .index ul li p + p {
           margin-top: 0.5em; }
 
@@ -159,7 +162,7 @@ body {
 
 main {
   *zoom: 1;
-  max-width: 68em;
+  max-width: 80em;
   margin-left: auto;
   margin-right: auto;
   margin-top: 1.6em;
@@ -190,8 +193,10 @@ main {
       margin-top: 0; }
     main .links li {
       list-style-type: none; }
-    main .links .search input {
-      padding: 0.1em 0.4em; }
+  main .search input {
+    padding: 0.1em 0.4em;
+    margin-top: 0.3em;
+    max-width: 100%; }
   main .demo {
     display: block;
     float: left;
@@ -225,7 +230,8 @@ main {
     main .sidebar strong {
       color: #00aac2;
       font-weight: bold;
-      text-transform: uppercase; }
+      text-transform: uppercase;
+      letter-spacing: 0.5px; }
     main .sidebar ul {
       margin-top: 0.5em;
       margin-bottom: 1em; }
@@ -237,22 +243,32 @@ main {
       padding-left: 0.75em;
       padding-top: 0.25em;
       padding-bottom: 0.25em;
-      font-weight: 300;
+      font-weight: normal;
       list-style-type: none; }
       main .sidebar li a {
-        color: #5c5c5c; }
+        color: #2f2f2f; }
     main .sidebar .active {
       border-left-color: #00aac2; }
       main .sidebar .active a {
         color: #00aac2;
         font-weight: bold; }
+    main .sidebar #searchbox {
+      color: #2f2f2f; }
+      main .sidebar #searchbox h2 {
+        color: #00aac2;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        /* Disable '»' */ }
+        main .sidebar #searchbox h2:before {
+          content: ""; }
   main .docs {
     display: block;
     float: left;
     margin-right: 5.8515051827%;
     width: 78.8296989635%;
-    font-size: 15px;
-    color: #5c5c5c; }
+    font-size: 16px;
+    color: #2f2f2f; }
     main .docs:last-child {
       margin-right: 0; }
     main .docs h2, main .docs h3, main .docs h4 {
@@ -300,6 +316,15 @@ main {
         list-style-type: square;
         margin-left: 2em;
         margin-right: 2em; }
+    main .docs .vcs-edit {
+      font-size: 1.16em;
+      line-height: 1.16em;
+      float: right; }
+      main .docs .vcs-edit img {
+        height: 20px;
+        width: 20px;
+        margin-right: 0.2em;
+        vertical-align: top; }
   main a {
     text-decoration: none;
     color: #00aac2; }
