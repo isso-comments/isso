@@ -10,7 +10,7 @@ from configparser import ConfigParser, NoOptionError, NoSectionError, DuplicateS
 
 logger = logging.getLogger("isso")
 
-default_config_file = pkg_resources.resource_filename('isso', 'defaults.ini')
+default_config_file = pkg_resources.resource_filename('isso', 'isso.cfg')
 
 
 def timedelta(string):
