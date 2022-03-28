@@ -191,11 +191,13 @@ main {
     li {
       list-style-type: none;
     }
+  }
 
-    .search {
-      input {
-        padding: 0.1em 0.4em;
-      }
+  .search {
+    input {
+      padding: 0.1em 0.4em;
+      margin-top: 0.3em;
+      max-width: 100%;
     }
   }
 
@@ -268,6 +270,22 @@ main {
         color: $blue;
         font-weight: bold;
       }
+    }
+
+    #searchbox {
+        color: $text;
+
+        h2 {
+            color: $blue;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+
+            /* Disable '»' */
+            &:before {
+                content: "";
+            }
+        }
     }
   }
 

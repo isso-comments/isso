@@ -190,8 +190,10 @@ main {
       margin-top: 0; }
     main .links li {
       list-style-type: none; }
-    main .links .search input {
-      padding: 0.1em 0.4em; }
+  main .search input {
+    padding: 0.1em 0.4em;
+    margin-top: 0.3em;
+    max-width: 100%; }
   main .demo {
     display: block;
     float: left;
@@ -246,6 +248,16 @@ main {
       main .sidebar .active a {
         color: #00aac2;
         font-weight: bold; }
+    main .sidebar #searchbox {
+      color: #5c5c5c; }
+      main .sidebar #searchbox h2 {
+        color: #00aac2;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        /* Disable '»' */ }
+        main .sidebar #searchbox h2:before {
+          content: ""; }
   main .docs {
     display: block;
     float: left;
