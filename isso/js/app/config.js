@@ -1,30 +1,14 @@
+var default_config = require("app/default_config");
 var utils = require("app/utils");
 
 "use strict";
 
-var config = {
-    "css": true,
-    "css-url": null,
-    "lang": null,
-    "default-lang": "en",
-    "reply-to-self": false,
-    "require-email": false,
-    "require-author": false,
-    "reply-notifications": false,
-    "reply-notifications-default-enabled": false,
-    "max-comments-top": "inf",
-    "max-comments-nested": 5,
-    "reveal-on-click": 5,
-    "gravatar": false,
-    "avatar": true,
-    "avatar-bg": "#f0f0f0",
-    "avatar-fg": ["#9abf88", "#5698c4", "#e279a3", "#9163b6",
-                  "#be5168", "#f19670", "#e4bf80", "#447c69"].join(" "),
-    "vote": true,
-    "vote-levels": null,
-    "feed": false,
-    "page-author-hashes": "",
-};
+// Preserve default values to filter out when comparing
+// with values fetched from server
+var config = {};
+for (var key in default_config) {
+    config[key] = default_config[key];
+}
 
 var js = document.getElementsByTagName("script");
 

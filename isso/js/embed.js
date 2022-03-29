@@ -5,6 +5,7 @@
 
 var domready = require("app/lib/ready");
 var config = require("app/config");
+var default_config = require("app/default_config");
 var i18n = require("app/i18n");
 var api = require("app/api");
 var isso = require("app/isso");
@@ -86,7 +87,9 @@ function fetchComments() {
         config["max-comments-nested"]).then(
         function (rv) {
             for (var setting in rv.config) {
-                if (setting in config && config[setting] != rv.config[setting]) {
+                if (setting in config
+                    && config[setting] != default_config[setting]
+                    && config[setting] != rv.config[setting]) {
                     console.log("Isso: Client value '%s' for setting '%s' overridden by server value '%s'.\n" +
                                 "Since Isso version 0.12.6, 'data-isso-%s' is only configured via the server " +
                                 "to keep client and server in sync",
