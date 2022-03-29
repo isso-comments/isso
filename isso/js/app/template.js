@@ -1,8 +1,8 @@
-const utils = require("app/utils");
+var utils = require("app/utils");
 
-const tmpl_postbox = require("app/templates/postbox");
-const tmpl_comment = require("app/templates/comment");
-const tmpl_comment_loader = require("app/templates/comment-loader");
+var tmpl_postbox = require("app/templates/postbox");
+var tmpl_comment = require("app/templates/comment");
+var tmpl_comment_loader = require("app/templates/comment-loader");
 
 "use strict";
 

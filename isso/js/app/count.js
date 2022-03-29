@@ -1,6 +1,6 @@
-const api = require("app/api");
-const $ = require("app/dom");
-const i18n = require("app/i18n");
+var api = require("app/api");
+var $ = require("app/dom");
+var i18n = require("app/i18n");
 
 module.exports = function () {
 

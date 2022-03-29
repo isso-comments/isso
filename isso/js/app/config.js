@@ -1,4 +1,4 @@
-const utils = require("app/utils");
+var utils = require("app/utils");
 
 "use strict";
 

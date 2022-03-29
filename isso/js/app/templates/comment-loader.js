@@ -1,6 +1,7 @@
 var html = function (globals) {
-  // De-structure globals dict
-  ({comment, pluralize} = {...globals});
+  var comment = globals.comment;
+  var pluralize = globals.pluralize;
+
   return "" +
 "<div class='isso-comment-loader' id='isso-loader-" + comment.name + "'>"
 + "<a class='load_hidden' href='#'>" + pluralize('comment-hidden', comment.hidden_replies) + "</a>"

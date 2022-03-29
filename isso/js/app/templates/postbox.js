@@ -1,6 +1,9 @@
 var html = function (globals) {
-  // De-structure globals dict
-  ({i18n, author, email, website} = {...globals});
+  var i18n = globals.i18n;
+  var author = globals.author;
+  var email = globals.email;
+  var website = globals.website;
+
   return "" +
 "<div class='isso-postbox'>"
  + "<div class='form-wrapper'>"
