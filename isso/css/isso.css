@@ -47,7 +47,6 @@
 .isso-comment > .isso-avatar {
     display: block;
     float: left;
-    width: 7%;
     margin: 3px 15px 0 0;
 }
 .isso-comment > .isso-avatar > svg {

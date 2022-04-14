@@ -107,7 +107,7 @@ gravatar
 
 gravatar-url
     Url for gravatar images. The "{}" is where the email hash will be placed.
-    Defaults to "https://www.gravatar.com/avatar/{}?d=identicon"
+    Defaults to "https://www.gravatar.com/avatar/{}?d=identicon&s=55"
 
 latest-enabled
     If True it will enable the ``/latest`` endpoint. Optional, defaults
