@@ -9,6 +9,11 @@ Changelog for Isso
   This change necessitates adjusting custom CSS files to the new names.
 - Drop support for outdated Python version 3.5
   (#808, l33tname)
+- Fix avatar sizing, limit default gravatar images to 55px (#831, l33tname)
+  In case of a custom gravatar URL, the ``&s=55`` size parameter will have
+  to be added, see `Gravatar: Image requests`_.
+
+.. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 
 0.12.6 (2022-03-06)
 -------------------
