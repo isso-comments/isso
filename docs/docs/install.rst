@@ -140,7 +140,6 @@ Prebuilt Packages
   – not yet available in Portage, but you can use the ebuild to build Isso.
 
 * Arch Linux: https://aur.archlinux.org/packages/isso/
-  – install with `yaourt isso`.
 
 * Fedora: https://copr.fedoraproject.org/coprs/jujens/isso/ — copr
   repository. Built from Pypi, includes a systemctl unit script.
