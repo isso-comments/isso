@@ -3,6 +3,10 @@ Changelog for Isso
 
 %(version)s (%(date)s)
 
+- **BREAKING:** css, js: Prefix all classes with ``isso-`` (#816, ix5)
+  Now Isso's CSS is "namespaced" in order not to conflict with other classes on
+  the page.
+  This change necessitates adjusting custom CSS files to the new names.
 - Drop support for outdated Python version 3.5
   (#808, l33tname)
 

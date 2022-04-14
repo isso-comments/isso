@@ -10,33 +10,33 @@ var html = function (globals) {
 
   return "" +
 "<div class='isso-comment' id='isso-" + comment.id + "'>"
-+ (conf.gravatar ? "<div class='avatar'><img src='" + comment.gravatar_image + "'></div>" : '')
-+ (conf.avatar ? "<div class='avatar'><svg data-hash='" + comment.hash + "'</svg></div>" : '')
-+ "<div class='text-wrapper'>"
++ (conf.gravatar ? "<div class='isso-avatar'><img src='" + comment.gravatar_image + "'></div>" : '')
++ (conf.avatar ? "<div class='isso-avatar'><svg data-hash='" + comment.hash + "'</svg></div>" : '')
++ "<div class='isso-text-wrapper'>"
   + "<div class='isso-comment-header' role='meta'>"
     + (comment.website
-        ? "<a class='author' href='" + comment.website + "' rel='nofollow'>" + author + "</a>"
-        : "<span class='author'>" + author + "</span>")
-     + "<span class='spacer'>&bull;</span>"
-     + "<a class='permalink' href='#isso-" + comment.id + "'>"
+        ? "<a class='isso-author' href='" + comment.website + "' rel='nofollow'>" + author + "</a>"
+        : "<span class='isso-author'>" + author + "</span>")
+     + "<span class='isso-spacer'>&bull;</span>"
+     + "<a class='isso-permalink' href='#isso-" + comment.id + "'>"
        + "<time title='" + humanize(comment.created) + "' datetime='" + datetime(comment.created) + "'>" + humanize(comment.created) + "</time>"
      + "</a>"
-     + "<span class='note'>"
+     + "<span class='isso-note'>"
          + (comment.mode == 2 ? i18n('comment-queued') : (comment.mode == 4 ? i18n('comment-deleted') : ''))
      + "</span>"
   + "</div>" // .text-wrapper
-  + "<div class='text'>"
+  + "<div class='isso-text'>"
     + (comment.mode == 4 ? '<p>&nbsp;</p>' : comment.text)
   + "</div>" // .text
   + "<div class='isso-comment-footer'>"
     + (conf.vote
-        ? "<a class='upvote' href='#'>" + svg['arrow-up'] + "</a>"
-          + "<span class='spacer'>|</span>"
-          + "<a class='downvote' href='#'>" + svg['arrow-down'] + "</a>"
+        ? "<a class='isso-upvote' href='#'>" + svg['arrow-up'] + "</a>"
+          + "<span class='isso-spacer'>|</span>"
+          + "<a class='isso-downvote' href='#'>" + svg['arrow-down'] + "</a>"
         : '')
-     + "<a class='reply' href='#'>" + i18n('comment-reply') + "</a>"
-     + "<a class='edit' href='#'>" + i18n('comment-edit') + "</a>"
-     + "<a class='delete' href='#'>" + i18n('comment-delete') + "</a>"
+     + "<a class='isso-reply' href='#'>" + i18n('comment-reply') + "</a>"
+     + "<a class='isso-edit' href='#'>" + i18n('comment-edit') + "</a>"
+     + "<a class='isso-delete' href='#'>" + i18n('comment-delete') + "</a>"
   + "</div>" // .isso-comment-footer
   + "<div class='isso-follow-up'></div>"
 + "</div>" // .text-wrapper
