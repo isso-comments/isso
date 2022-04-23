@@ -43,11 +43,15 @@ flakes:
 
 # Note: It doesn't make sense to split up configs by output file with
 # webpack, just run everything at once
-isso/js/%.min.js: $(ISSO_JS_SRC)
+isso/js/embed.min.js: $(ISSO_JS_SRC)
 	npm run build-prod
 
-isso/js/%.dev.js: $(ISSO_JS_SRC)
+isso/js/count.min.js: isso/js/embed.min.js
+
+isso/js/embed.dev.js: $(ISSO_JS_SRC)
 	npm run build-dev
+
+isso/js/count.dev.js: isso/js/embed.dev.js
 
 # Note: No need to depend on css sources since they are no longer inlined
 js: $(ISSO_JS_DST)
