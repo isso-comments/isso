@@ -94,7 +94,7 @@ var Postbox = function(parent) {
     $("[name='preview']", el).on("click", function() {
         api.preview(utils.text($(".isso-textarea", el).innerHTML)).then(
             function(html) {
-                $(".preview .text", el).innerHTML = html;
+                $(".isso-preview .isso-text", el).innerHTML = html;
                 el.classList.add('isso-preview-mode');
             });
     });
