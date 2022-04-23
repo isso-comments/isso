@@ -10,13 +10,18 @@ RUN apk add --no-cache make
 
 # Only copy necessities, to not trigger re-builds unnecessarily
 COPY ["Makefile", "package.json", "package-lock.json", "./"]
-COPY ["isso/js/", "./isso/js/"]
-COPY ["isso/css/", "./isso/css/"]
 
 # Disable nagware and save some time skipping "security" "audits"
-RUN echo -e "audit=false\nfund=false"> /root/.npmrc
+RUN echo -e "audit=false\nfund=false" > /root/.npmrc
 
-RUN make init js
+# Install node packages from npm
+RUN make init
+
+# Copy Javascript source code
+COPY ["isso/js/", "./isso/js/"]
+
+# Run webpack to generate minified Javascript
+RUN make js
 
 # Second stage: Create production-ready Isso package
 
