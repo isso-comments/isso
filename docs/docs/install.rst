@@ -3,8 +3,8 @@ Installation
 
 Isso is a web application written in Python. If pip and virtualenv mean anything
 to you, continue with :ref:`install-from-pypi`. If you are running
-Debian/Ubuntu, Gentoo, Archlinux or Fedora, you can use
-:ref:`prebuilt-package`. If not, read the next section carefully.
+Debian/Ubuntu or Arch Linux, you can use :ref:`prebuilt-package`. If not, read
+the next section carefully.
 
 .. contents::
     :local:
@@ -136,13 +136,7 @@ Prebuilt Packages
 
 * Debian (since Buster): https://packages.debian.org/search?keywords=isso
 
-* Gentoo: http://eroen.eu/cgit/cgit.cgi/eroen-overlay/tree/www-apps/isso?h=isso
-  – not yet available in Portage, but you can use the ebuild to build Isso.
-
 * Arch Linux: https://aur.archlinux.org/packages/isso/
-
-* Fedora: https://copr.fedoraproject.org/coprs/jujens/isso/ — copr
-  repository. Built from Pypi, includes a systemctl unit script.
 
 Build a Docker image
 --------------------
