@@ -14,9 +14,7 @@ ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js \
 	       isso/js/count.min.js isso/js/count.dev.js \
 	       isso/js/count.dev.js.map isso/js/embed.dev.js.map
 
-ISSO_CSS := isso/css/isso.css
-
-ISSO_PY_SRC := $(shell git ls-files | grep -E "^isso/.+.py$$")
+ISSO_PY_SRC := $(shell find isso/ | grep -E '^isso/.+.py$$')
 
 DOCS_RST_SRC := $(shell find docs/ -type f -name '*.rst') \
 		$(wildcard docs/_isso/*) \
