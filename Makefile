@@ -36,7 +36,7 @@ SASS = sassc
 all: js site
 
 init:
-	npm install
+	npm install --no-optional
 
 flakes:
 	flake8 isso/ contrib/ --count --max-line-length=127 --show-source --statistics
