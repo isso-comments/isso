@@ -23,10 +23,28 @@ template.set("svg", svg);
 
 var isso_thread;
 var heading;
+var postbox;
 
 function init() {
-    isso_thread = $('#isso-thread');
-    heading = $.new("h4");
+    // Fetch config from server, will override any local data-isso-* attributes
+    api.config().then(
+        function (rv) {
+            for (var setting in rv.config) {
+                if (setting in config
+                    && config[setting] != default_config[setting]
+                    && config[setting] != rv.config[setting]) {
+                    console.log("Isso: Client value '%s' for setting '%s' overridden by server value '%s'.\n" +
+                                "Since Isso version 0.12.6, 'data-isso-%s' is only configured via the server " +
+                                "to keep client and server in sync",
+                                config[setting], setting, rv.config[setting], setting);
+                }
+                config[setting] = rv.config[setting]
+            }
+        },
+        function(err) {
+            console.log(err);
+        }
+    );
 
     if (config["css"] && $("style#isso-style") === null) {
         var style = $.new("link");
@@ -36,6 +54,10 @@ function init() {
         style.href = config["css-url"] ? config["css-url"] : api.endpoint + "/css/isso.css";
         $("head").append(style);
     }
+
+    isso_thread = $('#isso-thread');
+    heading = $.new('h4.isso-thread-heading');
+    postbox = new isso.Postbox(null);
 
     count();
 
@@ -50,11 +72,19 @@ function init() {
         feedLinkWrapper.appendChild(feedLink);
         isso_thread.append(feedLinkWrapper);
     }
-    // Note: Not appending the isso.Postbox here since it relies
-    // on the config object populated by elements fetched from the server,
-    // and the call to fetch those is in fetchComments()
-    isso_thread.append(heading);
-    isso_thread.append('<div id="isso-root"></div>');
+
+    // Only insert elements if not already present, respecting Single-Page-Apps
+    if (!$('h4.isso-thread-heading')) {
+        isso_thread.append(heading);
+    }
+    if (!$('.isso-postbox')) {
+        isso_thread.append(postbox);
+    } else {
+        $('.isso-postbox').value = postbox;
+    }
+    if (!$('#isso-root')) {
+        isso_thread.append('<div id="isso-root"></div>');
+    }
 
     window.addEventListener('hashchange', function() {
         if (!window.location.hash.match("^#isso-[0-9]+$")) {
@@ -76,33 +106,16 @@ function init() {
 
 function fetchComments() {
 
-    if (!$('#isso-root')) {
+    var isso_root = $('#isso-root');
+    if (!isso_root) {
         return;
     }
-
-    var isso_root = $('#isso-root');
     isso_root.textContent = '';
+
     api.fetch(isso_thread.getAttribute("data-isso-id") || location.pathname,
         config["max-comments-top"],
         config["max-comments-nested"]).then(
         function (rv) {
-            for (var setting in rv.config) {
-                if (setting in config
-                    && config[setting] != default_config[setting]
-                    && config[setting] != rv.config[setting]) {
-                    console.log("Isso: Client value '%s' for setting '%s' overridden by server value '%s'.\n" +
-                                "Since Isso version 0.12.6, 'data-isso-%s' is only configured via the server " +
-                                "to keep client and server in sync",
-                                config[setting], setting, rv.config[setting], setting);
-                }
-                config[setting] = rv.config[setting]
-            }
-
-            // Note: isso.Postbox relies on the config object populated by elements
-            // fetched from the server, so it cannot be created in init()
-            // DOM polyfill prepend() will insert the element before the first
-            // child, not before the element itself!
-            isso_root.obj.parentElement.insertBefore(new isso.Postbox(null).obj, isso_root.obj);
 
             if (rv.total_replies === 0) {
                 heading.textContent = i18n.translate("no-comments");
