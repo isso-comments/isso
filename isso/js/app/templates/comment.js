@@ -38,8 +38,8 @@ var html = function (globals) {
      + "<a class='isso-edit' href='#'>" + i18n('comment-edit') + "</a>"
      + "<a class='isso-delete' href='#'>" + i18n('comment-delete') + "</a>"
   + "</div>" // .isso-comment-footer
-  + "<div class='isso-follow-up'></div>"
 + "</div>" // .text-wrapper
++ "<div class='isso-follow-up'></div>"
 + "</div>" // .isso-comment
 };
 module.exports = html;
