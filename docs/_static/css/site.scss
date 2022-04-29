@@ -57,6 +57,9 @@ body {
   header {
     @include span-columns(1 of 2);
 
+    // Override @span-columns mixin
+    margin-right: 0;
+
     font-weight: normal;
 
     .logo {
@@ -78,20 +81,22 @@ body {
   nav {
     @include span-columns(1 of 2);
 
-    ul {
-      padding-top: 1.55em + 0.3em;
+    // Override @span-columns mixin
+    &:last-child {
+      float: right;
+    }
 
-      li {
-        display: block;
-        float: right;
-        margin-left: 2em;
+    padding-top: 1.55em + 0.3em;
 
-        font-weight: bold;
-        text-transform: uppercase;
+    a {
+      display: inline-block;
+      margin-left: 1.4em;
 
-        color: $muted-grey;
-        letter-spacing: 0.1em;
-      }
+      font-weight: bold;
+      text-transform: uppercase;
+
+      color: $muted-grey;
+      letter-spacing: 0.1em;
     }
   }
 }
@@ -271,29 +276,29 @@ main {
       }
     }
 
-    .active {
+    .current {
       border-left-color: $blue;
 
-      a {
+      a.current {
         color: $blue;
         font-weight: bold;
       }
     }
 
     #searchbox {
-        color: $text;
+      color: $text;
 
-        h2 {
-            color: $blue;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 14px;
+      h2 {
+        color: $blue;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
 
-            /* Disable '»' */
-            &:before {
-                content: "";
-            }
+        /* Disable '»' */
+        &:before {
+          content: "";
         }
+      }
     }
   }
 

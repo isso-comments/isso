@@ -52,6 +52,7 @@ body {
     float: left;
     margin-right: 16.0363113405%;
     width: 41.9818443298%;
+    margin-right: 0;
     font-weight: normal; }
     .header header:last-child {
       margin-right: 0; }
@@ -68,19 +69,19 @@ body {
     display: block;
     float: left;
     margin-right: 16.0363113405%;
-    width: 41.9818443298%; }
+    width: 41.9818443298%;
+    padding-top: 1.85em; }
     .header nav:last-child {
       margin-right: 0; }
-    .header nav ul {
-      padding-top: 1.85em; }
-      .header nav ul li {
-        display: block;
-        float: right;
-        margin-left: 2em;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #151515;
-        letter-spacing: 0.1em; }
+    .header nav:last-child {
+      float: right; }
+    .header nav a {
+      display: inline-block;
+      margin-left: 1.4em;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #151515;
+      letter-spacing: 0.1em; }
 
 .outer {
   background-color: #eeeeee;
@@ -247,9 +248,9 @@ main {
       list-style-type: none; }
       main .sidebar li a {
         color: #2f2f2f; }
-    main .sidebar .active {
+    main .sidebar .current {
       border-left-color: #00aac2; }
-      main .sidebar .active a {
+      main .sidebar .current a.current {
         color: #00aac2;
         font-weight: bold; }
     main .sidebar #searchbox {
