@@ -1,5 +1,11 @@
-Testing
--------
+##################
+Testing the Server
+##################
+
+.. todo::
+   Unit tests: unittest, pytest, coverage
+
+   Maybe some links to "how to write good python tests"
 
 Isso is tested by the `pytest`_ tool. You should also install the `coverage`_
 module with the `pytest-cov`_ plugin to receive code coverage statistics.

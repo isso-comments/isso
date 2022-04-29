@@ -3,43 +3,41 @@
 .. toctree::
    :hidden:
    :maxdepth: 1
-   :caption: Getting Started
+   :caption: Guides
 
-   Installation <install.rst>
-   Quickstart <quickstart.rst>
-   Troubleshooting <troubleshooting.rst>
+   Quickstart <guides/quickstart.rst>
+   Tips & Tricks <guides/tips-and-tricks.rst>
+   Troubleshooting <guides/troubleshooting.rst>
+   Advanced Integration <guides/advanced-integration.rst>
+   FAQ <guides/faq.rst>
+
+.. toctree::
+   :hidden:
+   :maxdepth: 0
+   :caption: Reference
+
+   Installation <reference/installation.rst>
+   Server Configuration <reference/server-config.rst>
+   Client Configuration <reference/client-config.rst>
+   Deployment <reference/deployment.rst>
+   Multiple Sites & Sub-URI <reference/multi-site-sub-uri.rst>
+   Server API <reference/server-api.rst>
 
 .. toctree::
    :hidden:
    :maxdepth: 1
-   :caption: Advanced Setup
+   :caption: Technical documentation
 
-   Sub URI <setup/sub-uri.rst>
-   Multiple Sites <setup/multiple-sites.rst>
-
-.. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Configuration
-
-   Server <configuration/server.rst>
-   Client <configuration/client.rst>
+   Server <technical-docs/server.rst>
+   Client <technical-docs/client.rst>
+   Testing <technical-docs/testing.rst>
+   Testing the Client <technical-docs/testing-client.rst>
+   Testing the Server <technical-docs/testing-server.rst>
 
 .. toctree::
    :hidden:
    :maxdepth: 1
    :caption: Contributing
 
-   Contributing <docs/contribute.rst>
-
-.. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Extras
-
-   Deployment <extras/deployment.rst>
-   Advanced Integration <extras/advanced-integration.rst>
-   Advanced Migration <extras/advanced-migration.rst>
-   Testing <extras/testing.rst>
-   API <extras/api.rst>
-   Community tools <extras/contribs.rst>
+   Contributing to Isso <contributing/index.rst>
+   Writing Documentation <contributing/documentation.rst>
