@@ -92,7 +92,7 @@ class Reredirects:
         docnames to targets."""
         for doc, target in to_be_redirected.items():
             redirect_file_abs = Path(
-                self.app.outdir).joinpath(doc).with_suffix(".html")
+                self.app.outdir).joinpath(doc, "index.html")
             redirect_file_rel = redirect_file_abs.relative_to(self.app.outdir)
 
             if redirect_file_abs.exists():
