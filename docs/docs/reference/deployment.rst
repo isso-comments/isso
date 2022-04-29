@@ -13,7 +13,6 @@ and web-scale than the built-in web server.
 * mod_wsgi_, Apache interface to WSGI
 * mod_fastcgi_, Apache  interface to FastCGI
 * uberspace.de, `try this guide (in german) <http://blog.posativ.org/2014/isso-und-uberspace-de/>`_
-* Openshift, Isso has a one click installer
 
 
 `gevent <http://www.gevent.org/>`__

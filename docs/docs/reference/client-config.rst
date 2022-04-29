@@ -29,12 +29,17 @@ the embed tag, as well as the thread ID, e.g.:
 
     <section id="isso-thread" data-title="Foo!" data-isso-id="/path/to/resource"></section>
 
+Overriding translation strings
+------------------------------
+
 Additionally, you can override any translation string for any language by adding
 a ``data-isso-`` attribute that is equal to the translation key (found `here`__) with
 ``-text-[lang]`` appended to it. So, for example, if you want to override the
 english translation of the ``postbox-notification`` message, you could add:
 
-``data-isso-postbox-notification-text-en="Select to be notified of replies to your comment"``
+.. code-block:: html
+
+    data-isso-postbox-notification-text-en="Select to be notified of replies to your comment"
 
 .. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/en.js
 
