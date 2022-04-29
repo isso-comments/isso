@@ -1,0 +1,4 @@
+# Files that should not be sent to the docker daemon when building
+# Docker will have its own cache of node packages and its own python venv
+node_modules/
+.venv/
