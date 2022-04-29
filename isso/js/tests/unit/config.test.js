@@ -1,3 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
+
+/* Keep the above exactly as-is!
+ * https://jestjs.io/docs/configuration#testenvironment-string
+ * https://jestjs.io/docs/configuration#testenvironmentoptions-object
+ */
+
 "use strict";
 
 test("Client configuration - no languages", () => {

@@ -35,8 +35,9 @@ const config = {
 
   /* Run tests in a virtual DOM environment
    * See https://jestjs.io/docs/tutorial-jquery
+   * -> use per-file testEnvironment stanza instead
    */
-  testEnvironment: "jsdom",
+  //testEnvironment: "jsdom",
 };
 
 module.exports = config;
