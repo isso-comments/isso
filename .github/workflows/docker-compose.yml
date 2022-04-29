@@ -1,8 +1,12 @@
 name: E2e tests with docker
 
 on:
-  - push
-  - pull_request
+  push:
+    paths:
+      - "./**"
+      - "!docs/**"
+      - "!.github/**"
+      - ".github/workflows/docker-compose.yml"
 
 jobs:
   test:
