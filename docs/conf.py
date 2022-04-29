@@ -50,8 +50,12 @@ source_suffix = '.rst'
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
-# The master toctree document.
+# # The master toctree document.
 master_doc = 'docs/toc'
+# The document name of the “root” document, that is, the document that contains
+# the root toctree directive. Default is 'index'.
+# (Changed in version 4.0: Renamed root_doc from master_doc.)
+root_doc = 'docs/toc'
 
 # General information about the project.
 project = 'Isso'
@@ -131,7 +135,7 @@ html_theme_path = ["."]
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "favicon.ico"
+html_favicon = "_static/isso.svg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -193,6 +197,7 @@ html_context = {
 # -- Options for todo extension ----------------------------------------------
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
+# See https://sphinx-doc.org/en/master/usage/extensions/todo.html
 todo_include_todos = False
 
 # -- Options for reredirects extension ----------------------------------------------
