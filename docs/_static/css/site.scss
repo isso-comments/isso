@@ -7,6 +7,7 @@ $max-width: em(1280); // Max-width of the outer container, divided by 16
 $blue: #00aac2;
 $text: #2f2f2f;
 $muted-grey: #151515;
+$admon-todo: #f0b37e;
 
 * {
   margin: 0;
@@ -418,15 +419,80 @@ main {
     margin-bottom: 0.4em;
   }
 
-  .admonition {
+}
 
-    p + p {
-      margin-top: 0.25em;
-    }
+/* Admonitions
+ * Colors taken from sphinx-rtd-theme */
+.admonition {
+  padding-bottom: 1em;
+  margin-bottom: 1em;
 
-    p:not(:first-child) {
-      margin-left: 2em;
+  &.attention, &.caution, &.warning, &.admonition-todo {
+    background: #ffedcc;
+
+    .admonition-title {
+      background: $admon-todo;
+
+      &:before {
+        color: $admon-todo;
+      }
     }
   }
+  &.danger, &.error {
+    background: #fdf3f2;
 
+    .admonition-title {
+      background: #f29f97;
+
+      &:before {
+        color: #f29f97;
+      }
+    }
+  }
+  &.hint, &.important, &.tip {
+    background: #dbfaf4;
+
+    .admonition-title {
+      background: #1abc9c;
+
+      &:before {
+        color: #1abc9c;
+      }
+    }
+  }
+  &.note {
+    background: #e7f2fa;
+
+    .admonition-title {
+      background: #6ab0de;
+
+      &:before {
+        color: #6ab0de;
+      }
+    }
+  }
+  .admonition-title {
+    padding: 0.3em 0.52em;
+    margin: 1em 0;
+    font-weight: bold;
+    color: white;
+
+    &:before {
+      content: "!";
+      background: white;
+      display: block;
+      margin-right: 0.4rem;
+      float: left;
+      width: 1.4rem;
+      height: 1.4rem;
+      font-family: monospace;
+      font-size: 1.3rem;
+      border-radius: 999px;
+      text-align: center;
+      line-height: 1.4rem;
+    }
+  }
+  p {
+    padding: 0 0.8em;
+  }
 }
