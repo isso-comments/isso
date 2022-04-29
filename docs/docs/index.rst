@@ -10,9 +10,9 @@ Documentation overview:
 .. toctree::
    :maxdepth: 1
 
-   install
-   quickstart
-   troubleshooting
+   guides/quickstart
+   reference/installation
+   guides/troubleshooting
 
 What's Isso?
 ------------
