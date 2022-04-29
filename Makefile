@@ -55,6 +55,8 @@ isso/js/count.dev.js: isso/js/embed.dev.js
 # Note: No need to depend on css sources since they are no longer inlined
 js: $(ISSO_JS_DST)
 
+css: $(DOCS_CSS_DST)
+
 ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
 	$(SASS) $(DOCS_CSS_SRC) $@
 
