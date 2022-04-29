@@ -215,3 +215,21 @@ html_context = {
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+# -- Options for reredirects extension ----------------------------------------------
+redirects = {
+    "contribute/":                        "/docs/contributing/",
+    "docs/install/":                      "/docs/reference/installation/",
+    "docs/quickstart/":                   "/docs/guides/quickstart/",
+    "docs/troubleshooting/":              "/docs/guides/troubleshooting/",
+    "docs/setup/sub-uri/":                "/docs/reference/multi-site-sub-uri/#sub-uri",
+    "docs/setup/multiple-sites/":         "/docs/reference/multi-site-sub-uri/#multiple-sites",
+    "docs/configuration/server/":         "/docs/reference/server-config/",
+    "docs/configuration/client/":         "/docs/reference/client-config/",
+    "docs/extras/deployment/":            "/docs/reference/deployment/",
+    "docs/extras/advanced-integration/":  "/docs/guides/advanced-integration/",
+    "docs/extras/advanced-migration/":    "/docs/guides/tips-and-tricks/#advanced-migration",
+    "docs/extras/testing/":               "/docs/technical-docs/testing/",
+    "docs/extras/api/":                   "/docs/reference/server-api/",
+    "docs/extras/contribs/":              "/community/",
+}
