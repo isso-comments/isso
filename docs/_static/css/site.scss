@@ -24,7 +24,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 body {
-  font-size: 14px;
+  font-size: 16px;
   font-family: sans-serif;
   color: black;
 }
@@ -177,10 +177,6 @@ main {
   margin-bottom: 2em;
   line-height: 1.6em;
 
-  h2:before {
-    content: "» ";
-  }
-
   .links {
     @include span-columns(1 of 3);
 
@@ -294,11 +290,6 @@ main {
         font-weight: bold;
         text-transform: uppercase;
         font-size: 14px;
-
-        /* Disable '»' */
-        &:before {
-          content: "";
-        }
       }
     }
   }
@@ -310,30 +301,36 @@ main {
     color: $text;
 
     h2, h3, h4 {
-      margin-top: 1em;
+      margin-top: 1.2em;
       margin-bottom: 1em;
 
     }
 
     h2 {
-      font-size: 24px;
+      font-size: 32px;
     }
 
     h3 {
-      font-size: 18px;
+      font-size: 24px;
+      font-weight: bold;
     }
 
     h4 {
-      font-size: 14px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    pre {
+      color: rgb(77, 77, 76);
     }
 
     pre, code {
-      color: rgb(77, 77, 76);
-      font-size: 12px;
+      font-size: 14px;
       font-family: Monaco, Menlo, Consolas, monospace;
     }
 
     code {
+      color: #002e40;
       background-color: #eeeeee;
       padding: 0.2em 0.3em;
     }
@@ -409,7 +406,12 @@ main {
 
   dt {
     font-weight: bold;
-    margin: 0.4em 0;
+    margin: 1.4em 0 0.4em;
+    font-size: 16px;
+    line-height: 1.4em;
+  }
+  dt code {
+    font-size: 16px;
   }
   dd {
     margin-left: 1.2em;

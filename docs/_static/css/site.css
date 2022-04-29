@@ -16,7 +16,7 @@ h1, h2, h3, h4, h5, h6 {
   font-style: normal; }
 
 body {
-  font-size: 14px;
+  font-size: 16px;
   font-family: sans-serif;
   color: black; }
 
@@ -174,8 +174,6 @@ main {
     display: table; }
   main:after {
     clear: both; }
-  main h2:before {
-    content: "» "; }
   main .links {
     display: block;
     float: left;
@@ -259,10 +257,7 @@ main {
         color: #00aac2;
         font-weight: bold;
         text-transform: uppercase;
-        font-size: 14px;
-        /* Disable '»' */ }
-        main .sidebar #searchbox h2:before {
-          content: ""; }
+        font-size: 14px; }
   main .docs {
     display: block;
     float: left;
@@ -273,19 +268,23 @@ main {
     main .docs:last-child {
       margin-right: 0; }
     main .docs h2, main .docs h3, main .docs h4 {
-      margin-top: 1em;
+      margin-top: 1.2em;
       margin-bottom: 1em; }
     main .docs h2 {
-      font-size: 24px; }
+      font-size: 32px; }
     main .docs h3 {
-      font-size: 18px; }
+      font-size: 24px;
+      font-weight: bold; }
     main .docs h4 {
-      font-size: 14px; }
+      font-size: 18px;
+      font-weight: bold; }
+    main .docs pre {
+      color: #4d4d4c; }
     main .docs pre, main .docs code {
-      color: #4d4d4c;
-      font-size: 12px;
+      font-size: 14px;
       font-family: Monaco, Menlo, Consolas, monospace; }
     main .docs code {
+      color: #002e40;
       background-color: #eeeeee;
       padding: 0.2em 0.3em; }
     main .docs .highlight {
@@ -331,7 +330,11 @@ main {
     color: #00aac2; }
   main dt {
     font-weight: bold;
-    margin: 0.4em 0; }
+    margin: 1.4em 0 0.4em;
+    font-size: 16px;
+    line-height: 1.4em; }
+  main dt code {
+    font-size: 16px; }
   main dd {
     margin-left: 1.2em; }
   main dl {
