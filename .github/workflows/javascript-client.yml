@@ -34,7 +34,9 @@ jobs:
         cache: 'npm'
         cache-dependency-path: package.json
 
-    - name: Install Javascript dependencies using npm
+    - name: Install Javascript test dependencies using npm
+      env:
+        ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
       run: npm install
 
     - name: Run Javascript Jest test suite - unit tests
@@ -62,7 +64,7 @@ jobs:
         cache-dependency-path: package.json
 
     - name: Install Javascript dependencies using npm
-      run: npm install
+      run: make init
 
     - name: Create Javascript client files
       run: make js
