@@ -94,8 +94,8 @@ originating from CORS_. Also, privacy-protecting browser addons such as
         }
     }
 
-Now, the website integration is just as described in :doc:`../quickstart` but
-with a different location.
+Now, the website integration is just as described in
+:doc:`/docs/guides/quickstart` but with a different location.
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 .. _Request Policy: https://www.requestpolicy.com/

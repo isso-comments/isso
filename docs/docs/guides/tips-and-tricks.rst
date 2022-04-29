@@ -50,6 +50,8 @@ Use lazy-loading only if you are desperately trying to save bandwidth. By
 specifying ``async`` in the ``<script`` tag, loading the Isso Javascript will
 not render-block anyway.
 
+.. _advanced-migration:
+
 Advanced Migration
 ------------------
 
