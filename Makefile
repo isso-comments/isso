@@ -29,6 +29,12 @@ DOCS_CSS_DST := docs/_static/css/site.css
 
 DOCS_HTML_DST := docs/_build/html
 
+APIDOC_SRC := apidoc/apidoc.json apidoc/header.md apidoc/footer.md
+
+APIDOC_DST := apidoc/_output
+
+APIDOC = npx --no-install apidoc
+
 SASS = sassc
 
 all: js site
@@ -62,6 +68,15 @@ ${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
 
 site: $(DOCS_HTML_DST)
 
+# Generate docs using apiDoc. Config inside apidoc.json
+# https://apidocjs.com/
+apidoc-init:
+	npm install apidoc
+
+apidoc: $(ISSO_PY_SRC) $(APIDOC_SRC)
+	$(APIDOC) --config apidoc/apidoc.json \
+		--input isso/views/ --output $(APIDOC_DST)
+
 coverage: $(ISSO_PY_SRC)
 	coverage run --omit='*/tests/*' --source isso -m pytest
 	coverage report --omit='*/tests/*'
@@ -72,6 +87,7 @@ test: $($ISSO_PY_SRC)
 clean:
 	rm -f $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
+	rm -rf $(APIDOC_DST)
 
-.PHONY: clean site init js coverage test
+.PHONY: apidoc apidoc-init clean site init js coverage test
 

@@ -1,0 +1,20 @@
+{
+  "name": "Isso API",
+  "title": "Isso API",
+  "description": "",
+  "version": "0.12.6",
+  "order": ["Thread",  "Comment"],
+  "url" : "https://comments.example.com",
+  "header": {
+    "title": "Introduction",
+    "filename": "header.md"
+  },
+  "footer": {
+    "title": "Help",
+    "filename": "footer.md"
+  },
+  "template": {
+    "withCompare": false
+  }
+}
+
