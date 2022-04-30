@@ -4,18 +4,3 @@
         <h1>{{- title -}}</h1>
     </header>
 {% endblock %}
-{% block body %}
-    <div class="sidebar">
-    {% if pagename.startswith("docs/") %}
-        {% include "sidebar-docs.html" %}
-    {% endif %}
-    </div>
-    <div class="docs">
-          {%- if hasdoc(pagename) and display_github %}
-          <div class="vcs-edit-container">
-          <a href="https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/{{ theme_vcs_pageview_mode or "blob" }}/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ page_source_suffix or ".html" }}" class="vcs-edit"><img src="{{ pathto('_static/github.svg', 1) }}" /> Edit on GitHub</a>
-          </div>
-          {%- endif %}
-        {{ body }}
-    </div>
-{% endblock %}

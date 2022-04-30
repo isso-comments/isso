@@ -125,6 +125,10 @@ html_theme_options = {
     #"titles_only": True,
 }
 
+# If true, the text around the keyword is shown as summary of each search result.
+# Default is True.
+html_show_search_summary = True
+
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ["."]
 
@@ -163,7 +167,13 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    'docs/**': ['sidebar-docs.html'],
+    'index': [],
+    'news': [],
+    'community': [],
+    'search': [],
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

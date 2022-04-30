@@ -1,11 +1,6 @@
-{% macro doc(path, title) %}
-    {%- if pagename == path -%}
-    <li class="active">
-    {% else %}
-    <li>
-    {%- endif -%}
-    <a href="{{ pathto(path) }}">{{ title }}</a></li>
-{% endmacro %}
+{%- block sidebarsearch %}
+{%- include "searchbox.html" %}
+{%- endblock %}
 
 {%- block menu %}
   {%- set toctree = toctree(maxdepth=theme_navigation_depth|int,
@@ -18,8 +13,4 @@
     <!-- Local TOC -->
     <div class="local-toc">{{ toc }}</div>
   {%- endif %}
-{%- endblock %}
-
-{%- block sidebarsearch %}
-{%- include "searchbox.html" %}
 {%- endblock %}
