@@ -18,6 +18,9 @@
 /isso/js/count.dev.js
 /isso/js/**/*.map
 
+# apiDoc generated output
+apidoc/_output/
+
 node_modules/
 
 /pip-selfcheck.json
