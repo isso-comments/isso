@@ -1,10 +1,6 @@
 Tips & Tricks
 =============
 
-- Removing unused languages
-- Importing & exporting comments (integrate migration docs)
-- Keeping compat using babel
-
 
 Lazy-loading on scroll
 ----------------------
@@ -121,3 +117,20 @@ Next you can import you json dump:
 
     ~> isso -c /path/to/isso.cfg import -t generic comment-dump.json
     [100%]  53 threads, 192 comments
+
+.. attention::
+
+   This section of the Isso documentation is incomplete. Please help by expanding it.
+
+   Click the ``Edit on GitHub`` button in the top right corner and read the
+   GitHub Issue named
+   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   for further information.
+
+   **What's missing?**
+
+   - Removing unused languages
+   - Importing & exporting comments (integrate migration docs)
+   - Keeping compat using babel
+
+   ... and other collected tips & tricks, maybe also from the wiki.

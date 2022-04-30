@@ -2,13 +2,31 @@
 Testing the Client
 ##################
 
-Unit tests
-----------
+.. attention::
 
-Jest, how to write good tests (link to mailgun(?) standards)
-How to update and check in snapshots
+   This section of the Isso documentation is incomplete. Please help by expanding it.
 
-Integration tests
------------------
+   Click the ``Edit on GitHub`` button in the top right corner and read the
+   GitHub Issue named
+   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   for further information.
 
-Puppeteer, maybe docker setup?
+   **What's missing?**
+
+   Unit tests:
+
+   - Jest, how to write good tests (link to
+     `MailChimp standards <Github Action should build and deploy api docs>`_)
+   - How to update and check in snapshots
+
+   Integration tests:
+
+   - How Puppeteer works
+   - How to take advantage of ``jest-puppeteer` special ``expect`` functions
+
+   Running client tests in general:
+
+   - Ways of running tests inside and outside of docker containers
+   - Link to the GitHub actions that run on every Pull Request
+
+   ... and other things about client testing that should be documented.

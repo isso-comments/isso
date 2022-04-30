@@ -2,11 +2,6 @@
 Testing the Server
 ##################
 
-.. todo::
-   Unit tests: unittest, pytest, coverage
-
-   Maybe some links to "how to write good python tests"
-
 Isso is tested by the `pytest`_ tool. You should also install the `coverage`_
 module with the `pytest-cov`_ plugin to receive code coverage statistics.
 
@@ -34,3 +29,19 @@ standard test suite via ``make tests coverage``.
 .. _pytest: https://docs.pytest.org/
 .. _pytest-cov: https://github.com/pytest-dev/pytest-cov
 .. _coverage: https://coverage.readthedocs.io/en/latest/
+
+.. attention::
+
+   This section of the Isso documentation is incomplete. Please help by expanding it.
+
+   Click the ``Edit on GitHub`` button in the top right corner and read the
+   GitHub Issue named
+   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   for further information.
+
+   **What's missing?**
+
+   - Unit tests: unittest, pytest, coverage
+   - Maybe some links to "how to write good python tests"
+
+   ... and other things about server testing that should be documented.
