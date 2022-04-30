@@ -1,12 +1,18 @@
 {%- if pagename != "search" %}
-<div id="searchbox" style="display: none">
+<div role="search" id="searchbox" style="display: none">
   <h2>{{ _('Quick search') }}</h2>
     <form class="search" action="{{ pathto('search') }}" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="{{ _('Go') }}" />
+      <input type="text"
+             name="q"
+             aria-labelledby="searchlabel"
+             autocomplete="off"
+             autocorrect="off"
+             autocapitalize="off"
+             spellcheck="false"
+      />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 {%- endif %}

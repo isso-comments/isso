@@ -192,6 +192,11 @@ main {
       margin-top: 0; }
     main .links li {
       list-style-type: none; }
+  main .highlighted {
+    background: #f1c40f;
+    box-shadow: 0 0 0 2px #f1c40f;
+    font-weight: bold;
+    color: #2f2f2f; }
   main .search input {
     padding: 0.1em 0.4em;
     margin-top: 0.3em;
@@ -252,7 +257,8 @@ main {
         color: #00aac2;
         font-weight: bold; }
     main .sidebar #searchbox {
-      color: #2f2f2f; }
+      color: #2f2f2f;
+      margin: 0 0 1.4em; }
       main .sidebar #searchbox h2 {
         color: #00aac2;
         font-weight: bold;
@@ -316,15 +322,15 @@ main {
         list-style-type: square;
         margin-left: 2em;
         margin-right: 2em; }
-    main .docs .vcs-edit {
-      font-size: 1.16em;
-      line-height: 1.16em;
-      float: right; }
-      main .docs .vcs-edit img {
-        height: 20px;
-        width: 20px;
-        margin-right: 0.2em;
-        vertical-align: top; }
+  main .vcs-edit {
+    font-size: 1.16em;
+    line-height: 1.16em;
+    float: right; }
+    main .vcs-edit img {
+      height: 20px;
+      width: 20px;
+      margin-right: 0.2em;
+      vertical-align: top; }
   main a {
     text-decoration: none;
     color: #00aac2; }

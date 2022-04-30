@@ -1,5 +1,20 @@
 <!DOCTYPE html>
 
+{%- set render_sidebar = (not embedded) and (not theme_nosidebar|tobool) and
+                         (sidebars != []) %}
+
+{%- macro sidebar() %}
+      {%- if render_sidebar %}
+          {%- if sidebars != None %}
+          <div role="navigation" class="sidebar">
+            {%- for sidebartemplate in sidebars %}
+            {%- include sidebartemplate %}
+            {%- endfor %}
+          </div>
+          {%- endif %}
+      {%- endif %}
+{%- endmacro %}
+
 {%- macro script() %}
     {%- for js in script_files %}
     {{ js_tag(js) }}
@@ -14,6 +29,14 @@
     <link rel="stylesheet" href="{{ pathto(css, 1)|e }}" type="text/css" />
       {%- endif %}
     {%- endfor %}
+{%- endmacro %}
+
+{%- macro vcs_edit_link() %}
+{%- if hasdoc(pagename) and display_github %}
+<div class="vcs-edit-container">
+<a href="https://{{ github_host|default("github.com") }}/{{ github_user }}/{{ github_repo }}/{{ theme_vcs_pageview_mode or "blob" }}/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ page_source_suffix or ".html" }}" class="vcs-edit"><img src="{{ pathto('_static/github.svg', 1) }}" /> Edit on GitHub</a>
+</div>
+{%- endif %}
 {%- endmacro %}
 
 <html>
@@ -52,7 +75,6 @@
     <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}" />
     {%- endif %}
 {%- endblock %}
-{%- block extrahead %} {% endblock %}
 </head>
 <body>
     <div class="wrapper">
@@ -80,7 +102,19 @@
 
 
         <main>
-        {% block body %} {% endblock %}
+        {% block main %}
+            {{ sidebar() }}
+
+            <div class="docs">
+                {{ vcs_edit_link() }}
+
+                <div role="main">
+                {% block body %}
+                {{ body }}
+                {% endblock %}
+                </div>
+            </div>
+        {% endblock %}
         </main>
 
         <div class="push"></div>

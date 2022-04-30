@@ -66,8 +66,9 @@ css: $(DOCS_CSS_DST)
 ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
 	$(SASS) $(DOCS_CSS_SRC) $@
 
+# Sphinx: "-W" flag turns warnings into errors, can be disabled for debugging
 ${DOCS_HTML_DST}: $(DOCS_RST_SRC) $(DOCS_CSS_DST)
-	sphinx-build -b dirhtml docs/ $@
+	sphinx-build -b dirhtml -W docs/ $@
 
 site: $(DOCS_HTML_DST)
 

@@ -8,6 +8,7 @@ $blue: #00aac2;
 $text: #2f2f2f;
 $muted-grey: #151515;
 $admon-todo: #f0b37e;
+$highlighted: #f1c40f;
 
 * {
   margin: 0;
@@ -202,6 +203,13 @@ main {
     }
   }
 
+  .highlighted {
+    background: $highlighted;
+    box-shadow: 0 0 0 2px $highlighted;
+    font-weight: bold;
+    color: $text;
+  }
+
   .search {
     input {
       padding: 0.1em 0.4em;
@@ -284,6 +292,7 @@ main {
 
     #searchbox {
       color: $text;
+      margin: 0 0 1.4em;
 
       h2 {
         color: $blue;
@@ -384,19 +393,19 @@ main {
         margin-right: 2em;
       }
     }
+  }
 
-    // "Edit on Github" link
-    .vcs-edit {
-        font-size: 1.16em;
-        line-height: 1.16em;
-        float: right;
-        & img {
-          height: 20px;
-          width: 20px;
-          margin-right: 0.2em;
-          vertical-align: top;
-        }
-    }
+  // "Edit on Github" link
+  .vcs-edit {
+      font-size: 1.16em;
+      line-height: 1.16em;
+      float: right;
+      & img {
+        height: 20px;
+        width: 20px;
+        margin-right: 0.2em;
+        vertical-align: top;
+      }
   }
 
   a {
