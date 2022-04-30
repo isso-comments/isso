@@ -29,7 +29,7 @@ DOCS_CSS_DST := docs/_static/css/site.css
 
 DOCS_HTML_DST := docs/_build/html
 
-APIDOC_SRC := apidoc/apidoc.json
+APIDOC_SRC := apidoc/apidoc.json apidoc/header.md apidoc/footer.md
 
 APIDOC_DST := apidoc/_output
 
