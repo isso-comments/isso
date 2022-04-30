@@ -46,6 +46,7 @@
     {%- block htmltitle %}
     <title>{{ title|striptags|e }}</title>
     {%- endblock %}
+    {%- block extrahead %} {% endblock %}
     {%- block css %}
     {{- css() }}
     {%- endblock %}
