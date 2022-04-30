@@ -1,12 +1,12 @@
 {
-		"name": "isso",
-		"description": "a Disqus alternative",
-		"title": "isso API",
-		"version": "0.12.6",
-		"order": ["Thread",  "Comment"],
-		"template": {
-			"withCompare": false
-		}
-
+  "name": "isso",
+  "title": "Isso API",
+  "description": "a Disqus alternative",
+  "version": "0.12.6",
+  "order": ["Thread",  "Comment"],
+  "url" : "https://comments.example.com",
+  "template": {
+    "withCompare": false
+  }
 }
 
