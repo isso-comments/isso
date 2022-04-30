@@ -42,6 +42,17 @@ jobs:
       - name: Build docs
         run: make site
 
+      - name: Set up NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Generate API docs
+        run: make apidoc-init apidoc
+
+      - name: Copy API docs to docs/ dir
+        run: cp -r apidoc/_output/ docs/_build/html/docs/api
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
