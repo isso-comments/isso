@@ -1,5 +1,6 @@
+############
 Installation
-============
+############
 
 Isso is a web application written in Python. If pip and virtualenv mean anything
 to you, continue with :ref:`install-from-pypi`. If you are running

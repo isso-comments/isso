@@ -16,7 +16,7 @@ h1, h2, h3, h4, h5, h6 {
   font-style: normal; }
 
 body {
-  font-size: 14px;
+  font-size: 16px;
   font-family: sans-serif;
   color: black; }
 
@@ -52,6 +52,7 @@ body {
     float: left;
     margin-right: 16.0363113405%;
     width: 41.9818443298%;
+    margin-right: 0;
     font-weight: normal; }
     .header header:last-child {
       margin-right: 0; }
@@ -68,19 +69,19 @@ body {
     display: block;
     float: left;
     margin-right: 16.0363113405%;
-    width: 41.9818443298%; }
+    width: 41.9818443298%;
+    padding-top: 1.85em; }
     .header nav:last-child {
       margin-right: 0; }
-    .header nav ul {
-      padding-top: 1.85em; }
-      .header nav ul li {
-        display: block;
-        float: right;
-        margin-left: 2em;
-        font-weight: bold;
-        text-transform: uppercase;
-        color: #151515;
-        letter-spacing: 0.1em; }
+    .header nav:last-child {
+      float: right; }
+    .header nav a {
+      display: inline-block;
+      margin-left: 1.4em;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #151515;
+      letter-spacing: 0.1em; }
 
 .outer {
   background-color: #eeeeee;
@@ -173,8 +174,6 @@ main {
     display: table; }
   main:after {
     clear: both; }
-  main h2:before {
-    content: "» "; }
   main .links {
     display: block;
     float: left;
@@ -247,9 +246,9 @@ main {
       list-style-type: none; }
       main .sidebar li a {
         color: #2f2f2f; }
-    main .sidebar .active {
+    main .sidebar .current {
       border-left-color: #00aac2; }
-      main .sidebar .active a {
+      main .sidebar .current a.current {
         color: #00aac2;
         font-weight: bold; }
     main .sidebar #searchbox {
@@ -258,10 +257,7 @@ main {
         color: #00aac2;
         font-weight: bold;
         text-transform: uppercase;
-        font-size: 14px;
-        /* Disable '»' */ }
-        main .sidebar #searchbox h2:before {
-          content: ""; }
+        font-size: 14px; }
   main .docs {
     display: block;
     float: left;
@@ -272,19 +268,23 @@ main {
     main .docs:last-child {
       margin-right: 0; }
     main .docs h2, main .docs h3, main .docs h4 {
-      margin-top: 1em;
+      margin-top: 1.2em;
       margin-bottom: 1em; }
     main .docs h2 {
-      font-size: 24px; }
+      font-size: 32px; }
     main .docs h3 {
-      font-size: 18px; }
+      font-size: 24px;
+      font-weight: bold; }
     main .docs h4 {
-      font-size: 14px; }
+      font-size: 18px;
+      font-weight: bold; }
+    main .docs pre {
+      color: #4d4d4c; }
     main .docs pre, main .docs code {
-      color: #4d4d4c;
-      font-size: 12px;
+      font-size: 14px;
       font-family: Monaco, Menlo, Consolas, monospace; }
     main .docs code {
+      color: #002e40;
       background-color: #eeeeee;
       padding: 0.2em 0.3em; }
     main .docs .highlight {
@@ -330,12 +330,62 @@ main {
     color: #00aac2; }
   main dt {
     font-weight: bold;
-    margin: 0.4em 0; }
+    margin: 1.4em 0 0.4em;
+    font-size: 16px;
+    line-height: 1.4em; }
+  main dt code {
+    font-size: 16px; }
   main dd {
     margin-left: 1.2em; }
   main dl {
     margin-bottom: 0.4em; }
-  main .admonition p + p {
-    margin-top: 0.25em; }
-  main .admonition p:not(:first-child) {
-    margin-left: 2em; }
+
+/* Admonitions
+ * Colors taken from sphinx-rtd-theme */
+.admonition {
+  padding-bottom: 1em;
+  margin-bottom: 1em; }
+  .admonition.attention, .admonition.caution, .admonition.warning, .admonition.admonition-todo {
+    background: #ffedcc; }
+    .admonition.attention .admonition-title, .admonition.caution .admonition-title, .admonition.warning .admonition-title, .admonition.admonition-todo .admonition-title {
+      background: #f0b37e; }
+      .admonition.attention .admonition-title:before, .admonition.caution .admonition-title:before, .admonition.warning .admonition-title:before, .admonition.admonition-todo .admonition-title:before {
+        color: #f0b37e; }
+  .admonition.danger, .admonition.error {
+    background: #fdf3f2; }
+    .admonition.danger .admonition-title, .admonition.error .admonition-title {
+      background: #f29f97; }
+      .admonition.danger .admonition-title:before, .admonition.error .admonition-title:before {
+        color: #f29f97; }
+  .admonition.hint, .admonition.important, .admonition.tip {
+    background: #dbfaf4; }
+    .admonition.hint .admonition-title, .admonition.important .admonition-title, .admonition.tip .admonition-title {
+      background: #1abc9c; }
+      .admonition.hint .admonition-title:before, .admonition.important .admonition-title:before, .admonition.tip .admonition-title:before {
+        color: #1abc9c; }
+  .admonition.note {
+    background: #e7f2fa; }
+    .admonition.note .admonition-title {
+      background: #6ab0de; }
+      .admonition.note .admonition-title:before {
+        color: #6ab0de; }
+  .admonition .admonition-title {
+    padding: 0.3em 0.52em;
+    margin: 1em 0;
+    font-weight: bold;
+    color: white; }
+    .admonition .admonition-title:before {
+      content: "!";
+      background: white;
+      display: block;
+      margin-right: 0.4rem;
+      float: left;
+      width: 1.4rem;
+      height: 1.4rem;
+      font-family: monospace;
+      font-size: 1.3rem;
+      border-radius: 999px;
+      text-align: center;
+      line-height: 1.4rem; }
+  .admonition p {
+    padding: 0 0.8em; }

@@ -7,31 +7,18 @@
     <a href="{{ pathto(path) }}">{{ title }}</a></li>
 {% endmacro %}
 
-<strong>Getting Started</strong>
-<ul>
-    {{ doc("docs/install", "Installation") }}
-    {{ doc("docs/quickstart", "Quickstart") }}
-    {{ doc("docs/troubleshooting", "Troubleshooting") }}
-</ul>
-<strong>Advanced Setup</strong>
-<ul>
-    {{ doc("docs/setup/sub-uri", "Sub URI") }}
-    {{ doc("docs/setup/multiple-sites", "Multiple Sites") }}
-</ul>
-<strong>Configuration</strong>
-<ul>
-    {{ doc("docs/configuration/server", "Server") }}
-    {{ doc("docs/configuration/client", "Client") }}
-</ul>
-<strong>Extras</strong>
-<ul>
-    {{ doc("docs/extras/deployment", "Deployment") }}
-    {{ doc("docs/extras/advanced-integration", "Advanced Integration") }}
-    {{ doc("docs/extras/advanced-migration", "Advanced Migration") }}
-    {{ doc("docs/extras/testing", "Testing") }}
-    {{ doc("docs/extras/api", "API") }}
-    {{ doc("docs/extras/contribs", "Community tools") }}
-</ul>
+{%- block menu %}
+  {%- set toctree = toctree(maxdepth=theme_navigation_depth|int,
+                            collapse=theme_collapse_navigation|tobool,
+                            includehidden=theme_includehidden|tobool,
+                            titles_only=theme_titles_only|tobool) %}
+  {%- if toctree %}
+    {{ toctree }}
+  {%- else %}
+    <!-- Local TOC -->
+    <div class="local-toc">{{ toc }}</div>
+  {%- endif %}
+{%- endblock %}
 
 {%- block sidebarsearch %}
 {%- include "searchbox.html" %}

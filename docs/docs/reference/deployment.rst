@@ -13,7 +13,6 @@ and web-scale than the built-in web server.
 * mod_wsgi_, Apache interface to WSGI
 * mod_fastcgi_, Apache  interface to FastCGI
 * uberspace.de, `try this guide (in german) <http://blog.posativ.org/2014/isso-und-uberspace-de/>`_
-* Openshift, Isso has a one click installer
 
 
 `gevent <http://www.gevent.org/>`__
@@ -248,26 +247,3 @@ Finally, copy'n'paste to `/var/www/isso.fcgi` (or whatever location you prefer):
         config.default_file(),
         "/path/to/isso.cfg"))
     WSGIServer(application).run()
-
-`Openshift <http://openshift.com>`__
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-With `Isso Openshift Deployment Kit`_, Isso can be installed on Open
-Shift with just one click. Make sure you already have installed ``rhc``
-(`instructions`_) and completed the setup.
-
-1. Run the following, you will get an Open Shift instance installed with
-   Isso:
-
-   ::
-
-       rhc create-app appname python-2.7 --from-code https://github.com/avinassh/isso-openshift.git
-
-2. Above step also clones Git repository of your Open Shift instance, in
-   current directory. Make changes to the configuration file and push
-   back to Openshift, it will be redeployed with new settings.
-
-3. Visit ``http://<yourappname>-<openshift-namespace>.com/info`` to
-   verify Isso is deployed properly and is working.
-
-.. _Isso Openshift Deployment Kit: https://github.com/avinassh/isso-openshift
-.. _instructions: https://developers.openshift.com/en/managing-client-tools.html

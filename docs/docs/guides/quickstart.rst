@@ -1,8 +1,9 @@
 Quickstart
 ==========
 
-Assuming you have successfully :doc:`installed <install>` Isso, here's
-a quickstart guide that covers the most common setup. Sections covered:
+Assuming you have successfully :doc:`installed </docs/reference/installation>`
+Isso, here's a quickstart guide that covers the most common setup. Sections
+covered:
 
 .. contents::
     :local:
@@ -55,15 +56,15 @@ URLs for activation and deletion:
     [smtp]
     ; SMTP settings
 
-For more options, see :doc:`server <configuration/server>` and :doc:`client
-<configuration/client>` configuration.
+For more options, see :doc:`server </docs/reference/server-config>`
+and :doc:`client </docs/reference/client-config>` configuration.
 
 Migration
 ---------
 
 Isso provides a tool for importing comments from Disqus_ or WordPress_.
 You can also import comments from any other comment system, but this topic is more
-complex and is covered in :doc:`advanced migration <extras/advanced-migration>`.
+complex and is covered in :ref:`advanced migration <advanced-migration>`.
 
 To export your comments from Disqus, log into Disqus, go to your website, click
 on *Discussions* and select the *Export* tab. You'll receive an email with your
@@ -144,13 +145,13 @@ Going Further
 -------------
 
 There are several server and client configuration options not covered in this
-quickstart, check out :doc:`configuration/server` and
-:doc:`configuration/client` for more information. For further website
-integration, see :doc:`extras/advanced-integration`.
+quickstart, check out :doc:`/docs/reference/server-config` and
+:doc:`/docs/reference/client-config` for more information. For further website
+integration, see :doc:`advanced-integration`.
 
 To launch Isso automatically, check the :ref:`init-scripts` section from the
 installation guide. A different approach to deploy a web application is
-written here: :doc:`Deployment of Isso <extras/deployment>`.
+written here: :doc:`Deployment of Isso </docs/reference/deployment/>`.
 
 .. _Nginx: http://nginx.org/
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS

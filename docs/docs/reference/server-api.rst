@@ -1,6 +1,16 @@
 API
 ====
 
+.. note:: This information might be outdated. Isso's API documentation is built
+   using the ``apiDoc`` Javascript tool.
+
+   Run ``make apidoc-init apidoc`` and view the generated API documentation at
+   ``apidoc/_output/``.
+
+   It is planned to add these generated API docs to the main Isso
+   documentation. For more information and progress, see the GitHub Issue
+   `Github Action should build and deploy api docs <https://github.com/posativ/isso/issues/814>`_.
+
 The Isso API uses HTTP and JSON as primary communication protocol.
 
 .. contents::

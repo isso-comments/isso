@@ -18,7 +18,8 @@ ISSO_PY_SRC := $(shell find isso/ | grep -E '^isso/.+.py$$')
 
 DOCS_RST_SRC := $(shell find docs/ -type f -name '*.rst') \
 		$(wildcard docs/_isso/*) \
-	        docs/index.html docs/conf.py docs/docutils.conf
+		docs/index.html docs/conf.py docs/docutils.conf \
+		$(shell find docs/_extensions/)
 
 DOCS_CSS_SRC := docs/_static/css/site.scss
 
@@ -59,6 +60,8 @@ isso/js/count.dev.js: isso/js/embed.dev.js
 
 # Note: No need to depend on css sources since they are no longer inlined
 js: $(ISSO_JS_DST)
+
+css: $(DOCS_CSS_DST)
 
 ${DOCS_CSS_DST}: $(DOCS_CSS_SRC) $(DOCS_CSS_DEP)
 	$(SASS) $(DOCS_CSS_SRC) $@
