@@ -34,5 +34,4 @@ jobs:
         run: pip install -r sphinx-requirements.txt
 
       - name: Check docs
-        # TODO: -W turns warnings into errors
         run: make site
