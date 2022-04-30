@@ -7,10 +7,12 @@
 {%- endmacro %}
 
 {%- macro css() %}
-    <link rel="stylesheet" href="{{ pathto('_static/pygments.css', 1) }}" type="text/css" />
-    <link rel="stylesheet" href="{{ pathto('_static/css/site.css', 1) }}"/>
-    {%- for cssfile in css_files %}
-    <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
+    {%- for css in css_files %}
+      {%- if css|attr("filename") %}
+    {{ css_tag(css) }}
+      {%- else %}
+    <link rel="stylesheet" href="{{ pathto(css, 1)|e }}" type="text/css" />
+      {%- endif %}
     {%- endfor %}
 {%- endmacro %}
 
@@ -21,7 +23,9 @@
     {%- block htmltitle %}
     <title>{{ title|striptags|e }}</title>
     {%- endblock %}
-    {{ css() }}
+    {%- block css %}
+    {{- css() }}
+    {%- endblock %}
     {%- if not embedded %}
     {{ script() }}
     {%- if use_opensearch %}
