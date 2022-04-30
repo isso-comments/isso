@@ -16,13 +16,13 @@ Testing the Client
    Unit tests:
 
    - Jest, how to write good tests (link to
-     `MailChimp standards <Github Action should build and deploy api docs>`_)
+     `MailChimp standards <https://mailchimp.com/developer/open-commerce/docs/testing-requirements/>`_)
    - How to update and check in snapshots
 
    Integration tests:
 
    - How Puppeteer works
-   - How to take advantage of ``jest-puppeteer` special ``expect`` functions
+   - How to take advantage of ``jest-puppeteer`` special ``expect`` functions
 
    Running client tests in general:
 
