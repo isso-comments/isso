@@ -1,6 +1,19 @@
 Writing Documentation
 =====================
 
+Syntax standards
+----------------
+
+- Use ``(.venv) $ python [cmd]`` for things that need to be run inside a
+  virtual environment and be consistent, see
+  `Sphinx: Narrative Documentation`__
+- Admonitions should only be: ``note``, ``tip``, ``warning``, ``attention``,
+  (maybe also ``error``?). See `docutils: Admonitions`__.
+
+.. __: https://www.sphinx-doc.org/en/master/tutorial/narrative-documentation.html
+.. __: https://docutils.sourceforge.io/docs/ref/rst/directives.html#admonitions
+
+
 .. attention::
 
    This section of the Isso documentation is incomplete. Please help by expanding it.

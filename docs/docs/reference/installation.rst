@@ -152,6 +152,8 @@ use the following command to spawn the Docker container:
 
 Then, you can use a reverse proxy to expose port 8080.
 
+.. _install-from-source:
+
 Install from Source
 -------------------
 

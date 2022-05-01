@@ -322,6 +322,8 @@ main {
         list-style-type: square;
         margin-left: 2em;
         margin-right: 2em; }
+        main .docs ul li > ul {
+          margin: 0; }
   main .vcs-edit {
     font-size: 1.16em;
     line-height: 1.16em;

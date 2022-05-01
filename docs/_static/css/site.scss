@@ -384,13 +384,19 @@ main {
     }
 
     ul {
-
       margin: 1em 0;
 
       li {
         list-style-type: square;
         margin-left: 2em;
         margin-right: 2em;
+
+        > {
+          // Nested lists shouldn't have margins
+          ul {
+              margin: 0;
+          }
+        }
       }
     }
   }
