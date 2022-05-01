@@ -369,18 +369,9 @@ main {
     }
 
     blockquote {
-      margin: 1em;
-      text-align: center;
-      font-size:125%;
-      font-style:italic;
-
-    }
-    blockquote:before {
-      content: "» ";
-    }
-
-    blockquote:after {
-      content: " «";
+      margin: 1em 0;
+      border-left: 5px solid #eee;
+      padding: 0 1em;
     }
 
     ul {
