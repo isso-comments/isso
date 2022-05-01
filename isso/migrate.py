@@ -71,8 +71,8 @@ class Disqus(object):
         remap = dict()
 
         if path not in self.db.threads:
-            self.db.threads.new(path, thread.find(
-                Disqus.ns + 'title').text.strip())
+            thread_title = thread.find(Disqus.ns + 'title').text or ''
+            self.db.threads.new(path, thread_title.strip())
 
         for item in sorted(posts, key=lambda k: k['created']):
 
@@ -112,10 +112,15 @@ class Disqus(object):
 
         progress = Progress(len(tree.findall(Disqus.ns + 'thread')))
         for i, thread in enumerate(tree.findall(Disqus.ns + 'thread')):
-            progress.update(i, thread.find(Disqus.ns + 'id').text)
+            # Workaround for not crashing with empty thread ids:
+            thread_id = thread.find(Disqus.ns + 'id')
+            if not thread_id:
+                thread_id = dict(text="<empty thread id>", empty=True)
+
+            progress.update(i, thread_id.get('text'))
 
             # skip (possibly?) duplicate, but empty thread elements
-            if thread.find(Disqus.ns + 'id').text is None and not self.empty_id:
+            if thread_id.get('empty') and not self.empty_id:
                 continue
 
             id = thread.attrib.get(Disqus.internals + 'id')
