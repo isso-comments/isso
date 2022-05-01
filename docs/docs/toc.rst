@@ -30,7 +30,7 @@
 
    Server <technical-docs/server.rst>
    Client <technical-docs/client.rst>
-   Testing <technical-docs/testing.rst>
+   Development & Testing <technical-docs/testing.rst>
    Testing the Client <technical-docs/testing-client.rst>
    Testing the Server <technical-docs/testing-server.rst>
 

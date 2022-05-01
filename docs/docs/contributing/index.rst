@@ -52,6 +52,13 @@ for pluralforms_ in the templating engine.
 .. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/
 .. _pluralforms: http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms
 
+Documentation
+-------------
+
+Documentation improvements are sorely needed. Anything that makes the
+experience for a newcomer more pleasant is always welcome.
+Please see the :doc:`documentation` page for more details.
+
 Code contributions
 ------------------
 
@@ -144,8 +151,9 @@ What is currently needed?
 - `Admin Web Interface <https://github.com/posativ/isso/issues/10>`_ –
   administration via email is cumbersome with a high amount of comments. A
   administration web interface should include the ability to:
-- Delete or activate comments matching a filter (e.g. name, email, ip address)
-- Close threads and remove threads completely
+
+  - Delete or activate comments matching a filter (e.g. name, email, ip address)
+  - Close threads and remove threads completely
 
 .. __: https://github.com/posativ/isso/labels/needs-contributor
 .. __: https://github.com/posativ/isso/labels/good-first-issue
