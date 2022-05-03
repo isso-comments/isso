@@ -63,12 +63,6 @@ var render = function(name, locals) {
 
     rv = templates[name](globals);
 
-    // These are all needed, else DOM.htmlify will fail to create the element!
-    // Strip newlines rendered from template literals
-    rv = rv.replace(/\r?\n|\r/g, " ");
-    // Trim whitespace
-    rv = rv.trim();
-
     for (var i = 0; i < keys.length; i++) {
         delete globals[keys[i]];
     }
