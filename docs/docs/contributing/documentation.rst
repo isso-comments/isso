@@ -1,26 +1,6 @@
 Writing Documentation
 =====================
 
-.. attention::
-
-   This section of the Isso documentation is incomplete. Please help by expanding it.
-
-   Click the ``Edit on GitHub`` button in the top right corner and read the
-   GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
-   for further information.
-
-   **What's missing?**
-
-   - How to install & run Sphinx (note that latest sphinx from pip is needed by theme)
-   - How Sphinx works, what its philosphy is
-   - Small reST intro, also link to the
-     `reStructuredText Primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
-   - How to write good documentation, maybe link to a few guides and example sites
-   - More syntax standards, and also correct wrong usage across the docs
-
-   ... and other things about documentation that should be documented.
-
 Introduction
 ------------
 
@@ -175,3 +155,21 @@ Debugging cross-references:
 
 Also make sure you have used ``:ref:`` or ``:doc``
 correctly and not confused the two.
+
+
+.. attention::
+
+   This section of the Isso documentation is incomplete. Please help by expanding it.
+
+   Click the ``Edit on GitHub`` button in the top right corner and read the
+   GitHub Issue named
+   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   for further information.
+
+   **What's missing?**
+
+   - How Sphinx works, what its philosphy is
+   - How to write good documentation, maybe link to a few guides and example sites
+   - More syntax standards, and also correct wrong usage across the docs
+
+   ... and other things about documentation that should be documented.
