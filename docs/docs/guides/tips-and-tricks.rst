@@ -118,6 +118,54 @@ Next you can import you json dump:
     ~> isso -c /path/to/isso.cfg import -t generic comment-dump.json
     [100%]  53 threads, 192 comments
 
+
+Pretty-print entire comments database
+-------------------------------------
+
+.. Migration complete from https://github.com/posativ/isso/wiki/Tips-&-tricks
+
+The following bash function pretty-print the entire comments DB sorted by
+insertion date.
+
+.. code-block:: bash
+
+   get_blog_comments () {
+       ssh $host sqlite3 -line /path/to/isso/isso.db \
+           "'SELECT t.uri,c.created,c.modified,c.text,c.author,c.email,c.website \
+             FROM comments AS c, threads as t WHERE c.tid = t.id;'" \
+           | perl -wpe '/(created|modified) = ./&&s/= (.*)/"= ".scalar(localtime($1))/e';
+   }
+
+Example output:
+
+.. code-block:: text
+
+        uri = /lucas/blog/2014/12/12/fr-la-tete-dans-le-guidon/
+    created = Mon Dec 15 13:10:28 2014
+   modified =
+       text = Merci ! Je suis très content d'apprendre que cette lecture a pu plaire à quelqu'un
+   N'hésitez pas à partager vos propres réflexions et astuces dans les commentaires.
+     author = lucas
+      email = lucas@chezsoi.org
+    website = https://chezsoi.org/lucas/blog
+
+
+Delete IP addresses weekly
+--------------------------
+
+Add this to your ``crontab`` to set all saved commenter IP addresses to
+``127.0.0.1`` to preserve their privacy under GDPR:
+
+.. code-block:: text
+
+   @weekly /usr/bin/sqlite3 /path/to/isso/comments.db 'UPDATE comments SET remote_addr = "127.0.0.1";'
+
+From `blog.mdosch.de <https://blog.mdosch.de/2018/05/20/isso-ip-adressen-woechentlich-loeschen/>`_:
+
+*Note that Isso already anonymizes the last part of IP addresses by setting
+them to to zero.*
+
+
 .. attention::
 
    This section of the Isso documentation is incomplete. Please help by expanding it.
