@@ -1,26 +1,6 @@
 Writing Documentation
 =====================
 
-.. attention::
-
-   This section of the Isso documentation is incomplete. Please help by expanding it.
-
-   Click the ``Edit on GitHub`` button in the top right corner and read the
-   GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
-   for further information.
-
-   **What's missing?**
-
-   - How to install & run Sphinx (note that latest sphinx from pip is needed by theme)
-   - How Sphinx works, what its philosphy is
-   - Small reST intro, also link to the
-     `reStructuredText Primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_
-   - How to write good documentation, maybe link to a few guides and example sites
-   - More syntax standards, and also correct wrong usage across the docs
-
-   ... and other things about documentation that should be documented.
-
 Introduction
 ------------
 
@@ -35,7 +15,7 @@ example:
 
     One asterisk: *text* for emphasis (italics),
     Two asterisks: **text** for strong emphasis (boldface), and
-    Backquotes: ``text`` for code samples.
+    Double backquotes: ``text`` for code samples.
 
 .. __: https://www.sphinx-doc.org/en/master/
 
@@ -73,8 +53,8 @@ If you have made any changes to the stylesheets, you need to install the
 
 .. code-block:: bash
 
-   apt install sassc
-   make css
+   $ apt install sassc
+   $ make css
 
 .. __: https://github.com/sass/sassc
 
@@ -92,6 +72,34 @@ First and foremost, see the
     This is a paragraph that contains `a link`_ using **references**.
 
     .. _a link: https://domain.invalid/
+
+**Headings:**
+
+Headings must always be *underlined* with at least as many characters as the
+text is wide.
+
+.. code-block:: rst
+
+   Page title
+   ==========
+
+Use page title only once per file (at the top). This is also the name that the
+page will appear under.
+
+.. code-block:: rst
+
+   Section heading (h3)
+   --------------------
+
+Use section heading to divide page into sections
+
+.. code-block:: rst
+
+   Sub-Heading (h4)
+   ^^^^^^^^^^^^^^^^
+
+Use sub-heading only if necessary - if you need this many levels of headings,
+maybe the content chould better be spread out across multiple articles
 
 **Referencing other sections:** (see `:ref:`__)
 
@@ -124,9 +132,9 @@ Use ``.. code-block:: <language>`` and indent the code by one level:
 
    .. code-block:: bash
 
-        sudo apt install python3 python3-pip python3-virtualenv
-        virtualenv .venv
-        source .venv/bin/activate
+        $ sudo apt install python3 python3-pip python3-virtualenv
+        $ virtualenv .venv
+        $ source .venv/bin/activate
         (.venv) $ python [cmd]
 
 Syntax standards
@@ -135,11 +143,17 @@ Syntax standards
 - Use at most three levels of headlines:
   ``===`` for page title, ``---`` for section headings (h3), ``^^^`` for
   sub-headings (h4).
+- Use ``$ /usr/bin/command`` to refer to shell commands and use
+  ``code-block:: bash`` over ``sh``
 - Use ``(.venv) $ python [cmd]`` for things that need to be run inside a
   virtual environment and be consistent
   (see `Sphinx: Narrative Documentation`__)
+- Use ``/path/to/isso/<thing>`` to refer to items inside Isso's main directory
+  and use ``comments.db`` as the name for the database
 - Admonitions should only be: ``note``, ``tip``, ``warning``, ``attention``,
   (maybe also ``error``?). See `docutils: Admonitions`__.
+- Try to keep line length under 80 characters, but don't worry when going over
+  that limit when using links or code blocks
 
 .. __: https://www.sphinx-doc.org/en/master/tutorial/narrative-documentation.html
 .. __: https://docutils.sourceforge.io/docs/ref/rst/directives.html#admonitions
@@ -169,3 +183,21 @@ Debugging cross-references:
 
 Also make sure you have used ``:ref:`` or ``:doc``
 correctly and not confused the two.
+
+
+.. attention::
+
+   This section of the Isso documentation is incomplete. Please help by expanding it.
+
+   Click the ``Edit on GitHub`` button in the top right corner and read the
+   GitHub Issue named
+   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   for further information.
+
+   **What's missing?**
+
+   - How Sphinx works, what its philosphy is
+   - How to write good documentation, maybe link to a few guides and example sites
+   - More syntax standards, and also correct wrong usage across the docs
+
+   ... and other things about documentation that should be documented.
