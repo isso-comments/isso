@@ -135,11 +135,17 @@ Syntax standards
 - Use at most three levels of headlines:
   ``===`` for page title, ``---`` for section headings (h3), ``^^^`` for
   sub-headings (h4).
+- Use ``$ /usr/bin/command`` to refer to shell commands and use
+  ``code-block:: bash`` over ``sh``
 - Use ``(.venv) $ python [cmd]`` for things that need to be run inside a
   virtual environment and be consistent
   (see `Sphinx: Narrative Documentation`__)
+- Use ``/path/to/isso/<thing>`` to refer to items inside Isso's main directory
+  and use ``comments.db`` as the name for the database
 - Admonitions should only be: ``note``, ``tip``, ``warning``, ``attention``,
   (maybe also ``error``?). See `docutils: Admonitions`__.
+- Try to keep line length under 80 characters, but don't worry when going over
+  that limit when using links or code blocks
 
 .. __: https://www.sphinx-doc.org/en/master/tutorial/narrative-documentation.html
 .. __: https://docutils.sourceforge.io/docs/ref/rst/directives.html#admonitions
