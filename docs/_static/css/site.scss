@@ -9,6 +9,11 @@ $strong-blue: #6ab0de;
 $background-blue: #e7f2fa;
 $text: #2f2f2f;
 $muted-grey: #151515;
+
+$code-background-color: #eeeeee;
+$code-block-background-color: #f3f3f3;
+$code-block-border-color: #d3d3d3;
+
 $admon-todo: #f0b37e;
 $highlighted: #f1c40f;
 $versionchanged: lightyellow;
@@ -345,7 +350,7 @@ main {
 
     code {
       color: #002e40;
-      background-color: #eeeeee;
+      background-color: $code-background-color;
       padding: 0.2em 0.3em;
     }
 
@@ -353,10 +358,10 @@ main {
       margin: 1.2em 0;
       padding: 10px 15px;
 
-      background-color: rgb(238, 238, 238);
-      color: rgb(77, 77, 76);
+      background-color: $code-block-background-color;
+      color: $text;
 
-      border: 1px solid rgb(221, 221, 221);
+      border: 1px solid $code-block-border-color;
       border-radius: 4px;
       overflow: auto;
     }

@@ -295,9 +295,9 @@ main {
     main .docs .highlight {
       margin: 1.2em 0;
       padding: 10px 15px;
-      background-color: #eeeeee;
-      color: #4d4d4c;
-      border: 1px solid #dddddd;
+      background-color: #f3f3f3;
+      color: #2f2f2f;
+      border: 1px solid #d3d3d3;
       border-radius: 4px;
       overflow: auto; }
     main .docs .headerlink {
