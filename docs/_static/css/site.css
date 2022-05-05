@@ -318,6 +318,8 @@ main {
         margin-right: 2em; }
         main .docs ul li > ul {
           margin: 0; }
+    main .docs table.hlist * {
+      vertical-align: top; }
   main .vcs-edit {
     font-size: 1.16em;
     line-height: 1.16em;

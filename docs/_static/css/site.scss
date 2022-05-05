@@ -390,6 +390,11 @@ main {
         }
       }
     }
+
+    // For `.. hlist::` directive, do not vertically center columns:
+    table.hlist * {
+        vertical-align: top;
+    }
   }
 
   // "Edit on Github" link
