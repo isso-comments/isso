@@ -20,15 +20,19 @@ The following example uses `gunicorn <http://gunicorn.org/>`_ as WSGI server (
 you can use uWSGI as well). Let's say you maintain two websites, like
 foo.example and other.bar:
 
-.. code-block:: sh
+.. code-block:: ini
+    :emphasize-lines: 3
 
-    $ cat /etc/isso.d/foo.example.cfg
+    ; /etc/isso.d/foo.example.cfg
     [general]
     name = foo
     host = http://foo.example/
     dbpath = /var/lib/isso/foo.example.db
 
-    $ cat /etc/isso.d/other.bar.cfg
+.. code-block:: ini
+    :emphasize-lines: 3
+
+    ; /etc/isso.d/other.bar.cfg
     [general]
     name = bar
     host = http://other.bar/
@@ -56,7 +60,7 @@ In your webserver configuration, proxy Isso as usual:
       }
 
 When you now visit http://comments.example/, you will see your different Isso
-configuration separated by /`name`.
+configuration separated by ``/name``.
 
 .. code-block:: text
 
@@ -65,7 +69,7 @@ configuration separated by /`name`.
     /bar
 
 Just embed the JavaScript including the new relative path, e.g.
-*http://comments.example/foo/js/embed.min.js*. Make sure, you don't mix the
+``http://comments.example/foo/js/embed.min.js``. Make sure, you don't mix the
 URLs on both sites as it will most likely cause CORS-related errors.
 
 .. _configure-sub-uri:
@@ -78,6 +82,7 @@ originating from CORS_. Also, privacy-protecting browser addons such as
 `Request Policy`_ wont block comments.
 
 .. code-block:: nginx
+    :emphasize-lines: 9
 
     server {
         listen       [::]:80;

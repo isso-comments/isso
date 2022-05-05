@@ -97,6 +97,7 @@ Running tests
 Run **unit tests:**
 
 .. code-block:: bash
+    :emphasize-lines: 4
 
     $ docker run \
         --mount type=bind,source=${PWD}/package.json,target=/src/package.json,readonly \
@@ -106,6 +107,7 @@ Run **unit tests:**
 Run **integration tests:**
 
 .. code-block:: bash
+    :emphasize-lines: 4-6
 
     $ docker run \
         --mount type=bind,source=${PWD}/package.json,target=/src/package.json,readonly \

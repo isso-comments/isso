@@ -102,6 +102,7 @@ Assuming both, your website and Isso are on the same server, the nginx
 configuration looks like this:
 
 .. code-block:: nginx
+  :emphasize-lines: 9,12
 
     server {
         listen [::]:80 default ipv6only=off;

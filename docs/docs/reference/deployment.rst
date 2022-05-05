@@ -103,8 +103,6 @@ isso distribution as `run.py`:
 
 .. code-block:: python
 
-    from __future__ import unicode_literals
-
     import os
 
     from isso import make_app
@@ -120,8 +118,7 @@ If you have installed Isso in a virtual environment, then you will have to add t
 of the virtualenv to the site-specific paths of Python:
 
 .. code-block:: python
-
-    from __future__ import unicode_literals
+  :emphasize-lines: 1-2
 
     import site
     site.addsitedir("/path/to/isso_virtualenv")
@@ -142,8 +139,7 @@ from the virtualenv otherwise. Should you want the opposite behavior, where modu
 the virtualenv have priority over system modules, the following script does the trick:
 
 .. code-block:: python
-
-    from __future__ import unicode_literals
+  :emphasize-lines: 2-3,6,9,12-17
 
     import os
     import site

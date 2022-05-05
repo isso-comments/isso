@@ -189,7 +189,7 @@ uses snapshots, check in or update the snapshot file by running
 
 .. code-block:: text
 
-   npx jest --config isso/js/jest-unit.config.js isso/js/tests/unit/ -u``
+   npx jest --config isso/js/jest-unit.config.js isso/js/tests/unit/ -u
    PASS  isso/js/tests/unit/isso.test.js
    › 1 snapshot updated.
 
