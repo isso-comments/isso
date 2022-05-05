@@ -20,6 +20,7 @@ preferably in the script tag which embeds the JS:
             data-isso-vote="true"
             data-isso-vote-levels=""
             data-isso-feed="false"
+            data-isso-reply-notifications-default-enabled="false"
             src="/prefix/js/embed.js"></script>
 
 Furthermore you can override the automatic title detection inside
@@ -141,6 +142,18 @@ data-isso-feed
     Enable or disable the addition of a link to the feed for the comment
     thread. The link will only be valid if the appropriate setting, in
     ``[rss]`` section, is also enabled server-side.
+
+data-isso-reply-notifications-default-enabled
+    Set to ``true`` to make the reply notifications checkbox on the postbox be
+    checked by default. Otherwise, the user will have to manually opt-in to
+    reply notifications.
+
+    This setting will have no effect if ``reply-notifications`` are not enabled
+    on the server.
+
+    Default: ``false``
+
+    .. versionadded:: 0.13
 
 
 Deprecated Client Settings
