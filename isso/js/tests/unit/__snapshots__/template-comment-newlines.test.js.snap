@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Code blocks in rendered comment should not be clipped 1`] = `
+"<p>A comment with</p>
+<pre><code>code blocks
+New line: preformatted
+
+Double newline
+</code></pre>"
+`;
+
+exports[`Simple comment text should render on one line 1`] = `"<p>A comment</p>"`;
