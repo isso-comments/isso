@@ -43,7 +43,7 @@ import errno
 import logging
 import tempfile
 
-from os.path import dirname, join
+from os.path import abspath, dirname, exists, join
 from argparse import ArgumentParser
 from functools import partial, reduce
 
@@ -177,6 +177,9 @@ def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
 
     isso = App(conf)
 
+    logger.info("Using database at '%s'",
+                abspath(isso.conf.get('general', 'dbpath')))
+
     if not any(conf.getiter("general", "host")):
         logger.error("No website(s) configured, Isso won't work.")
         sys.exit(1)
@@ -238,7 +241,20 @@ def main():
     subparser.add_parser("run", help="run server")
 
     args = parser.parse_args()
-    conf = config.load(config.default_file(), args.conf)
+
+    conf_file = args.conf
+
+    if not conf_file:
+        logger.error("No configuration file specified! Exiting.")
+        sys.exit(1)
+    if exists(conf_file):
+        logger.info("Using configuration file '%s'", abspath(conf_file))
+    else:
+        logger.error("Specified config '%s' does not exist! Exiting.",
+                     abspath(conf_file))
+        sys.exit(1)
+
+    conf = config.load(config.default_file(), conf_file)
 
     if args.command == "import":
         conf.set("guard", "enabled", "off")
