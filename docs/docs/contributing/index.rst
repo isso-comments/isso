@@ -186,51 +186,62 @@ Below is a non-exhaustive list of tools, services, dependencies and
 technologies Isso's contributors and maintainers need to at least peripherally
 be aware of - that's a lot to demand of someone!
 
-Docs
-    - apiDoc
-    - sphinx with reST syntax
+.. hlist::
+   :columns: 2
 
-Python
-    - Pallets project: werkzeug, jinja2, flask
-    - misaka (and changing config opts)
-    - bleach, html5lib
-    - different python versions, OS versions
-    - flake8
-    - setuptools, pip
-    - python package index (pypa) uploading
+   * **Docs**
 
-Python testing
-    - pytest (unit testing)
-    - coverage
+     -  apiDoc
+     -  sphinx with reST syntax
 
-Convenience tools
-    - docker
-    - vagrant
-    - ansible
+   * **Python**
 
-Javascript
-    - nodejs
-    - npm
-    - package.json oddities
-    - webpack
-    - Jest
-    - puppeteer
-    - Browser compatibility and ES5/ES6 standards
+     -  Pallets project: werkzeug, jinja2, flask
+     -  misaka (and changing config opts)
+     -  bleach, html5lib
+     -  Different python versions, OS versions
+     -  setuptools, pip
+     -  Python Package Index (PyPI) uploading
 
-Development tools
-    - make
-    - Github Actions
+   * **Python testing**
 
-Deployment options
-    - ``isso run [opts]``
-    - Apache (``mod_wsgi``)
-    - Apache (``mod_fastcgi``)
-    - Apache (proxy)
-    - nginx (proxy)
-    - uwswgi
-    - gunicorn
-    - gevent
+     -  pytest (unit testing)
+     -  coverage
+     -  flake8
 
-Importers
-    - Current disqus export format
-    - Current and past Wordpress export formats
+   * **Convenience tools**
+
+     -  Docker
+     -  Vagrant
+     -  Ansible
+
+   * **Javascript**
+
+     -  Node.js
+     -  npm
+     -  package.json oddities
+     -  webpack
+     -  Jest
+     -  puppeteer
+     -  Browser compatibility and ES5/ES6 standards
+
+   * **Development tools**
+
+     -  make
+     -  Github Actions
+
+   * **Deployment options**
+
+     -  ``isso run [opts]``
+     -  Apache (``mod_wsgi``)
+     -  Apache (``mod_fastcgi``)
+     -  Apache (proxy)
+     -  nginx (proxy)
+     -  uwswgi
+     -  gunicorn
+     -  gevent
+
+   * **Importers**
+
+     -  Current disqus export format
+     -  Current and past Wordpress export formats
