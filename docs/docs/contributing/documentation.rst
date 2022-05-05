@@ -154,6 +154,9 @@ Syntax standards
   (maybe also ``error``?). See `docutils: Admonitions`__.
 - Try to keep line length under 80 characters, but don't worry when going over
   that limit when using links or code blocks
+- Use ``.. versionadded::``, ``.. versionchanged::`` and ``.. deprecated::`` to
+  make it clear to readers which version of Isso are affected by an
+  option or behavior
 
 .. __: https://www.sphinx-doc.org/en/master/tutorial/narrative-documentation.html
 .. __: https://docutils.sourceforge.io/docs/ref/rst/directives.html#admonitions
@@ -174,6 +177,7 @@ Help
 Helpful links:
 
 - `Cross-referencing with Sphinx <https://docs.readthedocs.io/en/stable/guides/cross-referencing-with-sphinx.html>`_
+- `Sphinx directives <https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html>`_
 
 Debugging cross-references:
 
