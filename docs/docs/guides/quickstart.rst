@@ -12,8 +12,8 @@ covered:
 Configuration
 -------------
 
-You must provide a custom configuration to set `dbpath` (your database
-location) and `host` (a list of websites for CORS_). All other options have
+You must provide a custom configuration to set ``dbpath`` (your database
+location) and ``host`` (a list of websites for CORS_). All other options have
 sane defaults.
 
 .. code-block:: ini
@@ -76,9 +76,9 @@ Try to repair the file using ``xmllint`` before you continue with the import.
 
 Now import the XML dump:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> isso -c /path/to/isso.cfg import -t [disqus|wordpress] disqus-or-wordpress.xml
+    (.venv) $ isso -c /path/to/isso.cfg import -t [disqus|wordpress] disqus-or-wordpress.xml
     [100%]  53 threads, 192 comments
 
 .. _Disqus: https://disqus.com/
@@ -89,9 +89,9 @@ Running Isso
 
 To run Isso, simply execute:
 
-.. code-block:: sh
+.. code-block:: console
 
-    $ isso -c /path/to/isso.cfg run
+    (.venv) $ isso -c /path/to/isso.cfg run
     2013-11-25 15:31:34,773 INFO: connected to HTTP server
 
 Next, we configure Nginx_ to proxy Isso. Do not run Isso on a public interface!
