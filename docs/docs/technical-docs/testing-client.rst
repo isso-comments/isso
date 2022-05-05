@@ -51,6 +51,9 @@ You should receive output that looks similar to the following:
    Time:        0.907 s, estimated 1 s
    Ran all test suites matching /isso\/js\/tests\/unit\//i.
 
+If you receive an error saying ``1 snapshot failed`` see
+:ref:`Updating snapshots <updating-snapshots>`
+
 
 End-to-End Integration tests
 ----------------------------
@@ -147,6 +150,58 @@ who happens to know very little about testing (or even Javascript in general).
 Feel free to suggest improvements and change this!
 
 .. __: https://mailchimp.com/developer/open-commerce/docs/testing-requirements/>
+
+.. _updating-snapshots:
+
+Updating snapshots
+^^^^^^^^^^^^^^^^^^
+
+The ``Jest`` tests make use of `snapshots <https://jestjs.io/docs/snapshot-testing>`_. Say you want to ensure that the Postbox ``<textarea>`` always looks like this:
+
+.. code-block:: html
+
+   <div class="isso-textarea-wrapper">
+     <div class="isso-textarea isso-placeholder">
+         Type Comment Here (at least 3 chars)</div>
+     <div class="isso-preview">[...]</div>
+   </div>
+
+You *could* write this as:
+
+.. code-block:: javascript
+
+   let expected_html = '<div class="isso-textarea-wrapper> [...]';
+   expect($(".isso-textarea-wrapper").innerHTML.toBe(expected_html);
+
+But then your resulting test files would quickly grow quite messy, especially
+for large components where the ``expected_html`` block would span whole pages.
+That is why ``Jest`` offers to check in those expected blocks as ``snapshots``,
+which will saved into e.g. ``isso/js/tests/unit/__snapshots__/*.snap``
+
+.. code-block:: javascript
+
+   expect($(".isso-textarea-wrapper").innerHTML).toMatchSnapshot();
+
+If you have created a commit which changes the HTML that is generated on the
+client side (and you're sure it is correct) or written a new test case that
+uses snapshots, check in or update the snapshot file by running
+``npm run test-unit -- -u``. You should see something like the following:
+
+.. code-block:: text
+
+   npx jest --config isso/js/jest-unit.config.js isso/js/tests/unit/ -u``
+   PASS  isso/js/tests/unit/isso.test.js
+   › 1 snapshot updated.
+
+Make a new commit for the changes to the snapshot - here's an example:
+
+.. code-block:: text
+
+   isso: tests/unit: Update isso.js snapshot
+
+   Prepending `isso-` to the element classes causes a change in
+   the generated HTML and necessitates an update of the
+   snapshot.
 
 .. attention::
 
