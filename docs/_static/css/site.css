@@ -300,6 +300,17 @@ main {
       border: 1px solid #d3d3d3;
       border-radius: 4px;
       overflow: auto; }
+      main .docs .highlight .gp {
+        /* gp: Generic.Prompt */
+        user-select: none;
+        -webkit-user-select: text;
+        /* Safari fallback only */
+        -webkit-user-select: none;
+        /* Chrome/Safari */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* IE10+ */ }
     main .docs .headerlink {
       visibility: hidden; }
     main .docs p + p {
