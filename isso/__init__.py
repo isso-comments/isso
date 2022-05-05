@@ -242,7 +242,8 @@ def main():
 
     args = parser.parse_args()
 
-    conf_file = args.conf
+    # ISSO_SETTINGS env var takes precedence over `-c` flag
+    conf_file = os.environ.get('ISSO_SETTINGS') or args.conf
 
     if not conf_file:
         logger.error("No configuration file specified! Exiting.")
