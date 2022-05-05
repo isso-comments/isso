@@ -25,15 +25,14 @@ version – looking at you, Debian!).
 That's why most Python developers use the `Python Package Index`_ to get their
 dependencies. The most important rule to follow is to never install *anything* from PyPi
 as root. Not because of malicious software, but because you *will* break your
-system.
-``easy_install`` is one tool to mess up your system. Another package manager is
-``pip``. If you ever searched for an issue with Python/pip and Stackoverflow is
-suggesting you ``easy_install pip`` or ``pip install --upgrade pip`` (as root
+system. ``pip`` is one tool to mess up your system.
+If you ever searched for an issue with Python/pip and Stackoverflow is
+suggesting you ``pip install --upgrade pip`` (as root
 of course!), you are doing it wrong. `Why you should not use Python's
 easy_install carelessly on Debian`_ is worth the read.
 
 Fortunately, Python has a way to install packages (both as root and as user)
-without interfering with your globally installed packages: `virtualenv`. Use
+without interfering with your globally installed packages: ``virtualenv``. Use
 this *always* if you are installing software unavailable in your favourite
 package manager.
 
@@ -105,13 +104,7 @@ Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:
 
 .. code-block:: sh
 
-    ~> pip install isso
-
-`Don't have pip? <https://twitter.com/gardaud/status/357638468572151808>`_
-
-.. code-block:: sh
-
-    ~> easy_install isso  # cross your fingers
+    (.venv) $ pip install isso
 
 For easier execution, you can symlink the executable to a location in your
 :envvar:`PATH`.
