@@ -1,8 +1,10 @@
 var html = function (globals) {
   var i18n = globals.i18n;
+  var conf = globals.conf;
   var author = globals.author;
   var email = globals.email;
   var website = globals.website;
+  var notify = conf["reply-notifications-default-enabled"] ? " checked" : '';
 
   return "" +
 "<div class='isso-postbox'>"
@@ -39,7 +41,7 @@ var html = function (globals) {
   + "</section>"
   + "<section class='isso-notification-section'>"
     + "<label>"
-      + "<input type='checkbox' name='notification' />" + i18n('postbox-notification')
+      + "<input type='checkbox'" + notify + " name='notification' />" + i18n('postbox-notification')
     + "</label>"
   + "</section>"
 + "</div>"
