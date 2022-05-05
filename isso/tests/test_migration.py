@@ -20,16 +20,43 @@ conf = config.new({
 
 class TestMigration(unittest.TestCase):
 
-    def test_disqus(self):
+    def test_disqus_empty_id(self):
+        """
+        Fails with empty thread id
+        """
 
         xml = join(dirname(__file__), "disqus.xml")
         xxx = tempfile.NamedTemporaryFile()
 
         db = SQLite3(xxx.name, conf)
-        Disqus(db, xml).migrate()
+        Disqus(db, xml, empty_id=False).migrate()
+
+        # TODO: Convert unittest testcases with assertX to plain pytest
+        # asserts, allowing capturing of stdout, like this:
+        #
+        # def test_disqus_empty_id(self, capfd):
+        # [...]
+        # out, err = capfd.readouterr()
+        # assert out == \
+        #     "Isso couldn't import any thread, try again with --empty-id\n"
 
         self.assertEqual(
-            len(db.execute("SELECT id FROM comments").fetchall()), 2)
+            len(db.execute("SELECT id FROM comments").fetchall()), 0)
+
+    def test_disqus_empty_id_workaround(self):
+        """
+        Simulate supplying --empty_id to import call to work around empty
+        thread ids
+        """
+
+        xml = join(dirname(__file__), "disqus.xml")
+        xxx = tempfile.NamedTemporaryFile()
+
+        db = SQLite3(xxx.name, conf)
+        Disqus(db, xml, empty_id=True).migrate()
+
+        self.assertEqual(
+            len(db.execute("SELECT id FROM comments").fetchall()), 3)
 
         self.assertEqual(db.threads["/"]["title"], "Hello, World!")
         self.assertEqual(db.threads["/"]["id"], 1)

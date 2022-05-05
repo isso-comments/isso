@@ -78,4 +78,39 @@
         <thread dsq:id="1337" />
     </post>
 
+    <!-- Empty thread title and thead id
+         reported by waqqasdadabhoy in https://github.com/posativ/isso/issues/728 -->
+    <thread dsq:id="7">
+        <id />
+        <forum>redacted</forum>
+        <category dsq:id="435915" />
+        <link>http://localhost:4000/blog/2013/02/12/redacted/index.html</link>
+        <title />
+        <message />
+        <createdAt>2013-02-12T16:29:45Z</createdAt>
+        <author>
+            <name>Redacted</name>
+            <isAnonymous>false</isAnonymous>
+            <username>redacted</username>
+        </author>
+        <isClosed>false</isClosed>
+        <isDeleted>false</isDeleted>
+    </thread>
+
+    <!-- reference to thread with empty id -->
+    <post dsq:id="8">
+        <message><![CDATA[<p>Message from thread with empty title and id</p>]]></message>
+        <createdAt>2013-10-11T06:51:33Z</createdAt>
+        <isDeleted>false</isDeleted>
+        <isSpam>false</isSpam>
+        <author>
+            <email>baz@email.foo</email>
+            <name>Empty</name>
+            <isAnonymous>false</isAnonymous>
+            <username>EmptyUsername</username>
+        </author>
+        <ipAddress>127.0.0.1</ipAddress>
+        <thread dsq:id="7" />
+    </post>
+
   </disqus>
