@@ -2,13 +2,18 @@
 @import "neat/neat";
 
 // Override bourbon _grid.scss
-$max-width: em(1280); // Max-width of the outer container, divided by 16
+$max-width: em(1120); // Max-width of the outer container, divided by 16
 
 $blue: #2980b9;
 $strong-blue: #6ab0de;
 $background-blue: #e7f2fa;
 $text: #2f2f2f;
 $muted-grey: #151515;
+
+$code-background-color: #eeeeee;
+$code-block-background-color: #f3f3f3;
+$code-block-border-color: #d3d3d3;
+
 $admon-todo: #f0b37e;
 $highlighted: #f1c40f;
 $versionchanged: lightyellow;
@@ -345,7 +350,7 @@ main {
 
     code {
       color: #002e40;
-      background-color: #eeeeee;
+      background-color: $code-background-color;
       padding: 0.2em 0.3em;
     }
 
@@ -353,12 +358,22 @@ main {
       margin: 1.2em 0;
       padding: 10px 15px;
 
-      background-color: rgb(238, 238, 238);
-      color: rgb(77, 77, 76);
+      background-color: $code-block-background-color;
+      color: $text;
 
-      border: 1px solid rgb(221, 221, 221);
+      border: 1px solid $code-block-border-color;
       border-radius: 4px;
       overflow: auto;
+
+      // Make '$' at beginning of bash code blocks non-selectable
+      // See sphinx-rtd-theme: basic.css_t
+      .gp {  /* gp: Generic.Prompt */
+         user-select: none;
+         -webkit-user-select: text; /* Safari fallback only */
+         -webkit-user-select: none; /* Chrome/Safari */
+         -moz-user-select: none; /* Firefox */
+         -ms-user-select: none; /* IE10+ */
+      }
     }
 
     .headerlink {

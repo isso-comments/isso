@@ -31,7 +31,7 @@ You will need to have the latest version of the ``Sphinx`` documentation generat
 
 Install via pip:
 
-.. code-block:: bash
+.. code-block:: console
 
    $ virtualenv .venv && $ source .venv/bin/activate
    (.venv) $ pip install sphinx
@@ -40,7 +40,7 @@ Install via pip:
 
 Build the docs:
 
-.. code-block:: bash
+.. code-block:: console
 
    (.venv) $ make site
 
@@ -51,7 +51,7 @@ If you have made any changes to the stylesheets, you need to install the
 `sassc`__ program and then re-generate the CSS file at
 ``docs/_static/css/site.css``:
 
-.. code-block:: bash
+.. code-block:: console
 
    $ apt install sassc
    $ make css
@@ -130,7 +130,7 @@ Use ``.. code-block:: <language>`` and indent the code by one level:
 
 .. code-block:: rst
 
-   .. code-block:: bash
+   .. code-block:: console
 
         $ sudo apt install python3 python3-pip python3-virtualenv
         $ virtualenv .venv
@@ -144,12 +144,14 @@ Syntax standards
   ``===`` for page title, ``---`` for section headings (h3), ``^^^`` for
   sub-headings (h4).
 - Use ``$ /usr/bin/command`` to refer to shell commands and use
-  ``code-block:: bash`` over ``sh``
+  ``code-block:: console`` over ``bash`` or ``sh``.
+  For actual shell scripts, use ``sh``.
 - Use ``(.venv) $ python [cmd]`` for things that need to be run inside a
   virtual environment and be consistent
   (see `Sphinx: Narrative Documentation`__)
-- Use ``/path/to/isso/<thing>`` to refer to items inside Isso's main directory
-  and use ``comments.db`` as the name for the database
+- Use ``/path/to/isso/<thing>`` to refer to items inside Isso's installation
+  directory or for user data and use ``comments.db`` as the name for the
+  database
 - Admonitions should only be: ``note``, ``tip``, ``warning``, ``attention``,
   (maybe also ``error``?). See `docutils: Admonitions`__.
 - Try to keep line length under 80 characters, but don't worry when going over

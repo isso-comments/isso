@@ -25,43 +25,46 @@ version – looking at you, Debian!).
 That's why most Python developers use the `Python Package Index`_ to get their
 dependencies. The most important rule to follow is to never install *anything* from PyPi
 as root. Not because of malicious software, but because you *will* break your
-system.
-``easy_install`` is one tool to mess up your system. Another package manager is
-``pip``. If you ever searched for an issue with Python/pip and Stackoverflow is
-suggesting you ``easy_install pip`` or ``pip install --upgrade pip`` (as root
+system. ``pip`` is one tool to mess up your system.
+If you ever searched for an issue with Python/pip and Stackoverflow is
+suggesting you ``pip install --upgrade pip`` (as root
 of course!), you are doing it wrong. `Why you should not use Python's
 easy_install carelessly on Debian`_ is worth the read.
 
 Fortunately, Python has a way to install packages (both as root and as user)
-without interfering with your globally installed packages: `virtualenv`. Use
+without interfering with your globally installed packages: ``virtualenv``. Use
 this *always* if you are installing software unavailable in your favourite
 package manager.
 
-.. code-block:: sh
+.. code-block:: console
 
     # for Debian/Ubuntu
-    ~> sudo apt-get install python-setuptools python-virtualenv python-dev
+    $ sudo apt-get install python3-setuptools python3-virtualenv python3-dev
 
     # Fedora/Red Hat
-    ~> sudo yum install python-setuptools python-virtualenv python-devel
+    $ sudo yum install python3-setuptools python3-virtualenv python3-devel
 
 The next steps should be done as regular user, not as root (although possible
 but not recommended):
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> virtualenv /opt/isso
-    ~> source /opt/isso/bin/activate
+    $ virtualenv /opt/isso
+    $ source /opt/isso/bin/activate
 
-After calling `source`, you can now install packages from PyPi locally into this
-virtual environment. If you don't like Isso anymore, you just `rm -rf` the
+.. note::
+   This guide will refer to commands that need to run inside an activated
+   ``virtualenv`` with the ``(.venv) $`` prefix.
+
+After calling ``source``, you can now install packages from PyPi locally into this
+virtual environment. If you don't like Isso anymore, you just ``rm -rf`` the
 folder. Inside this virtual environment, you may also execute the example
 commands from above to upgrade your Python Package Manager (although it barely
 makes sense), it is completely independent from your global system.
 
 To use Isso installed in a virtual environment outside of the virtual
-environment, you just need to add */opt/isso/bin* to your :envvar:`PATH` or
-execute */opt/isso/bin/isso* directly. It will launch Isso from within the
+environment, you just need to add ``/opt/isso/bin`` to your :envvar:`PATH` or
+execute ``/opt/isso/bin/isso`` directly. It will launch Isso from within the
 virtual environment.
 
 With a virtualenv active, you may now continue to :ref:`install-from-pypi`!
@@ -87,48 +90,44 @@ Requirements
 For Debian/Ubuntu just `copy and paste
 <http://thejh.net/misc/website-terminal-copy-paste>`_ to your terminal:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> sudo apt-get install python3-dev sqlite3 build-essential
+    $ sudo apt-get install python3-dev sqlite3 build-essential
 
 Similar for Fedora (and derivates):
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> sudo yum install python3-devel sqlite
-    ~> sudo yum groupinstall “Development Tools”
+    $ sudo yum install python3-devel sqlite
+    $ sudo yum groupinstall “Development Tools”
 
 Installation
 ^^^^^^^^^^^^
 
-Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_:
+Install Isso with `pip <http://www.pip-installer.org/en/latest/>`_, using the
+``virtualenv`` set up before:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> pip install isso
-
-`Don't have pip? <https://twitter.com/gardaud/status/357638468572151808>`_
-
-.. code-block:: sh
-
-    ~> easy_install isso  # cross your fingers
+    $ source /opt/isso/bin/activate
+    (.venv) $ pip install isso
 
 For easier execution, you can symlink the executable to a location in your
 :envvar:`PATH`.
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> ln -s /opt/isso/bin/isso /usr/local/bin/isso
+    $ ln -s /opt/isso/bin/isso /usr/local/bin/isso
 
 Upgrade
 ^^^^^^^
 
 To upgrade Isso, activate your virtual environment again, and run
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> source /opt/isso/bin/activate  # optional
-    ~> pip install --upgrade isso
+    $ source /opt/isso/bin/activate  # optional
+    (.venv) $ pip install --upgrade isso
 
 .. _prebuilt-package:
 
@@ -142,13 +141,13 @@ Prebuilt Packages
 Build a Docker image
 --------------------
 
-You can get a Docker image by running ``docker build . -t
-isso``. Assuming you have your configuration in ``/opt/isso``, you can
-use the following command to spawn the Docker container:
+You can get a Docker image by running ``docker build . -t isso``.
+Assuming you have your configuration in ``/opt/isso``, you can use the
+following command to spawn the Docker container:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> docker run -d --rm --name isso -p 127.0.0.1:8080:8080 -v /opt/isso:/config -v /opt/isso:/db isso
+    $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 -v /opt/isso:/config -v /opt/isso:/db isso
 
 Then, you can use a reverse proxy to expose port 8080.
 
@@ -160,59 +159,44 @@ Install from Source
 If you want to hack on Isso or track down issues, there's an alternate
 way to set up Isso. It requires a lot more dependencies and effort:
 
-- Python 3.5+ (+ devel headers)
+- Python 3.6+ (+ devel headers)
 - Virtualenv
 - SQLite 3.3.8 or later
-- a working C compiler
+- a working C compiler (e.g. the ``gcc`` package)
 - Node.js, `NPM <https://npmjs.org/>`__ - *required for frontend*
-- `sphinx <http://www.sphinx-doc.org/>`_,
-  `sassc <https://github.com/sass/sassc>`_ (for compiling
-  `.scss <https://sass-lang.com/>`_ to css) - *optional - only for docs*
 
 Get a fresh copy of Isso:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> git clone https://github.com/posativ/isso.git
-    ~> cd isso/
+    $ git clone https://github.com/posativ/isso.git
+    $ cd isso/
 
 To create a virtual environment (recommended), run:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> virtualenv .
-    ~> source ./bin/activate
+    $ virtualenv .venv
+    $ source .venv/bin/activate
 
 Install JavaScript modules using ``npm``:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> make init
+    $ make init
 
 Build JavaScript frontend code:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> make js
+    $ make js
 
 Install Isso and its dependencies:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> python setup.py develop  # or `pip install -e .`
-    ~> isso run
-
-Install `sphinx <http://www.sphinx-doc.org/>`_ for generating docs:
-
-.. code-block:: sh
-
-    ~> pip install sphinx
-
-Generate docs:
-
-.. code-block:: sh
-
-    ~> make site
+    (.venv) $ python setup.py develop  # or `pip install -e .`
+    (.venv) $ isso -c /path/to/isso.cfg run
 
 .. _init-scripts:
 
