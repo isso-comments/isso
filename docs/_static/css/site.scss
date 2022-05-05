@@ -6,10 +6,14 @@ $max-width: em(1280); // Max-width of the outer container, divided by 16
 
 $blue: #2980b9;
 $strong-blue: #6ab0de;
+$background-blue: #e7f2fa;
 $text: #2f2f2f;
 $muted-grey: #151515;
 $admon-todo: #f0b37e;
 $highlighted: #f1c40f;
+$versionchanged: lightyellow;
+
+$monospace: Monaco, Menlo, Consolas, monospace;
 
 * {
   margin: 0;
@@ -260,10 +264,10 @@ main {
     ul {
       margin-top: 0.5em;
       margin-bottom: 1em;
-    }
 
-    ul:last-child {
-      margin-bottom: 0;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
 
     li {
@@ -336,7 +340,7 @@ main {
 
     pre, code {
       font-size: 14px;
-      font-family: Monaco, Menlo, Consolas, monospace;
+      font-family: $monospace;
     }
 
     code {
@@ -396,6 +400,18 @@ main {
     table.hlist * {
         vertical-align: top;
     }
+
+    .versionadded,
+    .versionchanged,
+    .deprecated {
+
+        margin: 0.3em 0;
+
+        span {
+            background: $versionchanged;
+            font-style: italic;
+        }
+    }
   }
 
   // "Edit on Github" link
@@ -417,18 +433,29 @@ main {
   }
 
   dt {
+    font-family: $monospace;
     font-weight: bold;
-    margin: 1.4em 0 0.4em;
     font-size: 16px;
     line-height: 1.4em;
-  }
-  dt code {
-    font-size: 16px;
+    display: inline-block;
+    margin: 1.4em 0 0.4em;
+    padding: 3px 6px;
+
+    background: $background-blue;
+    color: $text;
+
+    border-top: 2px solid lighten($strong-blue, 14);
   }
   dd {
     margin-left: 1.2em;
-  }
 
+    // Nested definitions should not have blue styling
+    & dl.simple dt {
+      border-top: none;
+      background: inherit;
+      color: inherit;
+    }
+  }
   dl {
     margin-bottom: 0.4em;
   }
@@ -499,7 +526,7 @@ main {
       float: left;
       width: 1.4rem;
       height: 1.4rem;
-      font-family: monospace;
+      font-family: $monospace;
       font-size: 1.3rem;
       border-radius: 999px;
       text-align: center;

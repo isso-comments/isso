@@ -238,8 +238,8 @@ main {
     main .sidebar ul {
       margin-top: 0.5em;
       margin-bottom: 1em; }
-    main .sidebar ul:last-child {
-      margin-bottom: 0; }
+      main .sidebar ul:last-child {
+        margin-bottom: 0; }
     main .sidebar li {
       border-left: solid 2px #d3d3d3;
       margin-left: 0.25em;
@@ -320,6 +320,15 @@ main {
           margin: 0; }
     main .docs table.hlist * {
       vertical-align: top; }
+    main .docs .versionadded,
+    main .docs .versionchanged,
+    main .docs .deprecated {
+      margin: 0.3em 0; }
+      main .docs .versionadded span,
+      main .docs .versionchanged span,
+      main .docs .deprecated span {
+        background: lightyellow;
+        font-style: italic; }
   main .vcs-edit {
     font-size: 1.16em;
     line-height: 1.16em;
@@ -333,14 +342,22 @@ main {
     text-decoration: none;
     color: #2980b9; }
   main dt {
+    font-family: Monaco, Menlo, Consolas, monospace;
     font-weight: bold;
-    margin: 1.4em 0 0.4em;
     font-size: 16px;
-    line-height: 1.4em; }
-  main dt code {
-    font-size: 16px; }
+    line-height: 1.4em;
+    display: inline-block;
+    margin: 1.4em 0 0.4em;
+    padding: 3px 6px;
+    background: #e7f2fa;
+    color: #2f2f2f;
+    border-top: 2px solid #a4cfeb; }
   main dd {
     margin-left: 1.2em; }
+    main dd dl.simple dt {
+      border-top: none;
+      background: inherit;
+      color: inherit; }
   main dl {
     margin-bottom: 0.4em; }
 
@@ -386,7 +403,7 @@ main {
       float: left;
       width: 1.4rem;
       height: 1.4rem;
-      font-family: monospace;
+      font-family: Monaco, Menlo, Consolas, monospace;
       font-size: 1.3rem;
       border-radius: 999px;
       text-align: center;
