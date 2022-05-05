@@ -23,6 +23,12 @@ You can also run tests independently via ``pytest [options] isso/``.
    always welcome! Please see the :doc:`/docs/contributing/index` page for
    further information.
 
+**Check Python code style** using ``flake8``:
+
+.. code-block:: bash
+
+    make flakes
+
 Generate and view server **test coverage**:
 
 .. code-block:: bash
@@ -32,7 +38,8 @@ Generate and view server **test coverage**:
 .. note::
    The Continuous Integration suite running via
    `GitHub Actions <https://github.com/posativ/isso/blob/master/.github/workflows/python-tests.yml>`_
-   will throw an **error** if the code coverage falls **below 70%**.
+   will throw an **error** if either the unit tests, the integration tests or
+   the ``flake8`` tests fail or the code coverage falls **below 70%**.
 
 
 DistributionNotFound error
