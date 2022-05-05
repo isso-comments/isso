@@ -28,7 +28,7 @@ body {
 .push, .footer {
   height: 2em; }
   .push a, .push a:visited, .footer a, .footer a:visited {
-    color: #00aac2;
+    color: #2980b9;
     text-decoration: none; }
 
 .header {
@@ -231,7 +231,7 @@ main {
     main .sidebar:last-child {
       margin-right: 0; }
     main .sidebar strong {
-      color: #00aac2;
+      color: #2980b9;
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.5px; }
@@ -251,15 +251,15 @@ main {
       main .sidebar li a {
         color: #2f2f2f; }
     main .sidebar .current {
-      border-left-color: #00aac2; }
+      border-left-color: #2980b9; }
       main .sidebar .current a.current {
-        color: #00aac2;
+        color: #2980b9;
         font-weight: bold; }
     main .sidebar #searchbox {
       color: #2f2f2f;
       margin: 0 0 1.4em; }
       main .sidebar #searchbox h2 {
-        color: #00aac2;
+        color: #2980b9;
         font-weight: bold;
         text-transform: uppercase;
         font-size: 14px; }
@@ -331,7 +331,7 @@ main {
       vertical-align: top; }
   main a {
     text-decoration: none;
-    color: #00aac2; }
+    color: #2980b9; }
   main dt {
     font-weight: bold;
     margin: 1.4em 0 0.4em;
