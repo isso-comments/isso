@@ -80,14 +80,14 @@ var Postbox = function(parent) {
 
     // email is not optional if this config parameter is set
     if (config["require-email"]) {
-        $("[name='email']", el).setAttribute("placeholder",
-            $("[name='email']", el).getAttribute("placeholder").replace(/ \(.*\)/, ""));
+        $("[for='isso-postbox-email']", el).textContent =
+            $("[for='isso-postbox-email']", el).textContent.replace(/ \(.*\)/, "");
     }
 
     // author is not optional if this config parameter is set
     if (config["require-author"]) {
-      $("[name='author']", el).placeholder =
-        $("[name='author']", el).placeholder.replace(/ \(.*\)/, "");
+      $("[for='isso-postbox-author']", el).textContent =
+        $("[for='isso-postbox-author']", el).textContent.replace(/ \(.*\)/, "");
     }
 
     // preview function

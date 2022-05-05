@@ -1,8 +1,11 @@
 module.exports = {
     "postbox-text": "Type Comment Here (at least 3 chars)",
     "postbox-author": "Name (optional)",
+    "postbox-author-placeholder": "John Doe",
     "postbox-email": "E-mail (optional)",
+    "postbox-email-placeholder": "johndoe@example.com",
     "postbox-website": "Website (optional)",
+    "postbox-website-placeholder": "https://example.com",
     "postbox-preview": "Preview",
     "postbox-edit": "Edit",
     "postbox-submit": "Submit",
