@@ -142,7 +142,9 @@ What is currently needed?
 - Look at `open issues with label "good-first-issue"`__
 - Look at `open issues with label "needs-decision"`__ and chime in with your
   well thought-out opinion
-- Look at `milestones`__
+- Look at `milestones`__ - the next release of Isso will be version 0.13, and
+  you can help by looking for open issues and PRs that
+  `contribute to 0.13 <https://github.com/posativ/isso/milestone/5>`_
 - Nicer automated testing, via docker or GH actions, of most of the available
   setup options (fastcgi/proxy configs, docker, apachge/nginx, ...)
 
@@ -184,7 +186,8 @@ It is built using many different technologies and moving parts
 
 Below is a non-exhaustive list of tools, services, dependencies and
 technologies Isso's contributors and maintainers need to at least peripherally
-be aware of - that's a lot to demand of someone!
+be aware of - that's a lot to demand of someone! Your aim should be to reduce
+this complexity, not add to it.
 
 .. hlist::
    :columns: 2

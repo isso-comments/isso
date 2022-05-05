@@ -178,6 +178,8 @@ Helpful links:
 
 - `Cross-referencing with Sphinx <https://docs.readthedocs.io/en/stable/guides/cross-referencing-with-sphinx.html>`_
 - `Sphinx directives <https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html>`_
+- For theme authors: Look at
+  `sphinx-rtd-theme internals <https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html>`_
 
 Debugging cross-references:
 
