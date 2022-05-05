@@ -12,6 +12,8 @@ Changelog for Isso
 - Fix avatar sizing, limit default gravatar images to 55px (#831, l33tname)
   In case of a custom gravatar URL, the ``&s=55`` size parameter will have
   to be added, see `Gravatar: Image requests`_.
+- Add ``data-isso-reply-notifications-default-enabled`` option to configure
+  whether or not the subscribe to replies checkbox should be checked by default.
 
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 
