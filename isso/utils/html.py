@@ -5,8 +5,6 @@ import html
 import bleach
 import misaka
 
-from configparser import NoOptionError
-
 
 class Sanitizer(object):
 
@@ -53,10 +51,6 @@ class Sanitizer(object):
 def Markdown(extensions=("strikethrough", "superscript", "autolink",
                          "fenced-code"), flags=[]):
 
-    # Normalize render extensions for misaka 2.0, which uses `dashed-case`
-    # instead of `snake_case` (misaka 1.x) for options.
-    extensions = [x.replace("_", "-") for x in extensions]
-
     renderer = Unofficial(flags=flags)
     md = misaka.Markdown(renderer, extensions=extensions)
 
@@ -85,15 +79,20 @@ class Unofficial(misaka.HtmlRenderer):
 class Markup(object):
 
     def __init__(self, conf):
+        self.flags = conf.getlist("flags")
+        self.extensions = conf.getlist("options")
 
-        try:
-            conf_flags = conf.getlist("flags")
-        except NoOptionError:
-            conf_flags = []
-        parser = Markdown(extensions=conf.getlist("options"), flags=conf_flags)
-        sanitizer = Sanitizer(
-            conf.getlist("allowed-elements"),
-            conf.getlist("allowed-attributes"))
+        # Normalize render flags and extensions for misaka 2.0, which uses
+        # `dashed-case` instead of `snake_case` (misaka 1.x) for options.
+        self.flags = [x.replace("_", "-") for x in self.flags]
+        self.extensions = [x.replace("_", "-") for x in self.extensions]
+
+        parser = Markdown(extensions=self.extensions,
+                          flags=self.flags)
+        # Filter out empty strings:
+        allowed_elements = [x for x in conf.getlist("allowed-elements") if x]
+        allowed_attributes = [x for x in conf.getlist("allowed-attributes") if x]
+        sanitizer = Sanitizer(allowed_elements, allowed_attributes)
 
         self._render = lambda text: sanitizer.sanitize(parser(text))
 
