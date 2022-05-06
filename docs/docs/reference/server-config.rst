@@ -385,12 +385,13 @@ Markup
 
 Customize markup and sanitized HTML. Currently, only Markdown (via Misaka) is
 supported, but new languages are relatively easy to add.
+For a more detailed explanation, see :doc:`/docs/reference/markdown-config`.
 
 .. code-block:: ini
 
     [markup]
     options = strikethrough, superscript, autolink, fenced-code
-    flags = skip-html, escape, hard-wrap
+    flags =
     allowed-elements =
     allowed-attributes =
 
@@ -399,11 +400,11 @@ options
     extension options can be used there, separated by comma, either by their
     name (``fenced-code``) or as ``EXT_FENCED_CODE``.
 
-    The `flask-misaka docs <https://flask-misaka.readthedocs.io/en/latest/#options>`_
-    have a good explanation of what each extension options does.
-
     Note: Use e.g. ``fenced-code`` (with a ``-`` dash) instead of
     ``fenced_code`` (underline) to refer to extension names.
+
+    For a more detailed explanation, see
+    :ref:`Markdown Configuration: Extensions <available-markdown-options>`
 
     Default: ``strikethrough, superscript, autolink, fenced-code``
 
@@ -412,6 +413,8 @@ flags
     <https://misaka.61924.nl/#html-render-flags>`_, all html rendering flags
     can be used here, separated by comma, either by their name (``hard-wrap``)
     or as e.g. ``HTML_HARD_WRAP``.
+
+    For a more detailed explanation, see :doc:`/docs/reference/markdown-config`.
 
     Default: (empty)
 
@@ -424,6 +427,8 @@ allowed-elements
     ``h1``, ``h2``, ``h3``, ``h4``, ``h5``, ``h6``, ``hr``, ``ins``, ``li``,
     ``ol``, ``p``, ``pre``, ``strong``, ``table``, ``tbody``, ``td``, ``th``,
     ``thead`` and ``ul`` are allowed.
+
+    For a more detailed explanation, see :doc:`/docs/reference/markdown-config`.
 
     .. warning::
 
@@ -443,6 +448,8 @@ allowed-attributes
 
     By default, only ``align`` and ``href`` are allowed (same caveats as for
     ``allowed-elements`` above apply)
+
+    For a more detailed explanation, see :doc:`/docs/reference/markdown-config`.
 
     Default: (empty)
 
