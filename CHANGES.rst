@@ -14,6 +14,8 @@ Changelog for Isso
   to be added, see `Gravatar: Image requests`_.
 - Add ``data-isso-reply-notifications-default-enabled`` option to configure
   whether or not the subscribe to replies checkbox should be checked by default.
+- Accessibility: Use labels rather than placeholders for name, email & website
+  in post box (`#861 <https://github.com/posativ/isso/pull/861>`_, ix5)
 
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 
