@@ -92,6 +92,10 @@ class Markup(object):
         # Filter out empty strings:
         allowed_elements = [x for x in conf.getlist("allowed-elements") if x]
         allowed_attributes = [x for x in conf.getlist("allowed-attributes") if x]
+
+        # If images are allowed, source element should be allowed as well
+        if 'img' in allowed_elements and 'src' not in allowed_attributes:
+            allowed_attributes.append('src')
         sanitizer = Sanitizer(allowed_elements, allowed_attributes)
 
         self._render = lambda text: sanitizer.sanitize(parser(text))
