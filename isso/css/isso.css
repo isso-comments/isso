@@ -92,6 +92,10 @@
     font-weight: bold;
     color: #555;
 }
+.isso-comment > .isso-text-wrapper > .isso-comment-header .isso-page-author-suffix {
+    font-weight: bold;
+    color: #2c2c2c;
+}
 .isso-comment > .isso-text-wrapper > .isso-textarea-wrapper .isso-textarea,
 .isso-comment > .isso-text-wrapper > .isso-textarea-wrapper .isso-preview {
     margin-top: 0.2em;
