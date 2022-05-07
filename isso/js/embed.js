@@ -54,6 +54,19 @@ function init() {
     // and the call to fetch those is in fetchComments()
     isso_thread.append(heading);
     isso_thread.append('<div id="isso-root"></div>');
+
+    window.addEventListener('hashchange', function() {
+        if (!window.location.hash.match("^#isso-[0-9]+$")) {
+            return;
+        }
+
+        var existingTarget = $(".isso-target");
+        if (existingTarget != null) {
+            existingTarget.classList.remove("isso-target");
+        }
+
+        $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+    });
 }
 
 function fetchComments() {
@@ -105,6 +118,11 @@ function fetchComments() {
             if (window.location.hash.length > 0 &&
                 window.location.hash.match("^#isso-[0-9]+$")) {
                 $(window.location.hash).scrollIntoView();
+
+                // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
+                // So a class `.isso-target` has to be used instead, and then we can manually remove the
+                // class from the old target comment in the `hashchange` listener.
+                $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
             }
         },
         function(err) {
