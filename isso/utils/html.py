@@ -10,14 +10,14 @@ class Sanitizer(object):
 
     def __init__(self, elements, attributes):
         # attributes found in Sundown's HTML serializer [1]
-        # except for <img> tag,
-        # because images are not generated anyways.
+        # - except for <img> tag, because images are not generated anyways.
+        # - sub and sup added
         #
         # [1] https://github.com/vmg/sundown/blob/master/html/html.c
         self.elements = ["a", "p", "hr", "br", "ol", "ul", "li",
                          "pre", "code", "blockquote",
                          "del", "ins", "strong", "em",
-                         "h1", "h2", "h3", "h4", "h5", "h6",
+                         "h1", "h2", "h3", "h4", "h5", "h6", "sub", "sup",
                          "table", "thead", "tbody", "th", "td"] + elements
 
         # href for <a> and align for <table>

@@ -17,6 +17,7 @@ Changelog for Isso
 - Accessibility: Use labels rather than placeholders for name, email & website
   in post box (`#861 <https://github.com/posativ/isso/pull/861>`_, ix5)
 - Re-enable ``no-intra-emphasis`` misaka extension in default config.
+- Allow ``sup`` and ``sub`` HTML elements by default
 
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 
