@@ -38,6 +38,8 @@ const config = {
    * -> use per-file testEnvironment stanza instead
    */
   //testEnvironment: "jsdom",
+
+  "globalSetup": "<rootDir>/tests/setup/global-setup.js"
 };
 
 module.exports = config;
