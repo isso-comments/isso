@@ -48,8 +48,8 @@ class Sanitizer(object):
         return linker.linkify(clean_html)
 
 
-def Markdown(extensions=("strikethrough", "superscript", "autolink",
-                         "fenced-code"), flags=[]):
+def Markdown(extensions=("autolink", "fenced-code", "no-intra-emphasis",
+                         "strikethrough", "superscript"), flags=[]):
 
     renderer = Unofficial(flags=flags)
     md = misaka.Markdown(renderer, extensions=extensions)
