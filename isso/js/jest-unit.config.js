@@ -30,7 +30,7 @@ const config = {
   modulePaths: ["<rootDir>"],
   /* rootDir already set to pwd when running jest with this config as arg */
   moduleNameMapper: {
-    "\.svg$": "<rootDir>/tests/mocks/fileMock.js",
+    "\.svg$": "<rootDir>/tests/mocks/fileTransformer.js",
   },
 
   /* Run tests in a virtual DOM environment
@@ -38,6 +38,8 @@ const config = {
    * -> use per-file testEnvironment stanza instead
    */
   //testEnvironment: "jsdom",
+
+  "globalSetup": "<rootDir>/tests/setup/global-setup.js"
 };
 
 module.exports = config;

@@ -9,7 +9,16 @@
 
 "use strict";
 
-test('Create Postbox', () => {
+/*
+ * Test goals:
+ * - Test editorify()
+ * - Test insert()
+ * - Test insert_loader()
+ * - Test Postbox()
+ * Also, untangle Postbox functions from DOM element
+ */
+
+test('Editorify text area', () => {
   // Set up our document body
   document.body.innerHTML =
     '<div id=isso-thread></div>' +
@@ -17,25 +26,35 @@ test('Create Postbox', () => {
     // else `api` fails to initialize!
     '<script src="http://isso.api/js/embed.min.js" data-isso="/"></script>';
 
+  let placeholder = 'Type here'
+  let html = "<div class='isso-textarea isso-placeholder' contenteditable='true'>Type here</div>"
+
+  jest.mock('app/i18n', () => ({
+    translate: jest.fn(key => placeholder),
+  }));
+
   const isso = require("app/isso");
   const $ = require("app/dom");
 
-  const config = require("app/config");
-  const i18n = require("app/i18n");
-  const svg = require("app/svg");
-
-  const template = require("app/template");
-
-  template.set("conf", config);
-  template.set("i18n", i18n.translate);
-  template.set("pluralize", i18n.pluralize);
-  template.set("svg", svg);
-
+  var textarea = $.htmlify(html);
   var isso_thread = $('#isso-thread');
-  isso_thread.append('<div id="isso-root"></div>');
-  isso_thread.append(new isso.Postbox(null));
+  isso_thread.append(textarea);
+  let area = document.querySelectorAll('.isso-textarea')[0];
 
-  // Will create a `.snap` file in `./__snapshots__/`.
-  // Don't forget to check in those files when changing anything!
-  expect(isso_thread.innerHTML).toMatchSnapshot();
+  isso.editorify(textarea);
+  expect(textarea.getAttribute('contentEditable')).toBe('true');
+
+  // textarea.focus() does not work here,
+  // Maybe some JSDOM oddities prevent addEventListener()?
+  area.dispatchEvent(new window.MouseEvent('focus'));
+
+  // classList returns {'0': 'class1, '1': 'class2', ...}
+  expect(textarea.innerHTML).toBe("");
+  expect(Object.values(textarea.classList)).not.toContain("isso-placeholder");
+
+  // textarea.blur() does not work here
+  area.dispatchEvent(new window.MouseEvent('blur'));
+
+  expect(Object.values(textarea.classList)).toContain("isso-placeholder");
+  expect(textarea.innerHTML).toBe("Type here");
 });
