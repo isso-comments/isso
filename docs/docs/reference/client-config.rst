@@ -20,6 +20,7 @@ preferably in the script tag which embeds the JS:
             data-isso-vote="true"
             data-isso-vote-levels=""
             data-isso-feed="false"
+            data-isso-page-author-hashes="f124cf6b2f01,7831fe17a8cd"
             data-isso-reply-notifications-default-enabled="false"
             src="/prefix/js/embed.js"></script>
 
@@ -142,6 +143,49 @@ data-isso-feed
     Enable or disable the addition of a link to the feed for the comment
     thread. The link will only be valid if the appropriate setting, in
     ``[rss]`` section, is also enabled server-side.
+
+data-isso-page-author-hashes
+    Provide the hash (or list of hashes) of the current page's author. Any
+    comments made by those authors will be given the ``isso-is-page-author``
+    class. This can be styled using CSS.
+
+    The hash of a user can be found by checking the ``data-hash`` parameter on the
+    ``<div>`` tag containing their comment. This is what the element looks like:
+
+    .. code-block:: html
+
+        <div class="isso-comment isso-no-votes" id="isso-14" data-hash="41faef0a49fc">
+
+    According to this example, your script tag would look something like this:
+
+    .. code-block:: html
+
+        <script src="..." data-isso-page-author-hashes="41faef0a49fc"></script>
+
+    When adding multiple hashes to support multiple page authors, separate the
+    hashes by a command and/or space. All of the following are acceptable
+    (although the hashes are made up):
+
+    - ``data-isso-page-author-hashes="86g7n8g67nm,8m787mg8"``
+    - ``data-isso-page-author-hashes="86g7n8g67nm 8m787mg8"``
+    - ``data-isso-page-author-hashes="86g7n8g67nm, 8m787mg8"``
+
+    For example, these CSS rules make the page author's name a sort of
+    turquoise color, and the comment's background a lighter version of that:
+
+    .. code-block:: css
+
+        .isso-comment.isso-is-page-author > .isso-text-wrapper {
+            background-color: #bae0ea;
+        }
+
+        .isso-comment.isso-is-page-author > .isso-text-wrapper > .isso-comment-header > .isso-author {
+            color: #19798d;
+        }
+
+
+    .. versionadded:: 0.13
+
 
 data-isso-reply-notifications-default-enabled
     Set to ``true`` to make the reply notifications checkbox on the postbox be

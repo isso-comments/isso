@@ -22,7 +22,8 @@ var config = {
                   "#be5168", "#f19670", "#e4bf80", "#447c69"].join(" "),
     "vote": true,
     "vote-levels": null,
-    "feed": false
+    "feed": false,
+    "page-author-hashes": "",
 };
 
 var js = document.getElementsByTagName("script");
@@ -81,5 +82,8 @@ config["langs"] = languages;
 // code outside this file should look only at langs
 delete config["lang"];
 delete config["default-lang"];
+
+// Convert page-author-hash into a array by splitting at whitespace and/or commas
+config["page-author-hashes"] = config["page-author-hashes"].split(/[\s,]+/);
 
 module.exports = config;

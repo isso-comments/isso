@@ -151,7 +151,7 @@ var insert_loader = function(comment, lastcreated) {
         entrypoint = $("#isso-root");
         comment.name = 'null';
     } else {
-        entrypoint = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-follow-up");
+        entrypoint = $("#isso-" + comment.id + " > .isso-follow-up");
         comment.name = comment.id;
     }
     var el = $.htmlify(template.render("comment-loader", {"comment": comment}));
@@ -208,7 +208,7 @@ var insert = function(comment, scrollIntoView) {
     if (comment.parent === null) {
         entrypoint = $("#isso-root");
     } else {
-        entrypoint = $("#isso-" + comment.parent + " > .isso-text-wrapper > .isso-follow-up");
+        entrypoint = $("#isso-" + comment.parent + " > .isso-follow-up");
     }
 
     entrypoint.append(el);

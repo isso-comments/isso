@@ -33,8 +33,6 @@
 
 #isso-root .isso-comment {
     max-width: 68em;
-    padding-top: 0.95em;
-    margin: 0.95em auto;
 }
 #isso-root .isso-preview .isso-comment {
     padding-top: 0;
@@ -43,11 +41,12 @@
 #isso-root .isso-comment:not(:first-of-type),
 .isso-follow-up .isso-comment {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5em;
 }
 .isso-comment > .isso-avatar {
     display: block;
     float: left;
-    margin: 3px 15px 0 0;
+    margin: 0.95em 0.95em 0;
 }
 .isso-comment > .isso-avatar > svg {
     max-width: 48px;
@@ -58,6 +57,7 @@
 }
 .isso-comment > .isso-text-wrapper {
     display: block;
+    padding: 0.95em;
 }
 .isso-comment .isso-follow-up {
     padding-left: calc(7% + 20px);
@@ -91,6 +91,10 @@
 .isso-comment > .isso-text-wrapper > .isso-comment-header .isso-author {
     font-weight: bold;
     color: #555;
+}
+.isso-comment > .isso-text-wrapper > .isso-comment-header .isso-page-author-suffix {
+    font-weight: bold;
+    color: #2c2c2c;
 }
 .isso-comment > .isso-text-wrapper > .isso-textarea-wrapper .isso-textarea,
 .isso-comment > .isso-text-wrapper > .isso-textarea-wrapper .isso-preview {
