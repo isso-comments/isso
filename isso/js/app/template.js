@@ -21,7 +21,6 @@ load_tmpl("postbox", tmpl_postbox);
 load_tmpl("comment", tmpl_comment);
 load_tmpl("comment-loader", tmpl_comment_loader);
 
-set("bool", function(arg) { return arg ? true : false; });
 set("humanize", function(date) {
     if (typeof date !== "object") {
         date = new Date(parseInt(date, 10) * 1000);
