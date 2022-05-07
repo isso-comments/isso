@@ -400,11 +400,11 @@ main {
       background: #f29f97; }
       .admonition.danger .admonition-title:before, .admonition.error .admonition-title:before {
         color: #f29f97; }
-  .admonition.hint, .admonition.important, .admonition.tip {
+  .admonition.hint, .admonition.important, .admonition.tip, .admonition.seealso {
     background: #dbfaf4; }
-    .admonition.hint .admonition-title, .admonition.important .admonition-title, .admonition.tip .admonition-title {
+    .admonition.hint .admonition-title, .admonition.important .admonition-title, .admonition.tip .admonition-title, .admonition.seealso .admonition-title {
       background: #1abc9c; }
-      .admonition.hint .admonition-title:before, .admonition.important .admonition-title:before, .admonition.tip .admonition-title:before {
+      .admonition.hint .admonition-title:before, .admonition.important .admonition-title:before, .admonition.tip .admonition-title:before, .admonition.seealso .admonition-title:before {
         color: #1abc9c; }
   .admonition.note {
     background: #e7f2fa; }
