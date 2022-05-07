@@ -416,6 +416,17 @@ main {
         vertical-align: top;
     }
 
+    table.docutils {
+      margin: 1em 0;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 0.4em 0.5em;
+        border: 1px solid $code-block-border-color;
+        border-collapse: collapse;
+      }
+    }
+
     .versionadded,
     .versionchanged,
     .deprecated {

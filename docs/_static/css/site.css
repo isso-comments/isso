@@ -331,6 +331,13 @@ main {
           margin: 0; }
     main .docs table.hlist * {
       vertical-align: top; }
+    main .docs table.docutils {
+      margin: 1em 0;
+      border-collapse: collapse; }
+      main .docs table.docutils th, main .docs table.docutils td {
+        padding: 0.4em 0.5em;
+        border: 1px solid #d3d3d3;
+        border-collapse: collapse; }
     main .docs .versionadded,
     main .docs .versionchanged,
     main .docs .deprecated {
