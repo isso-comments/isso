@@ -335,11 +335,22 @@ main {
     main .docs .versionchanged,
     main .docs .deprecated {
       margin: 0.3em 0; }
-      main .docs .versionadded span,
-      main .docs .versionchanged span,
-      main .docs .deprecated span {
-        background: lightyellow;
-        font-style: italic; }
+      main .docs .versionadded span.added,
+      main .docs .versionadded span.changed,
+      main .docs .versionchanged span.added,
+      main .docs .versionchanged span.changed,
+      main .docs .deprecated span.added,
+      main .docs .deprecated span.changed {
+        background: lightyellow; }
+      main .docs .versionadded span.deprecated,
+      main .docs .versionchanged span.deprecated,
+      main .docs .deprecated span.deprecated {
+        background: #ffe0e0; }
+      main .docs .versionadded span.versionmodified,
+      main .docs .versionchanged span.versionmodified,
+      main .docs .deprecated span.versionmodified {
+        font-style: italic;
+        margin-right: 0.6em; }
   main .vcs-edit {
     font-size: 1.16em;
     line-height: 1.16em;
