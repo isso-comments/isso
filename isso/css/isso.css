@@ -162,6 +162,19 @@
     display: none;
 }
 
+/* "target" means the comment that's being linked to, for example:
+ * https://example.com/blog/example/#isso-15
+ */
+.isso-target {
+    animation: isso-target-fade 5s ease-out;
+}
+@keyframes isso-target-fade {
+    0% { background-color: #eee5a1; }
+    /* This color should be changed when used on a dark background,
+     * maybe #3f3c1c for example
+     */
+}
+
 .isso-postbox {
     max-width: 68em;
     margin: 0 auto 2em;
