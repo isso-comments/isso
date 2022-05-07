@@ -416,6 +416,7 @@ var insert = function(comment, scrollIntoView) {
 };
 
 module.exports = {
+    editorify: editorify,
     insert: insert,
     insert_loader: insert_loader,
     Postbox: Postbox,
