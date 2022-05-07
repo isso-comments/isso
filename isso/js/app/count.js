@@ -24,16 +24,18 @@ module.exports = function () {
 
     var urls = Object.keys(objs);
 
-    api.count(urls).then(function(rv) {
-        for (var key in objs) {
-            if (objs.hasOwnProperty(key)) {
+    if (urls.length > 0) {
+        api.count(urls).then(function(rv) {
+            for (var key in objs) {
+                if (objs.hasOwnProperty(key)) {
 
-                var index = urls.indexOf(key);
+                    var index = urls.indexOf(key);
 
-                for (var i = 0; i < objs[key].length; i++) {
-                    objs[key][i].textContent = i18n.pluralize("num-comments", rv[index]);
+                    for (var i = 0; i < objs[key].length; i++) {
+                        objs[key][i].textContent = i18n.pluralize("num-comments", rv[index]);
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 };
