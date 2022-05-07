@@ -19,6 +19,7 @@
    Installation <reference/installation>
    Server Configuration <reference/server-config>
    Client Configuration <reference/client-config>
+   Markdown Configuration <reference/markdown-config>
    Deployment <reference/deployment>
    Multiple Sites & Sub-URI <reference/multi-site-sub-uri>
    Server API <reference/server-api>

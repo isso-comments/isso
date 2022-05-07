@@ -416,15 +416,33 @@ main {
         vertical-align: top;
     }
 
+    table.docutils {
+      margin: 1em 0;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 0.4em 0.5em;
+        border: 1px solid $code-block-border-color;
+        border-collapse: collapse;
+      }
+    }
+
     .versionadded,
     .versionchanged,
     .deprecated {
 
         margin: 0.3em 0;
 
-        span {
+        span.added,
+        span.changed {
             background: $versionchanged;
+        }
+        span.deprecated {
+            background: #ffe0e0;
+        }
+        span.versionmodified {
             font-style: italic;
+            margin-right: 0.6em;
         }
     }
   }
@@ -505,7 +523,7 @@ main {
       }
     }
   }
-  &.hint, &.important, &.tip {
+  &.hint, &.important, &.tip, &.seealso {
     background: #dbfaf4;
 
     .admonition-title {

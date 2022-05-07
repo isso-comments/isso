@@ -331,15 +331,33 @@ main {
           margin: 0; }
     main .docs table.hlist * {
       vertical-align: top; }
+    main .docs table.docutils {
+      margin: 1em 0;
+      border-collapse: collapse; }
+      main .docs table.docutils th, main .docs table.docutils td {
+        padding: 0.4em 0.5em;
+        border: 1px solid #d3d3d3;
+        border-collapse: collapse; }
     main .docs .versionadded,
     main .docs .versionchanged,
     main .docs .deprecated {
       margin: 0.3em 0; }
-      main .docs .versionadded span,
-      main .docs .versionchanged span,
-      main .docs .deprecated span {
-        background: lightyellow;
-        font-style: italic; }
+      main .docs .versionadded span.added,
+      main .docs .versionadded span.changed,
+      main .docs .versionchanged span.added,
+      main .docs .versionchanged span.changed,
+      main .docs .deprecated span.added,
+      main .docs .deprecated span.changed {
+        background: lightyellow; }
+      main .docs .versionadded span.deprecated,
+      main .docs .versionchanged span.deprecated,
+      main .docs .deprecated span.deprecated {
+        background: #ffe0e0; }
+      main .docs .versionadded span.versionmodified,
+      main .docs .versionchanged span.versionmodified,
+      main .docs .deprecated span.versionmodified {
+        font-style: italic;
+        margin-right: 0.6em; }
   main .vcs-edit {
     font-size: 1.16em;
     line-height: 1.16em;
@@ -389,11 +407,11 @@ main {
       background: #f29f97; }
       .admonition.danger .admonition-title:before, .admonition.error .admonition-title:before {
         color: #f29f97; }
-  .admonition.hint, .admonition.important, .admonition.tip {
+  .admonition.hint, .admonition.important, .admonition.tip, .admonition.seealso {
     background: #dbfaf4; }
-    .admonition.hint .admonition-title, .admonition.important .admonition-title, .admonition.tip .admonition-title {
+    .admonition.hint .admonition-title, .admonition.important .admonition-title, .admonition.tip .admonition-title, .admonition.seealso .admonition-title {
       background: #1abc9c; }
-      .admonition.hint .admonition-title:before, .admonition.important .admonition-title:before, .admonition.tip .admonition-title:before {
+      .admonition.hint .admonition-title:before, .admonition.important .admonition-title:before, .admonition.tip .admonition-title:before, .admonition.seealso .admonition-title:before {
         color: #1abc9c; }
   .admonition.note {
     background: #e7f2fa; }
