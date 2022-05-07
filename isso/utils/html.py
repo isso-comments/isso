@@ -10,14 +10,14 @@ class Sanitizer(object):
 
     def __init__(self, elements, attributes):
         # attributes found in Sundown's HTML serializer [1]
-        # except for <img> tag,
-        # because images are not generated anyways.
+        # - except for <img> tag, because images are not generated anyways.
+        # - sub and sup added
         #
         # [1] https://github.com/vmg/sundown/blob/master/html/html.c
         self.elements = ["a", "p", "hr", "br", "ol", "ul", "li",
                          "pre", "code", "blockquote",
                          "del", "ins", "strong", "em",
-                         "h1", "h2", "h3", "h4", "h5", "h6",
+                         "h1", "h2", "h3", "h4", "h5", "h6", "sub", "sup",
                          "table", "thead", "tbody", "th", "td"] + elements
 
         # href for <a> and align for <table>
@@ -48,8 +48,8 @@ class Sanitizer(object):
         return linker.linkify(clean_html)
 
 
-def Markdown(extensions=("strikethrough", "superscript", "autolink",
-                         "fenced-code"), flags=[]):
+def Markdown(extensions=("autolink", "fenced-code", "no-intra-emphasis",
+                         "strikethrough", "superscript"), flags=[]):
 
     renderer = Unofficial(flags=flags)
     md = misaka.Markdown(renderer, extensions=extensions)
@@ -92,6 +92,10 @@ class Markup(object):
         # Filter out empty strings:
         allowed_elements = [x for x in conf.getlist("allowed-elements") if x]
         allowed_attributes = [x for x in conf.getlist("allowed-attributes") if x]
+
+        # If images are allowed, source element should be allowed as well
+        if 'img' in allowed_elements and 'src' not in allowed_attributes:
+            allowed_attributes.append('src')
         sanitizer = Sanitizer(allowed_elements, allowed_attributes)
 
         self._render = lambda text: sanitizer.sanitize(parser(text))
