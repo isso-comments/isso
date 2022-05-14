@@ -33,6 +33,7 @@
 
 #isso-root .isso-comment {
     max-width: 68em;
+    margin: 0 auto;
 }
 #isso-root .isso-preview .isso-comment {
     padding-top: 0;
