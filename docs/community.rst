@@ -93,6 +93,11 @@ Isso-adjacent Projects
 .. _Grav cms: https://en.wikipedia.org/wiki/Grav_(CMS)
 .. _grav-plugin-jscomments: https://github.com/Sommerregen/grav-plugin-jscomments>
 
+.. note::
+   Feel free to **add your own project** that builds on top of or integrates
+   Isso in some manner. That way, there will be more data points for
+   maintainers to judge if they can afford to make (breaking) changes in Isso's
+   internals.
 
 .. attention::
 
