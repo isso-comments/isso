@@ -249,6 +249,7 @@ main {
   .sidebar {
     @include span-columns(2 of 9);
     display: block;
+    font-size: 15px;
 
     strong {
       color: $blue;
