@@ -247,7 +247,7 @@ main {
   }
 
   .sidebar {
-    @include span-columns(1 of 5);
+    @include span-columns(2 of 9);
     display: block;
 
     strong {
@@ -305,7 +305,7 @@ main {
   }
 
   .docs {
-    @include span-columns(4 of 5);
+    @include span-columns(7 of 9);
 
     font-size: 16px;
     color: $text;

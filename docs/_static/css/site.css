@@ -218,9 +218,9 @@ main {
   main .sidebar {
     display: block;
     float: left;
-    margin-right: 5.8515051827%;
-    width: 15.3187958539%;
-    display: block; }
+    margin-right: 3.1684356888%;
+    width: 19.7578833532%;
+    display: block;
     main .sidebar:last-child {
       margin-right: 0; }
     main .sidebar strong {
@@ -259,8 +259,8 @@ main {
   main .docs {
     display: block;
     float: left;
-    margin-right: 5.8515051827%;
-    width: 78.8296989635%;
+    margin-right: 3.1684356888%;
+    width: 77.073680958%;
     font-size: 16px;
     color: #2f2f2f; }
     main .docs:last-child {
