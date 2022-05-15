@@ -1,6 +1,22 @@
 Writing Documentation
 =====================
 
+The documentation for Isso has several purposes: It should help newcomers have
+a good experience in installing and setting up Isso, make it clear how to
+configure for several use cases, and invite people to improve the project by
+participating.
+
+.. note::
+   Please contribute to these docs! *Some* documentation is better than no
+   documentation. You may look at the ``docs/`` folder to see how existing
+   documentation is written or click the top right "Edit on GitHub" button to
+   directly edit a page.
+
+Sections covered in this document:
+
+.. contents::
+   :local:
+
 Introduction
 ------------
 
@@ -43,6 +59,9 @@ Build the docs:
 .. code-block:: console
 
    (.venv) $ make site
+
+Styles
+^^^^^^
 
 The stylesheets of the theme are written in a CSS-like language called
 `sass <https://sass-lang.com/guide>`_ and have the ``.scss`` file extension.
@@ -173,6 +192,18 @@ related projects that also offer commenting functionality.
 - `Remark42 Documentation <https://remark42.com/docs/getting-started/installation/>`_
 - `Schnack Documentation <https://schnack.cool/>`_
 
+A model for good documentation has been laid out by Divio as the
+`Divio Documentation System <https://documentation.divio.com/>`_.
+It divides docs into four clear areas:
+
+- Tutorials
+- How-to guides
+- Explanation
+- Reference
+
+The `Django docs <https://docs.djangoproject.com/en/dev/#how-the-documentation-is-organized>`_
+also follow this system.
+
 Help
 ----
 
@@ -195,7 +226,7 @@ correctly and not confused the two.
 
 .. attention::
 
-   This section of the Isso documentation is incomplete. Please help by expanding it.
+   This section of the Isso documentation could be improved. Please help by expanding it.
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
@@ -204,7 +235,6 @@ correctly and not confused the two.
 
    **What's missing?**
 
-   - How Sphinx works, what its philosphy is
    - How to write good documentation, maybe link to a few guides and example sites
    - More syntax standards, and also correct wrong usage across the docs
 
