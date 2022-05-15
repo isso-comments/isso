@@ -24,10 +24,8 @@ to install Isso into the user's home.
 Why isn't markdown in my comments rendering as I expect?
 --------------------------------------------------------
 
-Please configure Isso's markup parser to your requirements as described in
-:ref:`configure-markup`. As of version 0.12.2, Isso uses misaka 2.0 to render
-markdown. Misaka 2.0 uses ``dashed-case`` instead of ``snake_case`` for
-options, you might have to update your config.
+Please :ref:`configure <configure-markup>` Isso's markup parser to your
+requirements as described in :doc:`/docs/reference/markdown-config`.
 
 UnicodeDecodeError: 'ascii' codec can't decode byte 0xff
 --------------------------------------------------------
