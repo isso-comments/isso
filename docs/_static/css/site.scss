@@ -120,15 +120,6 @@ body {
   header {
     @include outer-container;
     padding: 1em 0;
-
-    h1 {
-      color: #555;
-      font-weight: 300;
-      font-size: 35px;
-      font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
-      text-shadow: 1px 0 #c0c0c0;
-      letter-spacing: 0.05em;
-    }
   }
 
   footer {
