@@ -5,7 +5,16 @@ Overview
 
 Welcome to Isso's documentation. This documentation will help you get started
 fast. If you run into any problems when using Isso, you can find the answer in
-troubleshooting guide or you can ask me on IRC or GitHub.
+`troubleshooting guide <guides/troubleshooting>`_ or you can
+:ref:`get in contact <contact>`
+
+Once you're familiar with Isso, check out the sidebar and the search on the
+left to find further information.
+
+.. note::
+   Contributions to the documentation and to the project as a whole are
+   welcome! See :doc:`/docs/contributing/index` and
+   :doc:`/docs/contributing/documentation` for more details.
 
 Documentation overview:
 
