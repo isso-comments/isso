@@ -2,7 +2,7 @@
   "name": "Isso API",
   "title": "Isso API",
   "description": "",
-  "version": "0.12.6",
+  "version": "0.13.0-dev",
   "order": ["Thread",  "Comment"],
   "url" : "https://comments.example.com",
   "header": {
