@@ -1,5 +1,5 @@
-Frequently asked question
-=========================
+Frequently asked questions
+==========================
 
 Why SQLite3?
 ------------
@@ -13,6 +13,17 @@ websites.
 
 For example, if you have 209 threads and 778 comments in total this only needs 620 kilobytes
 of memory. This is an excellent use case for SQLite.
+
+What does "Isso" mean?
+----------------------
+
+Isso is an informal, german abbreviation for "Ich schrei sonst!", which can
+roughly be translated to "I'm yelling otherwise". It usually ends the
+discussion without any further arguments.
+
+In germany, Isso `is also pokémon N° 360`__.
+
+.. __: http://bulbapedia.bulbagarden.net/wiki/Wynaut_(Pok%C3%A9mon)
 
 .. attention::
 

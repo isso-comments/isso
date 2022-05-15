@@ -99,6 +99,25 @@ Isso-adjacent Projects
    maintainers to judge if they can afford to make (breaking) changes in Isso's
    internals.
 
+Other options
+-------------
+
+Isso is not the only open-source commenting server. You can find an overview at
+`lisakov.com: Open source comments <https://lisakov.com/projects/open-source-comments/>`_.
+
+Some popular options are:
+
+* `Commento <https://commento.io/>`_, written in Go. Requires a
+  `PostgreSQL <https://www.postgresql.org/>`_ database.
+
+* `Remark42 <https://remark42.com/>`_, written in Go.
+
+* `Staticman <https://staticman.net/>`_, written in Node.js. Adds comments
+  directly to repository of static sites.
+
+* `schnack <https://schnack.cool/>`_, written in Node.js.
+
+
 .. attention::
 
    This section of the Isso documentation is incomplete. Please help by expanding it.
@@ -111,8 +130,7 @@ Isso-adjacent Projects
    **What's missing?**
 
    - Define and refine community standards
-   - Link to more related projects, investigate moving the "Other options"
-     section from the main docs here
+   - Link to more related projects
 
    Ideas:
 
