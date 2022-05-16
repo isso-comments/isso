@@ -166,6 +166,21 @@ From `blog.mdosch.de <https://blog.mdosch.de/2018/05/20/isso-ip-adressen-woechen
 them to to zero.*
 
 
+Change linked comment highlight color
+-------------------------------------
+
+When you click a link that goes to a specific Isso comment (such as ``https://example.com/example-post/#isso-43``),
+the comment will be highlighted yellow and then fade out over a few seconds.
+
+Add the following CSS to your site to change that color (replace ``#3f3c1c`` with any color of your choice):
+
+.. code-block:: css
+
+   @keyframes isso-target-fade {
+     0% { background-color: #3f3c1c; }
+   }
+
+
 .. attention::
 
    This section of the Isso documentation is incomplete. Please help by expanding it.
