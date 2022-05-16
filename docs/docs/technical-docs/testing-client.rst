@@ -1,6 +1,5 @@
-##################
 Testing the Client
-##################
+==================
 
 The Javascript client part of Isso is tested by the
 `Jest testing framework <https://jestjs.io/>`_.

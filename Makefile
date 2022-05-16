@@ -86,7 +86,7 @@ coverage: $(ISSO_PY_SRC)
 	coverage report --omit='*/tests/*'
 
 test: $($ISSO_PY_SRC)
-	pytest --doctest-modules isso/
+	PYTHONPATH=. pytest --doctest-modules isso/tests/
 
 clean:
 	rm -f $(ISSO_JS_DST)

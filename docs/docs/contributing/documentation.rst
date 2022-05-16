@@ -43,7 +43,7 @@ You will need to have the latest version of the ``Sphinx`` documentation generat
 
 .. warning:: Please avoid using the version installed by your operating system
    since it may be severely outdated and throw errors with Isso's theme. Isso's
-   docs need at least version 4.5.0.
+   docs need **at least Sphinx version 4.5.0**.
 
 Install via pip:
 
@@ -59,6 +59,9 @@ Build the docs:
 .. code-block:: console
 
    (.venv) $ make site
+
+You can then view the generated docs by starting a local server with
+``cd docs/_build/html && python -m http.server`` and visiting ``http://localhost:8000``.
 
 Styles
 ^^^^^^
@@ -204,8 +207,8 @@ It divides docs into four clear areas:
 The `Django docs <https://docs.djangoproject.com/en/dev/#how-the-documentation-is-organized>`_
 also follow this system.
 
-Help
-----
+Other Tips & Tricks
+-------------------
 
 Helpful links:
 
@@ -222,6 +225,21 @@ Debugging cross-references:
 
 Also make sure you have used ``:ref:`` or ``:doc``
 correctly and not confused the two.
+
+Automatic rebuilds
+^^^^^^^^^^^^^^^^^^
+
+For easier docs development through file watching, automatic rebuilding and
+refreshing the browser, use `sphinx-autobuild`_:
+
+.. code-block:: console
+
+   (.venv) $ pip install sphinx-autobuild
+   (.venv) $ sphinx-autobuild -b dirhtml docs/ docs/_build/html
+
+Then visit ``localhost:8000``
+
+.. _sphinx-autobuild: https://github.com/executablebooks/sphinx-autobuild
 
 
 .. attention::
