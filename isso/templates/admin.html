@@ -87,15 +87,15 @@
       svg(data-hash='#{{comment.hash}}')
     </div>
   {% endif %}
-    <div class='text-wrapper'>
+    <div class='isso-text-wrapper'>
       <div class='isso-comment-header' role='meta'>
         {% if order_by != "tid" %}
           <div>Thread: {{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</div><br />
         {% endif %}
         {% if comment.author %}
-          <span class='author' id="isso-author-{{comment.id}}">{{comment.author}}</span>
+          <span class='isso-author' id="isso-author-{{comment.id}}">{{comment.author}}</span>
         {% else %}
-          <span class='author' id="isso-author-{{comment.id}}">Anonymous</span>
+          <span class='isso-author' id="isso-author-{{comment.id}}">Anonymous</span>
         {% endif %}
         {% if comment.email %}
           (<span id="isso-email-{{comment.id}}">{{comment.email}}</span> <a href="mailto:{{comment.email}}" rel='nofollow' class='email'>mailto</a>)
@@ -107,7 +107,7 @@
         {% else %}
           <span id="isso-website-{{comment.id}}"></span>
         {% endif %}
-        <span class="spacer"> &bull;</span>
+        <span class="isso-spacer"> &bull;</span>
         <time>{{comment.created | datetimeformat}}</time>
         <span class='note'>
           {% if comment.mode == 1 %}
@@ -119,7 +119,7 @@
           {% endif %}
         </span>
       </div>
-      <div class='text'>
+      <div class='isso-text'>
         {% if comment.mode == 4 %}
           <strong>HIDDEN</strong>. Original text: <br />
         {% endif %}
@@ -129,7 +129,7 @@
         {% if conf.votes and comment.likes - comment.dislikes != 0 %}
           <span class='votes'>{{comment.likes - comment.dislikes}}</span>
         {% endif %}
-        <span class='spacer'></span>
+        <span class='isso-spacer'></span>
         <a id="edit-btn-{{comment.id}}" class="edit" onClick="javascript:start_edit({{comment.id}})">Edit</a>
         <a id="stop-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:stop_edit({{comment.id}})">Cancel</a>
         <a id="send-edit-btn-{{comment.id}}" class="hidden edit" onClick="javascript:send_edit({{comment.id}}, '{{comment.hash}}','{{isso_host_script}}')">Send</a>
