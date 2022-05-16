@@ -317,7 +317,10 @@ main {
         -ms-user-select: none;
         /* IE10+ */ }
     main .docs .headerlink {
-      visibility: hidden; }
+      opacity: 0;
+      margin-left: 0.5em; }
+    main .docs *:hover > .headerlink {
+      opacity: 1; }
     main .docs p + p {
       margin-top: 1em; }
     main .docs p + p:last-child {

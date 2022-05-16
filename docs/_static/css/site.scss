@@ -387,7 +387,11 @@ main {
     }
 
     .headerlink {
-      visibility: hidden;
+      opacity: 0;
+      margin-left: 0.5em;
+    }
+    *:hover > .headerlink {
+      opacity: 1;
     }
 
     p + p {
