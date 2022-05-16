@@ -1,6 +1,5 @@
-#####################
 Development & Testing
-#####################
+=====================
 
 Before submitting a change, you need to verify that it does not inadvertently
 break any existing functionality in Isso.

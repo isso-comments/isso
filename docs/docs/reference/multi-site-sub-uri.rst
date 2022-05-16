@@ -1,6 +1,5 @@
-########################
 Multiple Sites & Sub-URI
-########################
+========================
 
 .. todo::
    Once Isso has settled on a sensible multi-site configuration which preserves

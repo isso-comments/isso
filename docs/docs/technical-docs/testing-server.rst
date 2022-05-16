@@ -1,6 +1,5 @@
-##################
 Testing the Server
-##################
+==================
 
 The server part of Isso is tested by the `pytest`_ tool. You should also
 install the `coverage`_ module with the `pytest-cov`_ plugin to receive code
