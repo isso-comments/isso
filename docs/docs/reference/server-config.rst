@@ -7,6 +7,7 @@ booleans, strings and lists. Here's the default isso configuration:
 basic configuration from scratch looks like this:
 
 .. code-block:: ini
+   :caption: ``isso.cfg``
 
     [general]
     dbpath = /var/lib/isso/comments.db
@@ -14,13 +15,13 @@ basic configuration from scratch looks like this:
     [server]
     listen = http://localhost:1234/
 
-To use your configuration file with Isso, append ``-c /path/to/cfg`` to the
-executable or run Isso with an environment variable:
+To use your configuration file with Isso, append ``-c /path/to/isso.cfg`` to
+the executable or run Isso with an environment variable:
 
-.. code-block:: sh
+.. code-block:: console
 
-    ~> isso -c path/to/isso.cfg
-    ~> env ISSO_SETTINGS=path/to/isso.cfg isso
+    (.venv) $ isso -c /path/to/isso.cfg
+    (.venv) $ env ISSO_SETTINGS=/path/to/isso.cfg$ isso
 
 __ https://en.wikipedia.org/wiki/INI_file
 
