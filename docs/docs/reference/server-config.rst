@@ -215,11 +215,17 @@ listen
 
 public-endpoint
     Public URL that Isso is accessed from by end users. Should always be
-    a http:// or https:// absolute address. If left blank, automatic
-    detection is attempted. Normally only needs to be specified if
-    different than the ``listen`` setting.
+    a ``http://`` or ``https://`` absolute address. If left blank, automatic
+    detection is attempted. Normally only needs to be specified if different
+    than the ``listen`` setting.
+
+    This URL must not end in a ``/`` slash, i.e. ``http://foo.bar:8080/`` is
+    forbidden but ``http://foo/bar:8080`` is fine.
 
     Default: (empty)
+
+    .. versionchanged:: 0.13
+        Trailing slash now forbidden.
 
 reload
     Reload application, when the source code has changed. Useful for
