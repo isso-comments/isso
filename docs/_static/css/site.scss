@@ -268,7 +268,7 @@ main {
     }
 
     li {
-      border-left: solid 2px #d3d3d3;
+      border-left: solid 2px $code-block-border-color;
       margin-left: 0.25em;
       padding-left: 0.75em;
 
@@ -344,6 +344,24 @@ main {
       color: #002e40;
       background-color: $code-background-color;
       padding: 0.2em 0.3em;
+    }
+
+    .code-block-caption {
+        border: 1px solid $code-block-border-color;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        padding: 0.2em 0.5em;
+        margin-top: 1.2em;
+    }
+
+    // Highlight blocks preceded by code block captions:
+    // Remove rounded top border & top margin to that they visually fit
+    // together as a single unit
+    .code-block-caption + .notranslate > .highlight {
+      margin: 0 0 1.2em 0;
+      border-top: none;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
     }
 
     .highlight {

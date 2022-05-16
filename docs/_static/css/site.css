@@ -286,6 +286,17 @@ main {
       color: #002e40;
       background-color: #eeeeee;
       padding: 0.2em 0.3em; }
+    main .docs .code-block-caption {
+      border: 1px solid #d3d3d3;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      padding: 0.2em 0.5em;
+      margin-top: 1.2em; }
+    main .docs .code-block-caption + .notranslate > .highlight {
+      margin: 0 0 1.2em 0;
+      border-top: none;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0; }
     main .docs .highlight {
       margin: 1.2em 0;
       padding: 10px 15px;
