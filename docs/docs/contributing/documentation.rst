@@ -170,7 +170,7 @@ Syntax standards
   (see `Sphinx: Narrative Documentation`__)
 - Use ``/path/to/isso/<thing>`` to refer to items inside Isso's installation
   directory or for user data and use ``comments.db`` as the name for the
-  database
+  database, ``isso.cfg`` (not ``.conf``) for (user) config files.
 - Admonitions should only be: ``note``, ``tip``, ``warning``, ``attention``,
   (maybe also ``error``?). See `docutils: Admonitions`__.
 - Try to keep line length under 80 characters, but don't worry when going over
