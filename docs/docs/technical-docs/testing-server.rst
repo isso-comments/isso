@@ -5,17 +5,17 @@ The server part of Isso is tested by the `pytest`_ tool. You should also
 install the `coverage`_ module with the `pytest-cov`_ plugin to receive code
 coverage statistics.
 
-.. code-block:: bash
+.. code-block:: console
 
-    $ pip install pytest pytest-cov coverage
+    (.venv) $ pip install pytest pytest-cov coverage
 
 Run Isso's standard server **test suite**:
 
-.. code-block:: bash
+.. code-block:: console
 
-    make tests
+    (.venv) make tests
 
-You can also run tests independently via ``pytest [options] isso/``.
+You can also run tests independently via ``pytest [options] isso/tests/``.
 
 .. note::
    Improvements to Isso's test coverage and/or different testing strategies are
@@ -24,15 +24,16 @@ You can also run tests independently via ``pytest [options] isso/``.
 
 **Check Python code style** using ``flake8``:
 
-.. code-block:: bash
+.. code-block:: console
 
-    make flakes
+    (.venv) $ pip install flake8
+    (.venv) $ make flakes
 
 Generate and view server **test coverage**:
 
-.. code-block:: bash
+.. code-block:: console
 
-    make coverage
+    (.venv) $ make coverage
 
 .. note::
    The Continuous Integration suite running via
@@ -44,19 +45,24 @@ Generate and view server **test coverage**:
 DistributionNotFound error
 --------------------------
 
-Pytest needs your Isso package to be installed as a site package to work, else it
+Pytest needs your Isso package to be visible in its ``PATH`` to work, else it
 will complain with:
 
-.. code-block:: sh
+.. code-block:: console
 
     pkg_resources.DistributionNotFound: The 'isso' distribution was not found and is required by the application
 
-When running Isso via ``pytest``, you need to be aware that it will use the
-packaged version of Isso in your ``site-packages``, not the one you have in
+When running ``pytest`` directly, you need to be aware that it will prioritize
+the packaged version of Isso in your ``site-packages``, not the one you have in
 your current working directory.
 
-Use ``pip install -e .`` to install Isso as an "editable" package (the package
-in ``site-packages`` will be a symlink to your current development directory).
+That is why you should uninstall the ``pip`` package of Isso and set
+``PYTHONPATH=.`` before running tests. The project ``Makefile`` already does
+the latter for you.
+
+Alternatively, use ``pip install -e .`` to install Isso as an "editable"
+package (the package in ``site-packages`` will be a symlink to your current
+development directory).
 
 .. _pytest: https://docs.pytest.org/
 .. _pytest-cov: https://github.com/pytest-dev/pytest-cov
