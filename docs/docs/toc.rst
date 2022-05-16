@@ -23,6 +23,7 @@
    Deployment <reference/deployment>
    Multiple Sites & Sub-URI <reference/multi-site-sub-uri>
    Server API <reference/server-api>
+   Releasing <reference/releasing>
 
 .. toctree::
    :hidden:
