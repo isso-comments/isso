@@ -16,7 +16,11 @@
 # apiDoc generated output
 apidoc/_output/
 
+# Javascript ecosystem
 node_modules/
+
+# Database
+comments.db
 
 # github/gitignore
 # Byte-compiled / optimized / DLL files
