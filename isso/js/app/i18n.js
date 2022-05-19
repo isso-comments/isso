@@ -27,6 +27,7 @@ var vi = require("app/i18n/vi");
 var zh = require("app/i18n/zh_CN");
 var zh_CN = require("app/i18n/zh_CN");
 var zh_TW = require("app/i18n/zh_TW");
+var uk = require("app/i18n/uk");
 
 "use strict";
 
@@ -61,6 +62,7 @@ var pluralforms = function(lang) {
             return msgs[n > 1 ? 1 : 0];
         };
     case "ru":
+    case "uk":
         return function(msgs, n) {
             if (n % 10 === 1 && n % 100 !== 11) {
                 return msgs[0];
@@ -127,7 +129,8 @@ var catalogue = {
     vi: vi,
     zh: zh_CN,
     "zh-CN": zh_CN,
-    "zh-TW": zh_TW
+    "zh-TW": zh_TW,
+    uk: uk,
 };
 
 // for each entry in config.langs, see whether we have a catalogue
