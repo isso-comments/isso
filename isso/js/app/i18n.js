@@ -4,25 +4,26 @@ var bg = require("app/i18n/bg");
 var cs = require("app/i18n/cs");
 var da = require("app/i18n/da");
 var de = require("app/i18n/de");
+var el = require("app/i18n/el_GR");
 var en = require("app/i18n/en");
+var eo = require("app/i18n/eo");
+var es = require("app/i18n/es");
 var fa = require("app/i18n/fa");
 var fi = require("app/i18n/fi");
 var fr = require("app/i18n/fr");
 var hr = require("app/i18n/hr");
 var hu = require("app/i18n/hu");
-var ru = require("app/i18n/ru");
 var it = require("app/i18n/it");
 var ko = require("app/i18n/ko");
-var eo = require("app/i18n/eo");
+var nl = require("app/i18n/nl");
 var oc = require("app/i18n/oc");
 var pl = require("app/i18n/pl");
 var pt_BR = require("app/i18n/pt_BR");
 var pt_PT = require("app/i18n/pt_PT");
+var ru = require("app/i18n/ru");
 var sk = require("app/i18n/sk");
 var sv = require("app/i18n/sv");
-var nl = require("app/i18n/nl");
-var el = require("app/i18n/el_GR");
-var es = require("app/i18n/es");
+var uk = require("app/i18n/uk");
 var vi = require("app/i18n/vi");
 var zh = require("app/i18n/zh_CN");
 var zh_CN = require("app/i18n/zh_CN");
@@ -61,6 +62,7 @@ var pluralforms = function(lang) {
             return msgs[n > 1 ? 1 : 0];
         };
     case "ru":
+    case "uk":
         return function(msgs, n) {
             if (n % 10 === 1 && n % 100 !== 11) {
                 return msgs[0];
@@ -111,10 +113,11 @@ var catalogue = {
     fa: fa,
     fi: fi,
     fr: fr,
-    it: it,
-    ko: ko,
     hr: hr,
     hu: hu,
+    it: it,
+    ko: ko,
+    nl: nl,
     oc: oc,
     pl: pl,
     pt: pt_BR,
@@ -123,11 +126,11 @@ var catalogue = {
     ru: ru,
     sk: sk,
     sv: sv,
-    nl: nl,
+    uk: uk,
     vi: vi,
     zh: zh_CN,
     "zh-CN": zh_CN,
-    "zh-TW": zh_TW
+    "zh-TW": zh_TW,
 };
 
 // for each entry in config.langs, see whether we have a catalogue
