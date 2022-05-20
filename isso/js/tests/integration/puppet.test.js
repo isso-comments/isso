@@ -128,4 +128,23 @@ test("should fill Postbox with valid data and receive 201 reply", async () => {
     .toEqual(
       expect.objectContaining(expected)
     );
+
+  await page.waitForSelector('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-edit');
+
+  // Edit comment
+  await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-edit');
+  await expect(page).toFill(
+    '#isso-1 > .isso-text-wrapper > .isso-textarea-wrapper > .isso-textarea',
+    'Some other comment. *Emphasis* and [a link](https://example.com/foo).'
+  );
+  // .isso-edit is now 'Save' button
+  await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-edit');
+
+  await expect(page).toMatchElement('#isso-1 > .isso-text-wrapper > .isso-text',
+    { text: 'Some other comment. Emphasis and a link.' });
+
+  // Delete comment again
+  await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
+  // Need to click once to surface "confirm" and then again to confirm
+  await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
 });
