@@ -1,11 +1,12 @@
-name: E2e tests with docker
+name: E2E tests with docker
 
 on:
   push:
     paths:
-      - "./**"
-      - "!docs/**"
-      - "!.github/**"
+      - "isso/**"
+      - "package.json"
+      - "docker/**"
+      - "Dockerfile"
       - ".github/workflows/docker-compose.yml"
 
 jobs:
