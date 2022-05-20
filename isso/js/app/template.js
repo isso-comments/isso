@@ -35,8 +35,10 @@ set("datetime", function(date) {
 
     return [
         date.getUTCFullYear(),
-        utils.pad(date.getUTCMonth(), 2),
-        utils.pad(date.getUTCDay(), 2)
+        // getUTCMonth returns zero-based month!
+        utils.pad(date.getUTCMonth() + 1, 2),
+        // getUTCDay returns day of week, not month!
+        utils.pad(date.getUTCDate(), 2)
     ].join("-") + "T" + [
         utils.pad(date.getUTCHours(), 2),
         utils.pad(date.getUTCMinutes(), 2),
