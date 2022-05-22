@@ -12,14 +12,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      TESTBED_IMAGE: "ghcr.io/isso-comments/isso-js-testbed:latest"
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build the stack
+      - name: Switch testbed image to ${{ env.TESTBED_IMAGE }}
+        # Just for faster CI runs, instead of re-building the image every time
+        # Especially useful to save the time+bandwidth to re-download puppeteer & chromium
         run: |
-          docker compose build isso-js-puppeteer-intermediary
-          docker compose build isso-server
-          docker compose build isso-client
+          sed -i "s|isso-js-testbed|${{ env.TESTBED_IMAGE }}|g" docker-compose.yml
+          # Also remove the `build`: section so image is pulled, not built
+          sed -i '/container_name: isso-client/{n;N;N;d}' docker-compose.yml
+
+      - name: Pull testbed from ${{ env.TESTBED_IMAGE }}
+        run: docker pull ${{ env.TESTBED_IMAGE }}
+
+      - name: Build the stack
+        run: docker compose build isso-server
 
       - name: Bring up containers
         run: docker compose up -d
@@ -29,7 +39,7 @@ jobs:
           docker run \
           --mount type=bind,source=${{ github.workspace }}/package.json,target=/src/package.json,readonly \
           --mount type=bind,source=${{ github.workspace }}/isso/js/,target=/src/isso/js/,readonly \
-          isso-js-testbed npm run test-unit
+          ${{ env.TESTBED_IMAGE }} npm run test-unit
 
       - name: Client integration tests
         run: |
@@ -38,4 +48,4 @@ jobs:
           --mount type=bind,source=${{ github.workspace }}/isso/js/,target=/src/isso/js/,readonly \
           --env ISSO_ENDPOINT='http://isso-dev.local:8080' \
           --network container:isso-server \
-          isso-js-testbed npm run test-integration
+          ${{ env.TESTBED_IMAGE }} npm run test-integration
