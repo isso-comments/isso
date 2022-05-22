@@ -11,15 +11,14 @@ WORKDIR /src/
 # Install everything necessary to run headless
 RUN apt-get update && apt-get install -y --no-install-recommends libnss3 libxss1 chromium
 
-# Skip downloading headless chromium
+# Installing puppeteer will take some time as it pulls in
+# a ~400Mb headless chrome file
+RUN npm install puppeteer
+
+# Skip downloading headless chromium again for future steps
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 RUN npm install --no-save jest jest-puppeteer jest-environment-jsdom
-
-# Restore headless chromium files from intermediate image
-COPY --from=isso-js-puppeteer \
-    /src/node_modules/puppeteer/.local-chromium/ \
-    ./node_modules/puppeteer/.local-chromium/
 
 # Need to set $CI so that jest-puppeteer applies sensible launch params for
 # running headless chromium. Otherwise, chromium will fail with a "missing
