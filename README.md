@@ -16,8 +16,8 @@ Python and JavaScript. It aims to be a drop-in replacement for
 - **Configurable JS client**  
   Embed a single JS file, 65kB (20kB gzipped) and you are done.
 
-See **[posativ.org/isso](http://posativ.org/isso/)** for a **live demo**, more
-details and [documentation](https://posativ.org/isso/docs/).
+See **[isso-comments.de](https://isso-comments.de/)** for a **live demo**, more
+details and [documentation](https://isso-comments.de/docs/).
 
 ## Screenshot
 
@@ -36,22 +36,22 @@ Install Isso from [PyPi](https://pypi.python.org/pypi/isso/):
 pip install isso
 ```
 
-Then, follow the [Quickstart](https://posativ.org/isso/docs/quickstart/) guide.
+Then, follow the [Quickstart](https://isso-comments.de/docs/guides/quickstart/) guide.
 
-If you're stuck, follow the [Install guide](https://posativ.org/isso/docs/install/),
-see [Troubleshooting](https://posativ.org/isso/docs/troubleshooting/) and browse
-the [the full documentation](https://posativ.org/isso/docs/).
+If you're stuck, follow the [Install guide](https://isso-comments.de/docs/reference/installation/),
+see [Troubleshooting](https://isso-comments.de/docs/guides/troubleshooting/) and browse
+the [the full documentation](https://isso-comments.de/docs/).
 
 ## Contributing
 - Pull requests are very much welcome! These might be
   [good first issues](https://github.com/posativ/isso/labels/good-first-issue)
-- See [Ways to Contribute](https://posativ.org/isso/contribute/)
-- [Translate](https://posativ.org/isso/contribute/#translations)
+- See [Ways to Contribute](https://isso-comments.de/docs/contributing/)
+- [Translate](https://isso-comments.de/docs/contributing/#translations)
 
 ### Development
 <!-- TODO also mention "Development & Testing" section once new docs uploaded -->
 Refer to the docs for
-[Installing from Source](https://posativ.org/isso/docs/install/#install-from-source).
+[Installing from Source](https://isso-comments.de/docs/reference/installation/#install-from-source).
 
 ### Help
 - Join `#isso` via [Matrix](https://matrix.to/#/#isso:libera.chat) or via IRC on

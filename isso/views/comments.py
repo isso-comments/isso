@@ -385,7 +385,7 @@ class API(object):
     @apiName view
     @apiVersion 0.12.6
     @apiDescription
-        View an existing comment, for the purpose of editing. Editing a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
+        View an existing comment, for the purpose of editing. Editing a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://isso-comments.de/docs/reference/server-config/) for details.
 
     @apiParam {Number} id
         The id of the comment to view.
@@ -435,7 +435,7 @@ class API(object):
     @apiName edit
     @apiVersion 0.12.6
     @apiDescription
-        Edit an existing comment. Editing a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://posativ.org/isso/docs/configuration/server) for details. Editing a comment will set a new edit cookie in the response.
+        Edit an existing comment. Editing a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://isso-comments.de/docs/reference/server-config/) for details. Editing a comment will set a new edit cookie in the response.
     @apiUse csrf
 
     @apiParam {Number} id
@@ -517,7 +517,7 @@ class API(object):
     @apiName delete
     @apiVersion 0.12.6
     @apiDescription
-        Delete an existing comment. Deleting a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://posativ.org/isso/docs/configuration/server) for details.
+        Delete an existing comment. Deleting a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://isso-comments.de/docs/reference/server-config/) for details.
         Returns either `null` or a comment with an empty text value when the comment is still referenced by other comments.
     @apiUse csrf
 

@@ -24,7 +24,7 @@ class curl(object):
     """
 
     headers = {
-        "User-Agent": "Isso/{0} (+https://posativ.org/isso)".format(dist.version)
+        "User-Agent": "Isso/{0} (+https://isso-comments.de)".format(dist.version)
     }
 
     def __init__(self, method, host, path, timeout=3):
