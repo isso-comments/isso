@@ -3,14 +3,6 @@ version: "3.9"
 
 services:
 
-  # Force building intermediate image
-  isso-js-puppeteer-intermediary:
-    image: isso-js-puppeteer
-    container_name: isso-js-puppeteer-intermediary
-    build:
-      context: .
-      dockerfile: docker/Dockerfile-js-puppeteer
-
   # Isso server should always reflect production image
   isso-server:
     image: isso
@@ -71,7 +63,6 @@ services:
           nocopy: true
     depends_on:
       - isso-server
-      - isso-js-puppeteer-intermediary
 
 networks:
   test-net:
