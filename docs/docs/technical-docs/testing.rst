@@ -62,19 +62,16 @@ Build images
 
 First, ensure all images are built:
 
-.. code-block:: bash
+.. code-block:: console
 
-    # Download Jest and puppeteer files
-    $ docker build -f docker/Dockerfile-js-puppeteer -t isso-js-puppeteer .
+    # Prepare testbed image
+    $ docker build -f docker/Dockerfile-js-testbed -t isso-js-testbed .
 
 This will take some time as headless chromium needs to be downloaded, once
 (~400Mb), as well as necessary libraries installed. Will be cached on subsequent
 runs.
 
-.. code-block:: bash
-
-    # Prepare testbed image
-    $ docker build -f docker/Dockerfile-js-testbed -t isso-js-testbed .
+.. code-block:: console
 
     # Create production image
     $ docker build -f Dockerfile -t isso .
