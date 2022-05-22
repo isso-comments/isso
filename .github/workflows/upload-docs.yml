@@ -1,0 +1,52 @@
+name: Upload docs to GitHub Pages
+
+on:
+  push:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+    # "If you define both branches/branches-ignore and paths, the workflow will
+    #  only run when both filters are satisfied."
+    branches:
+      - master
+      - docs-overhaul
+    paths:
+      - "docs/**"
+      - ".github/workflows/upload-docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - ".github/workflows/upload-docs.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create faux requirements.txt file for caching sphinx pip pkg
+        # Need to upgrade pygments as well since the version shipped with GH
+        # actions default env is outdated and errors with a missing markdown
+        # lexer
+        run: echo -e "sphinx\npygments" > sphinx-requirements.txt
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          # Use file created on-the-fly to cache sphinx pip pkg
+          cache-dependency-path: 'sphinx-requirements.txt'
+
+      - name: Install sphinx python package from pip
+        run: pip install -U -r sphinx-requirements.txt
+
+      - name: Build docs
+        run: make site
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: isso-comments/isso-comments.github.io
+          publish_branch: gh-pages
+          publish_dir: ./docs/_build/html
+          cname: "isso-comments.de"
