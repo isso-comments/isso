@@ -88,10 +88,18 @@ coverage: $(ISSO_PY_SRC)
 test: $($ISSO_PY_SRC)
 	PYTHONPATH=. pytest --doctest-modules isso/tests/
 
+docker:
+	docker build -t isso:latest .
+
+docker-push:
+	docker tag isso:latest ghcr.io/isso-comments/isso:dev
+	docker push ghcr.io/isso-comments/isso:dev
+
 clean:
 	rm -f $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
 	rm -rf $(APIDOC_DST)
+	rm -rf .pytest_cache/
+	rm -rf .coverage
 
-.PHONY: apidoc apidoc-init clean site init js coverage test
-
+.PHONY: apidoc apidoc-init clean docker docker-push site init js coverage test
