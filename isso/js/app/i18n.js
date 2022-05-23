@@ -23,6 +23,7 @@ var pt_PT = require("app/i18n/pt_PT");
 var ru = require("app/i18n/ru");
 var sk = require("app/i18n/sk");
 var sv = require("app/i18n/sv");
+var tr = require("app/i18n/tr");
 var uk = require("app/i18n/uk");
 var vi = require("app/i18n/vi");
 var zh = require("app/i18n/zh_CN");
@@ -41,23 +42,25 @@ var pluralforms = function(lang) {
     case "de":
     case "el":
     case "en":
-    case "es":
     case "eo":
+    case "es":
     case "fa":
     case "fi":
     case "hr":
     case "hu":
     case "it":
     case "ko":
+    case "nl":
     case "pt":
     case "sv":
-    case "nl":
+    case "tr":
     case "vi":
     case "zh":
         return function(msgs, n) {
             return msgs[n === 1 ? 0 : 1];
         };
     case "fr":
+    case "oc":
         return function(msgs, n) {
             return msgs[n > 1 ? 1 : 0];
         };
@@ -71,10 +74,6 @@ var pluralforms = function(lang) {
             } else {
                 return typeof msgs[2] !== "undefined" ? msgs[2] : msgs[1];
             }
-        };
-    case "oc":
-        return function(msgs, n) {
-            return msgs[n > 1 ? 1 : 0];
         };
     case "pl":
         return function(msgs, n) {
@@ -126,6 +125,7 @@ var catalogue = {
     ru: ru,
     sk: sk,
     sv: sv,
+    tr: tr,
     uk: uk,
     vi: vi,
     zh: zh_CN,

@@ -21,9 +21,10 @@ Changelog for Isso
 - Add ``data-isso-page-author-hashes`` option to client which makes it possible
   to style comments and replies made by the page's author(s).
 - Add Ukrainian localisation (`#878`_, okawo80085)
+- Enable Turkish localisation (`#879`_, okawo80085)
 
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
-.. _878: https://github.com/posativ/isso/pull/878
+.. _879: https://github.com/posativ/isso/pull/879
 
 0.12.6 (2022-03-06)
 -------------------
