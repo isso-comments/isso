@@ -1,6 +1,13 @@
 name: E2E tests with docker
 
 on:
+  pull_request:
+    paths:
+      - "isso/**"
+      - "package.json"
+      - "docker/**"
+      - "Dockerfile"
+      - ".github/workflows/docker-compose.yml"
   push:
     paths:
       - "isso/**"
