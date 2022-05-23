@@ -23,6 +23,7 @@ var pt_PT = require("app/i18n/pt_PT");
 var ru = require("app/i18n/ru");
 var sk = require("app/i18n/sk");
 var sv = require("app/i18n/sv");
+var tr = require("app/i18n/tr");
 var uk = require("app/i18n/uk");
 var vi = require("app/i18n/vi");
 var zh = require("app/i18n/zh_CN");
@@ -54,6 +55,7 @@ var pluralforms = function(lang) {
     case "nl":
     case "vi":
     case "zh":
+    case "tr":
         return function(msgs, n) {
             return msgs[n === 1 ? 0 : 1];
         };
@@ -126,6 +128,7 @@ var catalogue = {
     ru: ru,
     sk: sk,
     sv: sv,
+    tr: tr,
     uk: uk,
     vi: vi,
     zh: zh_CN,
