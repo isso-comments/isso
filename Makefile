@@ -102,4 +102,4 @@ clean:
 	rm -rf .pytest_cache/
 	rm -rf .coverage
 
-.PHONY: apidoc apidoc-init clean docker docker-push site init js coverage test
+.PHONY: apidoc apidoc-init clean coverage docker docker-push init test
