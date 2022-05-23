@@ -15,7 +15,7 @@ test('"(optional)" labels in Postox vanish if require-author/-email set', () => 
     '<div id=isso-thread></div>' +
     '<script src="http://isso.api/js/embed.min.js"'
           + 'data-isso="/"'
-          + 'data-isso-lang="de"' // falls back to "en" for placeholders
+          + 'data-isso-lang="de"'
           + '></script>';
 
   const isso = require("app/isso");
@@ -39,8 +39,8 @@ test('"(optional)" labels in Postox vanish if require-author/-email set', () => 
   isso_thread.append('<div id="isso-root"></div>');
   isso_thread.append(new isso.Postbox(null));
 
-  expect($("#isso-postbox-author").placeholder).toBe('John Doe');
-  expect($("#isso-postbox-email").placeholder).toBe('johndoe@example.com');
+  expect($("#isso-postbox-author").placeholder).toBe('Max Mustermann');
+  expect($("#isso-postbox-email").placeholder).toBe('mustermann@beispiel.de');
   // Instead of "Name (optional)"
   expect($("[for='isso-postbox-author']").textContent).toBe('Name');
   // Instead of "E-mail (optional)"
