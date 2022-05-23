@@ -42,24 +42,25 @@ var pluralforms = function(lang) {
     case "de":
     case "el":
     case "en":
-    case "es":
     case "eo":
+    case "es":
     case "fa":
     case "fi":
     case "hr":
     case "hu":
     case "it":
     case "ko":
+    case "nl":
     case "pt":
     case "sv":
-    case "nl":
+    case "tr":
     case "vi":
     case "zh":
-    case "tr":
         return function(msgs, n) {
             return msgs[n === 1 ? 0 : 1];
         };
     case "fr":
+    case "oc":
         return function(msgs, n) {
             return msgs[n > 1 ? 1 : 0];
         };
@@ -73,10 +74,6 @@ var pluralforms = function(lang) {
             } else {
                 return typeof msgs[2] !== "undefined" ? msgs[2] : msgs[1];
             }
-        };
-    case "oc":
-        return function(msgs, n) {
-            return msgs[n > 1 ? 1 : 0];
         };
     case "pl":
         return function(msgs, n) {
