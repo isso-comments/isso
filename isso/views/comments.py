@@ -107,6 +107,7 @@ class API(object):
         ('dislike', ('POST', '/id/<int:id>/dislike')),
         ('demo', ('GET', '/demo')),
         ('preview', ('POST', '/preview')),
+        ('config', ('GET', '/config')),
         ('login', ('POST', '/login')),
         ('admin', ('GET', '/admin'))
     ]
@@ -1114,6 +1115,41 @@ class API(object):
             raise BadRequest("no text given")
 
         return JSON({'text': self.isso.render(data["text"])}, 200)
+
+    """
+    @api {get} /config fetch client config
+    @apiGroup Thread
+    @apiDescription
+        Returns only the client configuration parameters that depend on server settings. The following settings are sent as a `config` object from the server to the client:
+
+            reply-to-self
+            require-author
+            require-email
+            reply-notifications
+            gravatar
+            avatar  # if gravatar==true
+
+    @apiSuccess {Object[]} config
+        The client configuration object.
+
+    @apiExample {curl} get the client config:
+        curl 'https://comments.example.com/config'
+
+    @apiSuccessExample Client config:
+        {
+          "config": {
+            "reply-to-self": false,
+            "require-email": false,
+            "require-author": false,
+            "reply-notifications": false,
+            "gravatar": true
+            "avatar": false
+          }
+        }
+    """
+    def config(self, environment, request):
+        rv = {'config': self.public_conf}
+        return JSON(rv, 200)
 
     def demo(self, env, req):
         return redirect(
