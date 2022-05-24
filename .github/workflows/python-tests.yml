@@ -15,7 +15,7 @@ on:
       - "setup.py"
       - "setup.cfg"
       - "contrib/**.py"
-      - "isso/js/**.py"
+      - "isso/**.py"
       - ".github/workflows/python-tests.yml"
 
 jobs:
