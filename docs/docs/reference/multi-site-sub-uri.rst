@@ -8,7 +8,7 @@ Multiple Sites & Sub-URI
 .. _configure-multiple-sites:
 
 Multiple Sites
-==============
+--------------
 
 Isso is designed to serve comments for a single website and therefore stores
 comments for a relative URL. This is done to support HTTP, HTTPS and even domain transfers
@@ -74,7 +74,7 @@ URLs on both sites as it will most likely cause CORS-related errors.
 .. _configure-sub-uri:
 
 Sub-URI
-=======
+-------
 
 You can run Isso on the same domain as your website, which circumvents issues
 originating from CORS_. Also, privacy-protecting browser addons such as
