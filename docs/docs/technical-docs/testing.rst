@@ -159,13 +159,16 @@ Find a way to have 100, 1,000, 10,000, 100k commments at once.
 Then, test responsiveness, speed of insertion, the updating of all timestamps
 every minute, and whatever else might be performance-related.
 
-Here is an example to insert into the database (might be better optimized):
+Here is an example to insert large amounts of data into an existing database at
+``comments.db`` (might be better optimized):
 
 .. code-block:: bash
 
-    for i in {1..1000}; do
-      sqlite3 comments.db "INSERT INTO comments (tid, created, remote_addr, text, mode, voters) VALUES (1, 100, '127.0.0.1', 'hello', 1, 0);";
+    echo "INSERT INTO threads (id, uri, title) VALUES ('1', '/demo/index.html', 'Isso Test');" >> dummy.sql
+    for f in {1..500}; do
+        echo "INSERT INTO comments (tid, created, remote_addr, text, mode, voters) VALUES (1, 100, '127.0.0.1', 'hello', 1, 0);" >> dummy.sql
     done
+    cat dummy.sql | sqlite3 comments.db
 
 Also set the comments to be loaded at once to ``infinity``:
 
