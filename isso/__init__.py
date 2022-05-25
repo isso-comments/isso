@@ -64,7 +64,7 @@ local_manager = LocalManager([local])
 from isso import config, db, migrate, wsgi, ext, views
 from isso.core import ThreadedMixin, ProcessMixin, uWSGIMixin
 from isso.wsgi import origin, urlsplit
-from isso.utils import http, JSONRequest, html, hash
+from isso.utils import http, JSONRequest, JSONResponse, html, hash
 from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
@@ -75,6 +75,14 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s: %(message)s")
 
 logger = logging.getLogger("isso")
+
+
+def error_handler(env, request, error):
+    if request.accept_mimetypes.best == "application/json":
+        data = {'message': str(error)}
+        code = 500 if error.code is None else error.code
+        return JSONResponse(data, code)
+    return error
 
 
 class ProxyFixCustom(ProxyFix):
@@ -139,16 +147,16 @@ class Isso(object):
         try:
             handler, values = adapter.match()
         except HTTPException as e:
-            return e
+            return error_handler(request.environ, request, e)
         else:
             try:
                 response = handler(request.environ, request, **values)
             except HTTPException as e:
-                return e
+                return error_handler(request.environ, request, e)
             except Exception:
                 logger.exception("%s %s", request.method,
                                  request.environ["PATH_INFO"])
-                return InternalServerError()
+                return error_handler(request.environ, request, InternalServerError())
             else:
                 return response
 
