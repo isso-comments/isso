@@ -30,7 +30,7 @@ DOCS_CSS_DST := docs/_static/css/site.css
 
 DOCS_HTML_DST := docs/_build/html
 
-APIDOC_SRC := apidoc/apidoc.json apidoc/header.md apidoc/footer.md
+APIDOC_SRC := apidoc/apidoc.json apidoc/header.md apidoc/footer.md apidoc/_apidoc.js
 
 APIDOC_DST := apidoc/_output
 
@@ -79,7 +79,8 @@ apidoc-init:
 
 apidoc: $(ISSO_PY_SRC) $(APIDOC_SRC)
 	$(APIDOC) --config apidoc/apidoc.json \
-		--input isso/views/ --output $(APIDOC_DST)
+		--input isso/views/ --input apidoc/ \
+		--output $(APIDOC_DST)
 	cp -rT $(APIDOC_DST) $(DOCS_HTML_DST)/docs/api/
 
 coverage: $(ISSO_PY_SRC)

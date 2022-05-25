@@ -3,7 +3,8 @@
   "title": "Isso API",
   "description": "",
   "version": "0.13.0",
-  "order": ["Thread",  "Comment", "Demo", "Admin"],
+  "order": ["Thread",  "Comment", "Demo", "Admin",
+            "feed", "counts", "count", "config", "fetch"],
   "url" : "https://comments.example.com",
   "header": {
     "title": "Introduction",
