@@ -76,10 +76,11 @@ important part:
    $ make init
    $ make js
 
-Start the server:
+Start the server and ensure that the comment database is empty:
 
 .. code-block:: bash
 
+   $ mv comments.db comments.db.bak
    $ virtualenv .venv
    $ source .venv/bin/activate
    (.venv) $ isso -c contrib/isso-dev.cfg run
