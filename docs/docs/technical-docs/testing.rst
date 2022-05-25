@@ -27,6 +27,8 @@ Sections covered in this document:
     :local:
 
 
+.. _development-server:
+
 Development server
 ------------------
 
