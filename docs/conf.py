@@ -18,8 +18,8 @@ import re
 import pkg_resources
 
 from os.path import dirname, join
-# Make `_isso` custom sphinx theme available
-sys.path.insert(0, join(dirname(__file__), "_isso/"))
+# Make `_theme` custom sphinx theme available
+sys.path.insert(0, join(dirname(__file__), "_theme/"))
 # Make `sphinx_reredirects` extension available
 sys.path.insert(0, join(dirname(__file__), "_extensions/"))
 
@@ -112,7 +112,7 @@ pygments_style = 'abap'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = '_isso'
+html_theme = '_theme'
 html_translator_class = "remove_heading.IssoTranslator"
 
 # Theme options are theme-specific and customize the look and feel of a theme

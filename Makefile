@@ -17,7 +17,7 @@ ISSO_JS_DST := isso/js/embed.min.js isso/js/embed.dev.js \
 ISSO_PY_SRC := $(shell find isso/ | grep -E '^isso/.+.py$$')
 
 DOCS_RST_SRC := $(shell find docs/ -type f -name '*.rst') \
-		$(wildcard docs/_isso/*) \
+		$(wildcard docs/_theme/*) \
 		docs/index.html docs/conf.py docs/docutils.conf \
 		$(shell find docs/_extensions/)
 
