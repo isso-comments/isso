@@ -1,223 +1,91 @@
-API
-====
+Server API
+==========
 
-.. note:: This information might be outdated. Isso's API documentation is built
-   using the ``apiDoc`` Javascript tool.
+.. note:: View the `Current API documentation`_ for **Isso 0.12.6** here, which
+   is automatically generated. You can select previous versions from a dropdown
+   on the upper right of the page.
 
-   Run ``make apidoc-init apidoc`` and view the generated API documentation at
-   ``apidoc/_output/``.
+    Using the API, you can:
 
-   It is planned to add these generated API docs to the main Isso
-   documentation. For more information and progress, see the GitHub Issue
-   `Github Action should build and deploy api docs <https://github.com/posativ/isso/issues/814>`_.
+   - Fetch comment threads
+   - Post, edit and delete comments
+   - Get information about the server
+   - Like and dislike comments
+   - **...and much more!**
 
-The Isso API uses HTTP and JSON as primary communication protocol.
+The Isso API uses ``HTTP`` and ``JSON`` as primary communication protocol. The
+API is extensively documented using an `apiDoc`_-compatible syntax in
+`isso/views/comments.py`_.
+
+.. _Current API documentation: /docs/api/
+.. _apiDoc: https://apidocjs.com/
+.. _isso/views/comments.py: https://github.com/posativ/isso/blob/master/isso/views/comments.py
+
+Sections covered in this document:
 
 .. contents::
     :local:
 
+Generating API documentation
+----------------------------
 
-JSON format
------------
+Install ``Node.js`` and ``npm``.
 
-When querying the API you either get a regular HTTP error, an object or list of
-objects representing the comment. Here's an example JSON returned from
-Isso:
+Run ``make apidoc-init apidoc`` and view the generated API documentation at
+``apidoc/_output/`` (it produces a regular HTML file).
+
+Live API testing
+----------------
+
+To test out calls to the API right from the browser, without having to
+copy-&-paste ``curl`` commands, you can use ``apiDoc``'s live preview
+functionality.
+
+Set ``sampleUrl`` to e.g. ``localhost:8080`` in ``apidoc.json``:
 
 .. code-block:: json
+   :caption: apidoc.json
 
     {
-        "id": 1,
-        "parent": null,
-        "text": "<p>Hello, World!</p>\n",
-        "mode": 1,
-        "hash": "4505c1eeda98",
-        "author": null,
-        "website": null,
-        "created": 1387321261.572392,
-        "modified": null,
-        "likes": 3,
-        "dislikes": 0
+      "name": "Isso API",
+      "version": "0.13.0",
+      "sampleUrl": "http://localhost:8080",
+      "private": "true"
     }
 
-id :
-    comment id (unique per website).
+Run ``make apidoc`` again and start your local
+:ref:`test server <development-server>`
 
-parent :
-    parent id reference, may be ``null``.
+Go to ``apidoc/output`` and serve the generated API docs via
+``python -m http.server`` [#f1]_, open ``http://localhost:8000`` in your browser
+and use the "Send a sample request"
 
-text :
-    required, comment written in Markdown.
+.. image:: /images/apidoc-sample-latest.png
+   :scale: 75 %
 
-mode :
-    * 1 – accepted
-    * 2 – in moderation queue
-    * 4 – deleted, but referenced.
+.. [#f1] You must use a webserver to view the docs. Opening the local file
+   straight from the browser will not work; the browser will refuse to execute
+   any ``GET``/``POST`` calls because of security issues with local files.
 
-hash :
-    user identication, used to generate identicons. PBKDF2 from email or IP
-    address (fallback).
-
-author :
-    author's name, may be ``null``.
-
-website :
-    author's website, may be ``null``.
-
-likes :
-    upvote count, defaults to 0.
-
-dislikes :
-    downvote count, defaults to 0.
-
-created :
-    time in seconds since UNIX time.
-
-modified :
-    last modification since UNIX time, may be ``null``.
-
-
-List comments
--------------
-
-List all publicly visible comments for thread `uri`:
-
-.. code-block:: text
-
-    GET /?uri=%2Fhello-world%2F
-
-uri :
-    URI to fetch comments for, required.
-
-plain :
-    pass plain=1 to get the raw comment text, defaults to 0.
-
-
-Get the latest N comments for all threads:
-
-.. code-block:: text
-
-    GET /latest?limit=N
-
-The N parameter limits how many of the latest comments to retrieve; it's
-mandatory, and must be an integer greater than 0.
-
-This endpoint needs to be enabled in the configuration (see the
-``latest-enabled`` option in the ``general`` section).
-
-
-Create comment
---------------
-
-To create a new comment, you need to issue a POST request to ``/new`` and add
-the current URI (so the server can check if the location actually exists).
-
-.. code-block:: bash
-
-    $ curl -vX POST http://isso/new?uri=%2F -d '{"text": "Hello, World!"}' -H "Content-Type: application/json"
-    < HTTP/1.1 201 CREATED
-    < Set-Cookie: 1=...; Expires=Wed, 18-Dec-2013 12:57:20 GMT; Max-Age=900; Path=/
-    {
-        "author": null,
-        "created": 1387370540.733824,
-        "dislikes": 0,
-        "email": null,
-        "hash": "6dcdbfb4f00d",
-        "id": 1,
-        "likes": 0,
-        "mode": 1,
-        "modified": null,
-        "parent": null,
-        "text": "<p>Hello, World!</p>\n",
-        "website": null
-    }
-
-The payload must be valid JSON. To prevent CSRF attacks, you must set the
-`Content-Type` to `application/json` or omit the header completely.
-
-The server issues a cookie per new comment which acts as authentication token
-to modify or delete your own comment. The token is cryptographically signed
-and expires automatically after 900 seconds by default.
-
-The following keys can be used to POST a new comment, all other fields are
-dropped or replaced with values from the server:
-
-text : String
-    Actual comment, at least three characters long, required.
-
-author : String
-    Comment author, optional.
-
-website : String
-    Commenter's website (currently no field available in the client JS though),
-    optional.
-
-email : String
-    Commenter's email address (can be any arbitrary string though) used to
-    generate the identicon. Limited to 254 characters (RFC specification),
-    optional.
-
-parent : Integer
-    Reference to parent comment, optional.
-
-
-Edit comment
-------------
-
-When your authentication token is not yet expired, you can issue a PUT request
-to update `text`, `author` and `website`. After an update, you get an updated
-authentication token and the comment as JSON:
-
-.. code-block:: bash
-
-    $ curl -X PUT http://isso/id/1 -d "..." -H "Content-Type: application/json"
-
-
-Delete comment
---------------
-
-You can delete your own comments when your authentication token (= cookie) is
-not yet expired:
-
-.. code-block:: bash
-
-    $ curl -X DELETE http://isso/id/1 -H "Content-Type: application/json"
-    null
-
-Returns either `null` or a comment with an empty text value when the comment
-is still referenced by other comments.
-
-
-Up- and downvote comments
+Writing API documentation
 -------------------------
 
-...
+Isso's API documentation is built using the `apiDoc`_ Javascript tool.
 
-Get comment count
------------------
+Inside `isso/views/comments.py`_, the view functions that are public endpoints
+are annotated using ``@api`` syntax in code comments.
 
-Counts all publicly visible comments for thread `uri`:
+.. note:: The `apiDoc`_ "Getting started" guide should also help you get up to
+   speed in making the API documentation of Isso even better!
 
-.. code-block:: text
+A few points to consider:
 
-    GET /count?uri=%2Fhello-world%2F
-    2
-
-uri :
-    URI to count comments for, required.
-
-returns an integer
-
-Get Atom feed
--------------
-
-Get an Atom feed of comments for thread `uri`:
-
-.. code-block:: text
-
-    GET /feed?uri=%2Fhello-world%2F
-
-uri :
-    URI to get comments for, required.
-
-Returns an XML document as the Atom feed.
+- Use ``@apiVersion`` to annotate when an endpoint was first introduced or
+  changed. This information will help to automatically create a viewable diff
+  between Isso API versions.
+- The current documentation for all endpoints should be good enough to
+  copy-paste for your new or changed endpoint.
+- Admin functionality is marked ``@apiPrivate``. To generate docs for private
+  endpoints, set ``--private`` on the ``apidoc`` command line.
+- Use ``@apiQuery`` for GET query URL-encoded parameters, ``@apiBody`` for POST
+  data.
