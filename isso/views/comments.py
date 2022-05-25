@@ -93,7 +93,6 @@ class API(object):
     VIEWS = [
         ('fetch', ('GET', '/')),
         ('new', ('POST', '/new')),
-        ('count', ('GET', '/count')),
         ('counts', ('POST', '/count')),
         ('feed', ('GET', '/feed')),
         ('latest', ('GET', '/latest')),
@@ -1036,17 +1035,6 @@ class API(object):
             raise BadRequest("no text given")
 
         return JSON({'text': self.isso.render(data["text"])}, 200)
-
-    # TODO: remove someday (replaced by :func:`counts`)
-    @requires(str, 'uri')
-    def count(self, environ, request, uri):
-
-        rv = self.comments.count(uri)[0]
-
-        if rv == 0:
-            raise NotFound
-
-        return JSON(rv, 200)
 
     """
     @api {post} /count Count comments
