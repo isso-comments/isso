@@ -65,7 +65,11 @@ function init() {
             existingTarget.classList.remove("isso-target");
         }
 
-        $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+        try {
+            $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+        } catch(ex) {
+            // selector probably doesn't exist as element on page
+        }
     });
 }
 
@@ -119,12 +123,16 @@ function fetchComments() {
 
             if (window.location.hash.length > 0 &&
                 window.location.hash.match("^#isso-[0-9]+$")) {
-                $(window.location.hash).scrollIntoView();
+                try {
+                    $(window.location.hash).scrollIntoView();
 
-                // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
-                // So a class `.isso-target` has to be used instead, and then we can manually remove the
-                // class from the old target comment in the `hashchange` listener.
-                $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+                    // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
+                    // So a class `.isso-target` has to be used instead, and then we can manually remove the
+                    // class from the old target comment in the `hashchange` listener.
+                    $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+                } catch(ex) {
+                    // selector probably doesn't exist as element on page
+                }
             }
         },
         function(err) {
