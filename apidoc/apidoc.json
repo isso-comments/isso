@@ -2,8 +2,8 @@
   "name": "Isso API",
   "title": "Isso API",
   "description": "",
-  "version": "0.13.0-dev",
-  "order": ["Thread",  "Comment"],
+  "version": "0.13.0",
+  "order": ["Thread",  "Comment", "Demo", "Admin"],
   "url" : "https://comments.example.com",
   "header": {
     "title": "Introduction",
@@ -14,7 +14,6 @@
     "filename": "footer.md"
   },
   "template": {
-    "withCompare": false
+    "withCompare": "true"
   }
 }
-
