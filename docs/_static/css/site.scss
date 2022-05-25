@@ -331,6 +331,11 @@ main {
       font-weight: bold;
     }
 
+    .reference > img {
+      margin: 1em 0;
+      border: 2px solid $code-background-color;
+    }
+
     pre {
       color: rgb(77, 77, 76);
     }
