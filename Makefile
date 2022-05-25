@@ -95,6 +95,13 @@ docker-push:
 	docker tag isso:latest ghcr.io/isso-comments/isso:dev
 	docker push ghcr.io/isso-comments/isso:dev
 
+docker-testbed:
+	docker build -f docker/Dockerfile-js-testbed -t isso-js-testbed .
+
+docker-testbed-push:
+	docker tag isso-js-testbed:latest ghcr.io/isso-comments/isso-js-testbed:latest
+	docker push ghcr.io/isso-comments/isso-js-testbed:latest
+
 clean:
 	rm -f $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
@@ -102,4 +109,4 @@ clean:
 	rm -rf .pytest_cache/
 	rm -rf .coverage
 
-.PHONY: apidoc apidoc-init clean coverage docker docker-push init test
+.PHONY: apidoc apidoc-init clean coverage docker docker-push docker-testbed docker-testbed-push init test
