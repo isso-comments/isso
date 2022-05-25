@@ -65,7 +65,11 @@ function init() {
             existingTarget.classList.remove("isso-target");
         }
 
-        $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+        try {
+            $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+        } catch(ex) {
+            // selector probably doesn't exist as element on page
+        }
     });
 }
 
@@ -93,7 +97,9 @@ function fetchComments() {
 
             // Note: isso.Postbox relies on the config object populated by elements
             // fetched from the server, so it cannot be created in init()
-            isso_root.prepend(new isso.Postbox(null));
+            // DOM polyfill prepend() will insert the element before the first
+            // child, not before the element itself!
+            isso_root.obj.parentElement.insertBefore(new isso.Postbox(null).obj, isso_root.obj);
 
             if (rv.total_replies === 0) {
                 heading.textContent = i18n.translate("no-comments");
@@ -117,12 +123,16 @@ function fetchComments() {
 
             if (window.location.hash.length > 0 &&
                 window.location.hash.match("^#isso-[0-9]+$")) {
-                $(window.location.hash).scrollIntoView();
+                try {
+                    $(window.location.hash).scrollIntoView();
 
-                // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
-                // So a class `.isso-target` has to be used instead, and then we can manually remove the
-                // class from the old target comment in the `hashchange` listener.
-                $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+                    // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
+                    // So a class `.isso-target` has to be used instead, and then we can manually remove the
+                    // class from the old target comment in the `hashchange` listener.
+                    $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+                } catch(ex) {
+                    // selector probably doesn't exist as element on page
+                }
             }
         },
         function(err) {

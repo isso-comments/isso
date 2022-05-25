@@ -157,8 +157,6 @@ var fetch = function(tid, limit, nested_limit, parent, lastcreated) {
         qs(query_dict), null, function(rv) {
             if (rv.status === 200) {
                 deferred.resolve(JSON.parse(rv.body));
-            } else if (rv.status === 404) {
-                deferred.resolve({total_replies: 0});
             } else {
                 deferred.reject(rv.body);
             }
