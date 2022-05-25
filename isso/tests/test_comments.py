@@ -166,6 +166,15 @@ class TestComments(unittest.TestCase):
         data = loads(self.get('/?uri=?uri=%foo%2F').data)
         self.assertEqual(len(data['replies']), 0)
 
+    def testFetchEmpty(self):
+
+        empty = self.get('/?uri=%2Fempty%2F')
+        # Empty database returns 200, not 404
+        self.assertEqual(empty.status_code, 200)
+        data = loads(empty.data)
+        self.assertEqual(data['total_replies'], 0)
+        self.assertEqual(data['id'], None)
+
     def testGetLimited(self):
 
         for i in range(20):
