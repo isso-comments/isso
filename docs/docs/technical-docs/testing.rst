@@ -67,7 +67,7 @@ First, ensure all images are built:
 .. code-block:: console
 
     # Prepare testbed image
-    $ docker build -f docker/Dockerfile-js-testbed -t isso-js-testbed .
+    $ make docker-testbed
 
 This will take some time as headless chromium needs to be downloaded, once
 (~400Mb), as well as necessary libraries installed. Will be cached on subsequent
@@ -76,7 +76,7 @@ runs.
 .. code-block:: console
 
     # Create production image
-    $ docker build -f Dockerfile -t isso .
+    $ make docker
 
 Start server
 ^^^^^^^^^^^^
