@@ -29,7 +29,7 @@ services:
     volumes:
       - ./db:/db/
       - type: bind
-        source: ./share/isso-dev.cfg
+        source: ./contrib/isso-dev.cfg
         target: /config/isso-dev.cfg
         volume:
           nocopy: true

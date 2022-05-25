@@ -39,7 +39,7 @@ a development server available at ``localhost:8080``.
 
    $ virtualenv .venv
    $ source .venv/bin/activate
-   (.venv) $ isso -c share/isso-dev.cfg run
+   (.venv) $ isso -c contrib/isso-dev.cfg run
 
 From there, the page ``localhost:8080/demo`` will be available, from where you
 can try out the embedded Isso widget yourself. For convenience, the development

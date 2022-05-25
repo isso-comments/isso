@@ -82,7 +82,7 @@ Start the server:
 
    $ virtualenv .venv
    $ source .venv/bin/activate
-   (.venv) $ isso -c share/isso-dev.cfg run
+   (.venv) $ isso -c contrib/isso-dev.cfg run
 
 Install the necessary ``puppeteer``-related Javascript packages:
 
