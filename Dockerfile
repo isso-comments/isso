@@ -54,7 +54,7 @@ RUN . /isso/bin/activate \
 # Then copy over files
 # SRC "isso/" is treated as "isso/*" by docker, so copy to subdir explicitly
 COPY ["./isso/", "/isso/isso/"]
-COPY ["./share/", "./share/"]
+COPY ["./contrib/", "./contrib/"]
 
 # Copy over generated Javascript client files
 COPY --from=isso-js /src/isso/js/ ./isso/js
@@ -87,6 +87,6 @@ CMD ["/isso/bin/gunicorn", "-b", "0.0.0.0:8080", "-w", "4", "--preload", "isso.r
 #
 # Run:
 # $ mkdir config
-# $ cp share/isso-dev.conf config/isso.cfg
+# $ cp contrib/isso-dev.conf config/isso.cfg
 # $ mkdir db/
 # $ docker run -d --rm --name isso -p 8080:8080 -v $PWD/config:/config -v $PWD/db:/db isso:latest

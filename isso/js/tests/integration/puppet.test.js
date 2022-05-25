@@ -12,7 +12,7 @@
  *
  * Setup (abbreviated):
  * $ source .venv/bin/activate
- * $ isso -c share/isso-dev.cfg run
+ * $ isso -c contrib/isso-dev.cfg run
  */
 
 const ISSO_ENDPOINT = process.env.ISSO_ENDPOINT ?

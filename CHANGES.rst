@@ -18,6 +18,7 @@ Changelog for Isso
   in post box (`#861 <https://github.com/posativ/isso/pull/861>`_, ix5)
 - Re-enable ``no-intra-emphasis`` misaka extension in default config.
 - Allow ``sup`` and ``sub`` HTML elements by default
+- Move ``isso-dev.cfg`` to ``contrib/`` folder
 - Add ``data-isso-page-author-hashes`` option to client which makes it possible
   to style comments and replies made by the page's author(s).
 - Add Ukrainian localisation (`#878`_, okawo80085)
