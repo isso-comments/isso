@@ -51,6 +51,33 @@ class Info(object):
         self.moderation = isso.conf.getboolean("moderation", "enabled")
         isso.urls.add(Rule('/info', endpoint=self.show))
 
+    """
+    @api {get} /info Server info
+    @apiGroup Info
+    @apiName info
+    @apiVersion 0.12.6
+    @apiDescription
+        Reports basic information about the server setup.
+
+    @apiSuccess {String} version
+        Isso version.
+    @apiSuccess {String} host
+        URL that Isso runs on.
+    @apiSuccess {String} origin
+        URL that Isso expects threads to be under.
+    @apiSuccess {Boolean} moderation
+        Whether comment moderation is enabled, i.e. comments have to be manually approved by site admin.
+
+    @apiExample {curl} Get server info:
+        curl 'https://comments.example.com/info'
+    @apiSuccessExample {json} Server info:
+        {
+          "version": "0.12.6",
+          "host": "https://comments.example.com",
+          "origin": "https://example.com",
+          "moderation": true
+        }
+    """
     def show(self, environ, request):
 
         rv = {
