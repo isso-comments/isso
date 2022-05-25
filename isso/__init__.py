@@ -123,7 +123,6 @@ class Isso(object):
         self.urls = Map()
 
         views.Info(self)
-        views.Metrics(self)
         comments.API(self, self.hasher)
 
     def render(self, text):

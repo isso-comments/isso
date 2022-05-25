@@ -61,14 +61,3 @@ class Info(object):
         }
 
         return Response(json.dumps(rv), 200, content_type="application/json")
-
-
-class Metrics(object):
-
-    def __init__(self, isso):
-        isso.urls.add(Rule('/metrics', endpoint=self.show))
-
-    def show(self, environ, request):
-        content_type = 'text/plain; version=0.0.4; charset=utf-8'
-        metrics = ""
-        return Response(metrics, 200, content_type=content_type)
