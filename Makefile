@@ -80,6 +80,7 @@ apidoc-init:
 apidoc: $(ISSO_PY_SRC) $(APIDOC_SRC)
 	$(APIDOC) --config apidoc/apidoc.json \
 		--input isso/views/ --output $(APIDOC_DST)
+	cp -rT $(APIDOC_DST) $(DOCS_HTML_DST)/docs/api/
 
 coverage: $(ISSO_PY_SRC)
 	coverage run --omit='*/tests/*' --source isso -m pytest
