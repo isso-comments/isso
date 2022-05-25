@@ -8,6 +8,10 @@
  * https://jestjs.io/docs/configuration
  */
 
+// https://github.com/smooth-code/jest-puppeteer/issues/160#issuecomment-491975158
+// For `jest-puppeteer` package, currently empty but good to have
+process.env.JEST_PUPPETEER_CONFIG = require.resolve('./jest-puppeteer.config.js');
+
 const config = {
   /* puppeteer end-to-end integration testing
    * https://jestjs.io/docs/configuration#preset-string */

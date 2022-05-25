@@ -39,7 +39,7 @@ const config = {
    */
   //testEnvironment: "jsdom",
 
-  "globalSetup": "<rootDir>/tests/setup/global-setup.js"
+  "globalSetup": "<rootDir>/tests/setup/global-setup.js",
 };
 
 module.exports = config;
