@@ -86,7 +86,7 @@ coverage: $(ISSO_PY_SRC)
 	coverage report --omit='*/tests/*'
 
 test: $($ISSO_PY_SRC)
-	PYTHONPATH=. pytest --doctest-modules isso/tests/
+	PYTHONPATH=. pytest --doctest-modules isso/
 
 docker:
 	docker build -t isso:latest .
