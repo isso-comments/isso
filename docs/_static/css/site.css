@@ -277,6 +277,9 @@ main {
     main .docs h4 {
       font-size: 18px;
       font-weight: bold; }
+    main .docs .reference > img {
+      margin: 1em 0;
+      border: 2px solid #eeeeee; }
     main .docs pre {
       color: #4d4d4c; }
     main .docs pre, main .docs code {

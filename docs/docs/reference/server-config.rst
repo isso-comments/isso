@@ -549,3 +549,20 @@ Timedelta
 
     You can add different types: `1m30s` equals to 90 seconds, `3h45m12s`
     equals to 3 hours, 45 minutes and 12 seconds (12512 seconds).
+
+.. _appendum-values:
+
+URLs
+    Strings should not contain quotes, e.g. ``public-endpoint = https://isso.dev``
+    is correct, ``= "https://isso.dev"`` is wrong
+Booleans
+    For items that can be turned either on or off, acceptable values are (see
+    `getboolean`_):
+
+    - For ``True``, use ``1``, ``yes``, ``true``, or ``on``
+    - For ``False``, use ``0``, ``no``, ``false``, or ``off``
+
+.. todo:: Unify on ``true``/``false`` and remove occurrences of
+   ``on``/``off`` etc.
+
+.. _getboolean: https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.getboolean
