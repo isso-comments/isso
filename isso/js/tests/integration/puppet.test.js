@@ -15,11 +15,17 @@
  * $ isso -c contrib/isso-dev.cfg run
  */
 
+
 const ISSO_ENDPOINT = process.env.ISSO_ENDPOINT ?
   process.env.ISSO_ENDPOINT : 'http://localhost:8080';
 
 // Reset page before each test
 beforeEach(async () => {
+  await page.setViewport({
+    width: 1920,
+    height: 1080,
+    deviceScaleFactor: 1,
+  });
   await page.goto(
     ISSO_ENDPOINT + '/demo',
     { waitUntil: 'load' }
@@ -34,7 +40,7 @@ beforeEach(async () => {
   //await jestPuppeteer.debug()
   //await jestPuppeteer.resetBrowser()
   //await jestPuppeteer.resetPage()
-})
+});
 
 
 test('window.Isso functions should be idempotent', async () => {
@@ -147,4 +153,101 @@ test("should fill Postbox with valid data and receive 201 reply", async () => {
   await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
   // Need to click once to surface "confirm" and then again to confirm
   await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
+});
+
+test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
+
+  let newComment = {
+    author: "Some name",
+    email: "test@test.test",
+    notification: 0,
+    parent: null,
+    text: "A comment",
+    title: "Isso Test",
+    website: null,
+  };
+
+  // Create comment via POST
+  await page.setRequestInterception(true);
+  let createHandler = (request) => {
+    let data = {
+      'method': 'POST',
+      'postData': JSON.stringify(newComment),
+      'headers': {
+        ...request.headers(),
+        'Content-Type': 'application/json',
+      },
+    };
+    request.continue(data);
+    page.setRequestInterception(false);
+    page.off('request', createHandler);
+  };
+  await page.on('request', createHandler);
+  await page.goto(ISSO_ENDPOINT + '/new?uri=%2Fdemo%2Findex.html');
+
+  // Reload page to inspect new/changed/deleted comments
+  await page.goto(
+    ISSO_ENDPOINT + '/demo',
+    { waitUntil: 'load' }
+  );
+
+  // Relies on cookies from page.cookies, sent automatically
+  let postData = {
+    //id: 1,
+    text: 'New comment body',
+    author: 'Commenter #2',
+    website: 'https://new.website',
+  };
+
+  // Edit comment via PUT
+  await page.setRequestInterception(true);
+  let editHandler = request => {
+    let data = {
+      'method': 'PUT',
+      'postData': JSON.stringify(postData),
+      'headers': {
+        ...request.headers(),
+        'Content-Type': 'application/json',
+      },
+    };
+    request.continue(data);
+    page.off('request', editHandler);
+    page.setRequestInterception(false);
+  };
+  await page.on('request', editHandler);
+  await page.goto(ISSO_ENDPOINT + '/id/1');
+
+  // Reload page to inspect new/changed/deleted comments
+  await page.goto(
+    ISSO_ENDPOINT + '/demo',
+    { waitUntil: 'load' }
+  );
+
+  await expect(page).toMatchElement(
+    '#isso-1 .isso-text',
+    { text: 'New comment body' },
+  );
+
+  // Delete comment via DELETE
+  await page.setRequestInterception(true);
+  let deleteHandler = request => {
+    let data = {
+      'method': 'DELETE',
+      //'postData': JSON.stringify({id: 1}),
+      'headers': {
+        ...request.headers(),
+        'Content-Type': 'application/json',
+      },
+    };
+    request.continue(data);
+    page.off('request', deleteHandler);
+    page.setRequestInterception(false);
+  };
+  await page.once('request', deleteHandler);
+  await page.goto(ISSO_ENDPOINT + '/id/1');
+
+  await expect(page).not.toMatchElement(
+    '#isso-1 .isso-text',
+    { text: 'New comment body' },
+  );
 });
