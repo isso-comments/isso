@@ -93,7 +93,9 @@ function fetchComments() {
 
             // Note: isso.Postbox relies on the config object populated by elements
             // fetched from the server, so it cannot be created in init()
-            isso_root.prepend(new isso.Postbox(null));
+            // DOM polyfill prepend() will insert the element before the first
+            // child, not before the element itself!
+            isso_root.obj.parentElement.insertBefore(new isso.Postbox(null).obj, isso_root.obj);
 
             if (rv.total_replies === 0) {
                 heading.textContent = i18n.translate("no-comments");
