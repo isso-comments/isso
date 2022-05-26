@@ -24,8 +24,11 @@ Changelog for Isso
   to style comments and replies made by the page's author(s).
 - Add Ukrainian localisation (`#878`_, okawo80085)
 - Enable Turkish localisation (`#879`_, okawo80085)
-- Add ``/config`` endpoint for fetching server configuration options that
-  affect the client
+- **API:**
+
+  - Add ``/config`` endpoint for fetching server configuration options that
+    affect the client
+  - Remove ``/count`` GET endpoint (use POST instead)
 
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 .. _879: https://github.com/posativ/isso/pull/879
