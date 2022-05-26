@@ -1252,7 +1252,7 @@ class API(object):
             "require-email": false,
             "require-author": false,
             "reply-notifications": false,
-            "gravatar": true
+            "gravatar": true,
             "avatar": false
           }
         }
