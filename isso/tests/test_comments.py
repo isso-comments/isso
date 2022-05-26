@@ -391,25 +391,29 @@ class TestComments(unittest.TestCase):
 
     def testCounts(self):
 
-        self.assertEqual(self.get('/count?uri=%2Fpath%2F').status_code, 404)
+        rv = self.post('/count', data=json.dumps(['/path/']))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data), [0])
+
         self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
 
-        rv = self.get('/count?uri=%2Fpath%2F')
+        rv = self.post('/count', data=json.dumps(['/path/']))
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(loads(rv.data), 1)
+        self.assertEqual(loads(rv.data), [1])
 
         for x in range(3):
             self.post('/new?uri=%2Fpath%2F', data=json.dumps({"text": "..."}))
 
-        rv = self.get('/count?uri=%2Fpath%2F')
+        rv = self.post('/count', data=json.dumps(['/path/']))
         self.assertEqual(rv.status_code, 200)
-        self.assertEqual(loads(rv.data), 4)
+        self.assertEqual(loads(rv.data), [4])
 
         for x in range(4):
             self.delete('/id/%i' % (x + 1))
 
-        rv = self.get('/count?uri=%2Fpath%2F')
-        self.assertEqual(rv.status_code, 404)
+        rv = self.post('/count', data=json.dumps(['/path/']))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data), [0])
 
     def testMultipleCounts(self):
 
