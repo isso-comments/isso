@@ -42,17 +42,7 @@ jobs:
         run: docker compose up -d
 
       - name: Client unit tests
-        run: |
-          docker run \
-          --mount type=bind,source=${{ github.workspace }}/package.json,target=/src/package.json,readonly \
-          --mount type=bind,source=${{ github.workspace }}/isso/js/,target=/src/isso/js/,readonly \
-          ${{ env.TESTBED_IMAGE }} npm run test-unit
+        run: make docker-js-unit
 
       - name: Client integration tests
-        run: |
-          docker run \
-          --mount type=bind,source=${{ github.workspace }}/package.json,target=/src/package.json,readonly \
-          --mount type=bind,source=${{ github.workspace }}/isso/js/,target=/src/isso/js/ \
-          --env ISSO_ENDPOINT='http://isso-dev.local:8080' \
-          --network container:isso-server \
-          ${{ env.TESTBED_IMAGE }} npm run test-integration
+        run: make docker-js-integration

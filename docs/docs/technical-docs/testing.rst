@@ -96,25 +96,15 @@ Running tests
 
 Run **unit tests:**
 
-.. code-block:: bash
-    :emphasize-lines: 4
+.. code-block:: console
 
-    $ docker run \
-        --mount type=bind,source=${PWD}/package.json,target=/src/package.json,readonly \
-        --mount type=bind,source=${PWD}/isso/js/,target=/src/isso/js/,readonly \
-        isso-js-testbed npm run test-unit
+    $ make docker-js-unit
 
 Run **integration tests:**
 
-.. code-block:: bash
-    :emphasize-lines: 4-6
+.. code-block:: console
 
-    $ docker run \
-        --mount type=bind,source=${PWD}/package.json,target=/src/package.json,readonly \
-        --mount type=bind,source=${PWD}/isso/js/,target=/src/isso/js/ \
-        --env ISSO_ENDPOINT='http://isso-dev.local:8080' \
-        --network container:isso-server \
-        isso-js-testbed npm run test-integration
+    $ make docker-js-integration
 
 (The ``--network`` part ensures that the client container can see the server
 part. This is *not* set automatically by docker since this container is
