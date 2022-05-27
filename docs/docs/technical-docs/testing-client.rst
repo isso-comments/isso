@@ -164,6 +164,49 @@ For further information, see `puppeteer docs: Environment variables`__.
 
 .. __: https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#environment-variables
 
+Screenshot comparison
+^^^^^^^^^^^^^^^^^^^^^
+
+To ensure visual consistency for when somebody e.g. changes the CSS files, the
+end-to-end testing suite also checks before-and-after screenshots.
+These screenshots are stored in the `integration tests folder`_.
+
+To generate updated screenshots, you must run the following commands.
+(For help on setting up Docker, see :ref:`Docker <testing-docker>`)
+
+.. code-block:: console
+
+   $ make docker-js-integration
+
+This will run the test ``isso/js/tests/integration/screenshots.test.js`` and output
+``.png`` files. Now compare those screenshots against the known-to-be-good
+``.hash`` files:
+
+.. code-block:: console
+
+   $ make docker-compare-screenshots
+
+In case you have created a change that causes the resulting images to be
+different (and you are sure the visual changes are desired), you need generate
+new hashes:
+
+.. code-block:: console
+
+   $ make docker-compare-screenshots -u
+
+Then commit those generated ``.hash`` files in
+``isso/js/tests/integration/screenshots/*.png.hash`` to git.
+
+.. warning:: Please only check in hashes rendered through the Docker
+   environment as otherwise the screenshots could be skewed by aliasing and
+   font rendering settings from your OS.
+
+   Also note that ImageMagick ``identify`` outputs different hash values on
+   older Ubuntu versions - another reason to stick to the Docker environment
+   for consistency.
+
+.. _integration tests folder: https://github.com/posativ/isso/tree/master/isso/js/tests/integration/screenshots
+
 Testing standards
 -----------------
 

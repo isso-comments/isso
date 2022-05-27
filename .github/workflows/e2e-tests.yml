@@ -7,14 +7,14 @@ on:
       - "package.json"
       - "docker/**"
       - "Dockerfile"
-      - ".github/workflows/docker-compose.yml"
+      - ".github/workflows/e2e-tests.yml"
   push:
     paths:
       - "isso/**"
       - "package.json"
       - "docker/**"
       - "Dockerfile"
-      - ".github/workflows/docker-compose.yml"
+      - ".github/workflows/e2e-tests.yml"
 
 jobs:
   test:
@@ -42,17 +42,28 @@ jobs:
         run: docker compose up -d
 
       - name: Client unit tests
-        run: |
-          docker run \
-          --mount type=bind,source=${{ github.workspace }}/package.json,target=/src/package.json,readonly \
-          --mount type=bind,source=${{ github.workspace }}/isso/js/,target=/src/isso/js/,readonly \
-          ${{ env.TESTBED_IMAGE }} npm run test-unit
+        run: make docker-js-unit
 
       - name: Client integration tests
-        run: |
-          docker run \
-          --mount type=bind,source=${{ github.workspace }}/package.json,target=/src/package.json,readonly \
-          --mount type=bind,source=${{ github.workspace }}/isso/js/,target=/src/isso/js/,readonly \
-          --env ISSO_ENDPOINT='http://isso-dev.local:8080' \
-          --network container:isso-server \
-          ${{ env.TESTBED_IMAGE }} npm run test-integration
+        run: make docker-js-integration
+
+      - name: Compare screenshots
+        # Allow continuing to generate updated hashes in next step
+        id: compare-screenshots
+        continue-on-error: true
+        run: make docker-compare-screenshots
+
+      - name: Update screenshot hashes (if mismatched)
+        if: ${{ steps.compare-screenshots.outcome == 'failure' }}
+        run: make docker-update-screenshots
+
+      - name: Archive and upload updated screenshots & hashes
+        if: ${{ steps.compare-screenshots.outcome == 'failure' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: updated-screenshots-and-hashes
+          path: isso/js/tests/integration/screenshots/
+
+      - name: Fail if "Compare screenshots" step failed
+        if: ${{ steps.compare-screenshots.outcome == 'failure' }}
+        run: /bin/false

@@ -38,6 +38,8 @@ APIDOC = npx --no-install apidoc
 
 SASS = sassc
 
+TESTBED_IMAGE ?= isso-js-testbed:latest
+
 all: js site
 
 init:
@@ -104,6 +106,32 @@ docker-testbed-push:
 	docker tag isso-js-testbed:latest ghcr.io/isso-comments/isso-js-testbed:latest
 	docker push ghcr.io/isso-comments/isso-js-testbed:latest
 
+docker-js-unit:
+	docker run \
+		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/,readonly \
+		$(TESTBED_IMAGE) npm run test-unit
+
+docker-js-integration:
+	docker run \
+		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/ \
+		--env ISSO_ENDPOINT='http://isso-dev.local:8080' \
+		--network container:isso-server \
+		$(TESTBED_IMAGE) npm run test-integration
+
+docker-compare-screenshots:
+	docker run \
+		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/,readonly \
+		$(TESTBED_IMAGE) bash isso/js/tests/integration/compare-hashes.sh
+
+docker-update-screenshots:
+	docker run \
+		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/,readonly \
+		$(TESTBED_IMAGE) bash isso/js/tests/integration/compare-hashes.sh -u
+
 clean:
 	rm -f $(ISSO_JS_DST)
 	rm -rf $(DOCS_HTML_DST)
@@ -111,4 +139,4 @@ clean:
 	rm -rf .pytest_cache/
 	rm -rf .coverage
 
-.PHONY: apidoc apidoc-init clean coverage docker docker-push docker-testbed docker-testbed-push init test
+.PHONY: apidoc apidoc-init clean coverage docker docker-compare-screenshots docker-update-screenshots docker-js-unit docker-js-integration docker-push docker-testbed docker-testbed-push init test
