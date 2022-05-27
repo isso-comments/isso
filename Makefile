@@ -82,7 +82,7 @@ apidoc-init:
 apidoc: $(ISSO_PY_SRC) $(APIDOC_SRC)
 	$(APIDOC) --config apidoc/apidoc.json \
 		--input isso/views/ --input apidoc/ \
-		--output $(APIDOC_DST)
+		--output $(APIDOC_DST) --private
 	cp -rT $(APIDOC_DST) $(DOCS_HTML_DST)/docs/api/
 
 coverage: $(ISSO_PY_SRC)
