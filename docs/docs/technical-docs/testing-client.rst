@@ -20,6 +20,9 @@ Unit tests
 The unit tests that cover the frontend client ensure that the individual
 components are working fine in isolation.
 
+.. note:: Reminder: You can also :ref:`run these tests with Docker
+   <testing-docker>` conveniently.
+
 Install the needed ``Jest``-related packages
 (listed as ``optionalDependencies`` in ``package.json``):
 
@@ -60,6 +63,9 @@ End-to-End Integration tests
 For the end-to-end integration tests, the Python server part needs to be up and
 running - this part of the test suite pretends to be a real user sitting in
 front of a keyboard.
+
+.. note:: Reminder: You can also :ref:`run these tests with Docker
+   <testing-docker>` conveniently.
 
 The tests are run using the `puppeteer`__ browser automation tool. It runs a
 real Chromium browser in the background and can be instrumented to allow

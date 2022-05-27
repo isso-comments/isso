@@ -48,6 +48,8 @@ version of the bundled client code is used (``embed.dev.js`` with source map).
 This enables easier debugging - e.g. Firefox shows a ``webpack`` entry in the
 "Debugger" tab and shows the actual line of source code in any console traces.
 
+.. _testing-docker:
+
 Using docker
 ------------
 
