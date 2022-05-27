@@ -46,3 +46,6 @@ jobs:
 
       - name: Client integration tests
         run: make docker-js-integration
+
+      - name: Compare screenshots
+        run: make docker-compare-screenshots
