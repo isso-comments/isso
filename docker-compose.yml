@@ -31,8 +31,7 @@ services:
       - type: bind
         source: ./contrib/isso-dev.cfg
         target: /config/isso-dev.cfg
-        volume:
-          nocopy: true
+        read_only: true
 
   # Jest and puppeteer end-to-end integration test runner
   isso-client:
@@ -54,8 +53,7 @@ services:
       - type: bind
         source: ./package.json
         target: /src/package.json
-        volume:
-          nocopy: true
+        read_only: true
       - type: bind
         source: ./isso/js/
         target: /src/isso/js/
@@ -64,8 +62,6 @@ services:
         source: ./isso/js/tests/integration/screenshots/
         target: /src/isso/js/tests/integration/screenshots/
         read_only: false  # needed for generating screenshots during e2e tests
-        volume:
-          nocopy: false
     depends_on:
       - isso-server
 
