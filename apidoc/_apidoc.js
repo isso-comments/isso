@@ -1,6 +1,42 @@
 // ------------------------------------------------------------------------------------------
 // History.
 // ------------------------------------------------------------------------------------------
+
+/**
+* @api {get} /demo Isso demo page
+* @apiGroup Demo
+* @apiName demo
+* @apiVersion 0.12.6
+* @apiPrivate
+* @apiDescription
+*      Displays a demonstration of Isso with a thread counter and comment widget.
+*
+* @apiExample {curl} Get demo page
+*     curl 'https://comments.example.com/demo/index.html'
+*
+* @apiSuccessExample {html} Demo page:
+*     <!DOCTYPE html>
+*     <head>
+*      <title>Isso Demo</title>
+*      <meta charset="utf-8">
+*      <meta name="viewport" content="width=device-width, initial-scale=1">
+*     </head>
+*     <body>
+*      <div id="page">
+*       <div id="wrapper" style="max-width: 900px; margin-left: auto; margin-right: auto;">
+*        <h2><a href="index.html">Isso Demo</a></h2>
+*        <script src="../js/embed.dev.js" data-isso="../" ></script>
+*        <section>
+*          <p>This is a link to a thead, which will display a comment counter:
+*          <a href="/demo/index.html#isso-thread">How many Comments?</a></p>
+*          <p>Below is the actual comment field.</p>
+*        </section>
+*        <section id="isso-thread" data-title="Isso Test"><noscript>Javascript needs to be activated to view comments.</noscript></section>
+*       </div>
+*      </div>
+*     </body>
+*/
+
 /**
 * @api {get} /count (Deprecated) Count for single thread
 * @apiGroup Thread

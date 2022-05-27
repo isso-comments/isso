@@ -1276,7 +1276,7 @@ class API(object):
     @api {get} /demo/ Isso demo page
     @apiGroup Demo
     @apiName demo
-    @apiVersion 0.12.6
+    @apiVersion 0.13.0
     @apiPrivate
     @apiDescription
          Displays a demonstration of Isso with a thread counter and comment widget.
