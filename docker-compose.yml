@@ -59,8 +59,13 @@ services:
       - type: bind
         source: ./isso/js/
         target: /src/isso/js/
+        read_only: true
+      - type: bind
+        source: ./isso/js/tests/integration/screenshots/
+        target: /src/isso/js/tests/integration/screenshots/
+        read_only: false  # needed for generating screenshots during e2e tests
         volume:
-          nocopy: true
+          nocopy: false
     depends_on:
       - isso-server
 
