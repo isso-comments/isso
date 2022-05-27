@@ -77,6 +77,14 @@ test('should display "Isso Demo" text on page', async () => {
 });
 
 
+test('should match blank widget to snapshot', async () => {
+  const thread = await page.$('#isso-thread')
+  const elm = await thread.evaluate((node) => node.innerHTML);
+  await expect(elm.replace(/<time.*?>/, '<time>'))
+    .toMatchSnapshot();
+});
+
+
 test("should fill Postbox with valid data and receive 201 reply", async () => {
   // Can't use toFillForm() because it's not a <form> element (yet)
   await expect(page).toFill(
@@ -134,6 +142,11 @@ test("should fill Postbox with valid data and receive 201 reply", async () => {
     .toEqual(
       expect.objectContaining(expected)
     );
+
+  const thread = await page.$('#isso-thread')
+  const elm = await thread.evaluate((node) => node.innerHTML);
+  await expect(elm.replace(/<time.*?>/, '<time>'))
+    .toMatchSnapshot();
 
   await page.waitForSelector('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-edit');
 
