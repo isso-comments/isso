@@ -19,6 +19,7 @@ Changelog for Isso
 - Re-enable ``no-intra-emphasis`` misaka extension in default config.
 - Allow ``sup`` and ``sub`` HTML elements by default
 - Move ``isso-dev.cfg`` to ``contrib/`` folder
+- Run automated screenshot comparisons for testing (`#889`_)
 - wsgi: Return HTTP errors as JSON if client prefers it (`#488`_, sundbry)
 - Add ``data-isso-page-author-hashes`` option to client which makes it possible
   to style comments and replies made by the page's author(s).
@@ -33,6 +34,7 @@ Changelog for Isso
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 .. _879: https://github.com/posativ/isso/pull/879
 .. _488: https://github.com/posativ/isso/pull/488
+.. _#889: https://github.com/posativ/isso/pull/889
 
 0.12.6 (2022-03-06)
 -------------------
