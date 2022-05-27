@@ -5,11 +5,13 @@ import re
 import time
 import functools
 import json  # json.dumps to put URL in <script>
+import pkg_resources
 
 from configparser import NoOptionError
 from datetime import datetime, timedelta
 from html import escape
 from io import BytesIO as StringIO
+from os import path as os_path
 from urllib.parse import unquote, urlparse
 from xml.etree import ElementTree as ET
 
@@ -17,7 +19,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.http import dump_cookie
 from werkzeug.routing import Rule
-from werkzeug.utils import redirect
+from werkzeug.utils import redirect, send_from_directory
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import get_current_url
 
@@ -104,7 +106,7 @@ class API(object):
         ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('like', ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('demo', ('GET', '/demo')),
+        ('demo', ('GET', '/demo/')),
         ('preview', ('POST', '/preview')),
         ('config', ('GET', '/config')),
         ('login', ('POST', '/login')),
@@ -1271,7 +1273,7 @@ class API(object):
         return JSON(rv, 200)
 
     """
-    @api {get} /demo Isso demo page
+    @api {get} /demo/ Isso demo page
     @apiGroup Demo
     @apiName demo
     @apiVersion 0.12.6
@@ -1280,7 +1282,7 @@ class API(object):
          Displays a demonstration of Isso with a thread counter and comment widget.
 
     @apiExample {curl} Get demo page
-        curl 'https://comments.example.com/demo/index.html'
+        curl 'https://comments.example.com/demo/'
 
     @apiSuccessExample {html} Demo page:
         <!DOCTYPE html>
@@ -1296,7 +1298,7 @@ class API(object):
            <script src="../js/embed.dev.js" data-isso="../" ></script>
            <section>
              <p>This is a link to a thead, which will display a comment counter:
-             <a href="/demo/index.html#isso-thread">How many Comments?</a></p>
+             <a href="/demo/#isso-thread">How many Comments?</a></p>
              <p>Below is the actual comment field.</p>
            </section>
            <section id="isso-thread" data-title="Isso Test"><noscript>Javascript needs to be activated to view comments.</noscript></section>
@@ -1305,9 +1307,8 @@ class API(object):
         </body>
     """
     def demo(self, env, req):
-        return redirect(
-            get_current_url(env, strip_querystring=True) + '/index.html'
-        )
+        index = pkg_resources.resource_filename('isso', 'demo/index.html')
+        return send_from_directory(os_path.dirname(index), 'index.html', env)
 
     """
     @api {post} /login Log in
