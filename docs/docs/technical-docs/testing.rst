@@ -111,7 +111,7 @@ Run **integration tests:**
 
     $ docker run \
         --mount type=bind,source=${PWD}/package.json,target=/src/package.json,readonly \
-        --mount type=bind,source=${PWD}/isso/js/,target=/src/isso/js/,readonly \
+        --mount type=bind,source=${PWD}/isso/js/,target=/src/isso/js/ \
         --env ISSO_ENDPOINT='http://isso-dev.local:8080' \
         --network container:isso-server \
         isso-js-testbed npm run test-integration
