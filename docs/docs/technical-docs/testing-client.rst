@@ -126,6 +126,25 @@ You should receive output that looks similar to the following:
     Time:        0.752 s, estimated 21 s
     Ran all test suites matching /isso\/js\/tests\/integration\//i.
 
+Troubleshooting timeouts
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Are you getting the following error?
+
+.. code-block::
+
+    thrown: "Exceeded timeout of 5000 ms for a hook.
+    Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
+
+The **solution** is to run ``make init js`` to re-generate the client files.
+
+**Explanation:** This is actually a very sneaky error and consists
+of``puppeteer`` waiting on a non-existent element selector on the page. Open
+``http://localhost:8080/demo`` and you'll see that in fact the Isso widget is
+not rendering. This type of error can happen if you switch between branches
+often and inadvertently have the wrong (incompatible) bundled client
+``embed.dev.js``, which is kept between branches because it is ignored via
+``.gitignore``.
 
 Skip downloading Chromium
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,6 +155,12 @@ skip downloading the bundled browser and instead use the locally installed
 version of Chrome/Chromium via e.g. ``PUPPETEER_EXECUTABLE_PATH=$(which chromium)``.
 
 For further information, see `puppeteer docs: Environment variables`__.
+
+.. warning:: Running ``puppeteer`` like this is discouraged as it cannot be
+   guaranteed that the versions of Chromium and ``puppeteer`` are in sync. This
+   method can save you a lot of disk space and bandwidth, but in case of any
+   errors, please retry after clearing ``node_modules`` and re-installing the
+   ``puppeteer``-related modules without those environment variables set.
 
 .. __: https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#environment-variables
 
