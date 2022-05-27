@@ -7,14 +7,14 @@ on:
       - "package.json"
       - "docker/**"
       - "Dockerfile"
-      - ".github/workflows/docker-compose.yml"
+      - ".github/workflows/e2e-tests.yml"
   push:
     paths:
       - "isso/**"
       - "package.json"
       - "docker/**"
       - "Dockerfile"
-      - ".github/workflows/docker-compose.yml"
+      - ".github/workflows/e2e-tests.yml"
 
 jobs:
   test:
