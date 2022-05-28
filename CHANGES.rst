@@ -32,6 +32,9 @@ Changelog for Isso
     affect the client
   - Remove ``/count`` GET endpoint (use POST instead)
 
+- Replace ``contenteditable`` ``div`` with ``textarea`` to fix issues when
+  editing messages that contain indented code
+
 .. _Gravatar: Image requests: http://en.gravatar.com/site/implement/images/
 .. _879: https://github.com/posativ/isso/pull/879
 .. _488: https://github.com/posativ/isso/pull/488
