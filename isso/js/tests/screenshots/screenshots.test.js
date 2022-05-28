@@ -5,7 +5,7 @@
 
 const ISSO_ENDPOINT = process.env.ISSO_ENDPOINT ?
   process.env.ISSO_ENDPOINT : 'http://localhost:8080';
-const SCREENSHOTS_PATH = 'isso/js/tests/integration/screenshots';
+const SCREENSHOTS_PATH = 'isso/js/tests/screenshots/reference';
 
 beforeEach(async () => {
   await page.goto(
