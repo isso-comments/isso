@@ -14,10 +14,11 @@ services:
     #command: /isso/bin/isso -c /config/isso.cfg run
     environment:
       ISSO_SETTINGS: "/config/isso-dev.cfg"
-    # If needed, production docker image can also be exposed for non-docker
-    # unit/integration testing
-    #ports:
-    #  - 127.0.0.1:8080:8080
+    # If needed, production docker image can also be exposed to host for
+    # non-docker unit/integration testing
+    ports:
+      - 127.0.0.1:8080:8080
+    # Expose port 80080 to other containerized services, not to host machine:
     expose:
       - 8080
     networks:
@@ -59,8 +60,8 @@ services:
         target: /src/isso/js/
         read_only: true
       - type: bind
-        source: ./isso/js/tests/integration/screenshots/
-        target: /src/isso/js/tests/integration/screenshots/
+        source: ./isso/js/tests/screenshots/reference/
+        target: /src/isso/js/tests/screenshots/reference/
         read_only: false  # needed for generating screenshots during e2e tests
     depends_on:
       - isso-server

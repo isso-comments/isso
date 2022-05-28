@@ -8,6 +8,7 @@
     "test": "jest --config isso/js/jest.config.js isso/js/tests/",
     "test-unit": "jest --config isso/js/jest-unit.config.js isso/js/tests/unit/",
     "test-integration": "jest --runInBand --config isso/js/jest-integration.config.js isso/js/tests/integration/",
+    "test-screenshots": "jest --runInBand --config isso/js/jest-integration.config.js isso/js/tests/screenshots/",
     "build-dev": "webpack --config isso/js/webpack.config.js --config-name dev",
     "watch-dev": "webpack --config isso/js/webpack.config.js --config-name dev --watch",
     "build-prod": "webpack --config isso/js/webpack.config.js --merge --config-name dev --config-name prod"

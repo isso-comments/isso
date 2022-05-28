@@ -178,7 +178,7 @@ To generate updated screenshots, you must run the following commands.
 
    $ make docker-js-integration
 
-This will run the test ``isso/js/tests/integration/screenshots.test.js`` and output
+This will run the test ``isso/js/tests/screenshots/screenshots.test.js`` and output
 ``.png`` files. Now compare those screenshots against the known-to-be-good
 ``.hash`` files:
 
@@ -195,7 +195,7 @@ new hashes:
    $ make docker-compare-screenshots -u
 
 Then commit those generated ``.hash`` files in
-``isso/js/tests/integration/screenshots/*.png.hash`` to git.
+``isso/js/tests/screenshots/reference/*.png.hash`` to git.
 
 .. warning:: Please only check in hashes rendered through the Docker
    environment as otherwise the screenshots could be skewed by aliasing and
@@ -205,7 +205,7 @@ Then commit those generated ``.hash`` files in
    older Ubuntu versions - another reason to stick to the Docker environment
    for consistency.
 
-.. _integration tests folder: https://github.com/posativ/isso/tree/master/isso/js/tests/integration/screenshots
+.. _integration tests folder: https://github.com/posativ/isso/tree/master/isso/js/tests/screenshots
 
 Testing standards
 -----------------

@@ -120,17 +120,25 @@ docker-js-integration:
 		--network container:isso-server \
 		$(TESTBED_IMAGE) npm run test-integration
 
-docker-compare-screenshots:
+docker-generate-screenshots:
 	docker run \
 		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
-		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/,readonly \
-		$(TESTBED_IMAGE) bash isso/js/tests/integration/compare-hashes.sh
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/ \
+		--network container:isso-server \
+		--env ISSO_ENDPOINT='http://isso-dev.local:8080' \
+		$(TESTBED_IMAGE) npm run test-screenshots
 
-docker-update-screenshots:
+docker-compare-screenshots: docker-generate-screenshots
 	docker run \
 		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
-		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/,readonly \
-		$(TESTBED_IMAGE) bash isso/js/tests/integration/compare-hashes.sh -u
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/ \
+		$(TESTBED_IMAGE) bash isso/js/tests/screenshots/compare-hashes.sh
+
+docker-update-screenshots: docker-generate-screenshots
+	docker run \
+		--mount type=bind,source=$(PWD)/package.json,target=/src/package.json,readonly \
+		--mount type=bind,source=$(PWD)/isso/js/,target=/src/isso/js/ \
+		$(TESTBED_IMAGE) bash isso/js/tests/screenshots/compare-hashes.sh -u
 
 clean:
 	rm -f $(ISSO_JS_DST)

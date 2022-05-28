@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/bash
 
 # This script takes the output of the screenshot puppeteer test and compares
 # the generated images against hashes of known-to-be-good images.
@@ -13,7 +13,7 @@
 # - imagemagick (for "identify" program)
 # - bash        (hopefully this script should run on any shell though)
 
-SCREENSHOTS_PATH=isso/js/tests/integration/screenshots
+SCREENSHOTS_PATH=isso/js/tests/screenshots/reference
 update=false
 
 for i in "$@"; do
@@ -79,8 +79,15 @@ if [ $thread_hash != $expected_thread ]; then
 fi
 
 if [ $failed = "true" ]; then
-    echo "One or more screenshots do not match (see above)."
+    echo ""
+    echo "*** ERROR: *** One or more screenshots do not match (see above)."
+    echo ""
     echo "To update screenshot hashes, run this script with the '-u' flag"
+    echo "You can do this e.g. via Docker. Run:"
+    echo "$ make docker"
+    echo "$ docker-compose up -d"
+    echo "$ make docker-update-screenshots"
+    echo ""
     exit 1
 else
     echo "Everything fine, screenshots have not changed."
