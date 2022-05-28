@@ -81,8 +81,14 @@ var Postbox = function(parent) {
         $(".isso-preview .isso-text", el).innerHTML = '';
         el.classList.remove('isso-preview-mode');
     };
-    $("[name='edit']", el).on("click", edit);
-    $(".isso-preview", el).on("click", edit);
+    $("[name='edit']", el).on("click", function() {
+      edit();
+      $(".isso-textarea", el).focus();
+    });
+    $(".isso-preview", el).on("click", function() {
+      edit();
+      $(".isso-textarea", el).focus();
+    });
 
     // submit form, initialize optional fields with `null` and reset form.
     // If replied to a comment, remove form completely.
