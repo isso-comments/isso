@@ -12,8 +12,8 @@ except ImportError:
 
 import _thread as thread
 
-from flask_caching.backends.nullcache import NullCache
-from flask_caching.backends.simplecache import SimpleCache
+from isso.utils.cache import NullCache
+from isso.utils.cache import SimpleCache
 
 logger = logging.getLogger("isso")
 
