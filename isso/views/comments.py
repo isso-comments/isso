@@ -152,7 +152,7 @@ class API(object):
     @classmethod
     def verify(cls, comment):
 
-        if "text" not in comment:
+        if comment.get("text") is None:
             return False, "text is missing"
 
         if not isinstance(comment.get("parent"), (int, type(None))):
@@ -290,7 +290,7 @@ class API(object):
 
         with self.isso.lock:
             if uri not in self.threads:
-                if 'title' not in data:
+                if not data.get('title'):
                     with http.curl('GET', local("origin"), uri) as resp:
                         if resp and resp.status == 200:
                             uri, title = parse.thread(resp.read(), id=uri)
@@ -484,7 +484,7 @@ class API(object):
 
         data = request.json
 
-        if "text" not in data or data["text"] is None or len(data["text"]) < 3:
+        if data.get("text") is None or len(data["text"]) < 3:
             raise BadRequest("no text given")
 
         for key in set(data.keys()) - set(["text", "author", "website"]):
@@ -1031,7 +1031,7 @@ class API(object):
     def preview(self, environment, request):
         data = request.json
 
-        if "text" not in data or data["text"] is None:
+        if data.get("text", None) is None:
             raise BadRequest("no text given")
 
         return JSON({'text': self.isso.render(data["text"])}, 200)
