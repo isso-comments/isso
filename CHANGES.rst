@@ -19,6 +19,7 @@ Changelog for Isso
 - Re-enable ``no-intra-emphasis`` misaka extension in default config.
 - Allow ``sup`` and ``sub`` HTML elements by default
 - Move ``isso-dev.cfg`` to ``contrib/`` folder
+- Drop ``Flask-Caching`` dependency and use drop-in solution instead
 - Run automated screenshot comparisons for testing (`#889`_)
 - wsgi: Return HTTP errors as JSON if client prefers it (`#488`_, sundbry)
 - Add ``data-isso-page-author-hashes`` option to client which makes it possible
