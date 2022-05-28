@@ -11,27 +11,6 @@ var globals = require("app/globals");
 
 "use strict";
 
-var editorify = function(el) {
-    el = $.htmlify(el);
-    el.setAttribute("contentEditable", true);
-
-    el.on("focus", function() {
-        if (el.classList.contains("isso-placeholder")) {
-            el.innerHTML = "";
-            el.classList.remove("isso-placeholder");
-        }
-    });
-
-    el.on("blur", function() {
-        if (el.textContent.length === 0) {
-            el.textContent = i18n.translate("postbox-text");
-            el.classList.add("isso-placeholder");
-        }
-    });
-
-    return el;
-}
-
 var Postbox = function(parent) {
 
     var localStorage = utils.localStorageImpl,
@@ -46,9 +25,7 @@ var Postbox = function(parent) {
     el.onsuccess = function() {};
 
     el.validate = function() {
-        if (utils.text($(".isso-textarea", this).innerHTML).length < 3 ||
-            $(".isso-textarea", this).classList.contains("isso-placeholder"))
-        {
+        if ($(".isso-textarea", this).value.length < 3) {
             $(".isso-textarea", this).focus();
             return false;
         }
@@ -92,7 +69,7 @@ var Postbox = function(parent) {
 
     // preview function
     $("[name='preview']", el).on("click", function() {
-        api.preview(utils.text($(".isso-textarea", el).innerHTML)).then(
+        api.preview($(".isso-textarea", el).value).then(
             function(html) {
                 $(".isso-preview .isso-text", el).innerHTML = html;
                 el.classList.add('isso-preview-mode');
@@ -125,13 +102,12 @@ var Postbox = function(parent) {
 
         api.create($("#isso-thread").getAttribute("data-isso-id"), {
             author: author, email: email, website: website,
-            text: utils.text($(".isso-textarea", el).innerHTML),
+            text: $(".isso-textarea", el).value,
             parent: parent || null,
             title: $("#isso-thread").getAttribute("data-title") || null,
             notification: $("[name=notification]", el).checked() ? 1 : 0,
         }).then(function(comment) {
-            $(".isso-textarea", el).innerHTML = "";
-            $(".isso-textarea", el).blur();
+            $(".isso-textarea", el).value = "";
             insert(comment, true);
 
             if (parent !== null) {
@@ -139,8 +115,6 @@ var Postbox = function(parent) {
             }
         });
     });
-
-    editorify($(".isso-textarea", el));
 
     return el;
 };
@@ -296,9 +270,12 @@ var insert = function(comment, scrollIntoView) {
 
             toggler.canceled = false;
             api.view(comment.id, 1).then(function(rv) {
-                var textarea = editorify($.new("div.isso-textarea"));
+                var textarea = $.new("textarea.isso-textarea");
+                textarea.setAttribute("rows", 5);
+                textarea.setAttribute("minlength", 3);
+                textarea.setAttribute("maxlength", 65535);
 
-                textarea.innerHTML = utils.detext(rv.text);
+                textarea.value = rv.text;
                 textarea.focus();
 
                 text.classList.remove("isso-text");
@@ -317,12 +294,12 @@ var insert = function(comment, scrollIntoView) {
             var avatar = config["avatar"] || config["gravatar"] ? $(".isso-avatar", el, false)[0] : null;
 
             if (! toggler.canceled && textarea !== null) {
-                if (utils.text(textarea.innerHTML).length < 3) {
+                if (textarea.value.length < 3) {
                     textarea.focus();
                     toggler.wait();
                     return;
                 } else {
-                    api.modify(comment.id, {"text": utils.text(textarea.innerHTML)}).then(function(rv) {
+                    api.modify(comment.id, {"text": textarea.value}).then(function(rv) {
                         text.innerHTML = rv.text;
                         comment.text = rv.text;
                     });
@@ -416,7 +393,6 @@ var insert = function(comment, scrollIntoView) {
 };
 
 module.exports = {
-    editorify: editorify,
     insert: insert,
     insert_loader: insert_loader,
     Postbox: Postbox,
