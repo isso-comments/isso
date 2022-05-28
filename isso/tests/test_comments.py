@@ -472,6 +472,17 @@ class TestComments(unittest.TestCase):
         self.assertEqual(
             rv["text"], '<p>This is <strong>mark</strong><em>down</em></p>')
 
+    def testTitleNull(self):
+        # Thread title set to `null` in API request
+        # Javascript `null` equals Python `None`
+        self.post('/new?uri=%2Fpath%2F',
+                  data=json.dumps({'text': 'Spam', 'title': None}))
+
+        thread = self.app.db.threads.get(1)
+        # Expect server to attempt to parse uri to extract title
+        # utils.parse cannot parse fake /path/, so default="Untitled."
+        self.assertEqual(thread.get('title'), "Untitled.")
+
     def testLatestOk(self):
         # load some comments in a mix of posts
         saved = []
