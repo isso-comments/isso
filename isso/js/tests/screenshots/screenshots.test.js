@@ -8,14 +8,25 @@ const ISSO_ENDPOINT = process.env.ISSO_ENDPOINT ?
 const SCREENSHOTS_PATH = 'isso/js/tests/screenshots/reference';
 
 beforeEach(async () => {
+
+
+  /**
+  * Clear localStorage so that stray pre-set Author/Email fields do not show up in screenshots
+  * Since before page load, about:blank has no localStorage and returns an exception:
+  * "Evaluation failed: DOMException:
+  *    Failed to read the 'localStorage' property from 'Window': Access is denied for this document."
+  * https://github.com/puppeteer/puppeteer/issues/1607
+  * -> Load the page once to enable clearing localStorage, then re-load with cleared pre-set values
+  */
+  await page.goto(ISSO_ENDPOINT + '/demo');
+  await page.evaluate(() => localStorage.clear());
+
   await page.goto(
     ISSO_ENDPOINT + '/demo',
     { waitUntil: 'load' }
   )
   await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/index.html');
 
-  // See also other waitForX options:
-  // https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagewaitforselectorselector-options
   await page.waitForSelector('.isso-textarea');
   await page.setViewport({
     width: 1920,
@@ -25,6 +36,10 @@ beforeEach(async () => {
 });
 
 test('Screenshot Postbox', async () => {
+  // Ensure no saved author info is pre-filled:
+  await expect(await page.evaluate(
+    () => localStorage.getItem("isso-author")))
+    .toBe(null);
   const thread = await page.$('#isso-thread');
   await thread.screenshot({
     path: SCREENSHOTS_PATH + '/postbox.png'
