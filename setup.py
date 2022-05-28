@@ -6,7 +6,7 @@ from re import sub as re_sub
 from setuptools import setup, find_packages
 
 requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
-            'werkzeug>=1.0', 'bleach', 'Flask-Caching>=1.9', 'Flask']
+            'werkzeug>=1.0', 'bleach']
 tests_require = ['pytest', 'pytest-cov']
 
 # https://packaging.python.org/en/latest/guides/making-a-pypi-friendly-readme/
