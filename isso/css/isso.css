@@ -24,11 +24,9 @@
     vertical-align: bottom;
 }
 #isso-thread .isso-textarea {
-    min-height: 58px;
     outline: 0;
-}
-#isso-thread .isso-textarea.isso-placeholder {
-    color: #757575;
+    width: 100%;
+    resize: none;
 }
 
 #isso-root .isso-comment {

@@ -18,7 +18,7 @@
  * Also, untangle Postbox functions from DOM element
  */
 
-test('Editorify text area', () => {
+test.skip('Editorify text area', () => {
   // Set up our document body
   document.body.innerHTML =
     '<div id=isso-thread></div>' +

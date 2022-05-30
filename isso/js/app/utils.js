@@ -11,36 +11,6 @@ var pad = function(n, width, z) {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
 
-var HTMLEntity = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': '&quot;',
-    "'": '&#39;',
-    "/": '&#x2F;'
-};
-
-var escape = function(html) {
-    return String(html).replace(/[&<>"'\/]/g, function (s) {
-        return HTMLEntity[s];
-    });
-};
-
-var text = function(html) {
-    var _ = document.createElement("div");
-    _.innerHTML = html.replace(/<div><br><\/div>/gi, '<br>')
-                      .replace(/<div>/gi,'<br>')
-                      .replace(/<br>/gi, '\n')
-                      .replace(/&nbsp;/gi, ' ');
-    return _.textContent.trim();
-};
-
-var detext = function(text) {
-    text = escape(text);
-    return text.replace(/\n\n/gi, '<br><div><br></div>')
-               .replace(/\n/gi, '<br>');
-};
-
 // Normalize a BCP47 language tag.
 // Quoting https://tools.ietf.org/html/bcp47 :
 //   An implementation can reproduce this format without accessing
@@ -94,9 +64,7 @@ try {
 
 module.exports = {
     cookie: cookie,
-    detext: detext,
     localStorageImpl: localStorageImpl,
     normalize_bcp47: normalize_bcp47,
     pad: pad,
-    text: text,
 };
