@@ -85,6 +85,7 @@ like Hugo, Ghost or Pelican.*
 Isso-adjacent Projects
 ----------------------
 
+* A Webmention receiver and publisher, has a plugin to integrate with Isso: `Bussator`_
 * A plugin for `Grav CMS`_ to integrate isso comments: `grav-plugin-jscomments`_
 * A `Pelican theme supporting isso comments <https://github.com/Lucas-C/pelican-mg>`_
 * A `Sphinx extension to integrate isso comments <https://github.com/sphinx-notes/isso>`_
@@ -92,6 +93,7 @@ Isso-adjacent Projects
 
 .. _Grav cms: https://en.wikipedia.org/wiki/Grav_(CMS)
 .. _grav-plugin-jscomments: https://github.com/Sommerregen/grav-plugin-jscomments>
+.. _Bussator: https://gitlab.com/mardy/bussator
 
 .. note::
    Feel free to **add your own project** that builds on top of or integrates
