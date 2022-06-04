@@ -1,4 +1,4 @@
-name: Upload docs to GitHub Pages
+name: Build and upload docs to GitHub Pages
 
 on:
   push:
@@ -7,17 +7,20 @@ on:
     #  only run when both filters are satisfied."
     branches:
       - master
-      - docs-overhaul
     paths:
       - "docs/**"
+      - "apidoc/**"
+      - "isso/views/comments.py"
       - ".github/workflows/upload-docs.yml"
   pull_request:
     paths:
       - "docs/**"
+      - "apidoc/**"
+      - "isso/views/comments.py"
       - ".github/workflows/upload-docs.yml"
 
 jobs:
-  deploy:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -53,8 +56,9 @@ jobs:
       - name: Copy API docs to docs/ dir
         run: cp -r apidoc/_output/ docs/_build/html/docs/api
 
-      - name: Deploy
+      - name: Deploy (only on push to master)
         uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/master' }}
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: isso-comments/isso-comments.github.io
