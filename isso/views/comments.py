@@ -141,6 +141,11 @@ class API(object):
         if self.public_conf["gravatar"]:
             self.public_conf["avatar"] = False
 
+        self.public_conf["feed"] = False
+        rss = isso.conf.section("rss")
+        if rss and rss.get('base'):
+            self.public_conf["feed"] = True
+
         self.guard = isso.db.guard
         self.threads = isso.db.threads
         self.comments = isso.db.comments

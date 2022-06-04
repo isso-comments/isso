@@ -19,7 +19,6 @@ preferably in the script tag which embeds the JS:
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
             data-isso-vote="true"
             data-isso-vote-levels=""
-            data-isso-feed="false"
             data-isso-page-author-hashes="f124cf6b2f01,7831fe17a8cd"
             data-isso-reply-notifications-default-enabled="false"
             src="/prefix/js/embed.js"></script>
@@ -139,10 +138,7 @@ data-isso-vote-levels
 
     These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
 
-data-isso-feed
-    Enable or disable the addition of a link to the feed for the comment
-    thread. The link will only be valid if the appropriate setting, in
-    ``[rss]`` section, is also enabled server-side.
+    Default: ``null``
 
 data-isso-page-author-hashes
     Provide the hash (or list of hashes) of the current page's author. Any
@@ -232,3 +228,10 @@ data-isso-gravatar
 
     Set to `true` when gravatars are enabled with `gravatar = true` in the
     server configuration.
+
+data-isso-feed
+    .. deprecated:: 0.13
+
+    Enable or disable the addition of a link to the feed for the comment
+    thread. The link will only be valid if the appropriate setting, in
+    ``[rss]`` section, is also enabled server-side.
