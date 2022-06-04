@@ -141,6 +141,11 @@ class API(object):
         if self.public_conf["gravatar"]:
             self.public_conf["avatar"] = False
 
+        self.public_conf["feed"] = False
+        rss = isso.conf.section("rss")
+        if rss and rss.get('base'):
+            self.public_conf["feed"] = True
+
         self.guard = isso.db.guard
         self.threads = isso.db.threads
         self.comments = isso.db.comments
@@ -1221,7 +1226,7 @@ class API(object):
     @api {get} /config Fetch client config
     @apiGroup Thread
     @apiName config
-    @apiVersion 0.12.6
+    @apiVersion 0.13.0
     @apiDescription
         Returns only the client configuration parameters that depend on server settings.
 
@@ -1241,6 +1246,9 @@ class API(object):
         To avoid having both regular avatars and Gravatars side-by-side,
         setting `gravatar` will disable regular avatars. The `avatar` key will
         only be sent by the server if `gravatar` is set.
+    @apiSuccess {Boolean} config.feed
+        Enable or disable the addition of a link to the feed for the comment
+        thread.
 
     @apiExample {curl} get the client config:
         curl 'https://comments.example.com/config'
@@ -1253,7 +1261,8 @@ class API(object):
             "require-author": false,
             "reply-notifications": false,
             "gravatar": true,
-            "avatar": false
+            "avatar": false,
+            "feed": false
           }
         }
     """

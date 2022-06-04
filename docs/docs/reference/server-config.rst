@@ -189,8 +189,8 @@ HTTP server configuration.
     [server]
     listen = http://localhost:8080
     public-endpoint =
-    reload = off
-    profile = off
+    reload = false
+    profile = false
     trusted-proxies =
     samesite =
 
@@ -225,13 +225,13 @@ reload
     Reload application, when the source code has changed. Useful for
     development. Only works with the internal webserver.
 
-    Default: ``off``
+    Default: ``false``
 
 profile
     Show 10 most time consuming function in Isso after each request. Do
     not use in production.
 
-    Default: ``off``
+    Default: ``false``
 
 trusted-proxies
     An optional list of reverse proxies IPs behind which you have deployed
