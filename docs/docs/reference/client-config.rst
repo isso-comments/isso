@@ -49,7 +49,7 @@ data-isso-* directives
 
 data-isso
    Isso usually detects the REST API automatically, but when you serve the JS
-   script on a different location, this may fail. Use `data-isso` to
+   script on a different location, this may fail. Use ``data-isso`` to
    override the API location:
 
    .. code-block:: html
@@ -67,7 +67,7 @@ data-isso-css-url
     Default: ``{api-endpoint}/css/isso.css``
 
 data-isso-css
-    Set to `false` prevents Isso from automatically appending the stylesheet.
+    Set to ``false`` prevents Isso from automatically appending the stylesheet.
 
     .. code-block:: html
 
@@ -155,13 +155,13 @@ data-isso-vote
 
 data-isso-vote-levels
     List of vote levels used to customize comment appearance based on score.
-    Provide a comma-separated values (eg. `"0,5,10,25,100"`) or a JSON array (eg. `"[-5,5,15]"`).
+    Provide a comma-separated values (eg. ``"0,5,10,25,100"``) or a JSON array (eg. ``"[-5,5,15]"``).
 
-    For example, the value `"-5,5"` will cause each `isso-comment` to be given one of these 3 classes:
+    For example, the value ``"-5,5"`` will cause each ``isso-comment`` to be given one of these 3 classes:
 
-    - `isso-vote-level-0` for scores lower than `-5`
-    - `isso-vote-level-1` for scores between `-5` and `4`
-    - `isso-vote-level-2` for scores of `5` and greater
+    - ``isso-vote-level-0`` for scores lower than ``-5``
+    - ``isso-vote-level-1`` for scores between ``-5`` and ``4``
+    - ``isso-vote-level-2`` for scores of ``5`` and greater
 
     These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
 
@@ -234,27 +234,27 @@ read out from the server automatically.
 data-isso-reply-to-self
     .. deprecated:: 0.12.6
 
-    Set to `true` when spam guard is configured with `reply-to-self = true`.
+    Set to ``true`` when spam guard is configured with ``reply-to-self = true``.
 
 data-isso-require-author
     .. deprecated:: 0.12.6
 
-    Set to `true` when spam guard is configured with `require-author = true`.
+    Set to ``true`` when spam guard is configured with ``require-author = true``.
 
 data-isso-require-email
     .. deprecated:: 0.12.6
 
-    Set to `true` when spam guard is configured with `require-email = true`.
+    Set to ``true`` when spam guard is configured with ``require-email = true``.
 
 data-isso-reply-notifications
     .. deprecated:: 0.12.6
 
-    Set to `true` when reply notifications is configured with `reply-notifications = true`.
+    Set to ``true`` when reply notifications is configured with ``reply-notifications = true``.
 
 data-isso-gravatar
     .. deprecated:: 0.12.6
 
-    Set to `true` when gravatars are enabled with `gravatar = true` in the
+    Set to ``true`` when gravatars are enabled with ``gravatar = true`` in the
     server configuration.
 
 data-isso-feed
