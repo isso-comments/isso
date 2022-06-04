@@ -5,7 +5,7 @@ var utils = require("app/utils");
 var config = {
     "css": true,
     "css-url": null,
-    "lang": "",
+    "lang": null,
     "default-lang": "en",
     "reply-to-self": false,
     "require-email": false,
