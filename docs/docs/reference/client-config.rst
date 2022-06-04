@@ -64,13 +64,16 @@ data-isso-css-url
 
         <script src="..." data-isso-css-url="/path/to/isso.css"></script>
 
+    Default: ``{api-endpoint}/css/isso.css``
+
 data-isso-css
     Set to `false` prevents Isso from automatically appending the stylesheet.
-    Defaults to `true`.
 
     .. code-block:: html
 
         <script src="..." data-isso-css="false"></script>
+
+    Default: ``true``
 
 data-isso-lang
     Always render the Isso UI in this language, ignoring what the
@@ -89,33 +92,53 @@ data-isso-lang
     <https://github.com/posativ/isso/tree/master/isso/js/app/i18n>`_ of
     the source tree.
 
+    Default: ``null``
+
 data-isso-default-lang
     Render the Isso UI in this language when the user-agent does not
     specify a preferred language, or if the language it specifies is not
     supported.  Like ``data-isso-lang``, the value of this property should
-    be a BCP 47 language tag.  Defaults to "en".
+    be a BCP 47 language tag.
 
     If you specify both ``data-isso-default-lang`` and ``data-isso-lang``,
     ``data-isso-lang`` takes precedence.
 
+    Default: ``en``
+
     .. versionadded:: 0.12.6
 
-data-isso-max-comments-top, data-isso-max-comments-nested
-    Number of top level (or nested) comments to show by default. If some
-    comments are not shown, an "X Hidden" link is shown.
+data-isso-max-comments-top
+    Number of top level comments to show by default. If some comments are not
+    shown, an "X Hidden" link is shown.
 
     Set to ``"inf"`` to show all, or ``"0"`` to hide all.
 
+    Default: ``inf``
+
+data-isso-max-comments-nested
+    Number of nested comments to show by default. If some comments are not
+    shown, an "X Hidden" link is shown.
+
+    Set to ``"inf"`` to show all, or ``"0"`` to hide all.
+
+    Default: ``5``
+
 data-isso-reveal-on-click
     Number of comments to reveal on clicking the "X Hidden" link.
+
+    Default: ``true``
 
 data-isso-avatar
     Enable or disable avatar generation. Ignored if gravatar is enabled on
     server side, since gravatars will take precedence and disable avatar
     generation.
 
+    Default: ``true``
+
 data-isso-avatar-bg
     Set avatar background color. Any valid CSS color will do.
+
+    Default: ``#f0f0f0``
 
 data-isso-avatar-fg
     Set avatar foreground color. Up to 8 colors are possible. The default color
@@ -123,8 +146,12 @@ data-isso-avatar-fg
     Multiple colors must be separated by space. If you use less than eight colors
     and not a multiple of 2, the color distribution is not even.
 
+    Default: ``"#9abf88 #5698c4 #e279a3 #9163b6 #be5168 #f19670 #e4bf80 #447c69"```
+
 data-isso-vote
     Enable or disable voting feature on the client side.
+
+    Default: ``true``
 
 data-isso-vote-levels
     List of vote levels used to customize comment appearance based on score.
@@ -179,6 +206,7 @@ data-isso-page-author-hashes
             color: #19798d;
         }
 
+    Default: ``null``
 
     .. versionadded:: 0.13
 
