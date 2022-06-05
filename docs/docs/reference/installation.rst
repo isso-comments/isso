@@ -142,7 +142,7 @@ Prebuilt Packages
 Using Docker
 ------------
 
-Assuming you have your configuration in ``/opt/isso``, with
+Assuming you have your configuration in ``/var/lib/isso``, with
 ``dbpath=/db/comments.db`` and ``host`` set properly in ``isso.cfg``, you have
 two options for running a Docker container:
 
@@ -153,7 +153,7 @@ a) Official Docker image
 
     $ docker pull ghcr.io/isso-comments/isso:latest
     $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 \
-        -v /opt/isso:/config -v /opt/isso:/db \
+        -v /var/lib/isso:/config -v /var/lib/isso:/db \
         ghcr.io/isso-comments/isso:latest
 
 b) Build a Docker image yourself

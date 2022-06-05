@@ -68,12 +68,8 @@ Please see the :doc:`documentation` page for more details.
 Code contributions
 ------------------
 
-You do not have to read this whole section; the maintainers will give you
-feedback in the review process. But if you want to be a nice and helpful
-person, you can make the lives of the maintainers a lot easier.
-
-These guidelines are here to help your thought process and hopefully make you
-aware of a few aspects you might not have thought about yet.
+You've chosen to make Isso better and that's great! Please follow this checklist when
+contributing code:
 
 .. _contribute-checklist:
 
@@ -101,9 +97,7 @@ How to write good commit messages
 - Link to related issues or references
 - Ideally, how to verify that this commit does what it says
 
-The `commento docs`_ have a more extensive explanation of good commits.
-
-This is an example of a **good commit:**
+For example, this a **good commit:**
 
 .. code-block::
 
@@ -131,6 +125,7 @@ This is an example of a **good commit:**
 
 It does not tell the reviewer which part is affected, why it is necessary or
 why this particular way of doing things was chosen.
+The `commento docs`_ have a more extensive explanation of good commits.
 
 .. _commento docs: https://docs.commento.io/contributing/development-guidelines.html
 
@@ -140,6 +135,12 @@ Considerations when submitting changes
 The following sections will help you decide how to tackle larger architectural
 issues and help avoid wasted efforts for changes that are unlikely to be
 accepted.
+
+You do not have to read this whole section; the maintainers will give you
+feedback in the review process. But if you want to be a nice and helpful
+person, you can make the lives of the maintainers a lot easier.
+These guidelines are here to help your thought process and hopefully make you
+aware of a few aspects you might not have thought about yet.
 
 Design philosophy / Zen of Isso
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

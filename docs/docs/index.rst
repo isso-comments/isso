@@ -1,12 +1,18 @@
 :orphan:
 
-Overview
-========
+Getting started
+===============
 
 Welcome to Isso's documentation. This documentation will help you get started
 fast. If you run into any problems when using Isso, you can find the answer in
 `troubleshooting guide <guides/troubleshooting>`_ or you can
 :ref:`get in contact <contact>`
+
+**Start here:**
+
+1. :doc:`Install Isso <reference/installation>`
+2. :doc:`Follow the Quickstart guide <guides/quickstart>`
+3. If you get in stuck, see :doc:`Troubleshooting <guides/troubleshooting>`
 
 Once you're familiar with Isso, check out the sidebar and the search on the
 left to find further information.
@@ -15,15 +21,6 @@ left to find further information.
    Contributions to the documentation and to the project as a whole are
    welcome! See :doc:`/docs/contributing/index` and
    :doc:`/docs/contributing/documentation` for more details.
-
-Documentation overview:
-
-.. toctree::
-   :maxdepth: 1
-
-   guides/quickstart
-   reference/installation
-   guides/troubleshooting
 
 What's Isso?
 ------------

@@ -105,7 +105,7 @@ configuration looks like this:
   :emphasize-lines: 9,12
 
     server {
-        listen [::]:80 default ipv6only=off;
+        listen [::]:80 default;
         server_name example.tld;
         root ...;
     }
@@ -136,7 +136,7 @@ Now, you embed Isso to your website:
         <noscript>Javascript needs to be activated to view comments.</noscript>
     </section>
 
-Note, that `data-isso` is optional, but when a website includes a script using
+Note, that ``data-isso`` is optional, but when a website includes a script using
 ``async`` it is no longer possible to determine the script's external URL.
 
 That's it. When you open your website, you should see a commenting form. Leave
