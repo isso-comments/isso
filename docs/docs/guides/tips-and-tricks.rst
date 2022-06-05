@@ -1,6 +1,12 @@
 Tips & Tricks
 =============
 
+Sections covered in this document:
+
+.. contents::
+    :local:
+    :depth: 1
+
 
 Lazy-loading on scroll
 ----------------------
@@ -118,6 +124,23 @@ Next you can import you json dump:
     ~> isso -c /path/to/isso.cfg import -t generic comment-dump.json
     [100%]  53 threads, 192 comments
 
+Export comments as CSV
+----------------------
+
+As suggested by `Joshua Gleitze`_:
+
+.. code-block:: bash
+
+    dbpath='/path/to/your/isso.db'
+    data=$(sqlite3 ${dbpath} -csv 'SELECT threads.uri, threads.title, comments.id, comments.mode, datetime(comments.created, "unixepoch", "localtime"), datetime(comments.modified, "unixepoch", "localtime"), comments.author, comments.email, comments.website, comments.remote_addr, comments.likes, comments.dislikes, comments.voters,comments.text FROM comments INNER JOIN threads ON comments.tid=threads.id')
+    header='"page: URI","page: title","ID","mode","created on","modified on","author: name","author: email","author: website","author: IP","likes","dislikes","voters","text"'
+    echo -e "${header}\n""${data}" > export.csv
+
+Use `isso-to-disqus.py <https://github.com/angristan/isso-to-disqus>`_ and see
+other options as discussed in `this issue`_.
+
+.. _Joshua Gleitze: https://github.com/posativ/isso/issues/186#issuecomment-223550325
+.. _this issue: https://github.com/posativ/isso/issues/186
 
 Pretty-print entire comments database
 -------------------------------------

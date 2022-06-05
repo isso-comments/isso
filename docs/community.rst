@@ -90,6 +90,7 @@ Isso-adjacent Projects
 * A `Pelican theme supporting isso comments <https://github.com/Lucas-C/pelican-mg>`_
 * A `Sphinx extension to integrate isso comments <https://github.com/sphinx-notes/isso>`_
 * `mihokookayami/isso Docker image <https://hub.docker.com/r/mihokookayami/isso>`_
+* `Migrating Isso comments to Disqus <https://github.com/angristan/isso-to-disqus>`_
 
 .. _Grav cms: https://en.wikipedia.org/wiki/Grav_(CMS)
 .. _grav-plugin-jscomments: https://github.com/Sommerregen/grav-plugin-jscomments>
