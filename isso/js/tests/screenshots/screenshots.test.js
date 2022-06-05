@@ -25,7 +25,7 @@ beforeEach(async () => {
     ISSO_ENDPOINT + '/demo',
     { waitUntil: 'load' }
   )
-  await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/index.html');
+  await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/');
 
   await page.waitForSelector('.isso-textarea');
   await page.setViewport({
