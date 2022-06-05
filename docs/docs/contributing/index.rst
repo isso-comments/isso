@@ -101,6 +101,8 @@ How to write good commit messages
 - Link to related issues or references
 - Ideally, how to verify that this commit does what it says
 
+The `commento docs`_ have a more extensive explanation of good commits.
+
 This is an example of a **good commit:**
 
 .. code-block::
@@ -129,6 +131,8 @@ This is an example of a **good commit:**
 
 It does not tell the reviewer which part is affected, why it is necessary or
 why this particular way of doing things was chosen.
+
+.. _commento docs: https://docs.commento.io/contributing/development-guidelines.html
 
 Considerations when submitting changes
 --------------------------------------

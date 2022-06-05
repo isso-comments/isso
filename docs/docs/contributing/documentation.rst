@@ -7,10 +7,11 @@ configure for several use cases, and invite people to improve the project by
 participating.
 
 .. note::
-   Please contribute to these docs! *Some* documentation is better than no
-   documentation. You may look at the ``docs/`` folder to see how existing
-   documentation is written or click the top right "Edit on GitHub" button to
-   directly edit a page.
+   You may look at the `docs/`_ folder to see how existing documentation is
+   written or click the top right **"Edit on GitHub"** button to directly edit
+   a page.
+
+.. _docs/: https://github.com/posativ/isso/tree/master/docs
 
 Sections covered in this document:
 
@@ -192,7 +193,8 @@ Inspiration
 The following documentation pages should serve as good examples. They are from
 related projects that also offer commenting functionality.
 
-- `Commento Documentation <https://docs.commento.io/>`_
+- `Commento Documentation <https://docs.commento.io/>`_, especially the
+  `contributing section <https://docs.commento.io/contributing/>`_.
 - `Remark42 Documentation <https://remark42.com/docs/getting-started/installation/>`_
 - `Schnack Documentation <https://schnack.cool/>`_
 
