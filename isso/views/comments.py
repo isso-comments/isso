@@ -109,8 +109,8 @@ class API(object):
         ('demo', ('GET', '/demo/')),
         ('preview', ('POST', '/preview')),
         ('config', ('GET', '/config')),
-        ('login', ('POST', '/login')),
-        ('admin', ('GET', '/admin'))
+        ('login', ('POST', '/login/')),
+        ('admin', ('GET', '/admin/'))
     ]
 
     def __init__(self, isso, hasher):
@@ -1311,13 +1311,13 @@ class API(object):
         return send_from_directory(os_path.dirname(index), 'index.html', env)
 
     """
-    @api {post} /login Log in
+    @api {post} /login/ Log in
     @apiGroup Admin
     @apiName login
     @apiVersion 0.12.6
     @apiPrivate
     @apiDescription
-         Log in to admin, will redirect to `/admin` on success. Must use form data, not `POST` JSON.
+         Log in to admin, will redirect to `/admin/` on success. Must use form data, not `POST` JSON.
 
     @apiBody {String} password
         The admin password as set in `[admin] password` in the server config.
@@ -1330,7 +1330,7 @@ class API(object):
         <html lang=en>
         <title>Redirecting...</title>
         <h1>Redirecting...</h1>
-        <p>You should be redirected automatically to the target URL: <a href="https://comments.example.com/admin">https://comments.example.com/admin</a>. If not, click the link.
+        <p>You should be redirected automatically to the target URL: <a href="https://comments.example.com/admin/">https://comments.example.com/admin/</a>. If not, click the link.
     """
     def login(self, env, req):
         if not self.isso.conf.getboolean("admin", "enabled"):
@@ -1340,8 +1340,8 @@ class API(object):
         password = self.isso.conf.get("admin", "password")
         if data['password'] and data['password'] == password:
             response = redirect(re.sub(
-                r'/login$',
-                '/admin',
+                r'/login/$',
+                '/admin/',
                 get_current_url(env, strip_querystring=True)
             ))
             cookie = self.create_cookie(value=self.isso.sign({"logged": True}),
@@ -1354,7 +1354,7 @@ class API(object):
             return render_template('login.html', isso_host_script=isso_host_script)
 
     """
-    @api {get} /admin Admin interface
+    @api {get} /admin/ Admin interface
     @apiGroup Admin
     @apiName admin
     @apiVersion 0.12.6
@@ -1378,7 +1378,7 @@ class API(object):
         Ascending
 
     @apiExample {curl} Listing of published comments:
-        curl 'https://comments.example.com/admin?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
+        curl 'https://comments.example.com/admin/?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
     """
     def admin(self, env, req):
         isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
