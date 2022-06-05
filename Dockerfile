@@ -86,7 +86,7 @@ CMD ["/isso/bin/gunicorn", "-b", "0.0.0.0:8080", "-w", "4", "--preload", "isso.r
 # $ docker build -t isso .
 #
 # Run:
-# $ mkdir config
-# $ cp contrib/isso-dev.conf config/isso.cfg
-# $ mkdir db/
-# $ docker run -d --rm --name isso -p 8080:8080 -v $PWD/config:/config -v $PWD/db:/db isso:latest
+# $ mkdir -p config/ db/
+# $ cp contrib/isso.sample.cfg config/isso.cfg
+# Set 'dbpath' to '/db/comments.db' and adjust 'host'
+# $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 -v $PWD/config:/config -v $PWD/db:/db isso:latest
