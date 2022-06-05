@@ -75,29 +75,67 @@ person, you can make the lives of the maintainers a lot easier.
 These guidelines are here to help your thought process and hopefully make you
 aware of a few aspects you might not have thought about yet.
 
-.. The project author @posativ has stipulated these basic two tenets:
-.. *  no hard-wired external services (e.g. Gravatar, Akismet)
-.. *  no support for ancient browsers (e.g. IE6-9)
+.. _contribute-checklist:
 
-Submitting a change
-^^^^^^^^^^^^^^^^^^^
+.. note:: **Submitting a change**
 
-- Please, if possible, run all test suites (see
-  :doc:`/docs/technical-docs/testing`) and make sure they pass
-- If it's a user-facing feature or an important bugfix, add ``CHANGES.rst``
-  entry
-- Add yourself to ``CONTRIBUTORS.txt``, if you like
+    1. Write **proper commit messages** (see next paragraph)
+    2. If adding features: **Add or amend tests** to cover the changes
+    3. Run all **test suites** (see :doc:`/docs/technical-docs/testing`) and make
+       sure they pass
+    4. If docs changes needed: Update the :doc:`documentation <documentation>`
+       accordingly.
+    5. If it's a user-facing feature or an important bugfix, add ``CHANGES.rst``
+       entry
+    6. Add yourself to ``CONTRIBUTORS.txt``, if you like
 
 .. _contribute-commitmsg:
 
 How to write good commit messages
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Mention the affected part in the title
+- Mention the affected part in the title (e.g. ``setup.py``)
 - Keep title under 50 characters if possible, at most 72
 - Keep body under 80 characters of width
 - Explain what the change does
 - Link to related issues or references
+- Ideally, how to verify that this commit does what it says
+
+This is an example of a **good commit:**
+
+.. code-block::
+
+    js: Postbox: Use labels rather than placeholders
+
+    Placeholders are is meant to be a hint (an example input)
+    for the user about what to enter into the field, but
+    shouldn't be used in lieu of a <label>.
+
+    See following links for further justification:
+    - https://www.tpgi.com/html5-accessibility-chops-the-placeholder-attribute/
+    - https://www.nngroup.com/articles/form-design-placeholders/
+    - https://www.maxability.co.in/2016/01/03/placeholder-attribute-and-why-it-is-not-accessible/
+
+    This commit is a reland of
+    https://github.com/posativ/isso/pull/356 with a fix for the
+    placeholder-replacement code in `isso.js` as reported in
+    https://github.com/posativ/isso/issues/524
+
+...while this is a **bad commit:**
+
+.. code-block::
+
+    Fix classes
+
+It does not tell the reviewer which part is affected, why it is necessary or
+why this particular way of doing things was chosen.
+
+Considerations when submitting changes
+--------------------------------------
+
+The following sections will help you decide how to tackle larger architectural
+issues and help avoid wasted efforts for changes that are unlikely to be
+accepted.
 
 Design philosophy / Zen of Isso
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
