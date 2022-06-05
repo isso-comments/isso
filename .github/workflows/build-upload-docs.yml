@@ -11,17 +11,20 @@ on:
       - "docs/**"
       - "apidoc/**"
       - "isso/views/comments.py"
-      - ".github/workflows/upload-docs.yml"
+      - ".github/workflows/build-upload-docs.yml"
   pull_request:
     paths:
       - "docs/**"
       - "apidoc/**"
       - "isso/views/comments.py"
-      - ".github/workflows/upload-docs.yml"
+      - ".github/workflows/build-upload-docs.yml"
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
     steps:
       - uses: actions/checkout@v2
 
