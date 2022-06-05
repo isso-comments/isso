@@ -31,7 +31,7 @@ example:
 
     One asterisk: *text* for emphasis (italics),
     Two asterisks: **text** for strong emphasis (boldface), and
-    Double backquotes: ``text`` for code samples.
+    Double backticks: ``text`` for code samples.
 
 .. __: https://www.sphinx-doc.org/en/master/
 
@@ -84,6 +84,7 @@ How to write reST
 -----------------
 First and foremost, see the
 `reStructuredText Primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_.
+You can play with a live rST editor at `snippets.documatt.com <https://snippets.documatt.com/>`_.
 
 **Links:**
 
