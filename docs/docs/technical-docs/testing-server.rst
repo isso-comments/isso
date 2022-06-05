@@ -13,7 +13,7 @@ Run Isso's standard server **test suite**:
 
 .. code-block:: console
 
-    (.venv) make tests
+    (.venv) make test
 
 You can also run tests independently via ``pytest [options] isso/tests/``.
 

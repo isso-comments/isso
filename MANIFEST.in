@@ -1,7 +1,9 @@
 include isso/js/embed.min.js
 include isso/js/embed.dev.js
+include isso/js/embed.dev.js.map
 include isso/js/count.min.js
 include isso/js/count.dev.js
+include isso/js/count.dev.js.map
 include isso/js/admin.js
 
 include isso/isso.cfg
@@ -9,6 +11,8 @@ include isso/isso.cfg
 include isso/templates/admin.html
 include isso/templates/disabled.html
 include isso/templates/login.html
+
 include isso/css/admin.css
 include isso/css/isso.css
+
 include isso/img/isso.svg

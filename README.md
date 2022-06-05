@@ -42,6 +42,12 @@ If you're stuck, follow the [Install guide](https://isso-comments.de/docs/refere
 see [Troubleshooting](https://isso-comments.de/docs/guides/troubleshooting/) and browse
 the [the full documentation](https://isso-comments.de/docs/).
 
+## Docker
+
+A Docker image with the latest stable release is provided at
+`ghcr.io/isso-comments/isso:latest`. See
+[Using Docker](https://isso-comments.de/docs/reference/installation/#using-docker).
+
 ## Contributing
 - Pull requests are very much welcome! These might be
   [good first issues](https://github.com/posativ/isso/labels/good-first-issue)

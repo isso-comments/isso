@@ -142,12 +142,11 @@ body {
       }
     }
 
-    ul {
+    ul, ol {
       @include span-columns(3 of 5);
       margin-top: 1em;
 
       li {
-        list-style-type: none;
         margin-bottom: 2em;
 
         strong {
@@ -164,6 +163,11 @@ body {
           margin-top: 0.5em;
         }
       }
+    }
+    ul {
+        li {
+          list-style-type: none;
+        }
     }
   }
 }
@@ -258,7 +262,7 @@ main {
       letter-spacing: 0.5px;
     }
 
-    ul {
+    ul, ol {
       margin-top: 0.5em;
       margin-bottom: 1em;
 
@@ -413,20 +417,30 @@ main {
       padding: 0 1em;
     }
 
-    ul {
+    ul, ol {
       margin: 1em 0;
 
       li {
-        list-style-type: square;
         margin-left: 2em;
         margin-right: 2em;
 
         > {
           // Nested lists shouldn't have margins
-          ul {
+          ul, ol {
               margin: 0;
           }
         }
+      }
+    }
+    ul {
+      li {
+        list-style-type: square;
+      }
+    }
+    ol.simple {
+      li {
+        padding-left: 0.2em;
+        margin-left: 1.8em;
       }
     }
 

@@ -137,16 +137,39 @@ Prebuilt Packages
 
 * Arch Linux: https://aur.archlinux.org/packages/isso/
 
-Build a Docker image
---------------------
+.. _using-docker:
 
-You can get a Docker image by running ``docker build . -t isso``.
-Assuming you have your configuration in ``/opt/isso``, you can use the
-following command to spawn the Docker container:
+Using Docker
+------------
+
+Assuming you have your configuration in ``/opt/isso``, with
+``dbpath=/db/comments.db`` and ``host`` set properly in ``isso.cfg``, you have
+two options for running a Docker container:
+
+a) Official Docker image
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
-    $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 -v /opt/isso:/config -v /opt/isso:/db isso
+    $ docker pull ghcr.io/isso-comments/isso:latest
+    $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 \
+        -v /opt/isso:/config -v /opt/isso:/db \
+        ghcr.io/isso-comments/isso:latest
+
+b) Build a Docker image yourself
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can build a Docker image by running ``make docker``, which will be tagged
+as ``isso:latest``.
+
+.. code-block:: console
+
+    $ mkdir -p config/ db/
+    $ cp contrib/isso.sample.cfg config/isso.cfg
+    # Set 'dbpath' to '/db/comments.db' and adjust 'host'
+    $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 \
+        -v $PWD/config:/config -v $PWD/db:/db \
+        isso:latest
 
 Then, you can use a reverse proxy to expose port 8080.
 

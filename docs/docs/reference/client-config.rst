@@ -64,7 +64,7 @@ data-isso-css-url
 
         <script src="..." data-isso-css-url="/path/to/isso.css"></script>
 
-    Default: ``{api-endpoint}/css/isso.css``
+    Default: ``"{api-endpoint}/css/isso.css"``
 
 data-isso-css
     Set to ``false`` prevents Isso from automatically appending the stylesheet.
@@ -103,7 +103,7 @@ data-isso-default-lang
     If you specify both ``data-isso-default-lang`` and ``data-isso-lang``,
     ``data-isso-lang`` takes precedence.
 
-    Default: ``en``
+    Default: ``"en"``
 
     .. versionadded:: 0.12.6
 
@@ -113,7 +113,7 @@ data-isso-max-comments-top
 
     Set to ``"inf"`` to show all, or ``"0"`` to hide all.
 
-    Default: ``inf``
+    Default: ``"inf"``
 
 data-isso-max-comments-nested
     Number of nested comments to show by default. If some comments are not
@@ -138,7 +138,7 @@ data-isso-avatar
 data-isso-avatar-bg
     Set avatar background color. Any valid CSS color will do.
 
-    Default: ``#f0f0f0``
+    Default: ``"#f0f0f0"``
 
 data-isso-avatar-fg
     Set avatar foreground color. Up to 8 colors are possible. The default color
@@ -146,7 +146,7 @@ data-isso-avatar-fg
     Multiple colors must be separated by space. If you use less than eight colors
     and not a multiple of 2, the color distribution is not even.
 
-    Default: ``"#9abf88 #5698c4 #e279a3 #9163b6 #be5168 #f19670 #e4bf80 #447c69"```
+    Default: ``"#9abf88 #5698c4 #e279a3 #9163b6 #be5168 #f19670 #e4bf80 #447c69"``
 
 data-isso-vote
     Enable or disable voting feature on the client side.
