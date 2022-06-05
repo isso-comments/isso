@@ -18,7 +18,7 @@ long_description = re_sub(r"\n## License\n.*LICENSE.*\n", "", long_description)
 
 setup(
     name='isso',
-    version='0.13.0-dev',
+    version='0.13.0.beta0',
     author='Martin Zimmermann',
     author_email='info@posativ.org',
     packages=find_packages(),
