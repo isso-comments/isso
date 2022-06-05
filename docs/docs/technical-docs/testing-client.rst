@@ -176,7 +176,7 @@ To generate updated screenshots, you must run the following commands.
 
 .. code-block:: console
 
-   $ make docker-js-integration
+   $ make docker-generate-screenshots
 
 This will run the test ``isso/js/tests/screenshots/screenshots.test.js`` and output
 ``.png`` files. Now compare those screenshots against the known-to-be-good
@@ -192,7 +192,7 @@ new hashes:
 
 .. code-block:: console
 
-   $ make docker-compare-screenshots -u
+   $ make docker-update-screenshots
 
 Then commit those generated ``.hash`` files in
 ``isso/js/tests/screenshots/reference/*.png.hash`` to git.
