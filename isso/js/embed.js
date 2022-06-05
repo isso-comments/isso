@@ -32,6 +32,25 @@ var config_fetched = utils.wait_for();
 function init() {
     config_fetched.reset()
 
+    // Decorate all <a> links that point to an #isso-thread with comment counts
+    // Relies on i18n.pluralize, but doesn't need to wait for server config
+    count();
+
+    isso_thread = $('#isso-thread');
+    heading = $.new('h4.isso-thread-heading');
+    if (isso_thread === null) {
+        return console.log("abort, #isso-thread is missing");
+    }
+
+    if (config["css"] && $("style#isso-style") === null) {
+        var style = $.new("link");
+        style.id = "isso-style";
+        style.rel ="stylesheet";
+        style.type = "text/css";
+        style.href = config["css-url"] ? config["css-url"] : api.endpoint + "/css/isso.css";
+        $("head").append(style);
+    }
+
     // Fetch config from server, will override any local data-isso-* attributes
     api.config().then(
         function (rv) {
@@ -47,26 +66,6 @@ function init() {
                 config[setting] = rv.config[setting]
             }
 
-            if (config["css"] && $("style#isso-style") === null) {
-                var style = $.new("link");
-                style.id = "isso-style";
-                style.rel ="stylesheet";
-                style.type = "text/css";
-                style.href = config["css-url"] ? config["css-url"] : api.endpoint + "/css/isso.css";
-                $("head").append(style);
-            }
-
-            isso_thread = $('#isso-thread');
-            heading = $.new('h4.isso-thread-heading');
-            postbox = new isso.Postbox(null);
-
-            // Relies on i18n.pluralize, but doesn't need to wait for server config
-            count();
-
-            if (isso_thread === null) {
-                return console.log("abort, #isso-thread is missing");
-            }
-
             // Depends on whether feed is enabled on server
             if (config["feed"]) {
                 var feedLink = $.new('a', i18n.translate('atom-feed'));
@@ -79,6 +78,7 @@ function init() {
             if (!$('h4.isso-thread-heading')) {
                 isso_thread.append(heading);
             }
+            postbox = new isso.Postbox(null);
             if (!$('.isso-postbox')) {
                 isso_thread.append(postbox);
             } else {
