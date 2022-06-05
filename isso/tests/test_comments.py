@@ -111,6 +111,34 @@ class TestComments(unittest.TestCase):
 
         self.assertEqual(loads(invalid.data)["parent"], 1)
 
+    def testCreateInvalidThreadForParent(self):
+
+        self.post('/new?uri=one', data=json.dumps({'text': '...'}))
+        # Parent which is not in same thread should be rejected, set to None
+        invalid = self.post(
+            '/new?uri=two', data=json.dumps({'text': '...', 'parent': 1}))
+        # Replies to commments in thread "two" are valid
+        valid = self.post(
+            '/new?uri=two', data=json.dumps({'text': '...', 'parent': 2}))
+
+        self.assertEqual(loads(invalid.data)["parent"], None)
+        self.assertEqual(loads(valid.data)["parent"], 2)
+
+        # Insert (invalid) comment into thread "two" with parent from thread 1
+        self.app.db.execute([
+            'INSERT INTO COMMENTS (tid, parent, created, modified, mode,'
+            '   remote_addr, text, author, email, website, voters, notification)',
+            'SELECT threads.id, ?, ?, ?, ?, ?,     ?, ?, ?, ?, ?, ?',
+            'FROM threads where threads.uri = ?;'],
+            (None, 0.0, 0.0, 1, None, 'Text', None, None, None, bytes(1), None, 'two')
+        )
+        # For id=4, the parent has id=1, but is from thread "one". Because id=1
+        # does not belong to the current thread "two", it is rejected and id=4
+        # chosen instead.
+        impossible = self.post(
+            '/new?uri=two', data=json.dumps({'text': '...', 'parent': 4}))
+        self.assertEqual(loads(impossible.data)["parent"], 4)
+
     def testVerifyFields(self):
 
         def verify(comment):

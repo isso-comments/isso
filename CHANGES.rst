@@ -22,6 +22,7 @@ Changelog for Isso
 - Drop ``Flask-Caching`` dependency and use drop-in solution instead
 - Run automated screenshot comparisons for testing (`#889`_)
 - wsgi: Return HTTP errors as JSON if client prefers it (`#488`_, sundbry)
+- Verify that parent of new comment is in same thread (`#885`_)
 - Add ``data-isso-page-author-hashes`` option to client which makes it possible
   to style comments and replies made by the page's author(s).
 - Add Ukrainian localisation (`#878`_, okawo80085)
@@ -42,6 +43,7 @@ Changelog for Isso
 .. _879: https://github.com/posativ/isso/pull/879
 .. _488: https://github.com/posativ/isso/pull/488
 .. _#889: https://github.com/posativ/isso/pull/889
+.. _#885: https://github.com/posativ/isso/pull/885
 
 0.12.6 (2022-03-06)
 -------------------

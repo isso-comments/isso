@@ -52,10 +52,27 @@ class Comments:
         database values.
         """
 
+        # Comment parent must be valid and be of same thread
+        # If parent itself has a valid parent, use that
+        def _find(uri, parent):
+            if parent in ["0", 0, None]:
+                return None
+            obj = self.get(parent)
+            if obj is None:  # parent does not exist
+                return None
+            rv = self.db.execute([
+                'SELECT CASE WHEN EXISTS(',
+                '   SELECT comments.id FROM comments INNER JOIN threads',
+                '       ON comments.tid=threads.id WHERE threads.uri=?',
+                '       AND comments.id=?)',
+                '   THEN 1 ELSE 0 END;'],
+                (uri, parent)).fetchone()
+            if rv[0] == 0:  # parent is not in current thread
+                return None
+            return _find(uri, obj.get("parent")) or parent
+
         if c.get("parent") is not None:
-            ref = self.get(c["parent"])
-            if ref.get("parent") is not None:
-                c["parent"] = ref["parent"]
+            c["parent"] = _find(uri, c["parent"])
 
         self.db.execute([
             'INSERT INTO comments (',
@@ -339,7 +356,7 @@ class Comments:
 
     def purge(self, delta):
         """
-        Remove comments older than :param:`delta`.
+        Remove stale pending comments older than :param:`delta`.
         """
         self.db.execute([
             'DELETE FROM comments WHERE mode = 2 AND ? - created > ?;'
