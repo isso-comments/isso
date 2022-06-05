@@ -30,7 +30,7 @@ beforeEach(async () => {
     ISSO_ENDPOINT + '/demo',
     { waitUntil: 'load' }
   )
-  await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/index.html');
+  await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/');
 
   // See also other waitForX options:
   // https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagewaitforselectorselector-options
@@ -196,7 +196,7 @@ test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
     page.off('request', createHandler);
   };
   await page.on('request', createHandler);
-  await page.goto(ISSO_ENDPOINT + '/new?uri=%2Fdemo%2Findex.html');
+  await page.goto(ISSO_ENDPOINT + '/new?uri=%2Fdemo%2F');
 
   // Reload page to inspect new/changed/deleted comments
   await page.goto(

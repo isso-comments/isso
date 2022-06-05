@@ -5,11 +5,13 @@ import re
 import time
 import functools
 import json  # json.dumps to put URL in <script>
+import pkg_resources
 
 from configparser import NoOptionError
 from datetime import datetime, timedelta
 from html import escape
 from io import BytesIO as StringIO
+from os import path as os_path
 from urllib.parse import unquote, urlparse
 from xml.etree import ElementTree as ET
 
@@ -17,7 +19,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.http import dump_cookie
 from werkzeug.routing import Rule
-from werkzeug.utils import redirect
+from werkzeug.utils import redirect, send_from_directory
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import get_current_url
 
@@ -104,11 +106,11 @@ class API(object):
         ('moderate', ('POST', '/id/<int:id>/<any(edit,activate,delete):action>/<string:key>')),
         ('like', ('POST', '/id/<int:id>/like')),
         ('dislike', ('POST', '/id/<int:id>/dislike')),
-        ('demo', ('GET', '/demo')),
+        ('demo', ('GET', '/demo/')),
         ('preview', ('POST', '/preview')),
         ('config', ('GET', '/config')),
-        ('login', ('POST', '/login')),
-        ('admin', ('GET', '/admin'))
+        ('login', ('POST', '/login/')),
+        ('admin', ('GET', '/admin/'))
     ]
 
     def __init__(self, isso, hasher):
@@ -1271,16 +1273,16 @@ class API(object):
         return JSON(rv, 200)
 
     """
-    @api {get} /demo Isso demo page
+    @api {get} /demo/ Isso demo page
     @apiGroup Demo
     @apiName demo
-    @apiVersion 0.12.6
+    @apiVersion 0.13.0
     @apiPrivate
     @apiDescription
          Displays a demonstration of Isso with a thread counter and comment widget.
 
     @apiExample {curl} Get demo page
-        curl 'https://comments.example.com/demo/index.html'
+        curl 'https://comments.example.com/demo/'
 
     @apiSuccessExample {html} Demo page:
         <!DOCTYPE html>
@@ -1296,7 +1298,7 @@ class API(object):
            <script src="../js/embed.dev.js" data-isso="../" ></script>
            <section>
              <p>This is a link to a thead, which will display a comment counter:
-             <a href="/demo/index.html#isso-thread">How many Comments?</a></p>
+             <a href="/demo/#isso-thread">How many Comments?</a></p>
              <p>Below is the actual comment field.</p>
            </section>
            <section id="isso-thread" data-title="Isso Test"><noscript>Javascript needs to be activated to view comments.</noscript></section>
@@ -1305,18 +1307,17 @@ class API(object):
         </body>
     """
     def demo(self, env, req):
-        return redirect(
-            get_current_url(env, strip_querystring=True) + '/index.html'
-        )
+        index = pkg_resources.resource_filename('isso', 'demo/index.html')
+        return send_from_directory(os_path.dirname(index), 'index.html', env)
 
     """
-    @api {post} /login Log in
+    @api {post} /login/ Log in
     @apiGroup Admin
     @apiName login
     @apiVersion 0.12.6
     @apiPrivate
     @apiDescription
-         Log in to admin, will redirect to `/admin` on success. Must use form data, not `POST` JSON.
+         Log in to admin, will redirect to `/admin/` on success. Must use form data, not `POST` JSON.
 
     @apiBody {String} password
         The admin password as set in `[admin] password` in the server config.
@@ -1329,7 +1330,7 @@ class API(object):
         <html lang=en>
         <title>Redirecting...</title>
         <h1>Redirecting...</h1>
-        <p>You should be redirected automatically to the target URL: <a href="https://comments.example.com/admin">https://comments.example.com/admin</a>. If not, click the link.
+        <p>You should be redirected automatically to the target URL: <a href="https://comments.example.com/admin/">https://comments.example.com/admin/</a>. If not, click the link.
     """
     def login(self, env, req):
         if not self.isso.conf.getboolean("admin", "enabled"):
@@ -1339,8 +1340,8 @@ class API(object):
         password = self.isso.conf.get("admin", "password")
         if data['password'] and data['password'] == password:
             response = redirect(re.sub(
-                r'/login$',
-                '/admin',
+                r'/login/$',
+                '/admin/',
                 get_current_url(env, strip_querystring=True)
             ))
             cookie = self.create_cookie(value=self.isso.sign({"logged": True}),
@@ -1353,7 +1354,7 @@ class API(object):
             return render_template('login.html', isso_host_script=isso_host_script)
 
     """
-    @api {get} /admin Admin interface
+    @api {get} /admin/ Admin interface
     @apiGroup Admin
     @apiName admin
     @apiVersion 0.12.6
@@ -1377,7 +1378,7 @@ class API(object):
         Ascending
 
     @apiExample {curl} Listing of published comments:
-        curl 'https://comments.example.com/admin?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
+        curl 'https://comments.example.com/admin/?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
     """
     def admin(self, env, req):
         isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
