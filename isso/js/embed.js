@@ -13,6 +13,7 @@ var count = require("app/count");
 var $ = require("app/dom");
 var svg = require("app/svg");
 var template = require("app/template");
+var utils = require("app/utils");
 
 "use strict";
 
@@ -25,7 +26,12 @@ var isso_thread;
 var heading;
 var postbox;
 
+// Track whether config has been fetched from server
+var config_fetched = utils.wait_for();
+
 function init() {
+    config_fetched.reset()
+
     // Fetch config from server, will override any local data-isso-* attributes
     api.config().then(
         function (rv) {
@@ -40,51 +46,54 @@ function init() {
                 }
                 config[setting] = rv.config[setting]
             }
+
+            if (config["css"] && $("style#isso-style") === null) {
+                var style = $.new("link");
+                style.id = "isso-style";
+                style.rel ="stylesheet";
+                style.type = "text/css";
+                style.href = config["css-url"] ? config["css-url"] : api.endpoint + "/css/isso.css";
+                $("head").append(style);
+            }
+
+            isso_thread = $('#isso-thread');
+            heading = $.new('h4.isso-thread-heading');
+            postbox = new isso.Postbox(null);
+
+            // Relies on i18n.pluralize, but doesn't need to wait for server config
+            count();
+
+            if (isso_thread === null) {
+                return console.log("abort, #isso-thread is missing");
+            }
+
+            // Depends on whether feed is enabled on server
+            if (config["feed"]) {
+                var feedLink = $.new('a', i18n.translate('atom-feed'));
+                var feedLinkWrapper = $.new('span.isso-feedlink');
+                feedLink.href = api.feed(isso_thread.getAttribute("data-isso-id"));
+                feedLinkWrapper.appendChild(feedLink);
+                isso_thread.append(feedLinkWrapper);
+            }
+            // Only insert elements if not already present, respecting Single-Page-Apps
+            if (!$('h4.isso-thread-heading')) {
+                isso_thread.append(heading);
+            }
+            if (!$('.isso-postbox')) {
+                isso_thread.append(postbox);
+            } else {
+                $('.isso-postbox').value = postbox;
+            }
+            if (!$('#isso-root')) {
+                isso_thread.append('<div id="isso-root"></div>');
+            }
+
+            config_fetched.on_ready();
         },
         function(err) {
             console.log(err);
         }
     );
-
-    if (config["css"] && $("style#isso-style") === null) {
-        var style = $.new("link");
-        style.id = "isso-style";
-        style.rel ="stylesheet";
-        style.type = "text/css";
-        style.href = config["css-url"] ? config["css-url"] : api.endpoint + "/css/isso.css";
-        $("head").append(style);
-    }
-
-    isso_thread = $('#isso-thread');
-    heading = $.new('h4.isso-thread-heading');
-    postbox = new isso.Postbox(null);
-
-    count();
-
-    if (isso_thread === null) {
-        return console.log("abort, #isso-thread is missing");
-    }
-
-    if (config["feed"]) {
-        var feedLink = $.new('a', i18n.translate('atom-feed'));
-        var feedLinkWrapper = $.new('span.isso-feedlink');
-        feedLink.href = api.feed(isso_thread.getAttribute("data-isso-id"));
-        feedLinkWrapper.appendChild(feedLink);
-        isso_thread.append(feedLinkWrapper);
-    }
-
-    // Only insert elements if not already present, respecting Single-Page-Apps
-    if (!$('h4.isso-thread-heading')) {
-        isso_thread.append(heading);
-    }
-    if (!$('.isso-postbox')) {
-        isso_thread.append(postbox);
-    } else {
-        $('.isso-postbox').value = postbox;
-    }
-    if (!$('#isso-root')) {
-        isso_thread.append('<div id="isso-root"></div>');
-    }
 
     window.addEventListener('hashchange', function() {
         if (!window.location.hash.match("^#isso-[0-9]+$")) {
@@ -107,7 +116,8 @@ function init() {
 function fetchComments() {
 
     var isso_root = $('#isso-root');
-    if (!isso_root) {
+    if (!isso_root || !config_fetched.is_ready()) {
+        config_fetched.register(fetchComments);
         return;
     }
     isso_root.textContent = '';
