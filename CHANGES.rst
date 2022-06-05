@@ -3,6 +3,9 @@ Changelog for Isso
 
 %(version)s (%(date)s)
 
+0.13.0.beta0 (2022-06-05)
+-------------------------
+
 - **BREAKING:** css, js: Prefix all classes with ``isso-`` (#816, ix5)
   Now Isso's CSS is "namespaced" in order not to conflict with other classes on
   the page.
