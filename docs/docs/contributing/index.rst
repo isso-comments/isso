@@ -1,13 +1,15 @@
 Contribute
 ==========
 
-Sections covered in this document:
+.. list-table:: **I am looking to...**
 
-.. contents::
-    :local:
+    * - ... :ref:`report an issue <contribute-report-issues>`
+      - ... :ref:`translate Isso into my language <contribute-translations>`
+      - ... :ref:`improve the documentation <contribute-docs>`
+      - ... :ref:`contribute code <contribute-code>`
 
-.. note:: In short: We welcome your changes. We don't bite and are happy for
-   anyone who donates their time and effort to the project.
+*The Isso community welcomes your changes. We don't bite and are happy for
+anyone who donates their time and effort to the project.*
 
 .. _contribute-report-issues:
 
@@ -52,12 +54,16 @@ for pluralforms_ in the templating engine.
 .. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/
 .. _pluralforms: http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms
 
+.. _contribute-docs:
+
 Documentation
 -------------
 
 Documentation improvements are sorely needed. Anything that makes the
 experience for a newcomer more pleasant is always welcome.
 Please see the :doc:`documentation` page for more details.
+
+.. _contribute-code:
 
 Code contributions
 ------------------
@@ -82,8 +88,10 @@ Submitting a change
   entry
 - Add yourself to ``CONTRIBUTORS.txt``, if you like
 
-How to write commit messages
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _contribute-commitmsg:
+
+How to write good commit messages
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Mention the affected part in the title
 - Keep title under 50 characters if possible, at most 72
