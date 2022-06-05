@@ -129,25 +129,26 @@ body {
       .outer .index figure img {
         max-width: 100%;
         max-height: 100%; }
-    .outer .index ul {
+    .outer .index ul, .outer .index ol {
       display: block;
       float: left;
       margin-right: 5.8515051827%;
       width: 57.6593979269%;
       margin-top: 1em; }
-      .outer .index ul:last-child {
+      .outer .index ul:last-child, .outer .index ol:last-child {
         margin-right: 0; }
-      .outer .index ul li {
-        list-style-type: none;
+      .outer .index ul li, .outer .index ol li {
         margin-bottom: 2em; }
-        .outer .index ul li strong {
+        .outer .index ul li strong, .outer .index ol li strong {
           font-weight: normal;
           font-size: 18px;
           color: black; }
-        .outer .index ul li p {
+        .outer .index ul li p, .outer .index ol li p {
           color: #2f2f2f; }
-        .outer .index ul li p + p {
+        .outer .index ul li p + p, .outer .index ol li p + p {
           margin-top: 0.5em; }
+    .outer .index ul li {
+      list-style-type: none; }
 
 .footer {
   text-align: right;
@@ -229,10 +230,10 @@ main {
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.5px; }
-    main .sidebar ul {
+    main .sidebar ul, main .sidebar ol {
       margin-top: 0.5em;
       margin-bottom: 1em; }
-      main .sidebar ul:last-child {
+      main .sidebar ul:last-child, main .sidebar ol:last-child {
         margin-bottom: 0; }
     main .sidebar li {
       border-left: solid 2px #d3d3d3;
@@ -332,14 +333,18 @@ main {
       margin: 1em 0;
       border-left: 5px solid #eee;
       padding: 0 1em; }
-    main .docs ul {
+    main .docs ul, main .docs ol {
       margin: 1em 0; }
-      main .docs ul li {
-        list-style-type: square;
+      main .docs ul li, main .docs ol li {
         margin-left: 2em;
         margin-right: 2em; }
-        main .docs ul li > ul {
+        main .docs ul li > ul, main .docs ul li > ol, main .docs ol li > ul, main .docs ol li > ol {
           margin: 0; }
+    main .docs ul li {
+      list-style-type: square; }
+    main .docs ol.simple li {
+      padding-left: 0.2em;
+      margin-left: 1.8em; }
     main .docs table.hlist * {
       vertical-align: top; }
     main .docs table.docutils {
