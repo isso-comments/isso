@@ -4,7 +4,6 @@ import json
 import tempfile
 import unittest
 
-from werkzeug import __version__
 from werkzeug.test import Client
 from werkzeug.wrappers import Response
 
@@ -13,12 +12,6 @@ from isso.utils import http
 
 from fixtures import curl, FakeIP
 http.curl = curl
-
-if __version__.startswith("0.8"):
-    class Response(Response):
-
-        def get_data(self, as_text=False):
-            return self.data.decode("utf-8")
 
 
 class TestGuard(unittest.TestCase):

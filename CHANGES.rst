@@ -31,6 +31,9 @@ Changelog for Isso
   - Add ``/config`` endpoint for fetching server configuration options that
     affect the client
   - Remove ``/count`` GET endpoint (use POST instead)
+- Strip trailing slash from public-endpoint, allow trailing slashes for routes.
+  A trailing slash in ``[server] public-endpoint`` is now discouraged and
+  throws a warning (#876, ix5)
 
 - Replace ``contenteditable`` ``div`` with ``textarea`` to fix issues when
   editing messages that contain indented code

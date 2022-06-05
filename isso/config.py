@@ -114,6 +114,9 @@ class IssoParser(ConfigParser):
             if item:
                 yield item
 
+    def set(self, section, key, value):
+        super(IssoParser, self).set(section, key, value)
+
     def section(self, section):
         return Section(self, section)
 
@@ -170,5 +173,16 @@ def load(default, user=None):
     if not parseaddr(fromaddr)[0]:
         parser.set("smtp", "from",
                    formataddr(("Ich schrei sonst!", fromaddr)))
+
+    # Warn on trailing slash which can result in malformed double-slashed URLs
+    if parser.get("server", "public-endpoint").endswith("/"):
+        public_endpoint = parser.get("server", "public-endpoint")
+        logger.warn("In your config file, '[server] public-endpoint' has a slash at the end, "
+                    "please remove it: '%s' -> '%s'",
+                    public_endpoint, public_endpoint.rstrip("/"))
+        # XXX Actually fail here in a future version
+        logger.warn("A future version of Isso might quit with an error if 'public-endpoint' is set incorrectly")
+        # Remove trailing slash
+        parser.set("server", "public-endpoint", public_endpoint.rstrip("/"))
 
     return parser
