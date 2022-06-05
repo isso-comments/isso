@@ -62,9 +62,40 @@ try {
     })({});
 }
 
+// Check if something is ready, and if not, register self as listener to be
+// triggered once it is ready
+var wait_for = function() {
+    var listeners = [];
+    var is_ready = false;
+    return {
+        is_ready: function(){return is_ready},
+        register: function(listener) {
+            // Ignore duplicate listeners
+            if (listeners.indexOf(listener) < 0) {
+                listeners.push(listener);
+            };
+        },
+        reset: function() { is_ready = false },
+        on_ready: function() {
+            is_ready = true;
+            for (var listener in listeners) {
+                // Ignore dead listeners
+                if (!listeners[listener]) {
+                    continue;
+                }
+                // Run listener
+                listeners[listener]();
+            }
+            // Clear listeners
+            listeners = [];
+        },
+    };
+};
+
 module.exports = {
     cookie: cookie,
     localStorageImpl: localStorageImpl,
     normalize_bcp47: normalize_bcp47,
     pad: pad,
+    wait_for: wait_for,
 };

@@ -164,6 +164,18 @@ var fetch = function(tid, limit, nested_limit, parent, lastcreated) {
     return deferred.promise;
 };
 
+var config = function() {
+    var deferred = Q.defer();
+    curl("GET", endpoint + "/config", null, function(rv) {
+        if (rv.status === 200) {
+            deferred.resolve(JSON.parse(rv.body));
+        } else {
+            deferred.reject(rv.body);
+        }
+    });
+    return deferred.promise;
+};
+
 var count = function(urls) {
     var deferred = Q.defer();
     curl("POST", endpoint + "/count", JSON.stringify(urls), function(rv) {
@@ -221,4 +233,5 @@ module.exports = {
     dislike: dislike,
     feed: feed,
     preview: preview,
+    config: config,
 };
