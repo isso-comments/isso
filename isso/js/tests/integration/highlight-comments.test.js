@@ -6,7 +6,7 @@ beforeEach(async () => {
     ISSO_ENDPOINT + '/demo#isso-1',
     { waitUntil: 'load' }
   )
-  await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/index.html#isso-1');
+  await expect(page.url()).toBe(ISSO_ENDPOINT + '/demo/#isso-1');
 })
 
 test('Linked should be highlighted', async () => {
