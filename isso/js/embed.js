@@ -42,7 +42,7 @@ function init() {
         return console.log("abort, #isso-thread is missing");
     }
 
-    if (config["css"] && $("style#isso-style") === null) {
+    if (config["css"] && $("#isso-style") === null) {
         var style = $.new("link");
         style.id = "isso-style";
         style.rel ="stylesheet";
@@ -67,7 +67,7 @@ function init() {
             }
 
             // Depends on whether feed is enabled on server
-            if (config["feed"]) {
+            if (config["feed"] && $(".isso-feedlink") === null) {
                 var feedLink = $.new('a', i18n.translate('atom-feed'));
                 var feedLinkWrapper = $.new('span.isso-feedlink');
                 feedLink.href = api.feed(isso_thread.getAttribute("data-isso-id"));
