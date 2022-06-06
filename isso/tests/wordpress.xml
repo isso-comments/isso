@@ -101,13 +101,29 @@
             </wp:comment>
             <wp:comment>
                 <wp:comment_id>10</wp:comment_id>
+                <wp:comment_author><![CDATA[Multiline Author]]></wp:comment_author>
+                <wp:comment_author_email>multiline@example.org
+                </wp:comment_author_email>
+                <wp:comment_author_url></wp:comment_author_url>
+                <wp:comment_author_IP>::ffff:86.52.1.0</wp:comment_author_IP>
+                <wp:comment_date>2022-06-06 12:13:14</wp:comment_date>
+                <wp:comment_date_gmt>2022-06-06 02:13:14</wp:comment_date_gmt>
+                <wp:comment_content><![CDATA[When you have a comment with multiple lines:
+WordPress exports it like this.]]></wp:comment_content>
+                <wp:comment_approved>1</wp:comment_approved>
+                <wp:comment_type></wp:comment_type>
+                <wp:comment_parent>0</wp:comment_parent>
+                <wp:comment_user_id>1</wp:comment_user_id>
+            </wp:comment>
+            <wp:comment>
+                <wp:comment_id>11</wp:comment_id>
                 <wp:comment_author><![CDATA[Letzter :/]]></wp:comment_author>
                 <wp:comment_author_email>info@posativ.org
                 </wp:comment_author_email>
                 <wp:comment_author_url></wp:comment_author_url>
                 <wp:comment_author_IP>::ffff:86.56.63.0</wp:comment_author_IP>
-                <wp:comment_date>2014-04-29 15:21:56</wp:comment_date>
-                <wp:comment_date_gmt>2014-04-29 15:21:56</wp:comment_date_gmt>
+                <wp:comment_date>2022-06-07 15:21:56</wp:comment_date>
+                <wp:comment_date_gmt>2022-06-07 15:21:56</wp:comment_date_gmt>
                 <wp:comment_content><![CDATA[...]]></wp:comment_content>
                 <wp:comment_approved>1</wp:comment_approved>
                 <wp:comment_type></wp:comment_type>

@@ -87,7 +87,7 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(
             len(db.execute("SELECT id FROM threads").fetchall()), 2)
         self.assertEqual(
-            len(db.execute("SELECT id FROM comments").fetchall()), 7)
+            len(db.execute("SELECT id FROM comments").fetchall()), 8)
 
         first = db.comments.get(1)
         self.assertEqual(first["author"], "Ohai")
@@ -101,7 +101,11 @@ class TestMigration(unittest.TestCase):
         for i in (3, 4, 5):
             self.assertEqual(db.comments.get(i)["parent"], second["id"])
 
-        last = db.comments.get(6)
+        # Ensure newlines in wordpress translate to two newlines in isso, to render the same
+        multiline = db.comments.get(6)
+        self.assertIn("multiple lines:  \nWordPress", multiline["text"])
+
+        last = db.comments.get(7)
         self.assertEqual(last["author"], "Letzter :/")
         self.assertEqual(last["parent"], None)
 
