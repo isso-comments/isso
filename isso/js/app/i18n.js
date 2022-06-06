@@ -1,36 +1,39 @@
+"use strict";
+
 var config = require("app/config");
 
-var bg = require("app/i18n/bg");
-var cs = require("app/i18n/cs");
-var da = require("app/i18n/da");
-var de = require("app/i18n/de");
-var el = require("app/i18n/el_GR");
-var en = require("app/i18n/en");
-var eo = require("app/i18n/eo");
-var es = require("app/i18n/es");
-var fa = require("app/i18n/fa");
-var fi = require("app/i18n/fi");
-var fr = require("app/i18n/fr");
-var hr = require("app/i18n/hr");
-var hu = require("app/i18n/hu");
-var it = require("app/i18n/it");
-var ko = require("app/i18n/ko");
-var nl = require("app/i18n/nl");
-var oc = require("app/i18n/oc");
-var pl = require("app/i18n/pl");
-var pt_BR = require("app/i18n/pt_BR");
-var pt_PT = require("app/i18n/pt_PT");
-var ru = require("app/i18n/ru");
-var sk = require("app/i18n/sk");
-var sv = require("app/i18n/sv");
-var tr = require("app/i18n/tr");
-var uk = require("app/i18n/uk");
-var vi = require("app/i18n/vi");
-var zh = require("app/i18n/zh_CN");
-var zh_CN = require("app/i18n/zh_CN");
-var zh_TW = require("app/i18n/zh_TW");
-
-"use strict";
+var catalogue = {
+    bg:      require("app/i18n/bg"),
+    cs:      require("app/i18n/cs"),
+    da:      require("app/i18n/da"),
+    de:      require("app/i18n/de"),
+    en:      require("app/i18n/en"),
+    el:      require("app/i18n/el_GR"),
+    eo:      require("app/i18n/eo"),
+    es:      require("app/i18n/es"),
+    fa:      require("app/i18n/fa"),
+    fi:      require("app/i18n/fi"),
+    fr:      require("app/i18n/fr"),
+    hr:      require("app/i18n/hr"),
+    hu:      require("app/i18n/hu"),
+    it:      require("app/i18n/it"),
+    ko:      require("app/i18n/ko"),
+    nl:      require("app/i18n/nl"),
+    oc:      require("app/i18n/oc"),
+    pl:      require("app/i18n/pl"),
+    pt:      require("app/i18n/pt_BR"),
+    "pt-BR": require("app/i18n/pt_BR"),
+    "pt-PT": require("app/i18n/pt_PT"),
+    ru:      require("app/i18n/ru"),
+    sk:      require("app/i18n/sk"),
+    sv:      require("app/i18n/sv"),
+    tr:      require("app/i18n/tr"),
+    uk:      require("app/i18n/uk"),
+    vi:      require("app/i18n/vi"),
+    zh:      require("app/i18n/zh_CN"),
+    "zh-CN": require("app/i18n/zh_CN"),
+    "zh-TW": require("app/i18n/zh_TW"),
+};
 
 var pluralforms = function(lang) {
     // we currently only need to look at the primary language
@@ -98,39 +101,6 @@ var pluralforms = function(lang) {
     default:
         return null;
     }
-};
-
-var catalogue = {
-    bg: bg,
-    cs: cs,
-    da: da,
-    de: de,
-    el: el,
-    en: en,
-    eo: eo,
-    es: es,
-    fa: fa,
-    fi: fi,
-    fr: fr,
-    hr: hr,
-    hu: hu,
-    it: it,
-    ko: ko,
-    nl: nl,
-    oc: oc,
-    pl: pl,
-    pt: pt_BR,
-    "pt-BR": pt_BR,
-    "pt-PT": pt_PT,
-    ru: ru,
-    sk: sk,
-    sv: sv,
-    tr: tr,
-    uk: uk,
-    vi: vi,
-    zh: zh_CN,
-    "zh-CN": zh_CN,
-    "zh-TW": zh_TW,
 };
 
 // for each entry in config.langs, see whether we have a catalogue
