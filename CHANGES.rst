@@ -2,6 +2,23 @@ Changelog for Isso
 ==================
 
 %(version)s (%(date)s)
+----------------------
+
+New Features
+^^^^^^^^^^^^
+
+- TBD
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+- TBD
+
+Bugfixes & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- TBD
+
 
 0.13.0.beta1 (2022-06-05)
 -------------------------
