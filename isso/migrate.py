@@ -225,9 +225,18 @@ class WordPress(object):
         progress.finish("{0} threads, {1} comments".format(
             len(items) - skip, self.count))
 
+    def _process_comment_content(self, text):
+        # WordPress comment text renders a single newline between two blocks of
+        # text as a <br> tag, so add an explicit Markdown line break on import
+        # (Otherwise multiple blocks of text separated by single newlines are
+        # all shown as one long line.)
+        text = re.sub(r'(?!^\n)\n(?!^\n)', '  \n', text, 0)
+
+        return strip(text)
+
     def Comment(self, el):
         return {
-            "text": strip(el.find(self.ns + "comment_content").text),
+            "text": self._process_comment_content(el.find(self.ns + "comment_content").text),
             "author": strip(el.find(self.ns + "comment_author").text),
             "email": strip(el.find(self.ns + "comment_author_email").text),
             "website": strip(el.find(self.ns + "comment_author_url").text),

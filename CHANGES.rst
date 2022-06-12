@@ -17,8 +17,10 @@ Breaking Changes
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- TBD
+- When importing from WordPress single newlines are now converted to line breaks
+  (`#903`_, projectgus)
 
+.. _#903: https://github.com/posativ/isso/pull/903
 
 0.13.0.beta1 (2022-06-05)
 -------------------------
