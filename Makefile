@@ -147,4 +147,4 @@ clean:
 	rm -rf .pytest_cache/
 	rm -rf .coverage
 
-.PHONY: apidoc apidoc-init clean coverage docker docker-compare-screenshots docker-update-screenshots docker-js-unit docker-js-integration docker-push docker-testbed docker-testbed-push init test
+.PHONY: apidoc apidoc-init clean coverage docker docker-compare-screenshots docker-generate-screenshots docker-update-screenshots docker-js-unit docker-js-integration docker-push docker-testbed docker-testbed-push init test
