@@ -14,6 +14,12 @@ services:
     #command: /isso/bin/isso -c /config/isso.cfg run
     environment:
       ISSO_SETTINGS: "/config/isso-dev.cfg"
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8080/info || exit 1
+      interval: 5s  # short timeout needed during start phase
+      retries: 3
+      start_period: 5s
+      timeout: 3s
     # If needed, production docker image can also be exposed to host for
     # non-docker unit/integration testing
     ports:
