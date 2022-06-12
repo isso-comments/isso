@@ -46,6 +46,9 @@ jobs:
       - name: Client unit tests
         run: make docker-js-unit
 
+      - name: Check if containers are up, sleep if not
+        run: [ "$(docker inspect --format='{{.State.Health.Status}}' isso-server)" = 'healthy' ] || sleep 5
+
       - name: Client integration tests
         run: make docker-js-integration
 
