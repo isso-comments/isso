@@ -7,8 +7,7 @@ import socket
 import time
 
 from _thread import start_new_thread
-from email.header import Header
-from email.mime.text import MIMEText
+from email.message import EmailMessage
 from email.utils import formatdate
 from urllib.parse import quote
 
@@ -172,14 +171,15 @@ class SMTP(object):
 
         from_addr = self.conf.get("from")
 
-        msg = MIMEText(body, 'plain', 'utf-8')
+        msg = EmailMessage()
+        msg.set_payload(body, 'utf-8')
         msg['From'] = from_addr
         msg['To'] = to_addr
         msg['Date'] = formatdate(localtime=True)
         msg['Subject'] = Header(subject, 'utf-8')
 
         with SMTPConnection(self.conf) as con:
-            con.sendmail(from_addr, to_addr, msg.as_string())
+            con.send_message(msg, from_addr, to_addr)
 
     def _retry(self, subject, body, to):
         for x in range(5):
