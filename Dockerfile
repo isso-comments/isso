@@ -48,7 +48,8 @@ RUN . /isso/bin/activate \
 # over client files, so that changing Isso js/python source code will not
 # trigger a re-installation of all pip packages from scratch
 COPY ["setup.py", "setup.cfg", "README.md", "LICENSE", "./"]
-RUN . /isso/bin/activate \
+RUN --mount=type=cache,target=/root/.cache \
+  . /isso/bin/activate \
  && python3 setup.py develop
 
 # Then copy over files
@@ -60,7 +61,8 @@ COPY ["./contrib/", "./contrib/"]
 COPY --from=isso-js /src/isso/js/ ./isso/js
 
 # Build and install Isso package (pip dependencies cached from previous step)
-RUN . /isso/bin/activate \
+RUN --mount=type=cache,target=/root/.cache \
+ . /isso/bin/activate \
  && python3 setup.py develop --no-deps
 
 

@@ -7,9 +7,11 @@ Changelog for Isso
 New Features
 ^^^^^^^^^^^^
 
--  notifications: Implement 'List-Unsubscribe' header (`#906`_, ix5)
+- notifications: Implement 'List-Unsubscribe' header (`#906`_, ix5)
+- css: Grey styling for comment code, code blocks (`#907`_, ix5)
 
 .. _#906: https://github.com/posativ/isso/pull/906
+.. _#907: https://github.com/posativ/isso/pull/907
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^

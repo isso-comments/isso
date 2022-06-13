@@ -127,6 +127,21 @@ h4.isso-thread-heading {
     font-size: 130%;
     font-weight: bold;
 }
+.isso-text pre {
+    background: #eee;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    color: #4d4d4c;
+    overflow: auto;
+    line-height: 1.5em;
+}
+.isso-text :not(pre) > code {
+    padding: .2em .4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: #eeeeee;
+    border-radius: 6px;
+}
 .isso-comment-footer {
     font-size: 0.80em;
     color: gray;
@@ -207,8 +222,9 @@ h4.isso-thread-heading {
     display: block;
 }
 .isso-textarea:focus,
+.isso-input-wrapper input:focus,
 .isso-auth-section input:focus {
-    border-color: rgba(0, 0, 0, 0.8);
+    outline: 2px solid #3584e4;
 }
 .isso-input-wrapper {
     display: inline-block;
