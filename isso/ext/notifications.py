@@ -7,8 +7,7 @@ import socket
 import time
 
 from _thread import start_new_thread
-from email.header import Header
-from email.mime.text import MIMEText
+from email.message import EmailMessage
 from email.utils import formatdate
 from urllib.parse import quote
 
@@ -72,7 +71,8 @@ class SMTP(object):
                 try:
                     self._sendmail(args[b"subject"].decode("utf-8"),
                                    args["body"].decode("utf-8"),
-                                   args[b"to"].decode("utf-8"))
+                                   args[b"to"].decode("utf-8"),
+                                   args[b"headers"].decode("utf-8"))
                 except smtplib.SMTPConnectError:
                     return uwsgi.SPOOL_RETRY
                 else:
@@ -83,6 +83,12 @@ class SMTP(object):
     def __iter__(self):
         yield "comments.new:after-save", self.notify_new
         yield "comments.activate", self.notify_activated
+
+    # Add List-Unsubscribe email header
+    def create_headers(self, parent_comment, recipient):
+        uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
+        key = self.isso.sign(('unsubscribe', recipient))
+        return (('List-Unsubscribe', uri + "/unsubscribe/" + quote(recipient) + "/" + key),)
 
     def format(self, thread, comment, parent_comment, recipient=None, admin=False):
 
@@ -132,7 +138,7 @@ class SMTP(object):
             subject = "New comment posted"
             if thread['title']:
                 subject = "%s on %s" % (subject, thread["title"])
-            self.sendmail(subject, body, thread, comment)
+            self.sendmail(subject, body, thread, comment, None)
 
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
@@ -152,11 +158,12 @@ class SMTP(object):
                 if "email" in comment_to_notify and comment_to_notify["notification"] and email not in notified \
                         and comment_to_notify["id"] != comment["id"] and email != comment["email"]:
                     body = self.format(thread, comment, parent_comment, email, admin=False)
+                    headers = self.create_headers(parent_comment, email)
                     subject = "Re: New comment posted on %s" % thread["title"]
-                    self.sendmail(subject, body, thread, comment, to=email)
+                    self.sendmail(subject, body, thread, comment, to=email, headers=headers)
                     notified.append(email)
 
-    def sendmail(self, subject, body, thread, comment, to=None):
+    def sendmail(self, subject, body, thread, comment, to=None, headers=None):
         to = to or self.conf.get("to")
         if not subject:
             # Fallback, just in case as an empty subject does not work
@@ -164,27 +171,32 @@ class SMTP(object):
         if uwsgi:
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
-                         b"to": to.encode("utf-8")})
+                         b"to": to.encode("utf-8"),
+                         b"headers": headers.encode("utf-8")})
         else:
-            start_new_thread(self._retry, (subject, body, to))
+            start_new_thread(self._retry, (subject, body, to, headers))
 
-    def _sendmail(self, subject, body, to_addr):
+    def _sendmail(self, subject, body, to_addr, headers=None):
 
         from_addr = self.conf.get("from")
 
-        msg = MIMEText(body, 'plain', 'utf-8')
+        msg = EmailMessage()
+        msg.set_payload(body, 'utf-8')
         msg['From'] = from_addr
         msg['To'] = to_addr
         msg['Date'] = formatdate(localtime=True)
-        msg['Subject'] = Header(subject, 'utf-8')
+        msg['Subject'] = subject
+
+        for key, val in headers if headers else ():
+            msg.add_header(key, val)
 
         with SMTPConnection(self.conf) as con:
-            con.sendmail(from_addr, to_addr, msg.as_string())
+            con.send_message(msg, from_addr, to_addr)
 
-    def _retry(self, subject, body, to):
+    def _retry(self, subject, body, to, headers):
         for x in range(5):
             try:
-                self._sendmail(subject, body, to)
+                self._sendmail(subject, body, to, headers)
             except smtplib.SMTPConnectError:
                 time.sleep(60)
             else:
