@@ -80,7 +80,8 @@ EXPOSE 8080
 ENV ISSO_SETTINGS /config/isso.cfg
 
 # Run Isso via gunicorn WSGI server
-CMD ["/isso/bin/gunicorn", "-b", "0.0.0.0:8080", "-w", "4", "--preload", "isso.run", "--worker-tmp-dir", "/dev/shm"]
+ENTRYPOINT ["/isso/bin/gunicorn", "-b", "0.0.0.0:8080", "-w", "4", "--preload", "--worker-tmp-dir", "/dev/shm"]
+CMD ["isso.run"]
 
 # Example of use:
 #
