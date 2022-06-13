@@ -7,7 +7,9 @@ Changelog for Isso
 New Features
 ^^^^^^^^^^^^
 
-- TBD
+-  notifications: Implement 'List-Unsubscribe' header (`#906`_, ix5)
+
+.. _#906: https://github.com/posativ/isso/pull/906
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
