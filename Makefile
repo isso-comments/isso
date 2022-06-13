@@ -95,6 +95,9 @@ test: $($ISSO_PY_SRC)
 docker:
 	DOCKER_BUILDKIT=1 docker build -t isso:latest .
 
+docker-run:
+	docker run -d --rm --name isso -p 127.0.0.1:8080:8080 --mount type=bind,source=$(PWD)/contrib/isso-dev.cfg,target=/config/isso.cfg,readonly isso:latest isso.run
+
 docker-push:
 	docker tag isso:latest ghcr.io/isso-comments/isso:dev
 	docker push ghcr.io/isso-comments/isso:dev
