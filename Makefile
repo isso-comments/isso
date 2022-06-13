@@ -93,7 +93,7 @@ test: $($ISSO_PY_SRC)
 	PYTHONPATH=. pytest --doctest-modules isso/
 
 docker:
-	docker build -t isso:latest .
+	DOCKER_BUILDKIT=1 docker build -t isso:latest .
 
 docker-push:
 	docker tag isso:latest ghcr.io/isso-comments/isso:dev
