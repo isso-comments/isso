@@ -40,6 +40,10 @@ const config = {
   //testEnvironment: "jsdom",
 
   "globalSetup": "<rootDir>/tests/setup/global-setup.js",
+
+  // Highlight failing lines in GH Actions reports
+  // https://jestjs.io/docs/configuration#reporters-arraymodulename--modulename-options
+  "reporters": ["default", "github-actions"],
 };
 
 module.exports = config;

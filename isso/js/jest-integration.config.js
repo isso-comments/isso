@@ -16,6 +16,10 @@ const config = {
   /* puppeteer end-to-end integration testing
    * https://jestjs.io/docs/configuration#preset-string */
   preset: "jest-puppeteer",
+
+  // Highlight failing lines in GH Actions reports
+  // https://jestjs.io/docs/configuration#reporters-arraymodulename--modulename-options
+  "reporters": ["default", "github-actions"],
 };
 
 module.exports = config;
