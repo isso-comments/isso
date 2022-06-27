@@ -156,7 +156,7 @@ Here is an example to insert large amounts of data into an existing database at
 
 .. code-block:: bash
 
-    echo "INSERT INTO threads (id, uri, title) VALUES ('1', '/demo/index.html', 'Isso Test');" >> dummy.sql
+    echo "INSERT INTO threads (id, uri, title) VALUES ('1', '/demo/', 'Isso Test');" >> dummy.sql
     for f in {1..500}; do
         echo "INSERT INTO comments (tid, created, remote_addr, text, mode, voters) VALUES (1, 100, '127.0.0.1', 'hello', 1, 0);" >> dummy.sql
     done
