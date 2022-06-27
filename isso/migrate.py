@@ -53,6 +53,7 @@ class Progress(object):
 
 
 class Disqus(object):
+    # Format documented at https://help.disqus.com/en/articles/1717164-comments-export
 
     ns = '{http://disqus.com}'
     internals = '{http://disqus.com/disqus-internals}'
