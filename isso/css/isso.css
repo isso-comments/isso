@@ -229,10 +229,10 @@ h4.isso-thread-heading {
 .isso-input-wrapper {
     display: inline-block;
     position: relative;
-    max-width: 25%;
-    margin: 0;
+    margin: 0 1% 0 0;
 }
 .isso-input-wrapper input {
+    display: block;
     padding: .3em 10px;
     max-width: 100%;
     border-radius: 3px;
@@ -242,7 +242,7 @@ h4.isso-thread-heading {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 .isso-input-wrapper label {
-    display: inline-block;
+    display: block;
     line-height: 1.4em;
     height: 1.4em;
 }
