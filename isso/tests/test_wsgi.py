@@ -88,3 +88,9 @@ class TestWSGIUtilities(unittest.TestCase):
             '??? Unknown Error: invalid data'
         )
         self.assertEqual(error_handler(env, req, error).status_code, 500)
+
+        # Request's accept_mimetypes.best should always return, even if no
+        # Accept MimeTypes supplied
+        env = create_environ()
+        req = Request(env)
+        self.assertEqual(req.accept_mimetypes.best, None)
