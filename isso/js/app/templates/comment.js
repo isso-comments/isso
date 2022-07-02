@@ -15,7 +15,7 @@ var html = function (globals) {
 + (conf.gravatar ? "<div class='isso-avatar'><img src='" + comment.gravatar_image + "'></div>" : '')
 + (conf.avatar ? "<div class='isso-avatar'><svg data-hash='" + comment.hash + "'</svg></div>" : '')
 + "<div class='isso-text-wrapper'>"
-  + "<div class='isso-comment-header' role='meta'>"
+  + "<div class='isso-comment-header'>"
     + (comment.website
         ? "<a class='isso-author' href='" + comment.website + "' rel='nofollow'>" + author + "</a>"
         : "<span class='isso-author'>" + author + "</span>")
