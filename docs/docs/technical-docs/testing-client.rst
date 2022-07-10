@@ -126,6 +126,9 @@ You should receive output that looks similar to the following:
     Time:        0.752 s, estimated 21 s
     Ran all test suites matching /isso\/js\/tests\/integration\//i.
 
+If you receive an error saying ``1 snapshot failed`` see
+:ref:`Updating snapshots <updating-snapshots>`
+
 Troubleshooting timeouts
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -259,7 +262,9 @@ which will saved into e.g. ``isso/js/tests/unit/__snapshots__/*.snap``
 If you have created a commit which changes the HTML that is generated on the
 client side (and you're sure it is correct) or written a new test case that
 uses snapshots, check in or update the snapshot file by running
-``npm run test-unit -- -u``. You should see something like the following:
+``npm run test-unit -- -u`` (or ``npm run test-integration -- -u`` for
+integration tests with the dev server running). You should see something like
+the following:
 
 .. code-block:: text
 
