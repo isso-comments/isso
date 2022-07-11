@@ -74,6 +74,9 @@ COPY --from=isso-builder /isso/ .
 # Clean up
 RUN rm -rf /var/apk/cache/* /tmp/* /var/tmp/*
 
+# Setup permissions for volume mounts
+RUN mkdir /db /config && chmod 1777 /db /config
+
 # Configuration
 VOLUME /db /config
 EXPOSE 8080
