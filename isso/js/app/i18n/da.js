@@ -1,13 +1,13 @@
 module.exports= {
-    "postbox-text": "Type Comment Here (at least 3 chars)",
-    "postbox-author": "Name (optional)",
-    "postbox-email": "E-mail (optional)",
-    "postbox-website": "Website (optional)",
-    "postbox-preview": "Eksempel",
+    "postbox-text": "Skriv din kommentar her (mindst 3 tegn)",
+    "postbox-author": "Navn (valgfrit)",
+    "postbox-email": "E-mail (valgfrit)",
+    "postbox-website": "Hjemmeside (valgfrit)",
+    "postbox-preview": "Forhåndsvisning",
     "postbox-edit": "Rediger",
-    "postbox-submit": "Submit",
+    "postbox-submit": "Send",
 
-    "num-comments": "One Comment\n{{ n }} Comments",
+    "num-comments": "En Kommentar\n{{ n }} Kommentarer",
     "no-comments": "Ingen kommentarer endnu",
 
     "comment-reply": "Svar",
