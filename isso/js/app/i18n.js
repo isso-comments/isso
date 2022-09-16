@@ -133,7 +133,7 @@ if (!plural || !translations) {
 var translate = function(msgid) {
     return config[msgid + '-text-' + lang] ||
       translations[msgid] ||
-      en[msgid] ||
+      catalogue.en[msgid] ||
       "[?" + msgid + "]";
 };
 
