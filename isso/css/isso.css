@@ -114,6 +114,7 @@ h4.isso-thread-heading {
 }
 .isso-text p {
     margin-top: 0.2em;
+    word-break: break-word;
 }
 .isso-text p:last-child {
     margin-bottom: 0.2em;
