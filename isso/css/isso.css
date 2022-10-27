@@ -112,6 +112,9 @@ h4.isso-thread-heading {
     border-radius: 2px;
     box-shadow: 0 0 2px #888;
 }
+.isso-text {
+    word-break: break-word;
+}
 .isso-text p {
     margin-top: 0.2em;
 }
