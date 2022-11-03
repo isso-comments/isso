@@ -21,7 +21,7 @@ Breaking Changes
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- TBD
+- Python 3.11 support (`#832`_, l33tname)
 
 
 0.13.0 (2022-06-12)
