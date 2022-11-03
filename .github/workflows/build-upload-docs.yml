@@ -26,7 +26,7 @@ jobs:
       matrix:
         python-version: ["3.10"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create faux requirements.txt file for caching sphinx pip pkg
         # Need to upgrade pygments as well since the version shipped with GH
@@ -35,7 +35,7 @@ jobs:
         run: echo -e "sphinx\npygments" > sphinx-requirements.txt
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'

@@ -24,7 +24,7 @@ jobs:
     env:
       TESTBED_IMAGE: "ghcr.io/isso-comments/isso-js-testbed:latest"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Switch testbed image to ${{ env.TESTBED_IMAGE }}
         # Just for faster CI runs, instead of re-building the image every time
