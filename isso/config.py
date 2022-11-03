@@ -143,13 +143,13 @@ def load(default, user=None):
                    for option in cp.options(section))
 
     parser = new()
-    with open(default, 'r') as f:
+    with open(default, 'r', encoding="utf-8") as f:
         parser.read_file(f)
 
     a = setify(parser)
 
     if user:
-        with open(user, 'r') as f:
+        with open(user, 'r', encoding="utf-8") as f:
             parser.read_file(f)
 
     for item in setify(parser).difference(a):
