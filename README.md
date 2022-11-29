@@ -23,10 +23,10 @@ details and [documentation](https://isso-comments.de/docs/).
 
 ![Isso in Action](https://user-images.githubusercontent.com/10212877/167268553-3f30b448-25ff-4850-afef-df2f2e599c93.png)
 
-## Geting started
+## Getting started
 
 **Requirements**
-- Python 3.6+ (+ devel headers)
+- Python 3.7+ (+ devel headers)
 - SQLite 3.3.8 or later
 - a working C compiler
 
