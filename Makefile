@@ -43,7 +43,7 @@ TESTBED_IMAGE ?= isso-js-testbed:latest
 all: js site
 
 init:
-	npm install --no-optional
+	npm install --omit=optional
 
 flakes:
 	flake8 isso/ contrib/ --count --max-line-length=127 --show-source --statistics

@@ -69,3 +69,4 @@ ENV/
 
 # Development tools
 .vagrant
+.eggs

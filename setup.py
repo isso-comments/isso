@@ -5,10 +5,6 @@ from pathlib import Path
 from re import sub as re_sub
 from setuptools import setup, find_packages
 
-requires = ['itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
-            'werkzeug>=1.0', 'bleach']
-tests_require = ['pytest', 'pytest-cov']
-
 # https://packaging.python.org/en/latest/guides/making-a-pypi-friendly-readme/
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
@@ -29,22 +25,26 @@ setup(
     description='lightweight Disqus alternative',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         "Development Status :: 4 - Beta",
         "Topic :: Internet",
         "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
     ],
-    install_requires=requires,
-    tests_require=tests_require,
+    install_requires=[
+        'itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
+        'werkzeug>=1.0', 'bleach'],
+    tests_require=['pytest', 'pytest-cov'],
+    extras_require={
+        'doc': ['Sphinx'],
+    },
     entry_points={
         'console_scripts':
             ['isso = isso:main'],

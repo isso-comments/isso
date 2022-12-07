@@ -27,7 +27,7 @@ details and [documentation](https://isso-comments.de/docs/).
 
 ### Requirements
 
-- Python 3.6+ (+ devel headers)
+- Python 3.7+ (+ devel headers)
 - SQLite 3.3.8 or later
 - a working C compiler
 
