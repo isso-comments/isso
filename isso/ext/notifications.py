@@ -168,7 +168,10 @@ class SMTP(object):
         if not subject:
             # Fallback, just in case as an empty subject does not work
             subject = 'isso notification'
+
         if uwsgi:
+            if not headers:
+                headers = ''
             uwsgi.spool({b"subject": subject.encode("utf-8"),
                          b"body": body.encode("utf-8"),
                          b"to": to.encode("utf-8"),
