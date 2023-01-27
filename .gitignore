@@ -70,3 +70,6 @@ ENV/
 # Development tools
 .vagrant
 .eggs
+
+# Tox
+.tox
