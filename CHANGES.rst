@@ -1,7 +1,7 @@
 Changelog for Isso
 ==================
 
-%(version)s (%(date)s)
+0.13.1.dev0 (2023-02-05)
 ----------------------
 
 New Features
