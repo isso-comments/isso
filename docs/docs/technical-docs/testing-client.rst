@@ -34,7 +34,7 @@ Then run the unit tests:
 
 .. code-block:: bash
 
-   $ npm run tests-unit
+   $ npm run test-unit
 
 You should receive output that looks similar to the following:
 
