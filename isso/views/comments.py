@@ -6,6 +6,7 @@ import time
 import functools
 import json  # json.dumps to put URL in <script>
 import pkg_resources
+import validators
 
 from configparser import NoOptionError
 from datetime import datetime, timedelta
@@ -31,21 +32,12 @@ from isso.utils.hash import md5, sha1
 from isso.views import requires
 
 
-# from Django apparently, looks good to me *duck*
-__url_re = re.compile(
-    r'^'
-    r'(https?://)?'
-    # domain...
-    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'
-    r'localhost|'  # localhost...
-    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
-    r'(?::\d+)?'  # optional port
-    r'(?:/?|[/?]\S+)'
-    r'$', re.IGNORECASE)
-
-
 def isurl(text):
-    return __url_re.match(text) is not None
+    text = normalize(text)
+    # urlparse does not like port numbers in URLs
+    text = re.sub(r':\d+', '', text)
+    domain = urlparse(text).netloc
+    return validators.domain(domain)
 
 
 def normalize(url):
