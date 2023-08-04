@@ -306,7 +306,7 @@ port
 security
     Use a secure connection to the server.
 
-    Accepted values: ``none``, ``starttls``, ``ssl```
+    Accepted values: ``none``, ``starttls``, ``ssl``
 
     Default: ``starttls``
 
