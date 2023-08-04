@@ -169,6 +169,7 @@ class TestComments(unittest.TestCase):
         self.assertTrue(comments.isurl("example.tld"))
         self.assertTrue(comments.isurl("http://example.tld"))
         self.assertTrue(comments.isurl("https://example.tld"))
+        self.assertTrue(comments.isurl("https://exämple.tld"))
         self.assertTrue(comments.isurl("https://example.tld:1337/"))
         self.assertTrue(comments.isurl("https://example.tld:1337/foobar"))
         self.assertTrue(comments.isurl(

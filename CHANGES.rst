@@ -22,7 +22,7 @@ Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 - Python 3.11 support (`#832`_, l33tname)
-
+- Changed website validation to allow domain names containing umlauts (`#951`_, schneidr)
 
 0.13.0 (2022-06-12)
 -------------------
