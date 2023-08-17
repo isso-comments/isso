@@ -18,6 +18,11 @@ Breaking Changes
 
 - TBD
 
+New Features
+^^^^^^^^^^^^
+
+- Add Catalan localisation (`#966`_, welpo)
+
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -814,4 +819,3 @@ Minor improvements:
 ----------------
 
 - initial PyPi release
-
