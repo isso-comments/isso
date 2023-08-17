@@ -4,6 +4,7 @@ var config = require("app/config");
 
 var catalogue = {
     bg:      require("app/i18n/bg"),
+    ca:      require("app/i18n/ca"),
     cs:      require("app/i18n/cs"),
     da:      require("app/i18n/da"),
     de:      require("app/i18n/de"),
@@ -40,6 +41,7 @@ var pluralforms = function(lang) {
     // subtag.
     switch (lang.split("-", 1)[0]) {
     case "bg":
+    case "ca":
     case "cs":
     case "da":
     case "de":
