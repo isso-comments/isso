@@ -1,0 +1,38 @@
+module.exports = {
+    "postbox-text": "Escriu el teu comentari aquí (almenys 3 caràcters)",
+    "postbox-author": "Nom (opcional)",
+    "postbox-author-placeholder": "John Doe",
+    "postbox-email": "Correu electrònic (opcional)",
+    "postbox-email-placeholder": "johndoe@example.com",
+    "postbox-website": "Lloc web (opcional)",
+    "postbox-website-placeholder": "https://example.com",
+    "postbox-preview": "Vista prèvia",
+    "postbox-edit": "Editar",
+    "postbox-submit": "Enviar",
+    "postbox-notification": "Suscriu-te a les notificacions per correu electrònic",
+
+    "num-comments": "Un comentari\n{{ n }} comentaris",
+    "no-comments": "Encara no hi ha comentaris",
+    "atom-feed": "Canal web Atom",
+
+    "comment-reply": "Respondre",
+    "comment-edit": "Editar",
+    "comment-save": "Desar",
+    "comment-delete": "Eliminar",
+    "comment-confirm": "Confirmar",
+    "comment-close": "Tancar",
+    "comment-cancel": "Cancel·lar",
+    "comment-deleted": "Comentari eliminat.",
+    "comment-queued": "Comentari en espera de moderació.",
+    "comment-anonymous": "Anònim",
+    "comment-hidden": "1 ocult\n{{ n }} ocults",
+    "comment-page-author-suffix": "Autor",
+
+    "date-now": "ara",
+    "date-minute": "fa un minut\nfa {{ n }} minuts",
+    "date-hour": "fa una hora\nfa {{ n }} hores",
+    "date-day": "ahir\nfa {{ n }} dies",
+    "date-week": "la setmana passada\nfa {{ n }} setmanes",
+    "date-month": "el mes passat\nfa {{ n }} mesos",
+    "date-year": "l'any passat\nfa {{ n }} anys"
+};
