@@ -1,0 +1,38 @@
+module.exports = {
+    "postbox-text": "ضع تعليقًا هُنا (على الأقل ثلاثة أحرف)",
+    "postbox-author": "الاسم (اختياري)",
+    "postbox-author-placeholder": "جون سميث",
+    "postbox-email": "عنوان البريد الإلكتروني (اختياري)",
+    "postbox-email-placeholder": "johndoe@example.com",
+    "postbox-website": "الموقع الشخصي (اختياري)",
+    "postbox-website-placeholder": "https://example.com",
+    "postbox-preview": "معاينة",
+    "postbox-edit": "تعديل",
+    "postbox-submit": "نشر",
+    "postbox-notification": "الاشتراك بالإشعارات عبر البريد الإلكتروني",
+
+    "num-comments": "تعليق واحد\n{{ n }} تعليق",
+    "no-comments": "لا يوجد تعليقات حتى الآن",
+    "atom-feed": "تقليم آتوم",
+
+    "comment-reply": "رد",
+    "comment-edit": "تعديل",
+    "comment-save": "حفظ",
+    "comment-delete": "حذف",
+    "comment-confirm": "تأكيد",
+    "comment-close": "إغلاق",
+    "comment-cancel": "إلغاء",
+    "comment-deleted": "تم حذف التعليق.",
+    "comment-queued": "التعليق بانتظار المراجعة.",
+    "comment-anonymous": "مجهول",
+    "comment-hidden": "{{ n }} مخفي",
+    "comment-page-author-suffix": "الكاتب",
+
+    "date-now": "الآن",
+    "date-minute": "دقيقة مضت\n{{ n }} دقائق مضت",
+    "date-hour": "منذ ساعة\n{{ n }} ساعات مضت",
+    "date-day": "البارحة\n{{ n }} أيام مضت",
+    "date-week": "الأسبوع الماضي\n{{ n }} أسابيع مضت",
+    "date-month": "الشهر الماضي\n{{ n }} أشهر مضت",
+    "date-year": "السنة الماضية\n{{ n }} سنين مضت"
+};
