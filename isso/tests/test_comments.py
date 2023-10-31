@@ -272,7 +272,7 @@ class TestComments(unittest.TestCase):
         r = self.get('/id/1?plain=1')
         self.assertEqual(r.status_code, 200)
 
-        self.client.delete_cookie('localhost.local', '1')
+        self.client.delete_cookie(key='1', domain='localhost')
         r = self.get('/id/1?plain=1')
         self.assertEqual(r.status_code, 403)
 
