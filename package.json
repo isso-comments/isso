@@ -14,11 +14,11 @@
     "build-prod": "webpack --config isso/js/webpack.config.js --merge --config-name dev --config-name prod"
   },
   "devDependencies": {
-    "webpack": "^5.68.0",
-    "webpack-cli": "^4.9.2"
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "optionalDependencies": {
-    "jest": "^28.0.3",
-    "jest-environment-jsdom": "^28.0.2"
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
   }
 }

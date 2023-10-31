@@ -72,7 +72,7 @@ test('should have correct ISSO_ENDPOINT on page', async () => {
 
 
 test('should display "Isso Demo" text on page', async () => {
-  await expect(page).toMatch('Isso Demo');
+  await expect(page).toMatchTextContent('Isso Demo');
   await expect(page).toMatchElement('h2 > a', { text: 'Isso Demo' });
 });
 
