@@ -14,7 +14,12 @@ New Features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
-- TBD
+- Change default log messages formatting and make it configurable (`#976`_, HorlogeSkynet)
+
+    [general]
+    log-format = %(asctime)s:%(levelname)s:%(name)s:%(message)s
+
+.. _#976: https://github.com/posativ/isso/pull/976
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^

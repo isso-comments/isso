@@ -281,6 +281,9 @@ def main():
     if conf.get("general", "log-file"):
         handler = logging.FileHandler(conf.get("general", "log-file"))
 
+        if conf.get("general", "log-format"):
+            handler.setFormatter(logging.Formatter(conf.get("general", "log-format")))
+
         logger.addHandler(handler)
         logging.getLogger("werkzeug").addHandler(handler)
 

@@ -49,6 +49,7 @@ Here are the **default values** for this section:
     max-age = 15m
     notify = stdout
     log-file =
+    log-format = %(asctime)s:%(levelname)s:%(name)s:%(message)s
     gravatar = false
     gravatar-url = https://www.gravatar.com/avatar/{}?d=identicon&s=55
     latest-enabled = false
@@ -117,6 +118,17 @@ log-file
     Log console messages to file instead of standard out.
 
     Default: (empty)
+
+log-format
+    Format string for console messages logged to file (see ``log-file`` option).
+    Also see Python `LogRecord attributes`_ documentation for the full list of
+    attributes.
+    Please do note this option is interpolated by Python runtime and may lead
+    to security issues if not trusted.
+
+    Default: %(asctime)s:%(levelname)s:%(name)s:%(message)s
+
+.. _LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
 gravatar
     When set to ``true`` this will add the property "gravatar_image"
