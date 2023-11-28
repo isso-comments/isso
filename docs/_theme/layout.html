@@ -39,7 +39,7 @@
 {%- endif %}
 {%- endmacro %}
 
-<html>
+<html{% if language is not none %} lang="{{ language }}"{% endif %} data-content_root="{{ content_root }}">
   <head>
     <meta charset="utf-8">
     {{ metatags }}
