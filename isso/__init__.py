@@ -295,7 +295,7 @@ def main():
         except ImportError:
             run_simple(host, port, make_app(conf), threaded=True,
                        use_reloader=conf.getboolean('server', 'reload'))
-    else:
+    elif conf.get("server", "listen").startswith("unix://"):
         sock = conf.get("server", "listen").partition("unix://")[2]
         try:
             os.unlink(sock)
@@ -303,3 +303,6 @@ def main():
             if ex.errno != errno.ENOENT:
                 raise
         wsgi.SocketHTTPServer(sock, make_app(conf)).serve_forever()
+    else:
+        logger.error("server.listen must specify a protocol of http:// or unix://")
+        sys.exit(1)
