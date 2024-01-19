@@ -18,6 +18,13 @@ Breaking Changes
 
 - TBD
 
+Bugfixes & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- Make language code handling more robust (`#983`_, ix5)
+
+.. _#983: https://github.com/posativ/isso/pull/983
+
 New Features
 ^^^^^^^^^^^^
 
