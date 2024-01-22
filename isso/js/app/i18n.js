@@ -133,7 +133,10 @@ if (!plural || !translations) {
 }
 
 var translate = function(msgid) {
-    return config[msgid + '-text-' + lang] ||
+    // Need to convert the language string to lowercase because data-isso-*
+    // attributes are automatically cast to lowercase as per HTML spec
+    // https://stackoverflow.com/questions/36176474/camel-case-in-html-tag-attributes-and-jquery-doesnt-work-why
+    return config[msgid + '-text-' + lang.toLowerCase()] ||
       translations[msgid] ||
       catalogue.en[msgid] ||
       "[?" + msgid + "]";

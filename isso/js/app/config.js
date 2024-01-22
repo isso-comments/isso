@@ -17,9 +17,21 @@ for (var i = 0; i < js.length; i++) {
         var attr = js[i].attributes[j];
         if (/^data-isso-/.test(attr.name)) {
             try {
-                config[attr.name.substring(10)] = JSON.parse(attr.value);
+                // Normalize underscores to dashes so that language-specific
+                // strings can be caught better later on,
+                // e.g. data-isso-postbox-text-text-PT_BR becomes
+                // postbox-text-text-pt-br.
+                // Also note that attr.name only gives lowercase strings as per
+                // HTML spec, e.g. data-isso-FOO-Bar becomes foo-bar, but since
+                // the test environment's jest-environment-jsdom seemingly does
+                // not follow that convention, convert to lowercase here anyway.
+                config[attr.name.substring(10)
+                       .replace(/_/g, '-')
+                       .toLowerCase()] = JSON.parse(attr.value);
             } catch (ex) {
-                config[attr.name.substring(10)] = attr.value;
+                config[attr.name.substring(10)
+                       .replace(/_/g, '-')
+                       .toLowerCase()] = attr.value;
             }
         }
     }
