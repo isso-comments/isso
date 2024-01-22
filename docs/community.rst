@@ -86,9 +86,11 @@ Isso-adjacent Projects
 ----------------------
 
 * A Webmention receiver and publisher, has a plugin to integrate with Isso: `Bussator`_
-* A plugin for `Grav CMS`_ to integrate isso comments: `grav-plugin-jscomments`_
-* A `Pelican theme supporting isso comments <https://github.com/Lucas-C/pelican-mg>`_
-* A `Sphinx extension to integrate isso comments <https://github.com/sphinx-notes/isso>`_
+* A plugin for `Grav CMS`_ to integrate Isso comments: `grav-plugin-jscomments`_
+* A `Pelican theme supporting Isso comments <https://github.com/Lucas-C/pelican-mg>`_
+* A `Sphinx extension to integrate Isso comments <https://github.com/sphinx-notes/isso>`_
+* A `1-click installation template for installing Isso comments <https://easypanel.io/docs/templates/isso>`_
+  through the `Easypanel Server Control Panel <https://easypanel.io/>`_
 * `mihokookayami/isso Docker image <https://hub.docker.com/r/mihokookayami/isso>`_
 * `Migrating Isso comments to Disqus <https://github.com/angristan/isso-to-disqus>`_
 
