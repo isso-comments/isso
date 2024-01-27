@@ -1,8 +1,34 @@
 Changelog for Isso
 ==================
 
-0.13.1.dev0 (2023-02-05)
+%(version)s (%(date)s)
 ----------------------
+
+New Features
+^^^^^^^^^^^^
+
+- Add Catalan localisation (`#966`_, welpo)
+
+.. _#966: https://github.com/posativ/isso/pull/966
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+- TBD
+
+Bugfixes & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- Changed website validation to allow domain names containing umlauts (`#951`_, schneidr)
+- Improve Spanish translation (`#967`_, welpo)
+- Make language code handling more robust (`#983`_, ix5)
+
+.. _#951: https://github.com/posativ/isso/pull/951
+.. _#967: https://github.com/posativ/isso/pull/967
+.. _#983: https://github.com/posativ/isso/pull/983
+
+0.13.1.dev0 (2023-02-05)
+------------------------
 
 New Features
 ^^^^^^^^^^^^
@@ -13,29 +39,12 @@ New Features
 .. _#906: https://github.com/posativ/isso/pull/906
 .. _#907: https://github.com/posativ/isso/pull/907
 
-Breaking Changes
-^^^^^^^^^^^^^^^^
-
-- TBD
-
-Bugfixes & Improvements
-^^^^^^^^^^^^^^^^^^^^^^^
-
-- Make language code handling more robust (`#983`_, ix5)
-
-.. _#983: https://github.com/posativ/isso/pull/983
-
-New Features
-^^^^^^^^^^^^
-
-- Add Catalan localisation (`#966`_, welpo)
-
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 - Python 3.11 support (`#832`_, l33tname)
-- Changed website validation to allow domain names containing umlauts (`#951`_, schneidr)
-- Improve Spanish translation (`#967`_, welpo)
+
+.. _#832: https://github.com/posativ/isso/pull/832
 
 0.13.0 (2022-06-12)
 -------------------
