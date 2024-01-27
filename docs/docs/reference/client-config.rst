@@ -7,7 +7,6 @@ preferably in the script tag which embeds the JS:
 .. code-block:: html
 
     <script data-isso="/prefix/"
-            data-isso-id="thread-id"
             data-isso-css="true"
             data-isso-css-url="null"
             data-isso-lang="ru"
