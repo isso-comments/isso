@@ -89,10 +89,11 @@ data-isso-lang
     specified explicitly by using ``data-isso-lang=""``.
 
     The value of this property should be a `BCP 47 language tag
-    <https://tools.ietf.org/html/bcp47>`_, such as "en", "ru", or "pt-BR".
+    <https://tools.ietf.org/html/bcp47>`_, such as ``en``, ``ru``, or
+    ``pt-BR``.
     Language tags are processed case-insensitively, and may use
-    underscores as separators instead of dashes (e.g. "pt_br" is treated
-    the same as same as "pt-BR").
+    underscores as separators instead of dashes (e.g. ``pt_br`` is treated the
+    same as same as ``pt-BR``).
 
     You can find a list of all supported languages by browsing the
     `i18n directory
@@ -106,8 +107,9 @@ data-isso-lang
 data-isso-default-lang
     Render the Isso UI in this language when the user-agent does not
     specify a preferred language, or if the language it specifies is not
-    supported.  Like ``data-isso-lang``, the value of this property should
-    be a BCP 47 language tag.
+    supported.  Like :ref:`data-isso-lang`, the value of this property should
+    be a `BCP 47 language tag <https://tools.ietf.org/html/bcp47>`_,
+    such as ``en``, ``ru``, or ``pt-BR``.
 
     If you specify both ``data-isso-default-lang`` and ``data-isso-lang``,
     ``data-isso-lang`` takes precedence.
