@@ -7,7 +7,6 @@ preferably in the script tag which embeds the JS:
 .. code-block:: html
 
     <script data-isso="/prefix/"
-            data-isso-id="thread-id"
             data-isso-css="true"
             data-isso-css-url="null"
             data-isso-lang="ru"
@@ -47,6 +46,8 @@ english translation of the ``postbox-notification`` message, you could add:
 data-isso-* directives
 ------------------------
 
+.. _data-isso:
+
 data-isso
    Isso usually detects the REST API automatically, but when you serve the JS
    script on a different location, this may fail. Use ``data-isso`` to
@@ -55,6 +56,8 @@ data-isso
    .. code-block:: html
 
        <script data-isso="/isso" src="/path/to/embed.min.js"></script>
+
+.. _data-isso-css-url:
 
 data-isso-css-url
     Set URL from which to fetch ``isso.css``, e.g. from a CDN.
@@ -66,6 +69,8 @@ data-isso-css-url
 
     Default: ``"{api-endpoint}/css/isso.css"``
 
+.. _data-isso-css:
+
 data-isso-css
     Set to ``false`` prevents Isso from automatically appending the stylesheet.
 
@@ -75,6 +80,8 @@ data-isso-css
 
     Default: ``true``
 
+.. _data-isso-lang:
+
 data-isso-lang
     Always render the Isso UI in this language, ignoring what the
     user-agent says is the preferred language.  The default is to
@@ -82,10 +89,11 @@ data-isso-lang
     specified explicitly by using ``data-isso-lang=""``.
 
     The value of this property should be a `BCP 47 language tag
-    <https://tools.ietf.org/html/bcp47>`_, such as "en", "ru", or "pt-BR".
+    <https://tools.ietf.org/html/bcp47>`_, such as ``en``, ``ru``, or
+    ``pt-BR``.
     Language tags are processed case-insensitively, and may use
-    underscores as separators instead of dashes (e.g. "pt_br" is treated
-    the same as same as "pt-BR").
+    underscores as separators instead of dashes (e.g. ``pt_br`` is treated the
+    same as same as ``pt-BR``).
 
     You can find a list of all supported languages by browsing the
     `i18n directory
@@ -94,11 +102,14 @@ data-isso-lang
 
     Default: ``null``
 
+.. _data-isso-default-lang:
+
 data-isso-default-lang
     Render the Isso UI in this language when the user-agent does not
     specify a preferred language, or if the language it specifies is not
-    supported.  Like ``data-isso-lang``, the value of this property should
-    be a BCP 47 language tag.
+    supported.  Like :ref:`data-isso-lang`, the value of this property should
+    be a `BCP 47 language tag <https://tools.ietf.org/html/bcp47>`_,
+    such as ``en``, ``ru``, or ``pt-BR``.
 
     If you specify both ``data-isso-default-lang`` and ``data-isso-lang``,
     ``data-isso-lang`` takes precedence.
@@ -106,6 +117,8 @@ data-isso-default-lang
     Default: ``"en"``
 
     .. versionadded:: 0.12.6
+
+.. _data-isso-max-comments-top:
 
 data-isso-max-comments-top
     Number of top level comments to show by default. If some comments are not
@@ -115,6 +128,8 @@ data-isso-max-comments-top
 
     Default: ``"inf"``
 
+.. _data-isso-max-comments-nested:
+
 data-isso-max-comments-nested
     Number of nested comments to show by default. If some comments are not
     shown, an "X Hidden" link is shown.
@@ -123,10 +138,14 @@ data-isso-max-comments-nested
 
     Default: ``5``
 
+.. _data-isso-reveal-on-click:
+
 data-isso-reveal-on-click
     Number of comments to reveal on clicking the "X Hidden" link.
 
     Default: ``true``
+
+.. _data-isso-avatar:
 
 data-isso-avatar
     Enable or disable avatar generation. Ignored if gravatar is enabled on
@@ -135,10 +154,14 @@ data-isso-avatar
 
     Default: ``true``
 
+.. _data-isso-avatar-bg:
+
 data-isso-avatar-bg
     Set avatar background color. Any valid CSS color will do.
 
     Default: ``"#f0f0f0"``
+
+.. _data-isso-avatar-fg:
 
 data-isso-avatar-fg
     Set avatar foreground color. Up to 8 colors are possible. The default color
@@ -148,10 +171,14 @@ data-isso-avatar-fg
 
     Default: ``"#9abf88 #5698c4 #e279a3 #9163b6 #be5168 #f19670 #e4bf80 #447c69"``
 
+.. _data-isso-vote:
+
 data-isso-vote
     Enable or disable voting feature on the client side.
 
     Default: ``true``
+
+.. _data-isso-vote-levels:
 
 data-isso-vote-levels
     List of vote levels used to customize comment appearance based on score.
@@ -166,6 +193,8 @@ data-isso-vote-levels
     These classes can then be used to customize the appearance of comments (eg. put a star on popular comments)
 
     Default: ``null``
+
+.. _data-isso-page-author-hashes:
 
 data-isso-page-author-hashes
     Provide the hash (or list of hashes) of the current page's author. Any
@@ -210,6 +239,8 @@ data-isso-page-author-hashes
 
     .. versionadded:: 0.13
 
+
+.. _data-isso-reply-notifications-default-enabled:
 
 data-isso-reply-notifications-default-enabled
     Set to ``true`` to make the reply notifications checkbox on the postbox be
