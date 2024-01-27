@@ -71,7 +71,7 @@ Breaking Changes
   This change necessitates adjusting custom CSS files to the new names.
 - Drop support for outdated Python version 3.5 (`#808`_, l33tname)
 - Strip trailing slash from ``public-endpoint``. A trailing slash in ``[server]
-  public-endpoint`` is now discouraged and throws a warning (`#876`_, ix5)
+  public-endpoint`` is now discouraged and throws a warning (`#877`_, ix5)
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -104,7 +104,7 @@ Bugfixes & Improvements
 .. _#846: https://github.com/posativ/isso/pull/846
 .. _#861: https://github.com/posativ/isso/pull/861
 .. _#865: https://github.com/posativ/isso/pull/865
-.. _#876: https://github.com/posativ/isso/pull/876
+.. _#877: https://github.com/posativ/isso/pull/877
 .. _#878: https://github.com/posativ/isso/pull/878
 .. _#879: https://github.com/posativ/isso/pull/879
 .. _#880: https://github.com/posativ/isso/pull/880
@@ -141,7 +141,7 @@ Breaking Changes
   This change necessitates adjusting custom CSS files to the new names.
 - Drop support for outdated Python version 3.5 (`#808`_, l33tname)
 - Strip trailing slash from ``public-endpoint``. A trailing slash in ``[server]
-  public-endpoint`` is now discouraged and throws a warning (`#876`_, ix5)
+  public-endpoint`` is now discouraged and throws a warning (`#877`_, ix5)
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -172,7 +172,7 @@ Bugfixes & Improvements
 .. _#846: https://github.com/posativ/isso/pull/846
 .. _#861: https://github.com/posativ/isso/pull/861
 .. _#865: https://github.com/posativ/isso/pull/865
-.. _#876: https://github.com/posativ/isso/pull/876
+.. _#877: https://github.com/posativ/isso/pull/877
 .. _#878: https://github.com/posativ/isso/pull/878
 .. _#879: https://github.com/posativ/isso/pull/879
 .. _#880: https://github.com/posativ/isso/pull/880
