@@ -148,6 +148,8 @@ test("should fill Postbox with valid data and receive 201 reply", async () => {
   await expect(elm.replace(/<time.*?>/, '<time>'))
     .toMatchSnapshot();
 
+  await expect(page).not.toMatchElement('.isso-post-action > [type=submit]:disabled');
+
   await page.waitForSelector('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-edit');
 
   // Edit comment
@@ -243,7 +245,10 @@ test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
 
   await expect(page).toMatchElement(
     '#isso-1 .isso-text',
-    { text: 'New comment body' },
+    {
+      text: 'New comment body',
+      timeout: 1000,
+    },
   );
 
   // Delete comment via DELETE
@@ -267,4 +272,43 @@ test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
     '#isso-1 .isso-text',
     { text: 'New comment body' },
   );
+});
+
+test("Postbox submit button should be disabled on submit click and enabled after response", async () => {
+  const delay = (duration) => new Promise(resolve => setTimeout(resolve, duration));
+
+  await page.setRequestInterception(true);
+  let createHandler = async (request) => {
+    if (request.url().startsWith(ISSO_ENDPOINT + '/new')) {
+      delay(800).then(() => request.abort());
+    } else {
+      request.continue();
+    }
+  };
+  await page.on('request', createHandler);
+
+  await page.goto(
+    ISSO_ENDPOINT + '/demo',
+    {waitUntil: 'load'}
+  );
+
+  // Fill the textarea with the comment
+  await expect(page).toFill(
+    '.isso-textarea',
+    'A comment with *italics* and [a link](http://link.com)'
+  );
+
+  // Click the submit button
+  const submitButtonSelector = '.isso-post-action > [type=submit]';
+  await expect(page).toClick(submitButtonSelector);
+
+  await page.waitForSelector(submitButtonSelector + ":disabled", {timeout: 1000});
+  await expect(page).toMatchElement(submitButtonSelector + ":disabled", {timeout: 1000});
+
+  await page.waitForSelector(submitButtonSelector + ":enabled", {timeout: 1000});
+  await expect(page).toMatchElement(submitButtonSelector + ":enabled", {timeout: 1000});
+
+  // Disable request interception and remove the request handler
+  await page.setRequestInterception(false);
+  await page.off('request', createHandler);
 });

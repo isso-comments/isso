@@ -40,6 +40,7 @@ test('Linked should be highlighted', async () => {
 
   // Cleanup
   // Need to click once to surface "confirm" and then again to confirm
+  await page.waitForSelector('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
   await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
   await expect(page).toClick('#isso-1 > .isso-text-wrapper > .isso-comment-footer > .isso-delete');
 });
