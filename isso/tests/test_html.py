@@ -14,7 +14,8 @@ class TestHTML(unittest.TestCase):
         examples = [
             ("*Ohai!*", "<p><em>Ohai!</em></p>"),
             ("<em>Hi</em>", "<p><em>Hi</em></p>"),
-            ("http://example.org/", '<p>http://example.org/</p>')]
+            ("http://example.org/", '<p>http://example.org/</p>'),
+            (None, "")]
 
         for (input, expected) in examples:
             self.assertEqual(convert(input), expected)

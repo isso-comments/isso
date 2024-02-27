@@ -55,6 +55,9 @@ def Markdown(extensions=("autolink", "fenced-code", "no-intra-emphasis",
     md = misaka.Markdown(renderer, extensions=extensions)
 
     def inner(text):
+        if text is None:
+            return ""
+
         rv = md(text).rstrip("\n")
         if rv.startswith("<p>") or rv.endswith("</p>"):
             return rv

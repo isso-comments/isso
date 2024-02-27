@@ -92,10 +92,11 @@ class Disqus(object):
         for post in tree.findall(Disqus.ns + 'post'):
             email = post.find('{0}author/{0}email'.format(Disqus.ns))
             ip = post.find(Disqus.ns + 'ipAddress')
+            comment_text = post.find(Disqus.ns + 'message').text or ''
 
             item = {
                 'dsq:id': post.attrib.get(Disqus.internals + 'id'),
-                'text': post.find(Disqus.ns + 'message').text,
+                'text': comment_text,
                 'author': post.find('{0}author/{0}name'.format(Disqus.ns)).text,
                 'email': email.text if email is not None else '',
                 'created': mktime(strptime(
@@ -146,11 +147,13 @@ class Disqus(object):
                     continue
 
                 email = post.find("{0}author/{0}email".format(Disqus.ns))
+                comment_text = post.find(Disqus.ns + 'message').text or ''
+
                 print(" * {0} by {1} <{2}>".format(
                     post.attrib.get(Disqus.internals + "id"),
                     post.find("{0}author/{0}name".format(Disqus.ns)).text,
                     email.text if email is not None else ""))
-                print(textwrap.fill(post.find(Disqus.ns + "message").text,
+                print(textwrap.fill(comment_text,
                                     initial_indent="  ", subsequent_indent="  "))
                 print("")
 
