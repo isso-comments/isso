@@ -27,6 +27,11 @@ class Sanitizer(object):
         clean_html = bleach.clean(text, tags=self.elements, attributes=self.attributes, strip=True)
 
         def set_links(attrs, new=False):
+            # Linker can misinterpret text as a domain name and create new invalid links. 
+            # To prevent this, we only allow existing links to be modified. 
+            if new:
+                return None
+
             href_key = (None, u'href')
 
             if href_key not in attrs:
