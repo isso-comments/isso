@@ -139,13 +139,13 @@ As suggested by `Joshua Gleitze`_:
 Use `isso-to-disqus.py <https://github.com/angristan/isso-to-disqus>`_ and see
 other options as discussed in `this issue`_.
 
-.. _Joshua Gleitze: https://github.com/posativ/isso/issues/186#issuecomment-223550325
-.. _this issue: https://github.com/posativ/isso/issues/186
+.. _Joshua Gleitze: https://github.com/isso-comments/isso/issues/186#issuecomment-223550325
+.. _this issue: https://github.com/isso-comments/isso/issues/186
 
 Pretty-print entire comments database
 -------------------------------------
 
-.. Migration complete from https://github.com/posativ/isso/wiki/Tips-&-tricks
+.. Migration complete from https://github.com/isso-comments/isso/wiki/Tips-&-tricks
 
 The following bash function pretty-print the entire comments DB sorted by
 insertion date.
@@ -210,7 +210,7 @@ Add the following CSS to your site to change that color (replace ``#3f3c1c`` wit
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

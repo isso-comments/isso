@@ -17,12 +17,12 @@ Report issues
 -------------
 
 You are welcome report issues at the
-`GitHub Issue tracker <https://github.com/posativ/isso/issues>`_.
+`GitHub Issue tracker <https://github.com/isso-comments/isso/issues>`_.
 
 If you need help or want to request a feature, please `open a discussion`__
 instead. For more ways to get in contact, see the :doc:`/community` page.
 
-.. __: https://github.com/posativ/isso/discussions
+.. __: https://github.com/isso-comments/isso/discussions
 
 Here are a few general rules to keep in mind when reporting issues:
 
@@ -50,8 +50,8 @@ referece and open a Pull Request.
 You may notice some "weird" newlines in translations -- that's the separator
 for pluralforms_ in the templating engine.
 
-.. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/en.js
-.. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/
+.. __: https://github.com/isso-comments/isso/blob/master/isso/js/app/i18n/en.js
+.. __: https://github.com/isso-comments/isso/blob/master/isso/js/app/i18n/
 .. _pluralforms: http://docs.translatehouse.org/projects/localization-guide/en/latest/l10n/pluralforms.html?id=l10n/pluralforms
 
 .. _contribute-docs:
@@ -113,9 +113,9 @@ For example, this a **good commit:**
     - https://www.maxability.co.in/2016/01/03/placeholder-attribute-and-why-it-is-not-accessible/
 
     This commit is a reland of
-    https://github.com/posativ/isso/pull/356 with a fix for the
+    https://github.com/isso-comments/isso/pull/356 with a fix for the
     placeholder-replacement code in `isso.js` as reported in
-    https://github.com/posativ/isso/issues/524
+    https://github.com/isso-comments/isso/issues/524
 
 ...while this is a **bad commit:**
 
@@ -195,23 +195,23 @@ What is currently needed?
   well thought-out opinion
 - Look at `milestones`__ - the next release of Isso will be version 0.13, and
   you can help by looking for open issues and PRs that
-  `contribute to 0.13 <https://github.com/posativ/isso/milestone/5>`_
+  `contribute to 0.13 <https://github.com/isso-comments/isso/milestone/5>`_
 - Nicer automated testing, via docker or GH actions, of most of the available
   setup options (fastcgi/proxy configs, docker, apachge/nginx, ...)
 
 @posativ's wishlist:
 
-- `Admin Web Interface <https://github.com/posativ/isso/issues/10>`_ –
+- `Admin Web Interface <https://github.com/isso-comments/isso/issues/10>`_ –
   administration via email is cumbersome with a high amount of comments. A
   administration web interface should include the ability to:
 
   - Delete or activate comments matching a filter (e.g. name, email, ip address)
   - Close threads and remove threads completely
 
-.. __: https://github.com/posativ/isso/labels/needs-contributor
-.. __: https://github.com/posativ/isso/labels/good-first-issue
-.. __: https://github.com/posativ/isso/labels/needs-decision
-.. __: https://github.com/posativ/isso/milestones
+.. __: https://github.com/isso-comments/isso/labels/needs-contributor
+.. __: https://github.com/isso-comments/isso/labels/good-first-issue
+.. __: https://github.com/isso-comments/isso/labels/needs-decision
+.. __: https://github.com/isso-comments/isso/milestones
 
 Regarding fancy new CI tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

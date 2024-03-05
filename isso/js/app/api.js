@@ -22,7 +22,7 @@ if (! endpoint) {
     for (i = 0; i < js.length; i++) {
         if (js[i].getAttribute("async") || js[i].getAttribute("defer")) {
             throw "Isso's automatic configuration detection failed, please " +
-                  "refer to https://github.com/posativ/isso#client-configuration " +
+                  "refer to https://github.com/isso-comments/isso#client-configuration " +
                   "and add a custom `data-isso` attribute.";
         }
     }

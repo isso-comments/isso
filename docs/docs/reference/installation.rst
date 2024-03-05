@@ -191,7 +191,7 @@ Get a fresh copy of Isso:
 
 .. code-block:: console
 
-    $ git clone https://github.com/posativ/isso.git
+    $ git clone https://github.com/isso-comments/isso.git
     $ cd isso/
 
 To create a virtual environment (recommended), run:
@@ -233,7 +233,7 @@ don't use FastCGi or uWSGI:
 -  SysVinit (Isso + Gunicorn): https://salsa.debian.org/jelmer/isso/-/blob/master/debian/isso.init
 -  OpenBSD: https://gist.github.com/noqqe/7397719
 -  FreeBSD: https://gist.github.com/ckoepp/52f6f0262de04cee1b88ef4a441e276d
--  Supervisor: https://github.com/posativ/isso/issues/47
+-  Supervisor: https://github.com/isso-comments/isso/issues/47
 
 If you're writing your own init script, you can utilize ``start-stop-daemon``
 to run Isso in the background (Isso runs in the foreground usually). Below you

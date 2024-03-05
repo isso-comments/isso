@@ -3,7 +3,7 @@ Server Configuration
 
 The Isso configuration file is an `INI-style`__ textfile. It reads integers,
 booleans, strings and lists. Here's the default isso configuration:
-`isso.cfg <https://github.com/posativ/isso/blob/master/isso/isso.cfg>`_. A
+`isso.cfg <https://github.com/isso-comments/isso/blob/master/isso/isso.cfg>`_. A
 basic configuration from scratch looks like this:
 
 .. code-block:: ini
@@ -255,7 +255,7 @@ samesite
     By default, isso will set ``SameSite=None`` when served over https and
     ``SameSite=Lax`` when served over http
     (see `MDM: SameSite <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite>`_
-    and `#682 <https://github.com/posativ/isso/issues/682>`_ for details).
+    and `#682 <https://github.com/isso-comments/isso/issues/682>`_ for details).
 
     Accepted values: ``None``, ``Lax``, ``Strict``
 
@@ -445,7 +445,7 @@ allowed-elements
        still allowed. You can only add *additional* elements here.
 
        It is planned to change this behavior, see
-       `this issue <https://github.com/posativ/isso/issues/751>`_.
+       `this issue <https://github.com/isso-comments/isso/issues/751>`_.
 
     Default: (empty)
 

@@ -41,7 +41,7 @@ english translation of the ``postbox-notification`` message, you could add:
 
     data-isso-postbox-notification-text-en="Select to be notified of replies to your comment"
 
-.. __: https://github.com/posativ/isso/blob/master/isso/js/app/i18n/en.js
+.. __: https://github.com/isso-comments/isso/blob/master/isso/js/app/i18n/en.js
 
 data-isso-* directives
 ------------------------
@@ -97,7 +97,7 @@ data-isso-lang
 
     You can find a list of all supported languages by browsing the
     `i18n directory
-    <https://github.com/posativ/isso/tree/master/isso/js/app/i18n>`_ of
+    <https://github.com/isso-comments/isso/tree/master/isso/js/app/i18n>`_ of
     the source tree.
 
     Default: ``null``

@@ -11,7 +11,7 @@ participating.
    written or click the top right **"Edit on GitHub"** button to directly edit
    a page.
 
-.. _docs/: https://github.com/posativ/isso/tree/master/docs
+.. _docs/: https://github.com/isso-comments/isso/tree/master/docs
 
 Sections covered in this document:
 
@@ -251,7 +251,7 @@ Then visit ``localhost:8000``
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

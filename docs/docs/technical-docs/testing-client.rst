@@ -208,7 +208,7 @@ Then commit those generated ``.hash`` files in
    older Ubuntu versions - another reason to stick to the Docker environment
    for consistency.
 
-.. _integration tests folder: https://github.com/posativ/isso/tree/master/isso/js/tests/screenshots
+.. _integration tests folder: https://github.com/isso-comments/isso/tree/master/isso/js/tests/screenshots
 
 Testing standards
 -----------------
@@ -288,7 +288,7 @@ Make a new commit for the changes to the snapshot - here's an example:
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

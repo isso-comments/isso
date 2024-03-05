@@ -5,7 +5,7 @@ To generate this documentation:
 1. Install `Node.js` and `npm`
 2. Run:
   ```console
-  git clone https://github.com/posativ/isso && cd isso
+  git clone https://github.com/isso-comments/isso && cd isso
   make apidoc-init apidoc
   ```
 3. View API documentation in browser at `./apidoc/_output/index.html`:

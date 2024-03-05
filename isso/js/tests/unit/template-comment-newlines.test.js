@@ -10,8 +10,8 @@
 "use strict";
 
 /* Test rendered code blocks inside "comment" template
- * See https://github.com/posativ/isso/discussions/856
- * and https://github.com/posativ/isso/pull/857
+ * See https://github.com/isso-comments/isso/discussions/856
+ * and https://github.com/isso-comments/isso/pull/857
  */
 
 // Set up our document body

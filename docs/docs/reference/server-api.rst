@@ -19,7 +19,7 @@ API is extensively documented using an `apiDoc`_-compatible syntax in
 
 .. _Current API documentation: /docs/api/
 .. _apiDoc: https://apidocjs.com/
-.. _isso/views/comments.py: https://github.com/posativ/isso/blob/master/isso/views/comments.py
+.. _isso/views/comments.py: https://github.com/isso-comments/isso/blob/master/isso/views/comments.py
 
 Sections covered in this document:
 
