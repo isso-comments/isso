@@ -880,6 +880,9 @@ class API(object):
         if root_id not in reply_counts:
             reply_counts[root_id] = 0
 
+        # We need to calculate the total number of comments for the root response value
+        total_replies = sum(reply_counts.values()) if root_id is None else reply_counts[root_id]
+
         try:
             nested_limit = int(request.args.get('nested_limit'))
         except TypeError:
@@ -889,7 +892,7 @@ class API(object):
 
         rv = {
             'id': root_id,
-            'total_replies': reply_counts[root_id],
+            'total_replies': total_replies,
             'hidden_replies': reply_counts[root_id] - len(root_list),
             'replies': self._process_fetched_list(root_list, plain),
             'config': self.public_conf
