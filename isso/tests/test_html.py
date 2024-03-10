@@ -67,6 +67,8 @@ class TestHTML(unittest.TestCase):
              ['<a href="http://example.org/" rel="nofollow noopener">Ha</a>',
               '<a rel="nofollow noopener" href="http://example.org/">Ha</a>']),
             ('<a href="sms:+1234567890">Ha</a>', '<a>Ha</a>'),
+            ('ld.so', 'ld.so'),
+            ('/usr/lib/x86_64-linux-gnu/libc/memcpy-preload.so', '/usr/lib/x86_64-linux-gnu/libc/memcpy-preload.so'),
             ('<p style="visibility: hidden;">Test</p>', '<p>Test</p>'),
             ('<script>alert("Onoe")</script>', 'alert("Onoe")')]
 
