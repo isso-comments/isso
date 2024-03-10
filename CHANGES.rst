@@ -22,10 +22,12 @@ Bugfixes & Improvements
 - Changed website validation to allow domain names containing umlauts (`#951`_, schneidr)
 - Improve Spanish translation (`#967`_, welpo)
 - Make language code handling more robust (`#983`_, ix5)
+- Handle deleted comments in Disqus migration (`#994`_, pkvach)
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
 .. _#983: https://github.com/posativ/isso/pull/983
+.. _#994: https://github.com/isso-comments/isso/pull/994
 
 0.13.1.dev0 (2023-02-05)
 ------------------------
