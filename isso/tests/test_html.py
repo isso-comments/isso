@@ -70,6 +70,8 @@ class TestHTML(unittest.TestCase):
             ('ld.so', 'ld.so'),
             ('/usr/lib/x86_64-linux-gnu/libc/memcpy-preload.so', '/usr/lib/x86_64-linux-gnu/libc/memcpy-preload.so'),
             ('<p style="visibility: hidden;">Test</p>', '<p>Test</p>'),
+            ('<code class="language-cpp">Test</code>', '<code class="language-cpp">Test</code>'),
+            ('<code class="test language-cpp">Test</code>', '<code>Test</code>'),
             ('<script>alert("Onoe")</script>', 'alert("Onoe")')]
 
         for (input, expected) in examples:
@@ -122,7 +124,7 @@ class TestHTML(unittest.TestCase):
         convert = html.Markdown(extensions=('fenced-code',))
         examples = [
             ("```\nThis is a code-fence. <hello>\n```", "<p><pre><code>This is a code-fence. &lt;hello&gt;\n</code></pre></p>"),
-            ("```c++\nThis is a code-fence. <hello>\n```", "<p><pre><code class=\"c++\">This is a code-fence. &lt;hello&gt;\n</code></pre></p>"),
+            ("```cpp\nThis is a code-fence. <hello>\n```", "<p><pre><code class=\"language-cpp\">This is a code-fence. &lt;hello&gt;\n</code></pre></p>"),
             ("    This is a four-character indent. <hello>", "<p><pre><code>This is a four-character indent. &lt;hello&gt;\n</code></pre></p>")]
 
         for (input, expected) in examples:
