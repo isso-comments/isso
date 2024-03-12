@@ -8,8 +8,10 @@ New Features
 ^^^^^^^^^^^^
 
 - Add Catalan localisation (`#966`_, welpo)
+- Make <code class="language-$lang"> for syntax highlighting (`#998`_, pkvach)
 
 .. _#966: https://github.com/posativ/isso/pull/966
+.. _#998: https://github.com/isso-comments/isso/pull/998
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
