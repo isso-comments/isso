@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Isso admin</title>
   <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
   <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
-  <script type="text/javascript" src="{{isso_host_script}}/js/admin.js"></script>
+  <script src="{{isso_host_script}}/js/admin.js"></script>
 </head>
 <body>
   <div class="wrapper">
@@ -89,7 +89,7 @@
     </div>
   {% endif %}
     <div class='isso-text-wrapper'>
-      <div class='isso-comment-header' role='meta'>
+      <div class='isso-comment-header'>
         {% if order_by != "tid" %}
           <div>Thread: {{comment.title}} (<a href="{{comment.uri}}">{{comment.uri}}</a>)</div><br />
         {% endif %}

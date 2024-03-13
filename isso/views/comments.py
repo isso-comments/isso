@@ -1296,12 +1296,12 @@ class API(object):
           <div id="wrapper" style="max-width: 900px; margin-left: auto; margin-right: auto;">
            <h2><a href=".">Isso Demo</a></h2>
            <script src="../js/embed.dev.js" data-isso="../" ></script>
-           <section>
+           <div>
              <p>This is a link to a thead, which will display a comment counter:
              <a href=".#isso-thread">How many Comments?</a></p>
              <p>Below is the actual comment field.</p>
-           </section>
-           <section id="isso-thread" data-title="Isso Test"><noscript>Javascript needs to be activated to view comments.</noscript></section>
+           </div>
+           <div id="isso-thread" data-title="Isso Test"><noscript>Javascript needs to be activated to view comments.</noscript></div>
           </div>
          </div>
         </body>
