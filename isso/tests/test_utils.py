@@ -51,8 +51,8 @@ class TestParse(unittest.TestCase):
                     <header>
                         <h1>Can you find me?</h1>
                     </header>
-                    <section id="isso-thread">
-                    </section>
+                    <div id="isso-thread">
+                    </div>
                 </article>
             </body>
             </html>"""), (None, 'Can you find me?'))
@@ -61,12 +61,12 @@ class TestParse(unittest.TestCase):
             <html>
             <body>
             <h1>I'm the real title!1
-            <section data-title="No way%21" id="isso-thread">
+            <div data-title="No way%21" id="isso-thread">
             """), (None, 'No way!'))
 
         self.assertEqual(parse.thread("""
-            <section id="isso-thread" data-title="Test" data-isso-id="test">
+            <div id="isso-thread" data-title="Test" data-isso-id="test">
             """), ('test', 'Test'))
 
-        self.assertEqual(parse.thread('<section id="isso-thread" data-isso-id="Fuu.">'),
+        self.assertEqual(parse.thread('<div id="isso-thread" data-isso-id="Fuu.">'),
                          ('Fuu.', 'Untitled.'))
