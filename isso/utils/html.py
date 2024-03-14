@@ -1,12 +1,20 @@
 # -*- encoding: utf-8 -*-
 
 import html
+import re
 
 import bleach
 import misaka
 
 
 class Sanitizer(object):
+
+    # pattern to match a valid class attribute for code tags
+    code_language_pattern = re.compile(r"^language-[a-zA-Z0-9]{1,20}$")
+
+    @staticmethod
+    def allow_attribute_class(tag, name, value):
+        return name == "class" and bool(Sanitizer.code_language_pattern.match(value))
 
     def __init__(self, elements, attributes):
         # attributes found in Sundown's HTML serializer [1]
@@ -20,8 +28,13 @@ class Sanitizer(object):
                          "h1", "h2", "h3", "h4", "h5", "h6", "sub", "sup",
                          "table", "thead", "tbody", "th", "td"] + elements
 
-        # href for <a> and align for <table>
-        self.attributes = ["align", "href"] + attributes
+        # allowed attributes for tags
+        self.attributes = {
+            "table": ["align"],
+            "a": ["href"],
+            "code": Sanitizer.allow_attribute_class,
+            "*": attributes
+        }
 
     def sanitize(self, text):
         clean_html = bleach.clean(text, tags=self.elements, attributes=self.attributes, strip=True)
@@ -73,11 +86,11 @@ class Unofficial(misaka.HtmlRenderer):
 
     For instance, fenced code blocks (~~~ or ```) are just wrapped in <code>
     which does not preserve line breaks. If a language is given, it is added
-    to <code class="$lang">, compatible with Highlight.js.
+    to <code class="language-$lang">, compatible with Highlight.js.
     """
 
     def blockcode(self, text, lang):
-        lang = ' class="{0}"'.format(html.escape(lang)) if lang else ''
+        lang = ' class="language-{0}"'.format(html.escape(lang)) if lang else ''
         return "<pre><code{1}>{0}</code></pre>\n".format(html.escape(text, False), lang)
 
 
