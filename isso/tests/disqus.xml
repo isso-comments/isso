@@ -79,7 +79,7 @@
     </post>
 
     <!-- Empty thread title and thead id
-         reported by waqqasdadabhoy in https://github.com/posativ/isso/issues/728 -->
+         reported by waqqasdadabhoy in https://github.com/isso-comments/isso/issues/728 -->
     <thread dsq:id="7">
         <id />
         <forum>redacted</forum>

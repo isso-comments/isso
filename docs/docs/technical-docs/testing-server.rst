@@ -37,7 +37,7 @@ Generate and view server **test coverage**:
 
 .. note::
    The Continuous Integration suite running via
-   `GitHub Actions <https://github.com/posativ/isso/blob/master/.github/workflows/python-tests.yml>`_
+   `GitHub Actions <https://github.com/isso-comments/isso/blob/master/.github/workflows/python-tests.yml>`_
    will throw an **error** if either the unit tests, the integration tests or
    the ``flake8`` tests fail or the code coverage falls **below 70%**.
 
@@ -74,7 +74,7 @@ development directory).
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

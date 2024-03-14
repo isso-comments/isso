@@ -34,7 +34,7 @@ To get a list of all available options:
     contrib/dump_comments.py --help
 
 By installing the optional colorama dependency, you'll get a colored output.
-An example of output can be found at https://github.com/posativ/isso/issues/634
+An example of output can be found at https://github.com/isso-comments/isso/issues/634
 """
 
 import argparse

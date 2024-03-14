@@ -7,7 +7,7 @@ Technical Documentation: Client
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

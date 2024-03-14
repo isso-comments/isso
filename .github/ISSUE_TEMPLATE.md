@@ -2,7 +2,7 @@
 ## Checklist
 - [ ] I am running the latest version. Installing Isso from GitHub from the `master` branch does not fix my issue
 - [ ] I have checked the [troubleshooting guide](https://isso-comments.de/docs/guides/troubleshooting/)
-- [ ] I have searched the [open issues](https://github.com/posativ/isso/issues), but my issue has not already been reported
+- [ ] I have searched the [open issues](https://github.com/isso-comments/isso/issues), but my issue has not already been reported
 
 ## What is not working?
 <!-- Explain your issue in detail -->

@@ -9,7 +9,7 @@ Getting in contact
 ------------------
 
 The main place of interaction for the Isso community is the
-`GitHub issue tracker <https://github.com/posativ/isso/issues>`_.
+`GitHub issue tracker <https://github.com/isso-comments/isso/issues>`_.
 
 A few people - including the lead developers and maintainers - frequent the
 ``#isso`` channel, which you can join via
@@ -17,7 +17,7 @@ A few people - including the lead developers and maintainers - frequent the
 `Libera.Chat <https://libera.chat/>`_
 
 You may also ask questions or suggest improvements on
-`GitHub Discussions <https://github.com/posativ/isso/discussions>`_.
+`GitHub Discussions <https://github.com/isso-comments/isso/discussions>`_.
 
 .. _scripts-and-helpers:
 
@@ -26,7 +26,7 @@ Scripts & Helpers
 
 Some utility scripts have been developed by isso users.
 They are stored in the `GitHub contrib/ directory
-<https://github.com/posativ/isso/tree/master/contrib>`_ :
+<https://github.com/isso-comments/isso/tree/master/contrib>`_ :
 
 * `dump_comments.py` : dump isso comments as text, optionally with color
 * `import_blogger.py` : comment importer from Blogger
@@ -37,7 +37,7 @@ Powered by Isso
 ---------------
 
 A list of websites and people that use Isso can be found at
-`the wiki at GitHub <https://github.com/posativ/isso/wiki/Powered-by-isso>`_.
+`the wiki at GitHub <https://github.com/isso-comments/isso/wiki/Powered-by-isso>`_.
 
 Feel free to add your own project to the list!
 
@@ -53,7 +53,7 @@ like Hugo, Ghost or Pelican.*
    - Remember to add last updated timestamp (mon/year) to each new/updated article
    - Only publicly keep most relevant articles/tutorials here, the rest can
      stay as commented-out ones to avoid duplicates (see list below)
-   - Migration complete from https://github.com/posativ/isso/wiki/Tutorials,
+   - Migration complete from https://github.com/isso-comments/isso/wiki/Tutorials,
      wiki page deleted
 
 * `Add comments to a static blog with Isso <https://oktomus.com/posts/2020/add-comments-to-a-static-blog-with-isso/>`_ (1/2020)
@@ -129,7 +129,7 @@ Some popular options are:
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

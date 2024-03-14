@@ -11,7 +11,7 @@ aware of (this is called "test coverage"). For more information, see
 
 The **Javascript client** code is covered by both unit tests and end-to-end
 integration tests. The test coverage is very small at the moment - see
-`this GitHub issue <https://github.com/posativ/isso/issues/754>`_.
+`this GitHub issue <https://github.com/isso-comments/isso/issues/754>`_.
 For detailed instructions about running client tests, see
 :doc:`testing-client`.
 
@@ -58,7 +58,7 @@ a requirement, but can make a few tests faster to set up, makes automation
 easier and ensures a consistent testing environment across developer machines.
 
 Isso ships with several ``Dockerfiles`` - the ones under the
-`docker/ folder <https://github.com/posativ/isso/tree/master/docker>`_ are for
+`docker/ folder <https://github.com/isso-comments/isso/tree/master/docker>`_ are for
 creating a container that can run the unit and integration tests.
 
 Build images
@@ -190,7 +190,7 @@ Be a chaos monkey! Think of unconventional ways of breaking Isso.
 
    Click the ``Edit on GitHub`` button in the top right corner and read the
    GitHub Issue named
-   `Improve & Expand Documentation <https://github.com/posativ/isso/issues/797>`_
+   `Improve & Expand Documentation <https://github.com/isso-comments/isso/issues/797>`_
    for further information.
 
    **What's missing?**

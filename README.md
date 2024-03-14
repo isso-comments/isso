@@ -52,7 +52,7 @@ A Docker image with the latest stable release is provided at
 ## Contributing
 
 - Pull requests are very much welcome! These might be
-  [good first issues](https://github.com/posativ/isso/labels/good-first-issue)
+  [good first issues](https://github.com/isso-comments/isso/labels/good-first-issue)
 - See [Ways to Contribute](https://isso-comments.de/docs/contributing/)
 - [Translate](https://isso-comments.de/docs/contributing/#translations)
 
@@ -66,7 +66,7 @@ Refer to the docs for
 
 - Join `#isso` via [Matrix](https://matrix.to/#/#isso:libera.chat) or via IRC on
   [Libera.Chat](https://libera.chat/)
-- Ask a question on [GitHub Discussions](https://github.com/posativ/isso/discussions).
+- Ask a question on [GitHub Discussions](https://github.com/isso-comments/isso/discussions).
 
 ## License
 

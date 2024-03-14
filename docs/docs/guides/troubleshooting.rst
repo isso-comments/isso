@@ -47,5 +47,5 @@ The web console shows 404 Not Found responses
 
 Isso returned "404 Not Found" to indicate "No comments" in versions prior to
 0.12.3. This behaviour was changed in
-`a pull request <https://github.com/posativ/isso/pull/565>`_ to return a code
+`a pull request <https://github.com/isso-comments/isso/pull/565>`_ to return a code
 of "200" with an empty array.
