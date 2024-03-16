@@ -167,7 +167,7 @@ class Comments:
         return dict(comment_count)
 
     def fetchall(self, mode=5, after=0, parent='any', order_by='id',
-                 limit=100, page=0, asc=1):
+                 limit=100, page=0, asc=1, comment_id=None):
         """
         Return comments for admin with :param:`mode`.
         """
@@ -182,8 +182,14 @@ class Comments:
         sql = ['SELECT ' + sql_comments_fields + ', ' + sql_threads_fields + ' '
                'FROM comments INNER JOIN threads '
                'ON comments.tid=threads.id '
-               'WHERE comments.mode = ? ']
-        sql_args = [mode]
+               'WHERE ']
+
+        if comment_id:
+            sql.append('comments.id = ? ')
+            sql_args = [comment_id]
+        else:
+            sql.append('comments.mode = ? ')
+            sql_args = [mode]
 
         if parent != 'any':
             if parent is None:
