@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from html import escape
 from io import BytesIO as StringIO
 from os import path as os_path
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote, urlparse, urlsplit
 from xml.etree import ElementTree as ET
 
 from itsdangerous import SignatureExpired, BadSignature
@@ -82,6 +82,38 @@ def xhr(func):
         return func(self, env, req, *args, **kwargs)
 
     return dec
+
+
+def get_comment_id_from_url(comment_url):
+    """
+    Extracts the comment ID from a given comment URL.
+
+    Args:
+        comment_url (str): The URL of the comment.
+
+    Returns:
+        int or None: The extracted comment ID if successful, None otherwise.
+    """
+    try:
+        # Parse the comment URL to extract the comment ID from the fragment
+        parsed_url = urlsplit(comment_url)
+    except ValueError:
+        # Handle malformed URL
+        return None
+
+    fragment = parsed_url.fragment
+    if not fragment or '-' not in fragment:
+        # Handle missing fragment or fragment without hyphen
+        return None
+
+    last_element = fragment.split('-')[-1]
+    try:
+        comment_id = int(last_element)
+    except ValueError:
+        # Handle invalid comment ID
+        return None
+
+    return comment_id
 
 
 class API(object):
@@ -1402,16 +1434,8 @@ class API(object):
 
         # Search for a specific comment by URL
         if comment_url:
-            try:
-                # Parse the comment URL to extract the comment ID from the fragment
-                parsed_url = urlparse(comment_url)
-                fragment = parsed_url.fragment
-                comment_id = int(fragment.split('-')[-1])
-
-                comments = self.comments.fetchall(comment_id=comment_id, limit=1)
-            except Exception:
-                # If the URL is malformed or the comment does not exist
-                comments = []
+            comment_id = get_comment_id_from_url(comment_url)
+            comments = self.comments.fetchall(comment_id=comment_id, limit=1) if comment_id else []
         else:
             comments = self.comments.fetchall(mode=mode, page=page,
                                               limit=page_size,
