@@ -113,4 +113,37 @@
         <thread dsq:id="7" />
     </post>
 
+    <!-- deleted post -->
+    <post dsq:id="9">
+        <id/>
+        <message/>
+        <createdAt>2013-10-10T19:20:29Z</createdAt>
+        <isDeleted>true</isDeleted>
+        <isSpam>false</isSpam>
+        <author>
+            <email>foo@bar.com</email>
+            <name>peter</name>
+            <isAnonymous>true</isAnonymous>
+        </author>
+        <ipAddress>127.0.0.1</ipAddress>
+        <thread dsq:id="2" />
+    </post>
+
+    <!-- reference to previous deleted post -->
+    <post dsq:id="11">
+        <message><![CDATA[<p>Hello, World.</p>]]></message>
+        <createdAt>2013-10-11T06:52:33Z</createdAt>
+        <isDeleted>false</isDeleted>
+        <isSpam>false</isSpam>
+        <author>
+            <email>foo@bar.com</email>
+            <name>user</name>
+            <isAnonymous>false</isAnonymous>
+            <username>user</username>
+        </author>
+        <ipAddress>127.0.0.1</ipAddress>
+        <thread dsq:id="2" />
+        <parent dsq:id="9" />
+    </post>
+
   </disqus>
