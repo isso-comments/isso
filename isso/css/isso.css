@@ -1,3 +1,41 @@
+:root {
+    --isso-primary-text-color: #555;
+    --isso-secondary-text-color: #808080;
+
+    --isso-border: 1px solid rgba(0, 0, 0, 0.2);
+    --isso-box-shadow-color: rgba(0, 0, 0, 0.1);
+    --isso-hover-color: #606060;
+
+    --isso-link-hover-color: #111;
+    --isso-link-text-shadow-color: #aaa;
+
+    --isso-input-background-color: #fff;
+    --isso-input-outline-color: #3584e4;
+
+    --isso-button-background-color: #ddd;
+    --isso-button-border: 1px solid #ccc;
+    --isso-button-hover-background-color: #ccc;
+    --isso-button-active-background-color: #bbb;
+
+    --isso-preview-border-color: #f0f0f0;
+    --isso-preview-box-shadow-color: #888;
+    --isso-preview-background: repeating-linear-gradient(
+            -45deg,
+            #f8f8f8,
+            #f8f8f8 10px,
+            #fff 10px,
+            #fff 20px
+    );
+
+    --isso-pre-color: #4d4d4c;
+    --isso-pre-background-color: #eee;
+    --isso-pre-border-color: #ddd;
+
+    --isso-comment-divider-color: rgba(0, 0, 0, 0.1);
+    --isso-page-author-suffix-color: #2c2c2c;
+    --isso-target-fade-background-color: #eee5a1;
+}
+
 /* ========================================================================== */
 /* Generic styling                                                            */
 /* ========================================================================== */
@@ -16,7 +54,7 @@
     margin: 0;
 }
 h4.isso-thread-heading {
-    color: #555;
+    color: var(--isso-primary-text-color);
     font-weight: bold;
 }
 .isso-feedlink {
@@ -42,7 +80,7 @@ h4.isso-thread-heading {
 }
 .isso-comment:not(:first-of-type),
 .isso-follow-up .isso-comment {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--isso-comment-divider-color);
     margin-bottom: 0.5em;
 }
 .isso-avatar {
@@ -55,9 +93,9 @@ h4.isso-thread-heading {
     max-height: 48px;
     width: 100%;
     height: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border: var(--isso-border);
     border-radius: 3px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px var(--isso-box-shadow-color);
 }
 .isso-text-wrapper {
     display: block;
@@ -83,7 +121,7 @@ h4.isso-thread-heading {
 .isso-permalink,
 .isso-note,
 .isso-parent {
-    color: gray;
+    color: var(--isso-secondary-text-color);
     font-weight: normal;
     text-shadow: none;
 }
@@ -91,26 +129,26 @@ h4.isso-thread-heading {
 .isso-permalink:hover,
 .isso-note:hover,
 .isso-parent:hover {
-    color: #606060;
+    color: var(--isso-hover-color);
 }
 .isso-note {
     float: right;
 }
 .isso-author {
     font-weight: bold;
-    color: #555;
+    color: var(--isso-primary-text-color);
 }
 .isso-page-author-suffix {
     font-weight: bold;
-    color: #2c2c2c;
+    color: var(--isso-page-author-suffix-color);
 }
 .isso-textarea,
 .isso-preview {
     margin-top: 0.2em;
     width: 100%;
-    border: 1px solid #f0f0f0;
+    border: 1px solid var(--isso-preview-border-color);
     border-radius: 2px;
-    box-shadow: 0 0 2px #888;
+    box-shadow: 0 0 2px var(--isso-box-shadow-color);
 }
 .isso-text {
     word-break: break-word;
@@ -131,10 +169,10 @@ h4.isso-thread-heading {
     font-weight: bold;
 }
 .isso-text pre {
-    background: #eee;
-    border: 1px solid #ddd;
+    background: var(--isso-pre-background-color);
+    border: 1px solid var(--isso-pre-border-color);
     padding: 10px 15px;
-    color: #4d4d4c;
+    color: var(--isso-pre-color);
     overflow: auto;
     line-height: 1.5em;
 }
@@ -142,12 +180,12 @@ h4.isso-thread-heading {
     padding: .2em .4em;
     margin: 0;
     font-size: 85%;
-    background-color: #eeeeee;
+    background-color: var(--isso-pre-background-color);
     border-radius: 6px;
 }
 .isso-comment-footer {
     font-size: 0.80em;
-    color: gray;
+    color: var(--isso-secondary-text-color);
     clear: left;
 }
 .isso-feedlink,
@@ -157,8 +195,8 @@ h4.isso-thread-heading {
 }
 .isso-feedlink:hover,
 .isso-comment-footer a:hover {
-    color: #111111;
-    text-shadow: #aaaaaa 0 0 1px;
+    color: var(--isso-link-hover-color);
+    text-shadow: var(--isso-link-text-shadow-color) 0 0 1px;
 }
 .isso-comment-footer > a {
     position: relative;
@@ -168,7 +206,7 @@ h4.isso-thread-heading {
     padding-left: 1em;
 }
 .isso-comment-footer .isso-votes {
-    color: gray;
+    color: var(--isso-secondary-text-color);
 }
 .isso-upvote svg,
 .isso-downvote svg {
@@ -200,9 +238,9 @@ h4.isso-thread-heading {
     margin: 0 0 .3em;
     padding: .4em .8em;
     border-radius: 3px;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background-color: var(--isso-input-background-color);
+    border: var(--isso-border);
+    box-shadow: 0 1px 2px var(--isso-box-shadow-color);
 }
 .isso-textarea {
     outline: 0;
@@ -227,7 +265,7 @@ h4.isso-thread-heading {
 .isso-textarea:focus,
 .isso-input-wrapper input:focus,
 .isso-auth-section input:focus {
-    outline: 2px solid #3584e4;
+    outline: 2px solid var(--isso-input-outline-color);
 }
 .isso-input-wrapper {
     display: inline-block;
@@ -239,10 +277,10 @@ h4.isso-thread-heading {
     padding: .3em 10px;
     max-width: 100%;
     border-radius: 3px;
-    background-color: #fff;
+    background-color: var(--isso-input-background-color);
     line-height: 1.4em;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border: var(--isso-border);
+    box-shadow: 0 1px 2px var(--isso-box-shadow-color);
 }
 .isso-input-wrapper label {
     display: block;
@@ -257,18 +295,18 @@ h4.isso-thread-heading {
 .isso-post-action > input {
     padding: calc(.3em - 1px);
     border-radius: 2px;
-    border: 1px solid #ccc;
-    background-color: #ddd;
+    border: var(--isso-button-border);
+    background-color: var(--isso-button-background-color);
     cursor: pointer;
     outline: 0;
     line-height: 1.4em;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px var(--isso-box-shadow-color);
 }
 .isso-post-action > input:hover {
-    background-color: #ccc;
+    background-color: var(--isso-button-hover-background-color);
 }
 .isso-post-action > input:active {
-    background-color: #bbb;
+    background-color: var(--isso-button-active-background-color);
 }
 
 /* ========================================================================== */
@@ -287,14 +325,7 @@ h4.isso-thread-heading {
     display: inline;
 }
 .isso-preview {
-    background-color: #f8f8f8;
-    background: repeating-linear-gradient(
-        -45deg,
-        #f8f8f8,
-        #f8f8f8 10px,
-        #fff 10px,
-        #fff 20px
-    );
+    background: var(--isso-preview-background);
 }
 
 /* ========================================================================== */
@@ -308,7 +339,7 @@ h4.isso-thread-heading {
     animation: isso-target-fade 5s ease-out;
 }
 @keyframes isso-target-fade {
-    0% { background-color: #eee5a1; }
+    0% { background-color: var(--isso-target-fade-background-color); }
     /* This color should be changed when used on a dark background,
      * maybe #3f3c1c for example
      */
