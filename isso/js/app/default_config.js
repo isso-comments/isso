@@ -13,6 +13,7 @@ var default_config = {
     "max-comments-top": "inf",
     "max-comments-nested": 5,
     "reveal-on-click": 5,
+    "sorting": "oldest",
     "gravatar": false,
     "avatar": true,
     "avatar-bg": "#f0f0f0",

@@ -13,6 +13,7 @@ preferably in the script tag which embeds the JS:
             data-isso-max-comments-top="10"
             data-isso-max-comments-nested="5"
             data-isso-reveal-on-click="5"
+            data-isso-sorting="newest"
             data-isso-avatar="true"
             data-isso-avatar-bg="#f0f0f0"
             data-isso-avatar-fg="#9abf88 #5698c4 #e279a3 #9163b6 ..."
@@ -254,6 +255,21 @@ data-isso-reply-notifications-default-enabled
 
     .. versionadded:: 0.13
 
+
+.. _data-isso-sorting:
+
+data-isso-sorting
+    Sort thread comments by specified sorting method.
+
+    Possible sorting methods:
+
+    - ``newest``: Bring newest comments to the top
+    - ``oldest``: Bring oldest comments to the top
+    - ``upvotes``: Bring most liked comments to the top
+
+    Default sorting is ``oldest``.
+
+    .. versionadded:: 0.13.1
 
 Deprecated Client Settings
 --------------------------

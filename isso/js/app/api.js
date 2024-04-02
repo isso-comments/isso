@@ -138,17 +138,13 @@ var view = function(id, plain) {
     return deferred.promise;
 };
 
-var fetch = function(tid, limit, nested_limit, parent, lastcreated) {
-    if (typeof(limit) === 'undefined') { limit = "inf"; }
-    if (typeof(nested_limit) === 'undefined') { nested_limit = "inf"; }
-    if (typeof(parent) === 'undefined') { parent = null; }
+var fetch = function({ tid, limit = "inf", nested_limit = "inf", parent = null, sort = "", offset = 0 }) {
+    var query_dict = { uri: tid || location(), sort, parent, offset };
 
-    var query_dict = {uri: tid || location(), after: lastcreated, parent: parent};
-
-    if(limit !== "inf") {
+    if (limit !== "inf") {
         query_dict['limit'] = limit;
     }
-    if(nested_limit !== "inf"){
+    if (nested_limit !== "inf") {
         query_dict['nested_limit'] = nested_limit;
     }
 

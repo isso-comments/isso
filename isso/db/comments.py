@@ -238,11 +238,11 @@ class Comments:
             yield dict(zip(fields_comments + fields_threads, item))
 
     def fetch(self, uri, mode=5, after=0, parent='any',
-              order_by='id', asc=1, limit=None):
+              order_by='id', asc=1, limit=None, offset=0):
         """
         Return comments for :param:`uri` with :param:`mode`.
         """
-        sql = ['SELECT comments.* FROM comments INNER JOIN threads ON',
+        sql = ['SELECT comments.*, likes - dislikes AS karma FROM comments INNER JOIN threads ON',
                '    threads.uri=? AND comments.tid=threads.id AND (? | comments.mode) = ?',
                '    AND comments.created>?']
 
@@ -256,14 +256,18 @@ class Comments:
                 sql_args.append(parent)
 
         # custom sanitization
-        if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes']:
+        if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'karma']:
             order_by = 'id'
         sql.append('ORDER BY ')
         sql.append(order_by)
         if not asc:
             sql.append(' DESC')
 
-        if limit:
+        if offset and limit:
+            sql.append('LIMIT ?,?')
+            sql_args.append(offset)
+            sql_args.append(limit)
+        elif limit:
             sql.append('LIMIT ?')
             sql_args.append(limit)
 
@@ -350,7 +354,7 @@ class Comments:
             return {'likes': likes + 1, 'dislikes': dislikes}
         return {'likes': likes, 'dislikes': dislikes + 1}
 
-    def reply_count(self, url, mode=5, after=0):
+    def reply_count(self, url, mode=5):
         """
         Return comment count for main thread and all reply threads for one url.
         """
@@ -358,11 +362,10 @@ class Comments:
         sql = ['SELECT comments.parent,count(*)',
                'FROM comments INNER JOIN threads ON',
                '   threads.uri=? AND comments.tid=threads.id AND',
-               '   (? | comments.mode = ?) AND',
-               '   comments.created > ?',
+               '   (? | comments.mode = ?)',
                'GROUP BY comments.parent']
 
-        return dict(self.db.execute(sql, [url, mode, mode, after]).fetchall())
+        return dict(self.db.execute(sql, [url, mode, mode]).fetchall())
 
     def count(self, *urls):
         """
