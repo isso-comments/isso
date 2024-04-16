@@ -438,7 +438,7 @@ For a more detailed explanation, see :doc:`/docs/reference/markdown-config`.
     renderer = mistune
     options = strikethrough, superscript, autolink, fenced-code
     flags =
-    allowed-elements =
+    allowed-html-elements =
     allowed-attributes =
 
 renderer
@@ -470,7 +470,7 @@ allowed-elements
 
     By default, only ``a``, ``blockquote``, ``br``, ``code``, ``del``, ``em``,
     ``h1``, ``h2``, ``h3``, ``h4``, ``h5``, ``h6``, ``hr``, ``ins``, ``li``,
-    ``ol``, ``p``, ``pre``, ``strong``, ``table``, ``tbody``, ``td``, ``th``,
+    ``ol``, ``p``, ``pre``, ``strong``, ``table``, ``tbody``, ``tr``, ``td``, ``th``,
     ``thead`` and ``ul`` are allowed.
 
     For a more detailed explanation, see :doc:`/docs/reference/markdown-config`.
@@ -482,10 +482,28 @@ allowed-elements
        mean that ``br, code, del, ...`` and all other default allowed tags are
        still allowed. You can only add *additional* elements here.
 
-       It is planned to change this behavior, see
-       `this issue <https://github.com/isso-comments/isso/issues/751>`_.
+       To specify a list of *only* allowed elements, use the
+       ``allowed-html-elements`` option instead.
 
     Default: (empty)
+
+    .. deprecated:: 0.14.1
+
+       Superseded by ``allowed-html-elements``, which gives full control over
+       the list of allowed elements instead of only appending to it. If both
+       options are set, elements listed here are still added on top of
+       ``allowed-html-elements`` for backwards compatibility, but a warning
+       is logged. Please migrate to ``allowed-html-elements``.
+
+allowed-html-elements
+
+    **Only** allow the specified HTML tags in the generated output, comma-separated.
+    If ``allowed-elements`` is also set, its elements are added on top of this
+    list (with a deprecation warning logged); migrate them here instead.
+
+    Default: (empty)
+
+    .. versionadded:: 0.14.1
 
 allowed-attributes
     **Additional** HTML attributes (independent from elements) to allow in the
