@@ -10,10 +10,14 @@ New Features
 - Add Catalan localisation (`#966`_, welpo)
 - Make <code class="language-$lang"> for syntax highlighting (`#998`_, pkvach)
 - Add search for comments by URL in the admin interface (`#1000`_, pkvach)
+- Add CSS variables for better organization and flexibility (`#1001`_, pkvach)
 
 .. _#966: https://github.com/posativ/isso/pull/966
 .. _#998: https://github.com/isso-comments/isso/pull/998
 .. _#1000: https://github.com/isso-comments/isso/pull/1000
+.. _#966: https://github.com/posativ/isso/pull/966
+.. _#998: https://github.com/isso-comments/isso/pull/998
+.. _#1001: https://github.com/isso-comments/isso/pull/1001
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
@@ -28,12 +32,14 @@ Bugfixes & Improvements
 - Make language code handling more robust (`#983`_, ix5)
 - Prevent auto creation of invalid links in comments (`#995`_, pkvach)
 - Fix W3C Validation issues (`#999`_, pkvach)
+- Handle deleted comments in Disqus migration (`#994`_, pkvach)
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
 .. _#983: https://github.com/posativ/isso/pull/983
 .. _#995: https://github.com/isso-comments/isso/pull/995
 .. _#999: https://github.com/isso-comments/isso/pull/999
+.. _#994: https://github.com/isso-comments/isso/pull/994
 
 0.13.1.dev0 (2023-02-05)
 ------------------------

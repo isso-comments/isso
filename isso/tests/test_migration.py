@@ -56,7 +56,7 @@ class TestMigration(unittest.TestCase):
         Disqus(db, xml, empty_id=True).migrate()
 
         self.assertEqual(
-            len(db.execute("SELECT id FROM comments").fetchall()), 3)
+            len(db.execute("SELECT id FROM comments").fetchall()), 5)
 
         self.assertEqual(db.threads["/"]["title"], "Hello, World!")
         self.assertEqual(db.threads["/"]["id"], 1)
@@ -67,8 +67,11 @@ class TestMigration(unittest.TestCase):
         self.assertEqual(a["email"], "foo@bar.com")
         self.assertEqual(a["remote_addr"], "127.0.0.0")
 
-        b = db.comments.get(2)
+        b = db.comments.get(3)
         self.assertEqual(b["parent"], a["id"])
+
+        deleted_comment = db.comments.get(2)
+        self.assertEqual(deleted_comment["text"], "")
 
     def test_wordpress(self):
 
