@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from html import escape
 from io import BytesIO as StringIO
 from os import path as os_path
-from urllib.parse import unquote, urlparse
+from urllib.parse import unquote, urlparse, urlsplit
 from xml.etree import ElementTree as ET
 
 from itsdangerous import SignatureExpired, BadSignature
@@ -82,6 +82,38 @@ def xhr(func):
         return func(self, env, req, *args, **kwargs)
 
     return dec
+
+
+def get_comment_id_from_url(comment_url):
+    """
+    Extracts the comment ID from a given comment URL.
+
+    Args:
+        comment_url (str): The URL of the comment.
+
+    Returns:
+        int or None: The extracted comment ID if successful, None otherwise.
+    """
+    try:
+        # Parse the comment URL to extract the comment ID from the fragment
+        parsed_url = urlsplit(comment_url)
+    except ValueError:
+        # Handle malformed URL
+        return None
+
+    fragment = parsed_url.fragment
+    if not fragment or '-' not in fragment:
+        # Handle missing fragment or fragment without hyphen
+        return None
+
+    last_element = fragment.split('-')[-1]
+    try:
+        comment_id = int(last_element)
+    except ValueError:
+        # Handle invalid comment ID
+        return None
+
+    return comment_id
 
 
 class API(object):
@@ -1376,6 +1408,8 @@ class API(object):
         Comment ordering
     @apiQuery {Number{0,1}} [asc=0]
         Ascending
+    @apiQuery {String} comment_url
+        Search comment by URL
 
     @apiExample {curl} Listing of published comments:
         curl 'https://comments.example.com/admin/?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
@@ -1396,10 +1430,17 @@ class API(object):
         order_by = req.args.get('order_by', 'created')
         asc = int(req.args.get('asc', 0))
         mode = int(req.args.get('mode', 2))
-        comments = self.comments.fetchall(mode=mode, page=page,
-                                          limit=page_size,
-                                          order_by=order_by,
-                                          asc=asc)
+        comment_url = req.args.get('comment_url', '')
+
+        # Search for a specific comment by URL
+        if comment_url:
+            comment_id = get_comment_id_from_url(comment_url)
+            comments = self.comments.fetchall(comment_id=comment_id, limit=1) if comment_id else []
+        else:
+            comments = self.comments.fetchall(mode=mode, page=page,
+                                              limit=page_size,
+                                              order_by=order_by,
+                                              asc=asc)
         comments_enriched = []
         for comment in list(comments):
             comment['hash'] = self.isso.sign(comment['id'])
@@ -1411,6 +1452,7 @@ class API(object):
                                conf=self.conf, max_page=max_page,
                                counts=comment_mode_count,
                                order_by=order_by, asc=asc,
+                               comment_url=comment_url,
                                isso_host_script=isso_host_script)
     """
     @api {get} /latest latest

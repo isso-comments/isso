@@ -71,6 +71,16 @@
               </span>
             </a>
           {% endfor %}
+          <div class="search">
+            <form action="/admin/" method="get">
+              <input type="hidden" name="mode" value="0" />
+              <label>Comment URL
+                <input type="search" class="search__input" name="comment_url" value="{{comment_url}}" spellcheck="false"
+                  required placeholder="https://example.com/demo/#isso-1" />
+              </label>
+              <button type="submit" class="search__button">Search</button>
+            </form>
+          </div>
         </div>
     </div>
     <div id="isso-root">
