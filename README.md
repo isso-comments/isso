@@ -64,8 +64,7 @@ Refer to the docs for
 
 ### Help
 
-- Join `#isso` via [Matrix](https://matrix.to/#/#isso:libera.chat) or via IRC on
-  [Libera.Chat](https://libera.chat/)
+- Join `#isso` via IRC on [Libera.Chat](https://libera.chat/)
 - Ask a question on [GitHub Discussions](https://github.com/isso-comments/isso/discussions).
 
 ## License
