@@ -149,12 +149,30 @@ two options for running a Docker container:
 a) Official Docker image
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. attention::
+
+   The Docker image tagging scheme for stable releases was changed from ``:latest``
+   to ``:release`` as of March 2024 (`#970`_, `#1012`_).
+
+.. _#970: https://github.com/isso-comments/isso/pull/970
+.. _#1012: https://github.com/isso-comments/isso/pull/1012
+
+A `Docker image`_ with the latest stable release is provided at
+``ghcr.io/isso-comments/isso:release``, while ``isso:latest`` is rebuilt on
+every push to the ``master`` branch.
+
+The maintainers recommend pinning the image to a `release tag`_, e.g.
+``isso:0.13.0``.
+
 .. code-block:: console
 
-    $ docker pull ghcr.io/isso-comments/isso:latest
+    $ docker pull ghcr.io/isso-comments/isso:release
     $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 \
         -v /var/lib/isso:/config -v /var/lib/isso:/db \
-        ghcr.io/isso-comments/isso:latest
+        ghcr.io/isso-comments/isso:release
+
+.. _Docker image: https://github.com/isso-comments/isso/pkgs/container/isso
+.. _release tag: https://github.com/isso-comments/isso/pkgs/container/isso
 
 b) Build a Docker image yourself
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

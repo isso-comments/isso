@@ -22,7 +22,12 @@ New Features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
-- TBD
+- Rework the Docker image tagging scheme: ``isso:latest`` is now rebuilt on
+  every push to ``master``, while ``isso:release`` points to the latest stable
+  release (`#970`_, janw). Previously, ``:latest`` pointed to the latest stable
+  (tagged) version
+
+.. _#970: https://github.com/isso-comments/isso/pull/970
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
