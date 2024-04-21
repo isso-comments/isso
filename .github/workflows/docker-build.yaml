@@ -52,7 +52,6 @@ jobs:
         with:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
           platforms: ${{ env.build_platforms }}
 
       - name: Image digest
