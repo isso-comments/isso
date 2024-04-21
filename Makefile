@@ -38,6 +38,9 @@ APIDOC = npx --no-install apidoc
 
 SASS = sassc
 
+ISSO_IMAGE ?= isso:latest
+ISSO_RELEASE_IMAGE ?= isso:release
+ISSO_DOCKER_REGISTRY ?= ghcr.io/isso-comments
 TESTBED_IMAGE ?= isso-js-testbed:latest
 
 all: js site
@@ -93,21 +96,35 @@ test: $($ISSO_PY_SRC)
 	PYTHONPATH=. pytest --doctest-modules isso/
 
 docker:
-	DOCKER_BUILDKIT=1 docker build -t isso:latest .
+	DOCKER_BUILDKIT=1 docker build -t $(ISSO_IMAGE) .
+
+# For maintainers making releases only:
+docker-release:
+	DOCKER_BUILDKIT=1 docker build -t $(ISSO_IMAGE) .
 
 docker-run:
-	docker run -d --rm --name isso -p 127.0.0.1:8080:8080 --mount type=bind,source=$(PWD)/contrib/isso-dev.cfg,target=/config/isso.cfg,readonly isso:latest isso.run
+	docker run -d --rm --name isso -p 127.0.0.1:8080:8080 \
+		--mount type=bind,source=$(PWD)/contrib/isso-dev.cfg,target=/config/isso.cfg,readonly \
+		$(ISSO_IMAGE) isso.run
 
+# For maintainers only, discouraged in favor of the GitHub action running on
+# every git push
 docker-push:
-	docker tag isso:latest ghcr.io/isso-comments/isso:dev
-	docker push ghcr.io/isso-comments/isso:dev
+	docker tag $(ISSO_IMAGE) $(ISSO_DOCKER_REGISTRY)/$(ISSO_IMAGE)
+	docker push $(ISSO_DOCKER_REGISTRY)/$(ISSO_IMAGE)
+
+# For maintainers making releases only:
+docker-release-push:
+	docker tag $(ISSO_RELEASE_IMAGE) $(ISSO_DOCKER_REGISTRY)/$(ISSO_RELEASE_IMAGE)
+	docker push $(ISSO_DOCKER_REGISTRY)/$(ISSO_RELEASE_IMAGE)
 
 docker-testbed:
-	docker build -f docker/Dockerfile-js-testbed -t isso-js-testbed .
+	docker build -f docker/Dockerfile-js-testbed -t $(TESTBED_IMAGE) .
 
+# For maintainers only:
 docker-testbed-push:
-	docker tag isso-js-testbed:latest ghcr.io/isso-comments/isso-js-testbed:latest
-	docker push ghcr.io/isso-comments/isso-js-testbed:latest
+	docker tag $(TESTBED_IMAGE) $(ISSO_DOCKER_REGISTRY)/$(TESTBED_IMAGE)
+	docker push $(ISSO_DOCKER_REGISTRY)/$(TESTBED_IMAGE)
 
 docker-js-unit:
 	docker run \
@@ -150,4 +167,4 @@ clean:
 	rm -rf .pytest_cache/
 	rm -rf .coverage
 
-.PHONY: apidoc apidoc-init clean coverage docker docker-compare-screenshots docker-generate-screenshots docker-update-screenshots docker-js-unit docker-js-integration docker-push docker-testbed docker-testbed-push init test
+.PHONY: apidoc apidoc-init clean coverage docker docker-compare-screenshots docker-generate-screenshots docker-js-integration docker-js-unit docker-push docker-release docker-release-push docker-run docker-testbed docker-testbed-push docker-update-screenshots init test
