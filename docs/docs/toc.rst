@@ -13,7 +13,7 @@
 
 .. toctree::
    :hidden:
-   :maxdepth: 0
+   :maxdepth: 1
    :caption: Reference
 
    Installation <reference/installation>
@@ -43,3 +43,4 @@
 
    Contributing to Isso <contributing/index>
    Writing Documentation <contributing/documentation>
+   Isso Project Infrastructure <contributing/infrastructure>
