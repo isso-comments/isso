@@ -139,7 +139,6 @@ function fetchComments() {
                 if (comment.created > lastcreated) {
                     lastcreated = comment.created;
                 }
-                count = count + comment.total_replies;
             });
             heading.textContent = i18n.pluralize("num-comments", count);
 

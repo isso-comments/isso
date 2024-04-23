@@ -100,6 +100,7 @@ class TestComments(unittest.TestCase):
 
         rv = loads(r.data)
         self.assertEqual(len(rv['replies']), 20)
+        self.assertEqual(rv['total_replies'], 20)
 
     def testCreateInvalidParent(self):
 
@@ -185,15 +186,18 @@ class TestComments(unittest.TestCase):
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=123').status_code, 200)
         data = loads(self.get('/?uri=%2Fpath%2F&id=123').data)
         self.assertEqual(len(data['replies']), 0)
+        self.assertEqual(data['total_replies'], 0)
 
         self.assertEqual(
             self.get('/?uri=%2Fpath%2Fspam%2F&id=123').status_code, 200)
         data = loads(self.get('/?uri=%2Fpath%2Fspam%2F&id=123').data)
         self.assertEqual(len(data['replies']), 0)
+        self.assertEqual(data['total_replies'], 0)
 
         self.assertEqual(self.get('/?uri=?uri=%foo%2F').status_code, 200)
         data = loads(self.get('/?uri=?uri=%foo%2F').data)
         self.assertEqual(len(data['replies']), 0)
+        self.assertEqual(data['total_replies'], 0)
 
     def testFetchEmpty(self):
 
@@ -214,6 +218,7 @@ class TestComments(unittest.TestCase):
 
         rv = loads(r.data)
         self.assertEqual(len(rv['replies']), 10)
+        self.assertEqual(rv['total_replies'], 20)
 
     def testGetNested(self):
 
@@ -226,6 +231,7 @@ class TestComments(unittest.TestCase):
 
         rv = loads(r.data)
         self.assertEqual(len(rv['replies']), 1)
+        self.assertEqual(rv['total_replies'], 1)
 
     def testGetLimitedNested(self):
 
@@ -239,6 +245,7 @@ class TestComments(unittest.TestCase):
 
         rv = loads(r.data)
         self.assertEqual(len(rv['replies']), 10)
+        self.assertEqual(rv['total_replies'], 20)
 
     def testUpdate(self):
 
@@ -289,7 +296,7 @@ class TestComments(unittest.TestCase):
         self.assertIn('/path/', self.app.db.threads)
 
         data = loads(client.get("/?uri=%2Fpath%2F").data)
-        self.assertEqual(data["total_replies"], 1)
+        self.assertEqual(data["total_replies"], 2)
 
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=1').status_code, 200)
         self.assertEqual(self.get('/?uri=%2Fpath%2F&id=2').status_code, 200)
