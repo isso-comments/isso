@@ -16,22 +16,25 @@ for (var i = 0; i < js.length; i++) {
     for (var j = 0; j < js[i].attributes.length; j++) {
         var attr = js[i].attributes[j];
         if (/^data-isso-/.test(attr.name)) {
+
+            // Normalize underscores to dashes so that language-specific
+            // strings can be caught better later on, e.g.
+            // data-isso-postbox-text-text-PT_BR becomes postbox-text-text-pt-br.
+            // Also note that attr.name only gives lowercase strings as per HTML
+            // spec, e.g. data-isso-FOO-Bar becomes foo-bar, but since the test
+            // environment's jest-environment-jsdom seemingly does not follow
+            // that convention, convert to lowercase here anyway.
+            const attrName = attr.name.substring(10)
+                       .replace(/_/g, '-')
+                       .toLowerCase()
+
+            // Replace escaped newline characters in the attribute value with actual newline characters
+            const attrValue = attr.value.replace(/\\n/g, '\n');
+
             try {
-                // Normalize underscores to dashes so that language-specific
-                // strings can be caught better later on,
-                // e.g. data-isso-postbox-text-text-PT_BR becomes
-                // postbox-text-text-pt-br.
-                // Also note that attr.name only gives lowercase strings as per
-                // HTML spec, e.g. data-isso-FOO-Bar becomes foo-bar, but since
-                // the test environment's jest-environment-jsdom seemingly does
-                // not follow that convention, convert to lowercase here anyway.
-                config[attr.name.substring(10)
-                       .replace(/_/g, '-')
-                       .toLowerCase()] = JSON.parse(attr.value);
+                config[attrName] = JSON.parse(attrValue);
             } catch (ex) {
-                config[attr.name.substring(10)
-                       .replace(/_/g, '-')
-                       .toLowerCase()] = attr.value;
+                config[attrName] = attrValue;
             }
         }
     }
