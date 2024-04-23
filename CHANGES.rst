@@ -33,6 +33,7 @@ Bugfixes & Improvements
 - Handle deleted comments in Disqus migration (`#994`_, pkvach)
 - Fix total comments count calculation (`#997`_, pkvach)
 - Fix newline character handling in data-isso-* i18n strings (`#992`_, pkvach)
+- Add link logging for management of new comments in Stdout (`#1016`_, pkvach)
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
@@ -42,6 +43,7 @@ Bugfixes & Improvements
 .. _#994: https://github.com/isso-comments/isso/pull/994
 .. _#997: https://github.com/isso-comments/isso/pull/997
 .. _#992: https://github.com/isso-comments/isso/pull/992
+.. _#1016: https://github.com/isso-comments/isso/pull/1016
 
 0.13.1.dev0 (2023-02-05)
 ------------------------
