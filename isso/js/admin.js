@@ -125,3 +125,7 @@ function send_edit(com_id, hash, isso_host_script) {
     stop_edit(com_id, true);
 }
 
+function toggleTooltip(tooltipContainer) {
+    const tooltipText = tooltipContainer.querySelector(".search-tooltip-text");
+    tooltipText.classList.toggle("show");
+}

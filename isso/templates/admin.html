@@ -74,8 +74,15 @@
           <div class="search">
             <form action="/admin/" method="get">
               <input type="hidden" name="mode" value="0" />
-              <label>Comment URL
-                <input type="search" class="search__input" name="comment_url" value="{{comment_url}}" spellcheck="false"
+                <label class="search-label">Search by URL
+                  <div class="search-tooltip" onclick="toggleTooltip(this)"><span class="search-tooltip-icon">?</span>
+                    <span class="search-tooltip-text">
+                      Search for comments within threads (e.g. http://example.com/thread) or for specific comments
+                      (e.g. http://example.com/thread#isso-1) by their URL.
+                    </span>
+                  </div>
+                </label>
+                <input type="url" class="search__input" name="comment_search_url" value="{{comment_search_url}}" spellcheck="false"
                   required placeholder="https://example.com/demo/#isso-1" />
               </label>
               <button type="submit" class="search__button">Search</button>

@@ -116,6 +116,22 @@ def get_comment_id_from_url(comment_url):
     return comment_id
 
 
+def get_uri_from_url(url):
+    try:
+        # Parse the URL to extract the URI
+        parsed_url = urlsplit(url)
+    except ValueError:
+        # Handle malformed URL
+        return None
+
+    uri = parsed_url.path
+    if not uri:
+        # Handle missing URI
+        return None
+
+    return uri
+
+
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
@@ -1411,8 +1427,10 @@ class API(object):
         Comment ordering
     @apiQuery {Number{0,1}} [asc=0]
         Ascending
-    @apiQuery {String} comment_url
-        Search comment by URL
+    @apiQuery {String} comment_search_url
+        Search comments by URL. Both threads and individual comments are valid.
+        For example, a thread might have a URL like 'http://example.com/thread'
+        and an individual comment might have a URL like 'http://example.com/thread#isso-1'
 
     @apiExample {curl} Listing of published comments:
         curl 'https://comments.example.com/admin/?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
@@ -1433,12 +1451,16 @@ class API(object):
         order_by = req.args.get('order_by', 'created')
         asc = int(req.args.get('asc', 0))
         mode = int(req.args.get('mode', 2))
-        comment_url = req.args.get('comment_url', '')
+        comment_search_url = req.args.get('comment_search_url', '')
 
-        # Search for a specific comment by URL
-        if comment_url:
-            comment_id = get_comment_id_from_url(comment_url)
-            comments = self.comments.fetchall(comment_id=comment_id, limit=1) if comment_id else []
+        # Search for comments by URL
+        if comment_search_url:
+            comment_id = get_comment_id_from_url(comment_search_url)
+            uri = get_uri_from_url(comment_search_url)
+            if comment_id or uri:
+                comments = self.comments.fetchall(comment_id=comment_id, thread_uri=uri)
+            else:
+                comments = []
         else:
             comments = self.comments.fetchall(mode=mode, page=page,
                                               limit=page_size,
@@ -1455,7 +1477,7 @@ class API(object):
                                conf=self.conf, max_page=max_page,
                                counts=comment_mode_count,
                                order_by=order_by, asc=asc,
-                               comment_url=comment_url,
+                               comment_search_url=comment_search_url,
                                isso_host_script=isso_host_script)
     """
     @api {get} /latest latest
