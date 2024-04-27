@@ -31,20 +31,34 @@ class Comments:
               'remote_addr', 'text', 'author', 'email', 'website',
               'likes', 'dislikes', 'voters', 'notification']
 
+    # This method is used in the migration script from version 4 to 5.
+    # You need to write a new migration if you change the database schema!
+    @staticmethod
+    def create_table_query(table_name):
+        return f'''
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                tid REFERENCES threads(id),
+                id INTEGER PRIMARY KEY,
+                parent INTEGER,
+                created FLOAT NOT NULL,
+                modified FLOAT,
+                mode INTEGER,
+                remote_addr VARCHAR,
+                text VARCHAR NOT NULL,
+                author VARCHAR,
+                email VARCHAR,
+                website VARCHAR,
+                likes INTEGER DEFAULT 0,
+                dislikes INTEGER DEFAULT 0,
+                voters BLOB NOT NULL,
+                notification INTEGER DEFAULT 0
+            );
+        '''
+
     def __init__(self, db):
 
         self.db = db
-        self.db.execute([
-            'CREATE TABLE IF NOT EXISTS comments (',
-            '    tid REFERENCES threads(id), id INTEGER PRIMARY KEY, parent INTEGER,',
-            '    created FLOAT NOT NULL, modified FLOAT, mode INTEGER, remote_addr VARCHAR,',
-            '    text VARCHAR NOT NULL, author VARCHAR, email VARCHAR, website VARCHAR,',
-            '    likes INTEGER DEFAULT 0, dislikes INTEGER DEFAULT 0, voters BLOB NOT NULL,',
-            '    notification INTEGER DEFAULT 0);'])
-        try:
-            self.db.execute(['ALTER TABLE comments ADD COLUMN notification INTEGER DEFAULT 0;'])
-        except Exception:
-            pass
+        self.db.execute(Comments.create_table_query("comments"))
 
     def add(self, uri, c):
         """
