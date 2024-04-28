@@ -45,9 +45,19 @@ the [the full documentation](https://isso-comments.de/docs/).
 
 ## Docker
 
-A Docker image with the latest stable release is provided at
-`ghcr.io/isso-comments/isso:latest`. See
+> [!NOTE]  
+> The Docker image tagging scheme for stable releases was changed from `:latest`
+> to `:release` as of March 2024
+> ([#970](https://github.com/isso-comments/isso/pull/970), [#1012](https://github.com/isso-comments/isso/issues/1012))
+
+A [Docker image](https://github.com/isso-comments/isso/pkgs/container/isso) with
+the latest stable release is provided at `ghcr.io/isso-comments/isso:release`,
+while `isso:latest` is rebuilt on every push to the `master` branch. See
 [Using Docker](https://isso-comments.de/docs/reference/installation/#using-docker).
+
+The maintainers recommend pinning the image to a
+[release tag](https://github.com/isso-comments/isso/pkgs/container/isso), e.g.
+`isso:0.13.0`.
 
 ## Contributing
 

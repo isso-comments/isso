@@ -71,6 +71,10 @@ FROM python:3.10-alpine AS isso
 WORKDIR /isso/
 COPY --from=isso-builder /isso/ .
 
+LABEL org.opencontainers.image.source=https://github.com/isso-comments/isso
+LABEL org.opencontainers.image.description="Isso – a commenting server similar to Disqus"
+LABEL org.opencontainers.image.licenses=MIT
+
 # Clean up
 RUN rm -rf /var/apk/cache/* /tmp/* /var/tmp/*
 
