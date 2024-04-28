@@ -41,14 +41,16 @@ jobs:
         run: docker compose build isso-server
 
       - name: Bring up containers
+        # Don't wait for healthcheck via --wait. This would fail with a
+        # negative exit code since the isso-client container is expected to
+        # exit
         run: docker compose up -d
 
       - name: Client unit tests
         run: make docker-js-unit
 
-      - name: Check if containers are up, sleep if not
-        shell: bash
-        run: '[ "$(docker inspect --format={{.State.Health.Status}} isso-server)" = "healthy" ] || sleep 5'
+      - name: Wait for isso-server container to be ready
+        run: 'for i in $(seq 1 30); do [ "`docker inspect -f {{.State.Health.Status}} isso-server`" == "healthy" ] && s=0 && break || s=$? && sleep 0.3; done; (exit $s)'
 
       - name: Client integration tests
         run: make docker-js-integration
