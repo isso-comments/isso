@@ -69,10 +69,11 @@ from isso.views import comments
 
 from isso.ext.notifications import Stdout, SMTP
 
+LOG_FORMAT = "%(asctime)s:%(levelname)s: %(message)s"
 logging.getLogger('werkzeug').setLevel(logging.WARN)
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s %(levelname)s: %(message)s")
+    format=LOG_FORMAT)
 
 logger = logging.getLogger("isso")
 
@@ -280,6 +281,7 @@ def main():
 
     if conf.get("general", "log-file"):
         handler = logging.FileHandler(conf.get("general", "log-file"))
+        handler.setFormatter(logging.Formatter(LOG_FORMAT))
 
         logger.addHandler(handler)
         logging.getLogger("werkzeug").addHandler(handler)
