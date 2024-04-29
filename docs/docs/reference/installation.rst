@@ -133,9 +133,16 @@ To upgrade Isso, activate your virtual environment again, and run
 Prebuilt Packages
 -----------------
 
-* Debian (since Buster): https://packages.debian.org/search?keywords=isso
+* Arch Linux: The `isso`_ AUR package (maintained by `@HLFH`_) follows the
+  latest stable release, while the `isso-git`_ package (maintained by
+  `@AlphaJack`_) always builds the latest commit from ``git``.
+* Debian: The package was `dropped in 2021`_ from the Debian repositories.
 
-* Arch Linux: https://aur.archlinux.org/packages/isso/
+.. _isso: https://aur.archlinux.org/packages/isso
+.. _@HLFH: https://github.com/HLFH
+.. _isso-git: https://aur.archlinux.org/packages/isso-git
+.. _@AlphaJack: https://github.com/AlphaJack
+.. _dropped in 2021: https://tracker.debian.org/pkg/isso
 
 .. _using-docker:
 
