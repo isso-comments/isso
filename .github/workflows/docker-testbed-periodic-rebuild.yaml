@@ -1,0 +1,48 @@
+name: Rebuild js testbed image
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run weekly, at 2:15pm on Monday (chosen at random)
+    # https://cron.help/#15_14_*_*_1
+    - cron: '15 14 * * 1'
+
+env:
+  build_platforms: ${{ vars.BUILD_PLATFORMS || 'linux/amd64' }}
+  build_image: ${{ vars.BUILD_IMAGE || 'ghcr.io/isso-comments/isso-js-testbed' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          flavor: |
+            latest=false
+          images: ${{ env.build_image }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Login to Github Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build docker-js-testbed
+        run: make docker-testbed
+
+      - name: Push docker-js-testbed image as ${{ env.build_image }}
+        run: make docker-testbed-push

@@ -14,17 +14,20 @@ services:
     #command: /isso/bin/isso -c /config/isso.cfg run
     environment:
       ISSO_SETTINGS: "/config/isso-dev.cfg"
+      ISSO_ENDPOINT: "http://isso-dev.local:8080"
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8080/info || exit 1
-      interval: 5s  # short timeout needed during start phase
-      retries: 3
-      start_period: 5s
-      timeout: 3s
+      # Double $$ for parsing vars inside CMD: https://stackoverflow.com/a/54989793
+      # Debug with 'docker inspect --format "{{json .State.Health }}" isso-server | jq'
+      test: wget --no-verbose --tries=1 --spider $$ISSO_ENDPOINT/info || exit 1
+      interval: 1s  # time before first check and between subsequent checks
+      retries: 10
+      start_period: 10s
+      timeout: 10s
     # If needed, production docker image can also be exposed to host for
     # non-docker unit/integration testing
     ports:
       - 127.0.0.1:8080:8080
-    # Expose port 80080 to other containerized services, not to host machine:
+    # Expose port 8080 to other containerized services, not to host machine:
     expose:
       - 8080
     networks:
@@ -49,6 +52,8 @@ services:
       dockerfile: docker/Dockerfile-js-testbed
     environment:
       ISSO_ENDPOINT: "http://isso-dev.local:8080"
+    healthcheck:
+      disable: true
     # Command may also run from outside docker compose, e.g.:
     # $ docker run isso-js-testbed [mount, networks, ...] npm run test-integration
     #command: npm run test-integration

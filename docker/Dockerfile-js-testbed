@@ -3,9 +3,9 @@
 
 # Note: Do not use alpine images as they do not contain needed GObject, X11
 # etc. packages and complicate things
-# :current resolves to NodeJS 17 on Debian Buster as of 03/2022
+# :22-bookworm resolves to NodeJS 22 on Debian Bookworm as of 04/2024
 # https://hub.docker.com/_/node
-FROM docker.io/node:current AS isso-js-testbed
+FROM docker.io/node:22-bookworm AS isso-js-testbed
 WORKDIR /src/
 
 # Install everything necessary to run headless
