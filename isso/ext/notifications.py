@@ -22,6 +22,10 @@ except ImportError:
 from isso import local
 
 
+def create_comment_action_url(uri, action, key):
+    return uri + "/" + action + "/" + key
+
+
 class SMTPConnection(object):
 
     def __init__(self, conf):
@@ -118,10 +122,10 @@ class SMTP(object):
             uri = self.public_endpoint + "/id/%i" % comment["id"]
             key = self.isso.sign(comment["id"])
 
-            rv.write("Delete comment: %s\n" % (uri + "/delete/" + key))
+            rv.write("Delete comment: %s\n" % create_comment_action_url(uri, "delete", key))
 
             if comment["mode"] == 2:
-                rv.write("Activate comment: %s\n" % (uri + "/activate/" + key))
+                rv.write("Activate comment: %s\n" % create_comment_action_url(uri, "activate", key))
 
         else:
             uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
@@ -208,8 +212,9 @@ class SMTP(object):
 
 class Stdout(object):
 
-    def __init__(self, conf):
-        pass
+    def __init__(self, isso):
+        self.isso = isso
+        self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
 
     def __iter__(self):
 
@@ -224,6 +229,15 @@ class Stdout(object):
 
     def _new_comment(self, thread, comment):
         logger.info("comment created: %s", json.dumps(comment))
+        logger.info("Link to comment: %s" % (local("origin") + thread["uri"] + "#isso-%i" % comment["id"]))
+
+        uri = self.public_endpoint + "/id/%i" % comment["id"]
+        key = self.isso.sign(comment["id"])
+
+        logger.info("Delete comment: %s" % create_comment_action_url(uri, "delete", key))
+
+        if comment["mode"] == 2:
+            logger.info("Activate comment: %s" % create_comment_action_url(uri, "activate", key))
 
     def _edit_comment(self, comment):
         logger.info('comment %i edited: %s',

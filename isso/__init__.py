@@ -110,7 +110,7 @@ class Isso(object):
         smtp_backend = False
         for backend in conf.getlist("general", "notify"):
             if backend == "stdout":
-                subscribers.append(Stdout(None))
+                subscribers.append(Stdout(self))
             elif backend in ("smtp", "SMTP"):
                 smtp_backend = True
             else:
