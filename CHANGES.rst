@@ -24,8 +24,11 @@ Breaking Changes
   every push to ``master``, while ``isso:release`` points to the latest stable
   release (`#970`_, janw). Previously, ``:latest`` pointed to the latest stable
   (tagged) version
+- Disavow IE10 compatibility: (Not-so) recent changes mean that Isso is no
+  longer compatible (`#1022`, ix5)
 
 .. _#970: https://github.com/isso-comments/isso/pull/970
+.. _#1022: https://github.com/isso-comments/isso/pull/1022
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
