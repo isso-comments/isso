@@ -127,8 +127,15 @@ The following **additional options** are available:
 +==========================================================+===========================+
 | Ignore indented code blocks                              | ``disable-indented-code`` |
 +----------------------------------------------------------+---------------------------+
-| Parse inline LaTeX-style math blocks, such as            | ``math``                  |
-| inline ``$equations$`` or display ``$$equations$$``      |                           |
+| Ignore inline LaTeX-style math blocks, such as           | ``math``                  |
+| inline ``$equations$`` or display ``$$equations$$``,     |                           |
+| allowing them to be processed separately with a          |                           |
+| JavaScript library.                                      |                           |
+| **Note:** This extension will *not* render equations     |                           |
+| or any form of math, it just marks them to be ignored by |                           |
+| the markdown parser. A library such as                   |                           |
+| `MathJax <https://www.mathjax.org/>`_                    |                           |
+| or `KaTeX <https://katex.org/>`_ is needed for that.     |                           |
 +----------------------------------------------------------+---------------------------+
 | Normally, everything between two ``_underscores_`` would | ``no-intra-emphasis``     |
 | be rendered with *emphasis*. This option disables        |                           |
@@ -140,15 +147,19 @@ The following **additional options** are available:
 | multiple footnotes by different commenters on the same   |                           |
 | page could clash due to duplicate links to footnotes.    |                           |
 +----------------------------------------------------------+---------------------------+
-| Use two ``=`` signs like ``==this==`` to highlight text  | ``highlight``             |
+| Use two ``=`` signs like ``==this==`` to highlight text. | ``highlight``             |
 +----------------------------------------------------------+---------------------------+
 | Text inside quotes gets a special "quote" class.         | ``quote``                 |
 | Perhaps useful for styling in CSS                        |                           |
 +----------------------------------------------------------+---------------------------+
-| Enable Markdown tables                                   | ``tables``                |
+| Enable Markdown tables.                                  | ``tables``                |
+| **Note:** The ``<tr>`` and all other ``<table>``-related |                           |
+| tags need to be allowed under ``allowed-elements`` for   |                           |
+| this to work. Also, a table cannot be surrounded by      |                           |
+| anything other than blank lines to render properly.      |                           |
 +----------------------------------------------------------+---------------------------+
 | Instead of ``_underscore`` resulting in *emphasis*,      | ``underline``             |
-| the resulting text will be... underlined                 |                           |
+| the resulting text will be... underlined.                |                           |
 +----------------------------------------------------------+---------------------------+
 
 .. todo:: ``no-intra-emphasis`` should be made default
