@@ -5,13 +5,17 @@ services:
 
   # Isso server should always reflect production image
   isso-server:
-    image: isso
+    image: isso:latest
     container_name: isso-server
     build:
       context: .
       dockerfile: Dockerfile
-    # No need to set entrypoint, image already provides CMD
-    #command: /isso/bin/isso -c /config/isso.cfg run
+    # No need to set command/entrypoint, image already provides both
+    # For reference:
+    #command: /isso/bin/isso run  # standalone
+    # Using both ENTRYPOINT and CMD:
+    #entrypoint: /isso/bin/gunicorn -b 0.0.0.0:8080 -w 4 --preload --worker-tmp-dir /dev/shm
+    #command: isso.run
     environment:
       ISSO_SETTINGS: "/config/isso-dev.cfg"
       ISSO_ENDPOINT: "http://isso-dev.local:8080"
@@ -37,7 +41,7 @@ services:
         - isso-dev.local
         - localhost
     volumes:
-      - ./db:/db/
+      - ./db:/db/  # unused by default isso-dev.cfg
       - type: bind
         source: ./contrib/isso-dev.cfg
         target: /config/isso-dev.cfg

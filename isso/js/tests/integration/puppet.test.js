@@ -118,7 +118,7 @@ test("should fill Postbox with valid data and receive 201 reply", async () => {
   ]);
 
   const expected = {
-    "id": expect.any(Number),
+    "id": 1,
     "parent": null,
     "created": expect.any(Number),
     "modified": null,
@@ -204,8 +204,13 @@ test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
     { waitUntil: 'load' }
   );
 
+  await expect(page).toMatchElement(
+    '#isso-1 .isso-text',
+    { text: 'A comment' },
+  );
+
   // Relies on cookies from page.cookies, sent automatically
-  let postData = {
+  let putData = {
     //id: 1,
     text: 'New comment body',
     author: 'Commenter #2',
@@ -217,7 +222,7 @@ test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
   let editHandler = request => {
     let data = {
       'method': 'PUT',
-      'postData': JSON.stringify(postData),
+      'postData': JSON.stringify(putData),
       'headers': {
         ...request.headers(),
         'Content-Type': 'application/json',
@@ -246,7 +251,6 @@ test("should execute GET/PUT/POST/DELETE requests correctly", async () => {
   let deleteHandler = request => {
     let data = {
       'method': 'DELETE',
-      //'postData': JSON.stringify({id: 1}),
       'headers': {
         ...request.headers(),
         'Content-Type': 'application/json',

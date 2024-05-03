@@ -2,3 +2,5 @@
 # Docker will have its own cache of node packages and its own python venv
 node_modules/
 .venv/
+# Prevent accidental inclusion:
+comments.db
