@@ -22,6 +22,8 @@ sane defaults.
     ; database location, check permissions, automatically created if it
     ; does not exist
     dbpath = /var/lib/isso/comments.db
+    ; for docker image: dbpath = /db/comments.db
+    ;
     ; your website or blog (not the location of Isso!)
     host = http://example.tld/
     ; you can add multiple hosts for local development

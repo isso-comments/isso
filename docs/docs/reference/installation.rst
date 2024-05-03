@@ -167,6 +167,9 @@ The maintainers recommend pinning the image to a `release tag`_, e.g.
 .. code-block:: console
 
     $ docker pull ghcr.io/isso-comments/isso:release
+    $ mkdir -p config/ db/
+    $ cp contrib/isso.sample.cfg config/isso.cfg
+    # Set 'dbpath' to '/db/comments.db' and adjust 'host'
     $ docker run -d --rm --name isso -p 127.0.0.1:8080:8080 \
         -v /var/lib/isso:/config -v /var/lib/isso:/db \
         ghcr.io/isso-comments/isso:release
