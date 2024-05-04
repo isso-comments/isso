@@ -61,9 +61,11 @@ New Features
 
 - notifications: Implement 'List-Unsubscribe' header (`#906`_, ix5)
 - css: Grey styling for comment code, code blocks (`#907`_, ix5)
+- admin: Add log out button (`#870`_, bbaovanc)
 
 .. _#906: https://github.com/posativ/isso/pull/906
 .. _#907: https://github.com/posativ/isso/pull/907
+.. _#870: https://github.com/posativ/isso/pull/870
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
