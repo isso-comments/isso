@@ -14,7 +14,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         # Use only lowest and highest supported python versions for now,
         # to speed up CI runs
-        python-version: [3.8, "3.11"]
+        python-version: [3.8, "3.12"]
         node-version: [16]
       fail-fast: false
 

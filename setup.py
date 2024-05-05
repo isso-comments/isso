@@ -36,6 +36,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     install_requires=[
         'itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
