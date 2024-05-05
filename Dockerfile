@@ -32,24 +32,23 @@ RUN make js
 # Second stage: Create production-ready Isso package
 # ==================================================
 
-# Copy needed files
 FROM docker.io/python:${PY_VERSION}-alpine AS isso-builder
 WORKDIR /isso/
-
-# Set up virtualenv
-RUN python3 -m venv /isso \
- && . /isso/bin/activate \
- && pip3 install --no-cache-dir --upgrade pip \
- && pip3 install --no-cache-dir gunicorn
 
 # Install cffi dependencies since they're not present on alpine by default
 # (required by cffi which in turn is required by misaka)
 RUN apk add --no-cache gcc libffi-dev libc-dev
 
-# For some reason, it is required to install cffi before misaka, else pip will
-# fail to build cffi
-RUN . /isso/bin/activate \
- && pip3 install cffi
+# Use pip from /usr/local/lib to install virtualenv from PyPI
+# (Do not use the alpine py3-virtualenv package which would be stuck on the
+#  Python version from the alpine repos (3.9 as of May 2024), otherwise there
+#  would be a mismatch between PY_VERSION and the virtualenv used)
+RUN pip install virtualenv
+
+# # Set up virtualenv
+RUN virtualenv --download /isso \
+ && . /isso/bin/activate \
+ && pip install --no-cache-dir --upgrade pip gunicorn cffi
 
 # Install Isso's python dependencies via pip in a separate step before copying
 # over client files, so that changing Isso js/python source code will not
