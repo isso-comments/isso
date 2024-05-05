@@ -45,6 +45,7 @@ Bugfixes & Improvements
 - Fix newline character handling in data-isso-* i18n strings (`#992`_, pkvach)
 - Add link logging for management of new comments in Stdout (`#1016`_, pkvach)
 - Change logging to include datetime and loglevel (`#1023`_, ix5)
+- Make 'text' field in 'comments' table NOT NULL and handling data migration (`#1019`_, pkvach)
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
@@ -56,6 +57,7 @@ Bugfixes & Improvements
 .. _#992: https://github.com/isso-comments/isso/pull/992
 .. _#1016: https://github.com/isso-comments/isso/pull/1016
 .. _#1023: https://github.com/isso-comments/isso/pull/1023
+.. _#1019: https://github.com/isso-comments/isso/pull/1019
 
 0.13.1.dev0 (2023-02-05)
 ------------------------
