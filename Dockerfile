@@ -6,7 +6,7 @@ ARG PY_VERSION=3.10
 # First stage: Build Javascript client parts using NodeJS
 # =======================================================
 
-FROM node:current-alpine AS isso-js
+FROM docker.io/node:current-alpine AS isso-js
 WORKDIR /src/
 
 # make is not installed by default on alpine
@@ -33,7 +33,7 @@ RUN make js
 # ==================================================
 
 # Copy needed files
-FROM python:${PY_VERSION}-alpine AS isso-builder
+FROM docker.io/python:${PY_VERSION}-alpine AS isso-builder
 WORKDIR /isso/
 
 # Set up virtualenv
@@ -77,7 +77,7 @@ RUN --mount=type=cache,target=/root/.cache \
 # Third stage: Run Isso
 # =====================
 
-FROM python:${PY_VERSION}-alpine AS isso
+FROM docker.io/python:${PY_VERSION}-alpine AS isso
 WORKDIR /isso/
 COPY --from=isso-builder /isso/ .
 
