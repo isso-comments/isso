@@ -48,7 +48,7 @@ but not recommended):
 
 .. code-block:: console
 
-    $ virtualenv /opt/isso
+    $ virtualenv --download /opt/isso
     $ source /opt/isso/bin/activate
 
 .. note::
@@ -216,7 +216,7 @@ To create a virtual environment (recommended), run:
 
 .. code-block:: console
 
-    $ virtualenv .venv
+    $ virtualenv --download .venv
     $ source .venv/bin/activate
 
 Install JavaScript modules using ``npm``:
@@ -235,7 +235,7 @@ Install Isso and its dependencies:
 
 .. code-block:: console
 
-    (.venv) $ python setup.py develop  # or `pip install -e .`
+    (.venv) $ pip install -e .  # -e = "editable" installation for development
     (.venv) $ isso -c /path/to/isso.cfg run
 
 .. _init-scripts:
