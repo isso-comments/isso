@@ -1,6 +1,6 @@
 # Isso production Dockerfile
 
-ARG PY_VERSION=3.10
+ARG PY_VERSION=3.12
 
 # =======================================================
 # First stage: Build Javascript client parts using NodeJS
