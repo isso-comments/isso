@@ -1,6 +1,10 @@
 # Isso production Dockerfile
 
+ARG PY_VERSION=3.10
+
+# =======================================================
 # First stage: Build Javascript client parts using NodeJS
+# =======================================================
 
 FROM node:current-alpine AS isso-js
 WORKDIR /src/
@@ -23,10 +27,13 @@ COPY ["isso/js/", "./isso/js/"]
 # Run webpack to generate minified Javascript
 RUN make js
 
+
+# ==================================================
 # Second stage: Create production-ready Isso package
+# ==================================================
 
 # Copy needed files
-FROM python:3.10-alpine AS isso-builder
+FROM python:${PY_VERSION}-alpine AS isso-builder
 WORKDIR /isso/
 
 # Set up virtualenv
@@ -66,8 +73,11 @@ RUN --mount=type=cache,target=/root/.cache \
  && python3 setup.py develop --no-deps
 
 
+# =====================
 # Third stage: Run Isso
-FROM python:3.10-alpine AS isso
+# =====================
+
+FROM python:${PY_VERSION}-alpine AS isso
 WORKDIR /isso/
 COPY --from=isso-builder /isso/ .
 
