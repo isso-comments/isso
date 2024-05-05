@@ -82,7 +82,7 @@ Install from PyPi
 Requirements
 ^^^^^^^^^^^^
 
-- Python 3.8+ (+ devel headers)
+- Python 3.8+ (+ devel headers) and Virtualenv
 - SQLite 3.3.8 or later
 - a working C compiler
 
@@ -91,13 +91,13 @@ For Debian/Ubuntu just `copy and paste
 
 .. code-block:: console
 
-    $ sudo apt-get install python3-dev sqlite3 build-essential
+    $ sudo apt-get install python3-dev python3-virtualenv sqlite3 build-essential
 
 Similar for Fedora (and derivates):
 
 .. code-block:: console
 
-    $ sudo yum install python3-devel sqlite
+    $ sudo yum install python3-devel python3-virtualenv sqlite
     $ sudo yum groupinstall “Development Tools”
 
 Installation
