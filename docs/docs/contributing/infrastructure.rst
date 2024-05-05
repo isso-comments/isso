@@ -74,7 +74,7 @@ maintainer review before merging.
 Packaging
 ---------
 
-Isso is released "officially" to as an installable Python package on `PyPI`_
+Isso is released "officially" as an installable Python package on `PyPI`_
 and as a docker image. Other distributors may package releases of Isso natively
 for operating systems (e.g. for the Arch User repository or formerly Debian),
 but support for these releases should be given by the packager.
@@ -96,8 +96,9 @@ The `ghcr.io/isso-comments/isso docker image`_ is rebuilt on every push to
 inherited from the main ``isso-comments/isso`` GitHub repository (toggle
 ``Inherit access from source repository`` turned on).
 
-The `ghcr.io/isso-comments/isso-js-testbed`_ image for running ``Jest``-based
-unit and integration tests is built and pushed manually by @ix5 so far.
+The `ghcr.io/isso-comments/isso-js-testbed`_ image for running ``Jest``- and
+``puppet``-based unit and integration tests is rebuilt and pushed every week by
+a GitHub Action.
 
 .. _ghcr.io/isso-comments/isso docker image: https://github.com/isso-comments/isso/pkgs/container/isso
 .. _ghcr.io/isso-comments/isso-js-testbed: https://github.com/orgs/isso-comments/packages/container/package/isso-js-testbed

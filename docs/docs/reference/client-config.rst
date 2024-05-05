@@ -143,7 +143,7 @@ data-isso-max-comments-nested
 data-isso-reveal-on-click
     Number of comments to reveal on clicking the "X Hidden" link.
 
-    Default: ``true``
+    Default: ``5``
 
 .. _data-isso-avatar:
 
