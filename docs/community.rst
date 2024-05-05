@@ -11,10 +11,9 @@ Getting in contact
 The main place of interaction for the Isso community is the
 `GitHub issue tracker <https://github.com/isso-comments/isso/issues>`_.
 
-A few people - including the lead developers and maintainers - frequent the
-``#isso`` channel, which you can join via
-`Matrix <https://matrix.to/#/#isso:libera.chat">`_ or via IRC on
-`Libera.Chat <https://libera.chat/>`_
+A few people - including some of the lead developers and maintainers -
+sometimes participate in the ``#isso`` channel, which you can join via IRC on
+`Libera.Chat <https://libera.chat/>`_.
 
 You may also ask questions or suggest improvements on
 `GitHub Discussions <https://github.com/isso-comments/isso/discussions>`_.
