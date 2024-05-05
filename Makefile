@@ -119,7 +119,7 @@ docker-release-push:
 	docker push $(ISSO_DOCKER_REGISTRY)/$(ISSO_RELEASE_IMAGE)
 
 docker-testbed:
-	docker build -f docker/Dockerfile-js-testbed -t $(TESTBED_IMAGE) .
+	DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile-js-testbed -t $(TESTBED_IMAGE) .
 
 # For maintainers only:
 docker-testbed-push:

@@ -37,7 +37,7 @@ a development server available at ``localhost:8080``.
 
 .. code-block:: bash
 
-   $ virtualenv .venv
+   $ virtualenv --download .venv
    $ source .venv/bin/activate
    (.venv) $ isso -c contrib/isso-dev.cfg run
 

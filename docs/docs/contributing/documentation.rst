@@ -50,7 +50,7 @@ Install via pip:
 
 .. code-block:: console
 
-   $ virtualenv .venv && $ source .venv/bin/activate
+   $ virtualenv --download .venv && $ source .venv/bin/activate
    (.venv) $ pip install sphinx
    (.venv) $ sphinx-build --version
    ~> sphinx-build 4.5.0
@@ -157,7 +157,7 @@ Use ``.. code-block:: <language>`` and indent the code by one level:
    .. code-block:: console
 
         $ sudo apt install python3 python3-pip python3-virtualenv
-        $ virtualenv .venv
+        $ virtualenv --download .venv
         $ source .venv/bin/activate
         (.venv) $ python [cmd]
 
