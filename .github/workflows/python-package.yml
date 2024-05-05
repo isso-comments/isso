@@ -47,6 +47,7 @@ jobs:
     - name: Generate Isso package
       id: generate-package
       run: |
+        pip install setuptools
         python setup.py sdist
         echo "::set-output name=package_file::$(ls dist/)"
 
