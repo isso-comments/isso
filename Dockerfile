@@ -56,7 +56,7 @@ RUN virtualenv --download /isso \
 COPY ["setup.py", "setup.cfg", "README.md", "LICENSE", "./"]
 RUN --mount=type=cache,target=/root/.cache \
   . /isso/bin/activate \
- && python3 setup.py develop
+ && pip install -e .
 
 # Then copy over files
 # SRC "isso/" is treated as "isso/*" by docker, so copy to subdir explicitly
@@ -69,7 +69,7 @@ COPY --from=isso-js /src/isso/js/ ./isso/js
 # Build and install Isso package (pip dependencies cached from previous step)
 RUN --mount=type=cache,target=/root/.cache \
  . /isso/bin/activate \
- && python3 setup.py develop --no-deps
+ && pip install -e . --no-deps
 
 
 # =====================
