@@ -58,7 +58,7 @@ test('Rendered comment should match snapshot', () => {
   var isso_thread = $('#isso-thread');
   isso_thread.append('<div id="isso-root"></div>');
 
-  isso.insert(comment, false);
+  isso.insert({ comment, scrollIntoView: false, offset: 0 });
 
   // Will create a `.snap` file in `./__snapshots__/`.
   // Don't forget to check in those files when changing anything!

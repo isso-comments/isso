@@ -247,6 +247,134 @@ class TestComments(unittest.TestCase):
         self.assertEqual(len(rv['replies']), 10)
         self.assertEqual(rv['total_replies'], 20)
 
+    def testGetWithOffset(self):
+        for i in range(5):
+            self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        r = self.get('/?uri=test&limit=3&offset=2')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies']],
+            [3, 4, 5]
+        )
+
+    def testGetWithOffsetIgnoredWithoutLimit(self):
+        for i in range(5):
+            self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        r = self.get('/?uri=test&offset=2')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies']],
+            [1, 2, 3, 4, 5]
+        )
+
+    def testGetNestedWithOffset(self):
+
+        self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        for i in range(5):
+            self.post('/new?uri=test',
+                      data=json.dumps({'text': '...', 'parent': 1}))
+
+        r = self.get('/?uri=test&parent=1&limit=3&offset=2')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies']],
+            [4, 5, 6]
+        )
+
+    def testGetSortedByOldest(self):
+        for i in range(5):
+            self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        r = self.get('/?uri=test&sort=oldest')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        # assert order of comments is oldest first
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies']],
+            [1, 2, 3, 4, 5]
+        )
+
+    def testGetSortedByNewest(self):
+        for i in range(5):
+            self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        r = self.get('/?uri=test&sort=newest')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        # assert order of comments is newest first
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies']],
+            [5, 4, 3, 2, 1]
+        )
+
+    def testGetSortedByUpvotes(self):
+        for i in range(5):
+            self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+
+        # update the likes for some comments
+        self.app.db.execute(
+            'UPDATE comments SET likes = id WHERE id IN (2, 4)'
+        )
+
+        r = self.get('/?uri=test&sort=upvotes')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        # assert order of comments is by upvotes
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies']],
+            [4, 2, 1, 3, 5]
+        )
+
+    def testGetSortedByNewestWithNested(self):
+        self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        for i in range(5):
+            self.post('/new?uri=test',
+                      data=json.dumps({'text': '...', 'parent': 1}))
+
+        r = self.get('/?uri=test&sort=newest')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(len(rv['replies']), 1)
+        # assert order of nested comments is newest first
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies'][0]['replies']],
+            [6, 5, 4, 3, 2]
+        )
+
+    def testGetSortedByUpvotesWithNested(self):
+        self.post('/new?uri=test', data=json.dumps({'text': '...'}))
+        for i in range(5):
+            self.post('/new?uri=test',
+                      data=json.dumps({'text': '...', 'parent': 1}))
+
+        # update the likes for some comments
+        self.app.db.execute(
+            'UPDATE comments SET likes = id WHERE id IN (3, 6)'
+        )
+
+        r = self.get('/?uri=test&sort=upvotes')
+        self.assertEqual(r.status_code, 200)
+
+        rv = loads(r.data)
+        self.assertEqual(len(rv['replies']), 1)
+        # assert order of nested comments is newest first
+        self.assertEqual(
+            [comment['id'] for comment in rv['replies'][0]['replies']],
+            [6, 3, 2, 4, 5]
+        )
+
     def testUpdate(self):
 
         self.post('/new?uri=%2Fpath%2F',

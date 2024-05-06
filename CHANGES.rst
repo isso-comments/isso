@@ -12,12 +12,14 @@ New Features
 - Add search for comments by URL in the admin interface (`#1000`_, pkvach)
 - Add CSS variables for better organization and flexibility (`#1001`_, pkvach)
 - Add support for comment search by Thread URL in admin interface (`#1020`_, pkvach)
+- Add sorting option for comments (`#1005`_, pkvach)
 
 .. _#966: https://github.com/posativ/isso/pull/966
 .. _#998: https://github.com/isso-comments/isso/pull/998
 .. _#1000: https://github.com/isso-comments/isso/pull/1000
 .. _#1001: https://github.com/isso-comments/isso/pull/1001
 .. _#1020: https://github.com/isso-comments/isso/pull/1020
+.. _#1005: https://github.com/isso-comments/isso/pull/1005
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^

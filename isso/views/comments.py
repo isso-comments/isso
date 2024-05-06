@@ -809,7 +809,7 @@ class API(object):
     @api {get} / Get comments
     @apiGroup Thread
     @apiName fetch
-    @apiVersion 0.12.6
+    @apiVersion 0.13.1
     @apiDescription Queries the publicly visible comments of a thread.
 
     @apiQuery {String} uri
@@ -823,6 +823,10 @@ class API(object):
         The maximum number of returned nested comments per comment. Omit for unlimited results.
     @apiQuery {Number} [after]
         Includes only comments were added after the provided UNIX timestamp.
+    @apiQuery {String} [sort]
+        The sorting order of the comments. Possible values are `newest`, `oldest`, `upvotes`. If omitted, default sort order will be `oldest`.
+    @apiQuery {Number} [offset]
+        Offset the returned comments by this number. Used for pagination. Works only in combination with `limit`.
 
     @apiSuccess {Number} id
         Id of the comment `replies` is the list of replies of. `null` for the list of top-level comments.
@@ -899,12 +903,36 @@ class API(object):
             'after': request.args.get('after', 0)
         }
 
+        # map sort query parameter
+        valid_sort_options = ['newest', 'oldest', 'upvotes']
+        sort = request.args.get('sort', 'oldest')
+
+        if sort not in valid_sort_options:
+            return BadRequest("Invalid sort option. Must be one of: 'newest', 'oldest', 'upvotes'")
+
+        if sort == 'newest':
+            args['order_by'] = 'created'
+            args['asc'] = 0
+        elif sort == 'oldest':
+            args['order_by'] = 'created'
+            args['asc'] = 1
+        elif sort == 'upvotes':
+            args['order_by'] = 'karma'
+            args['asc'] = 0
+
         try:
             args['limit'] = int(request.args.get('limit'))
         except TypeError:
             args['limit'] = None
         except ValueError:
             return BadRequest("limit should be integer")
+
+        try:
+            args['offset'] = int(request.args.get('offset', 0))
+            if args['offset'] < 0:
+                return BadRequest("offset should not be negative")
+        except (ValueError, TypeError):
+            return BadRequest("offset should be integer")
 
         if request.args.get('parent') is not None:
             try:
@@ -918,7 +946,7 @@ class API(object):
 
         plain = request.args.get('plain', '0') == '0'
 
-        reply_counts = self.comments.reply_count(uri, after=args['after'])
+        reply_counts = self.comments.reply_count(uri)
 
         if args['limit'] == 0:
             root_list = []
@@ -941,7 +969,7 @@ class API(object):
         rv = {
             'id': root_id,
             'total_replies': total_replies,
-            'hidden_replies': reply_counts[root_id] - len(root_list),
+            'hidden_replies': reply_counts[root_id] - len(root_list) - args['offset'],
             'replies': self._process_fetched_list(root_list, plain),
             'config': self.public_conf
         }
@@ -954,6 +982,8 @@ class API(object):
                         if nested_limit > 0:
                             args['parent'] = comment['id']
                             args['limit'] = nested_limit
+                            # Reset offset to 0 for nested comments to ensure correct pagination
+                            args['offset'] = 0
                             replies = list(self.comments.fetch(**args))
                         else:
                             replies = []

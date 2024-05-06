@@ -114,7 +114,7 @@ var Postbox = function(parent) {
             notification: $("[name=notification]", el).checked() ? 1 : 0,
         }).then(function(comment) {
             $(".isso-textarea", el).value = "";
-            insert(comment, true);
+            insert({ comment, scrollIntoView: true, offset: 0 });
 
             if (parent !== null) {
                 el.onsuccess();
@@ -125,7 +125,7 @@ var Postbox = function(parent) {
     return el;
 };
 
-var insert_loader = function(comment, lastcreated) {
+var insert_loader = function(comment, offset) {
     var entrypoint;
     if (comment.id === null) {
         entrypoint = $("#isso-root");
@@ -140,34 +140,37 @@ var insert_loader = function(comment, lastcreated) {
 
     $("a.isso-load-hidden", el).on("click", function() {
         el.remove();
-        api.fetch($("#isso-thread").getAttribute("data-isso-id"),
-            config["reveal-on-click"], config["max-comments-nested"],
-            comment.id,
-            lastcreated).then(
+
+        api.fetch({
+            tid: $("#isso-thread").getAttribute("data-isso-id"),
+            limit: config["reveal-on-click"],
+            nested_limit: config["max-comments-nested"],
+            parent: comment.id,
+            sort: config["sorting"],
+            offset: offset
+        }).then(
             function(rv) {
                 if (rv.total_replies === 0) {
                     return;
                 }
 
-                var lastcreated = 0;
                 rv.replies.forEach(function(commentObject) {
-                    insert(commentObject, false);
-                    if(commentObject.created > lastcreated) {
-                        lastcreated = commentObject.created;
-                    }
+                    insert({ comment: commentObject, scrollIntoView: false, offset: 0 });
+
                 });
 
                 if(rv.hidden_replies > 0) {
-                    insert_loader(rv, lastcreated);
+                    insert_loader(rv, offset + rv.replies.length);
                 }
             },
             function(err) {
                 console.log(err);
-            });
+            }
+        );
     });
 };
 
-var insert = function(comment, scrollIntoView) {
+var insert = function({ comment, scrollIntoView, offset }) {
     var el = $.htmlify(template.render("comment", {"comment": comment}));
 
     // update datetime every 60 seconds
@@ -381,19 +384,13 @@ var insert = function(comment, scrollIntoView) {
         show($("a.isso-reply", footer).detach());
     }
 
-    if(comment.hasOwnProperty('replies')) {
-        var lastcreated = 0;
-        comment.replies.forEach(function(replyObject) {
-            insert(replyObject, false);
-            if(replyObject.created > lastcreated) {
-                lastcreated = replyObject.created;
-            }
-
+    if (comment.hasOwnProperty('replies')) {
+        comment.replies.forEach(function (replyObject) {
+            insert({ comment: replyObject, scrollIntoView: false, offset: offset + 1 });
         });
-        if(comment.hidden_replies > 0) {
-            insert_loader(comment, lastcreated);
+        if (comment.hidden_replies > 0) {
+            insert_loader(comment, offset + comment.replies.length);
         }
-
     }
 
 };

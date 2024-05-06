@@ -122,9 +122,15 @@ function fetchComments() {
     }
     isso_root.textContent = '';
 
-    api.fetch(isso_thread.getAttribute("data-isso-id") || location.pathname,
-        config["max-comments-top"],
-        config["max-comments-nested"]).then(
+
+    api.fetch({
+        tid: isso_thread.getAttribute("data-isso-id") || location.pathname,
+        limit: config["max-comments-top"],
+        nested_limit: config["max-comments-nested"],
+        parent: null,
+        sort: config["sorting"],
+        offset: 0
+    }).then(
         function (rv) {
 
             if (rv.total_replies === 0) {
@@ -132,18 +138,14 @@ function fetchComments() {
                 return;
             }
 
-            var lastcreated = 0;
             var count = rv.total_replies;
             rv.replies.forEach(function(comment) {
-                isso.insert(comment, false);
-                if (comment.created > lastcreated) {
-                    lastcreated = comment.created;
-                }
+                isso.insert({ comment: comment, scrollIntoView: false, offset: 0 });
             });
             heading.textContent = i18n.pluralize("num-comments", count);
 
             if (rv.hidden_replies > 0) {
-                isso.insert_loader(rv, lastcreated);
+                isso.insert_loader(rv, rv.replies.length);
             }
 
             if (window.location.hash.length > 0 &&
