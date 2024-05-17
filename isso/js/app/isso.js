@@ -92,34 +92,50 @@ var Postbox = function(parent) {
 
     // submit form, initialize optional fields with `null` and reset form.
     // If replied to a comment, remove form completely.
-    $("[type=submit]", el).on("click", function() {
+    $("[type=submit]", el).on("click", function(event) {
         edit();
         if (! el.validate()) {
             return;
         }
 
+        const submitButton = event.target;
+        submitButton.disabled = true; // Disable the submit button to prevent double posting
+
         var author = $("[name=author]", el).value || null,
             email = $("[name=email]", el).value || null,
             website = $("[name=website]", el).value || null;
 
-        localStorage.setItem("isso-author", JSON.stringify(author));
-        localStorage.setItem("isso-email", JSON.stringify(email));
-        localStorage.setItem("isso-website", JSON.stringify(website));
+        try {
+            localStorage.setItem("isso-author", JSON.stringify(author));
+            localStorage.setItem("isso-email", JSON.stringify(email));
+            localStorage.setItem("isso-website", JSON.stringify(website));
 
-        api.create($("#isso-thread").getAttribute("data-isso-id"), {
-            author: author, email: email, website: website,
-            text: $(".isso-textarea", el).value,
-            parent: parent || null,
-            title: $("#isso-thread").getAttribute("data-title") || null,
-            notification: $("[name=notification]", el).checked() ? 1 : 0,
-        }).then(function(comment) {
-            $(".isso-textarea", el).value = "";
-            insert({ comment, scrollIntoView: true, offset: 0 });
+            api.create($("#isso-thread").getAttribute("data-isso-id"), {
+                author: author, email: email, website: website,
+                text: $(".isso-textarea", el).value,
+                parent: parent || null,
+                title: $("#isso-thread").getAttribute("data-title") || null,
+                notification: $("[name=notification]", el).checked() ? 1 : 0,
+            }).then(
+                function(comment) {
+                    $(".isso-textarea", el).value = "";
+                    insert({ comment, scrollIntoView: true, offset: 0 });
 
-            if (parent !== null) {
-                el.onsuccess();
-            }
-        });
+                    if (parent !== null) {
+                        el.onsuccess();
+                    }
+
+                    submitButton.disabled = false;
+                },
+                function(err) {
+                    console.error(err);
+                    submitButton.disabled = false;
+                }
+            );
+        } catch (err) {
+            console.error(err);
+            submitButton.disabled = false;
+        }
     });
 
     return el;

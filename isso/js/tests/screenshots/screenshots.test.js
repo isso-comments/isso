@@ -66,12 +66,14 @@ test('Screenshot with inserted comment', async () => {
     page.waitForResponse(async (response) =>
       // response.ok means code of 200-300
       response.url().includes('/new') && response.ok(),
-      { timout: 500 }
+      { timeout: 500 }
     ),
     // Then, click submit button
     expect(page).toClick('.isso-post-action > input[type=submit]'),
   ]);
 
+  await page.waitForSelector('.isso-post-action > [type=submit]:enabled');
+  await page.waitForSelector('#isso-1');
   const rendered_comment = await page.$('#isso-1');
   await rendered_comment.screenshot({
     path: SCREENSHOTS_PATH + '/comment.png'
