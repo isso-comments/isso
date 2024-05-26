@@ -50,6 +50,7 @@ Bugfixes & Improvements
 - Make 'text' field in 'comments' table NOT NULL and handling data migration (`#1019`_, pkvach)
 - Python 3.12 support (`#1015`_, ix5)
 - Disable Postbox submit button on click, enable after response (`#993`_, pkvach)
+- Provide full control of allowed HTML elements via the configuration file (`#1007`_, pkvach)
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
@@ -64,6 +65,7 @@ Bugfixes & Improvements
 .. _#1019: https://github.com/isso-comments/isso/pull/1019
 .. _#1015: https://github.com/isso-comments/isso/pull/1015
 .. _#993: https://github.com/isso-comments/isso/pull/993
+.. _#1007: https://github.com/isso-comments/isso/pull/1007
 
 0.13.1.dev0 (2023-02-05)
 ------------------------
