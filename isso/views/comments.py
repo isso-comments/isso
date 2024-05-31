@@ -1546,12 +1546,12 @@ class API(object):
     @apiName latest
     @apiVersion 0.12.6
     @apiDescription
-        Get the latest comments from the system, no matter which thread. Only available if `[general] latest-enabled` is set to `true` in server config.
+        Get the latest accepted comments from the system, no matter which thread. Only available if `[general] latest-enabled` is set to `true` in server config.
 
     @apiQuery {Number} limit
         The quantity of last comments to retrieve
 
-    @apiExample {curl} Get the latest 5 comments
+    @apiExample {curl} Get the latest 5 accepted comments
         curl 'https://comments.example.com/latest?limit=5'
 
     @apiUse commentResponse
@@ -1608,13 +1608,15 @@ class API(object):
     @apiName pending
     @apiVersion 0.13.0
     @apiDescription
-        Get the latest comments from the system waiting moderation, no matter which thread. Only available if `[general] pending-enabled` is set to `true` in server config.
+        Get the latest comments waiting moderation from the system, no matter which thread. Only available if `[general] pending-enabled` is set to `true` and `[admin] enabled is set to `true` in server config.
+
+    @apiHeader {String="Basic BASE64_CREDENTIALS"} authorization Base64 encoded "USERNAME:PASSWORD"
 
     @apiQuery {Number} limit
         The quantity of last comments to retrieve
 
     @apiExample {curl} Get the latest 5 pending comments
-        curl 'https://comments.example.com/pending?limit=5'
+        curl -u 'admin:ADMIN_PASSWORD' 'https://comments.example.com/pending?limit=5'
 
     @apiUse commentResponse
 
