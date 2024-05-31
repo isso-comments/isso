@@ -1606,7 +1606,7 @@ class API(object):
     @api {get} /pending pending
     @apiGroup Comment
     @apiName pending
-    @apiVersion 0.13.0
+    @apiVersion 0.13.1
     @apiDescription
         Get the latest comments waiting moderation from the system, no matter which thread. Only available if `[general] pending-enabled` is set to `true` and `[admin] enabled is set to `true` in server config.
 
