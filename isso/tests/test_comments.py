@@ -5,10 +5,12 @@ import os
 import re
 import tempfile
 import unittest
+import base64
 
 from urllib.parse import urlencode
 
 from werkzeug.wrappers import Response
+from werkzeug.datastructures import Headers
 
 from isso import Isso, core, config
 from isso.utils import http
@@ -705,6 +707,20 @@ class TestComments(unittest.TestCase):
         response = self.get('/latest?limit=5')
         self.assertEqual(response.status_code, 404)
 
+    def testPendingNotFound(self):
+        # load some comments in a mix of posts
+        saved = []
+        for idx, post_id in enumerate([1, 2, 2, 1, 2, 1, 3, 1, 4, 2, 3, 4, 1, 2]):
+            text = 'text-{}'.format(idx)
+            post_uri = 'test-{}'.format(post_id)
+            self.post('/new?uri=' + post_uri, data=json.dumps({'text': text}))
+            saved.append((post_uri, text))
+
+        response = self.get('/pending?limit=5')
+
+        # If the admin interface was not enabled we should get a 404.
+        self.assertEqual(response.status_code, 404)
+
 
 class TestHostDependent(unittest.TestCase):
 
@@ -779,6 +795,8 @@ class TestModeratedComments(unittest.TestCase):
         conf.set("moderation", "enabled", "true")
         conf.set("guard", "enabled", "off")
         conf.set("hash", "algorithm", "none")
+        conf.set("admin", "enabled", "true")
+        self.conf = conf
 
         class App(Isso, core.Mixin):
             pass
@@ -786,6 +804,8 @@ class TestModeratedComments(unittest.TestCase):
         self.app = App(conf)
         self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
         self.client = JSONClient(self.app, Response)
+        self.post = self.client.post
+        self.get = self.client.get
 
     def tearDown(self):
         os.unlink(self.path)
@@ -859,6 +879,64 @@ class TestModeratedComments(unittest.TestCase):
 
         # Comment should no longer exist
         self.assertEqual(self.app.db.comments.get(id_), None)
+
+    def testPendingWithoutAdmin(self):
+        self.conf.set("admin", "enabled", "false")
+        response = self.get('/pending?limit=5')
+        self.assertEqual(response.status_code, 404)
+
+    def testPendingUnauthorized(self):
+        response = self.get('/pending?limit=5')
+        self.assertEqual(response.status_code, 401)
+
+    def getAuthenticated(self, url, username, password):
+        credentials = f"{username}:{password}"
+        encoded_credentials = base64.b64encode(credentials.encode('utf-8')).decode('utf-8')
+        headers = Headers()
+        headers.add('Authorization', f'Basic {encoded_credentials}')
+
+        return self.client.get(url, headers=headers)
+
+    def testPendingNotEnabled(self):
+        password = "s3cr3t"
+        self.conf.set("admin", "enabled", "true")
+        self.conf.set("admin", "password", password)
+        response = self.getAuthenticated('/pending?limit=5', 'admin', password)
+        self.assertEqual(response.status_code, 404)
+
+    def testPendingNotEnabled(self):
+        password = "s3cr3t"
+        self.conf.set("admin", "enabled", "true")
+        self.conf.set("admin", "password", password)
+        self.conf.set("general", "pending-enabled", "true")
+        response = self.getAuthenticated('/pending?limit=5', 'admin', password)
+        self.assertEqual(response.status_code, 200)
+
+        body = loads(response.data)
+        self.assertEqual(body, [])
+
+    def testPendingPosts(self):
+        # load some comments in a mix of posts
+        saved = []
+        for idx, post_id in enumerate([1, 2, 2, 1, 2, 1, 3, 1, 4, 2, 3, 4, 1, 2]):
+            text = 'text-{}'.format(idx)
+            post_uri = 'test-{}'.format(post_id)
+            self.post('/new?uri=' + post_uri, data=json.dumps({'text': text}))
+            saved.append((post_uri, text))
+
+        password = "s3cr3t"
+        self.conf.set("admin", "enabled", "true")
+        self.conf.set("admin", "password", password)
+        self.conf.set("general", "pending-enabled", "true")
+        response = self.getAuthenticated('/pending?limit=5', 'admin', password)
+        self.assertEqual(response.status_code, 200)
+
+        body = loads(response.data)
+        expected_items = saved[-5:]  # latest 5
+        for reply, expected in zip(body, expected_items):
+            expected_uri, expected_text = expected
+            self.assertIn(expected_text, reply['text'])
+            self.assertEqual(expected_uri, reply['uri'])
 
 
 class TestUnsubscribe(unittest.TestCase):

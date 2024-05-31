@@ -132,6 +132,33 @@ def get_uri_from_url(url):
     return uri
 
 
+def requires_auth(method):
+    def decorated(self, *args, **kwargs):
+        request = args[1]
+        auth = request.authorization
+        if not auth:
+            return Response(
+                "Unauthorized", 401,
+                {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
+        if not self.check_auth(auth.username, auth.password):
+            return Response(
+                "Wrong username or password", 401,
+                {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
+        return method(self, *args, **kwargs)
+    return decorated
+
+
+def requires_admin(method):
+    def decorated(self, *args, **kwargs):
+        if not self.isso.conf.getboolean("admin", "enabled"):
+            return NotFound(
+                "Unavailable because 'admin' not enabled by site admin"
+        )
+
+        return method(self, *args, **kwargs)
+    return decorated
+
+
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
@@ -146,6 +173,7 @@ class API(object):
         ('counts', ('POST', '/count')),
         ('feed', ('GET', '/feed')),
         ('latest', ('GET', '/latest')),
+        ('pending', ('GET', '/pending')),
         ('view', ('GET', '/id/<int:id>')),
         ('edit', ('PUT', '/id/<int:id>')),
         ('delete', ('DELETE', '/id/<int:id>')),
@@ -1565,6 +1593,77 @@ class API(object):
                 "Unavailable because 'latest-enabled' not set by site admin"
             )
 
+        return self._latest(environ, request, "1")
+
+
+    def check_auth(self, username, password):
+        admin_password = self.isso.conf.get("admin", "password")
+
+        return username == 'admin' and password == admin_password
+
+
+    """
+    @api {get} /pending pending
+    @apiGroup Comment
+    @apiName pending
+    @apiVersion 0.13.0
+    @apiDescription
+        Get the latest comments from the system waiting moderation, no matter which thread. Only available if `[general] pending-enabled` is set to `true` in server config.
+
+    @apiQuery {Number} limit
+        The quantity of last comments to retrieve
+
+    @apiExample {curl} Get the latest 5 pending comments
+        curl 'https://comments.example.com/pending?limit=5'
+
+    @apiUse commentResponse
+
+    @apiSuccessExample Example result:
+        [
+            {
+                "website": null,
+                "uri": "/some",
+                "author": null,
+                "parent": null,
+                "created": 1464912312.123416,
+                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+                "dislikes": 0,
+                "modified": null,
+                "mode": 2,
+                "id": 3,
+                "likes": 1
+            },
+            {
+                "website": null,
+                "uri": "/other",
+                "author": null,
+                "parent": null,
+                "created": 1464914341.312426,
+                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
+                "dislikes": 0,
+                "modified": null,
+                "mode": 2,
+                "id": 4,
+                "likes": 0
+            }
+        ]
+    """
+	# If the admin interface is not enabled, people may have not changed
+	# the default password.  We therefore disallow the /pending endpoint,
+    # as well.
+    @requires_admin
+    @requires_auth
+    def pending(self, environ, request):
+        # if the feature is not allowed, don't present the endpoint
+        if not self.conf.getboolean("pending-enabled"):
+            return NotFound(
+                "Unavailable because 'pending-enabled' not set by site admin"
+            )
+
+        return self._latest(environ, request, "2")
+
+
+    def _latest(self, environ, request, mode):
         # get and check the limit
         bad_limit_msg = "Query parameter 'limit' is mandatory (integer, >0)"
         try:
@@ -1575,7 +1674,7 @@ class API(object):
             return BadRequest(bad_limit_msg)
 
         # retrieve the latest N comments from the DB
-        all_comments_gen = self.comments.fetchall(limit=None, order_by='created', mode='1')
+        all_comments_gen = self.comments.fetchall(limit=None, order_by='created', mode=mode)
         comments = collections.deque(all_comments_gen, maxlen=limit)
 
         # prepare a special set of fields (except text which is rendered specifically)
