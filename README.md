@@ -21,7 +21,10 @@ details and [documentation](https://isso-comments.de/docs/).
 
 ## Screenshot
 
-![Isso in Action](https://user-images.githubusercontent.com/10212877/167268553-3f30b448-25ff-4850-afef-df2f2e599c93.png)
+<picture>
+ <source media="(prefers-color-scheme: dark)" srcset="https://github.com/isso-comments/isso/assets/6305520/741b312e-798c-412b-918d-39d96deb4a5d">
+ <img alt="Isso in Action" src="https://user-images.githubusercontent.com/10212877/167268553-3f30b448-25ff-4850-afef-df2f2e599c93.png">
+</picture>
 
 ## Getting started
 
