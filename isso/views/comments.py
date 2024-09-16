@@ -350,7 +350,7 @@ class API(object):
                         if resp and resp.status == 200:
                             uri, title = parse.thread(resp.read(), id=uri)
                         else:
-                            return NotFound('URI does not exist %s')
+                            return NotFound(f'URI {uri} does not exist')
                 else:
                     title = data['title']
 
