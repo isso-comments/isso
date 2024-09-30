@@ -539,11 +539,12 @@ class API(object):
 
         data = request.json
 
-        if data.get("text") is None or len(data["text"]) < 3:
-            raise BadRequest("no text given")
-
         for key in set(data.keys()) - set(["text", "author", "website"]):
             data.pop(key)
+
+        valid, reason = API.verify(data)
+        if not valid:
+            return BadRequest(reason)
 
         data['modified'] = time.time()
 
