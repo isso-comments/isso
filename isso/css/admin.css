@@ -51,6 +51,9 @@ input {
     color: #4d4c4c;
     text-decoration: none;
 }
+.header .logout {
+    float: right;
+}
 .outer {
     background-color: #eeeeee;
     box-shadow: 0 0 0.5em #c0c0c0 inset;

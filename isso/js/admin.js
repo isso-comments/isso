@@ -124,6 +124,11 @@ function send_edit(com_id, hash, isso_host_script) {
     edit(com_id, hash, author, email, website, comment, isso_host_script);
     stop_edit(com_id, true);
 }
+function log_out() {
+    // Delete cookie
+    document.cookie = "admin-session=; Max-Age=0; domain=" + window.location.hostname + "; path=/";
+    window.location.reload();
+}
 
 function toggleTooltip(tooltipContainer) {
     const tooltipText = tooltipContainer.querySelector(".search-tooltip-text");

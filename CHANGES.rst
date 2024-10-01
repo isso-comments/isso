@@ -13,7 +13,9 @@ New Features
 - Add CSS variables for better organization and flexibility (`#1001`_, pkvach)
 - Add support for comment search by Thread URL in admin interface (`#1020`_, pkvach)
 - Add sorting option for comments (`#1005`_, pkvach)
+- admin: Add log out button (`#870`_, bbaovanc)
 
+.. _#870: https://github.com/posativ/isso/pull/870
 .. _#966: https://github.com/posativ/isso/pull/966
 .. _#998: https://github.com/isso-comments/isso/pull/998
 .. _#1000: https://github.com/isso-comments/isso/pull/1000
