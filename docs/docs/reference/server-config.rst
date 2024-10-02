@@ -572,3 +572,24 @@ Booleans
    ``on``/``off`` etc.
 
 .. _getboolean: https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.getboolean
+
+Environment Variables
+^^^^^^^^^^^^^^^^^^^^^
+.. versionadded:: 0.13.1
+
+You can use environment variables in the configuration file. This is useful for keeping sensitive information, such as passwords, out of the configuration file itself. Environment variables are referenced using the ``$VAR_NAME`` or ``${VAR_NAME}`` syntax.
+
+Example:
+
+.. code-block:: ini
+   :caption: ``isso.cfg``
+
+    [general]
+    dbpath = /var/lib/isso/comments.db
+    host = https://example.tld/
+
+    [smtp]
+    username = $SMTP_USERNAME
+    password = ${SMTP_PASSWORD}
+
+In this example, the values for ``username`` and ``password`` will be taken from the environment variables ``SMTP_USERNAME`` and ``SMTP_PASSWORD``, respectively.

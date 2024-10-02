@@ -14,6 +14,7 @@ New Features
 - Add support for comment search by Thread URL in admin interface (`#1020`_, pkvach)
 - Add sorting option for comments (`#1005`_, pkvach)
 - admin: Add log out button (`#870`_, bbaovanc)
+- Add support for environment variables in config (`#1037`_, pkvach)
 
 .. _#870: https://github.com/posativ/isso/pull/870
 .. _#966: https://github.com/posativ/isso/pull/966
@@ -22,6 +23,7 @@ New Features
 .. _#1001: https://github.com/isso-comments/isso/pull/1001
 .. _#1020: https://github.com/isso-comments/isso/pull/1020
 .. _#1005: https://github.com/isso-comments/isso/pull/1005
+.. _#1037: https://github.com/isso-comments/isso/pull/1037
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^

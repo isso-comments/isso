@@ -2,6 +2,7 @@
 
 import datetime
 import logging
+import os
 import pkg_resources
 import re
 
@@ -82,6 +83,7 @@ class IssoParser(ConfigParser):
         * Parse human-readable timedelta such as "15m" as "15 minutes"
         * Handle indented lines as "lists"
         * Disable string interpolation ('%s') for values
+        * Support environment variable substitution
     """
 
     def __init__(self, *args, **kwargs):
@@ -94,6 +96,10 @@ class IssoParser(ConfigParser):
         """
         return super(IssoParser, self).__init__(
             allow_no_value=True, interpolation=None, *args, **kwargs)
+
+    def get(self, section, key, **kwargs):
+        value = super(IssoParser, self).get(section, key, **kwargs)
+        return os.path.expandvars(value)
 
     def getint(self, section, key):
         try:
