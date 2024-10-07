@@ -17,16 +17,7 @@ class Sanitizer(object):
         return name == "class" and bool(Sanitizer.code_language_pattern.match(value))
 
     def __init__(self, elements, attributes):
-        # attributes found in Sundown's HTML serializer [1]
-        # - except for <img> tag, because images are not generated anyways.
-        # - sub and sup added
-        #
-        # [1] https://github.com/vmg/sundown/blob/master/html/html.c
-        self.elements = ["a", "p", "hr", "br", "ol", "ul", "li",
-                         "pre", "code", "blockquote",
-                         "del", "ins", "strong", "em",
-                         "h1", "h2", "h3", "h4", "h5", "h6", "sub", "sup",
-                         "table", "thead", "tbody", "th", "td"] + elements
+        self.elements = elements
 
         # allowed attributes for tags
         self.attributes = {
@@ -108,12 +99,38 @@ class Markup(object):
         parser = Markdown(extensions=self.extensions,
                           flags=self.flags)
         # Filter out empty strings:
-        allowed_elements = [x for x in conf.getlist("allowed-elements") if x]
+        strictly_allowed_html_elements = [x for x in conf.getlist("strictly-allowed-html-elements") if x]
         allowed_attributes = [x for x in conf.getlist("allowed-attributes") if x]
+
+        # if "strictly-allowed-html-elements" option is set, use it instead of "allowed-elements"
+        if strictly_allowed_html_elements:
+            allowed_elements = strictly_allowed_html_elements
+        else:
+            allowed_elements = [x for x in conf.getlist("allowed-elements") if x]
+
+            # attributes found in Sundown's HTML serializer [1]
+            # - except for <img> tag, because images are not generated anyways.
+            # - sub and sup added
+            #
+            # [1] https://github.com/vmg/sundown/blob/master/html/html.c
+            allowed_elements = ["a", "p", "hr", "br", "ol", "ul", "li",
+                                "pre", "code", "blockquote",
+                                "del", "ins", "strong", "em",
+                                "h1", "h2", "h3", "h4", "h5", "h6", "sub", "sup",
+                                "table", "thead", "tbody", "tr", "th", "td"] + allowed_elements
 
         # If images are allowed, source element should be allowed as well
         if 'img' in allowed_elements and 'src' not in allowed_attributes:
             allowed_attributes.append('src')
+
+        # If 'highlight' extension is enabled, allow 'mark' element
+        if 'highlight' in self.extensions and 'mark' not in allowed_elements:
+            allowed_elements.append('mark')
+
+        # If 'underline' extension is enabled, allow 'u' element
+        if 'underline' in self.extensions and 'u' not in allowed_elements:
+            allowed_elements.append('u')
+
         sanitizer = Sanitizer(allowed_elements, allowed_attributes)
 
         self._render = lambda text: sanitizer.sanitize(parser(text))
