@@ -63,6 +63,7 @@ like Hugo, Ghost or Pelican.*
 * `Adding Isso comments to a Ghost blog on AWS Lightsail <https://dev.to/sometimescasey/adding-isso-comments-to-a-ghost-blog-on-aws-lightsail-5ea2>`_ (12/2020)
 * `Deploying Isso Commenting System Under Nginx With Docker <https://linuxhandbook.com/deploy-isso-comment/>`_ (2/2022)
 * `Inside The Isso Database <https://snorl.ax/posts/2019/06/10/inside-the-isso-database/>`_ (6/2019)
+* `Deploying Isso Commenting System Under Nginx With Docker <https://linuxhandbook.com/deploy-isso-comment/>`_ (updated 2/2023)
 
 .. Articles that are not relevant/recent enough:
    * `Install The Newest Isso and Integrated It with CDN like CloudFlare <https://snorl.ax/posts/2016/07/12/start-to-use-isso/`_
