@@ -70,7 +70,7 @@ jobs:
       run: make js
 
     - name: Archive and upload generated minified client files
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: client-js-files
         path: |
