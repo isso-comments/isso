@@ -18,6 +18,7 @@ var catalogue = {
     hr:      require("app/i18n/hr"),
     hu:      require("app/i18n/hu"),
     it:      require("app/i18n/it"),
+    ja:      require("app/i18n/ja"),
     ko:      require("app/i18n/ko"),
     nl:      require("app/i18n/nl"),
     oc:      require("app/i18n/oc"),
@@ -54,6 +55,7 @@ var pluralforms = function(lang) {
     case "hr":
     case "hu":
     case "it":
+    case "ja":
     case "ko":
     case "nl":
     case "pt":
