@@ -60,7 +60,7 @@ class TestHTML(unittest.TestCase):
             </code></pre>""")
 
     def test_sanitizer(self):
-        sanitizer = html.Sanitizer(elements=[], attributes=[])
+        sanitizer = html.Sanitizer(elements=["p", "a", "code"], attributes=["href"])
         examples = [
             ('Look: <img src="..." />', 'Look: '),
             ('<a href="http://example.org/">Ha</a>',
@@ -94,8 +94,9 @@ class TestHTML(unittest.TestCase):
             "markup": {
                 "options": "autolink",
                 "flags": "",
-                "allowed-elements": "",
-                "allowed-attributes": ""
+                "allowed-elements": "a, p",
+                "allowed-attributes": "href",
+                "strictly-allowed-html-elements": ""
             }
         })
         renderer = html.Markup(conf.section("markup")).render
@@ -103,14 +104,29 @@ class TestHTML(unittest.TestCase):
                       ['<p><a href="http://example.org/" rel="nofollow noopener">http://example.org/</a> and sms:+1234567890</p>',
                        '<p><a rel="nofollow noopener" href="http://example.org/">http://example.org/</a> and sms:+1234567890</p>'])
 
+    def test_render_with_strictly_allowed_elements(self):
+        conf = config.new({
+            "markup": {
+                "options": "autolink",
+                "flags": "",
+                "allowed-elements": "a, p",
+                "strictly-allowed-html-elements": "p",
+                "allowed-attributes": "href"
+            }
+        })
+        renderer = html.Markup(conf.section("markup")).render
+        self.assertEqual(renderer("http://example.org/ and sms:+1234567890"),
+                         '<p>http://example.org/ and sms:+1234567890</p>')
+
     def test_sanitized_render_extensions(self):
         """Options should be normalized from both dashed-case or snake_case (legacy)"""
         conf = config.new({
             "markup": {
                 "options": "no_intra_emphasis",  # Deliberately snake_case
                 "flags": "",
-                "allowed-elements": "",
-                "allowed-attributes": ""
+                "allowed-elements": "p",
+                "allowed-attributes": "",
+                "strictly-allowed-html-elements": ""
             }
         })
         renderer = html.Markup(conf.section("markup")).render
