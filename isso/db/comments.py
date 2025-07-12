@@ -11,6 +11,16 @@ logger = logging.getLogger("isso")
 
 MAX_LIKES_AND_DISLIKES = 142
 
+MESSAGE_TYPES = {
+    'comment': 'comment',                    # 普通评论
+    'system_notification': 'system_notification',  # 系统通知
+    #'task_created': 'task_created',          # 任务创建
+    #'task_updated': 'task_updated',          # 任务更新
+    #'content_modified': 'content_modified',   # 内容修改
+    #'user_mention': 'user_mention',          # 用户提及
+    #'status_change': 'status_change'         # 状态变更
+}
+
 
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
@@ -29,7 +39,8 @@ class Comments:
               'mode',  # status of the comment 1 = valid, 2 = pending,
                        # 4 = soft-deleted (cannot hard delete because of replies)
               'remote_addr', 'text', 'author', 'email', 'website',
-              'likes', 'dislikes', 'voters', 'notification']
+              'likes', 'dislikes', 'voters', 'notification',
+              'message_type', 'system_data']
 
     # This method is used in the migration script from version 4 to 5.
     # You need to write a new migration if you change the database schema!
@@ -51,7 +62,9 @@ class Comments:
                 likes INTEGER DEFAULT 0,
                 dislikes INTEGER DEFAULT 0,
                 voters BLOB NOT NULL,
-                notification INTEGER DEFAULT 0
+                notification INTEGER DEFAULT 0,
+                message_type VARCHAR(50) DEFAULT 'comment',
+                system_data TEXT
             );
         '''
 
@@ -92,16 +105,20 @@ class Comments:
             'INSERT INTO comments (',
             '    tid, parent,'
             '    created, modified, mode, remote_addr,',
-            '    text, author, email, website, voters, notification)',
+            '    text, author, email, website, voters, notification,'
+            '    message_type, system_data)',
             'SELECT',
             '    threads.id, ?,',
             '    ?, ?, ?, ?,',
-            '    ?, ?, ?, ?, ?, ?',
+            '    ?, ?, ?, ?, ?, ?,',
+            '    ?, ?',
             'FROM threads WHERE threads.uri = ?;'], (
             c.get('parent'),
             c.get('created') or time.time(), None, c["mode"], c['remote_addr'],
             c['text'], c.get('author'), c.get('email'), c.get('website'), memoryview(
                 Bloomfilter(iterable=[c['remote_addr']]).array), c.get('notification'),
+                c.get('message_type', 'comment'),
+                c.get('system_data'),
             uri)
         )
 
@@ -181,7 +198,7 @@ class Comments:
         return dict(comment_count)
 
     def fetchall(self, mode=5, after=0, parent='any', order_by='id',
-                 limit=100, page=0, asc=1, comment_id=None, thread_uri=None):
+                 limit=100, page=0, asc=1, comment_id=None, thread_uri=None, message_type=None):
         """
         Return comments for admin with :param:`mode`.
         """
@@ -207,6 +224,11 @@ class Comments:
         else:
             sql.append('comments.mode = ? ')
             sql_args = [mode]
+
+
+        if message_type:
+            sql.append('AND comments.message_type = ? ')
+            sql_args.append(message_type)
 
         if parent != 'any':
             if parent is None:
@@ -238,7 +260,7 @@ class Comments:
             yield dict(zip(fields_comments + fields_threads, item))
 
     def fetch(self, uri, mode=5, after=0, parent='any',
-              order_by='id', asc=1, limit=None, offset=0):
+              order_by='id', asc=1, limit=None, offset=0, message_type=None):
         """
         Return comments for :param:`uri` with :param:`mode`.
         """
@@ -254,6 +276,10 @@ class Comments:
             else:
                 sql.append('AND comments.parent=?')
                 sql_args.append(parent)
+
+        if message_type:
+            sql.append('AND comments.message_type=?')
+            sql_args.append(message_type)
 
         # custom sanitization
         if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'karma']:

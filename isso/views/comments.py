@@ -135,10 +135,11 @@ def get_uri_from_url(url):
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
-                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image', 'notification'])
+                  'mode', 'created', 'modified', 'likes', 'dislikes', 'hash', 'gravatar_image', 'notification',
+                  'message_type', 'system_data'])
 
     # comment fields, that can be submitted
-    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification'])
+    ACCEPT = set(['text', 'author', 'website', 'email', 'parent', 'title', 'notification', 'message_type', 'system_data'])
 
     VIEWS = [
         ('fetch', ('GET', '/')),
@@ -326,8 +327,11 @@ class API(object):
         for field in set(data.keys()) - API.ACCEPT:
             data.pop(field)
 
-        for key in ("author", "email", "website", "parent"):
+        for key in ("author", "email", "website", "parent", "message_type", "system_data"):
             data.setdefault(key, None)
+        
+        if not data.get("message_type"):
+            data["message_type"] = "comment"
 
         valid, reason = API.verify(data)
         if not valid:
@@ -903,6 +907,10 @@ class API(object):
             'uri': uri,
             'after': request.args.get('after', 0)
         }
+
+        message_type = request.args.get('message_type')
+        if message_type:
+            args['message_type'] = message_type
 
         # map sort query parameter
         valid_sort_options = ['newest', 'oldest', 'upvotes']
