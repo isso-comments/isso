@@ -15,7 +15,7 @@ jobs:
         # Use only lowest and highest supported python versions for now,
         # to speed up CI runs
         python-version: [3.8, "3.12"]
-        node-version: [16]
+        node-version: [22]
       fail-fast: false
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         cache-dependency-path: 'setup.py'
 
     - name: Set up NodeJS ${{ matrix.node-version }} on ${{ matrix.os }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
