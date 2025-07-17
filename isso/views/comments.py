@@ -293,6 +293,8 @@ class API(object):
         The comment’s author’s website’s url. Must be Django-conform, i.e. either `http(s)://example.com/foo` or `example.com/`
     @apiBody {Number} [parent]
         The parent comment’s id if the new comment is a response to an existing comment.
+    @apiBody {String} [title]
+        The title of the thread. Required when creating the first comment for a new thread if the title cannot be automatically fetched from the URI.
 
     @apiExample {curl} Create a reply to comment with id 15:
         curl 'https://comments.example.com/new?uri=/thread/' -d '{"text": "Stop saying that! *isso*!", "author": "Max Rant", "email": "rant@example.com", "parent": 15}' -H 'Content-Type: application/json' -c cookie.txt
@@ -350,7 +352,7 @@ class API(object):
                         if resp and resp.status == 200:
                             uri, title = parse.thread(resp.read(), id=uri)
                         else:
-                            return NotFound(f'URI {uri} does not exist')
+                            return BadRequest(f'Cannot create new thread: URI {uri} is not accessible and no title was provided. Please provide a title parameter in your request.')
                 else:
                     title = data['title']
 
