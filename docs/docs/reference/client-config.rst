@@ -267,7 +267,8 @@ data-isso-sorting
     - ``oldest``: Bring oldest comments to the top
     - ``upvotes``: Bring most liked comments to the top
 
-    Default sorting is ``oldest``.
+    Default sorting is ``oldest``. As of 0.13.1, replies are always sorted as
+    ``oldest``.
 
     .. versionadded:: 0.13.1
 
