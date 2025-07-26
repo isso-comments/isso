@@ -13,13 +13,19 @@ New Features
 - Add CSS variables for better organization and flexibility (`#1001`_, pkvach)
 - Add support for comment search by Thread URL in admin interface (`#1020`_, pkvach)
 - Add sorting option for comments (`#1005`_, pkvach)
+- admin: Add log out button (`#870`_, bbaovanc)
+- Add support for environment variables in config (`#1037`_, pkvach)
+- Add Japanese localisation (`#1051`_, zurukumo)
 
+.. _#870: https://github.com/posativ/isso/pull/870
 .. _#966: https://github.com/posativ/isso/pull/966
 .. _#998: https://github.com/isso-comments/isso/pull/998
 .. _#1000: https://github.com/isso-comments/isso/pull/1000
 .. _#1001: https://github.com/isso-comments/isso/pull/1001
 .. _#1020: https://github.com/isso-comments/isso/pull/1020
 .. _#1005: https://github.com/isso-comments/isso/pull/1005
+.. _#1037: https://github.com/isso-comments/isso/pull/1037
+.. _#1051: https://github.com/isso-comments/isso/pull/1051
 
 Breaking Changes
 ^^^^^^^^^^^^^^^^
@@ -50,6 +56,7 @@ Bugfixes & Improvements
 - Make 'text' field in 'comments' table NOT NULL and handling data migration (`#1019`_, pkvach)
 - Python 3.12 support (`#1015`_, ix5)
 - Disable Postbox submit button on click, enable after response (`#993`_, pkvach)
+- Document title parameter and improve error handling for /new API (`#1058`_, pkvach)
 - Set reply sorting to always be oldest (`#1035`_, ggtylerr)
 
 .. _#951: https://github.com/posativ/isso/pull/951
@@ -66,6 +73,7 @@ Bugfixes & Improvements
 .. _#1015: https://github.com/isso-comments/isso/pull/1015
 .. _#993: https://github.com/isso-comments/isso/pull/993
 .. _#1035: https://github.com/isso-comments/isso/pull/1035
+.. _#1058: https://github.com/isso-comments/isso/pull/1058
 
 0.13.1.dev0 (2023-02-05)
 ------------------------
