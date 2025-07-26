@@ -67,7 +67,7 @@ jobs:
 
       - name: Archive and upload updated screenshots & hashes
         if: ${{ steps.compare-screenshots.outcome == 'failure' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: updated-screenshots-and-hashes
           path: isso/js/tests/screenshots/reference/

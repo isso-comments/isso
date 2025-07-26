@@ -391,6 +391,22 @@ class TestComments(unittest.TestCase):
         self.assertEqual(rv['website'], 'http://example.com/')
         self.assertIn('modified', rv)
 
+    def testUpdateForbidden(self):
+
+        self.post('/new?uri=test', data=json.dumps({'text': 'Hello world!'}))
+
+        resp = self.put('/id/1', data=json.dumps({}))
+        self.assertEqual(resp.status, '400 BAD REQUEST')
+        self.assertIn('text is missing', resp.text)
+
+        resp = self.put('/id/1', data=json.dumps({'text': ''}))
+        self.assertEqual(resp.status, '400 BAD REQUEST')
+        self.assertIn('text is too short', resp.text)
+
+        resp = self.put('/id/1', data=json.dumps({'text': 'Hello again!', 'website': 'name@example.com'}))
+        self.assertEqual(resp.status, '400 BAD REQUEST')
+        self.assertIn('Website not Django-conform', resp.text)
+
     def testDelete(self):
 
         self.post('/new?uri=%2Fpath%2F',
