@@ -173,7 +173,6 @@ class API(object):
         ('counts', ('POST', '/count')),
         ('feed', ('GET', '/feed')),
         ('latest', ('GET', '/latest')),
-        ('pending', ('GET', '/pending')),
         ('view', ('GET', '/id/<int:id>')),
         ('edit', ('PUT', '/id/<int:id>')),
         ('delete', ('DELETE', '/id/<int:id>')),
@@ -1551,6 +1550,13 @@ class API(object):
     @apiQuery {Number} limit
         The quantity of last comments to retrieve
 
+    @apiQuery {Number{1,2}} [mode=1]
+        The comments’ mode:
+        value | explanation
+         ---  | ---
+         `1`  | accepted: The comment was accepted by the server and is published.
+         `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
+
     @apiExample {curl} Get the latest 5 accepted comments
         curl 'https://comments.example.com/latest?limit=5'
 
@@ -1593,76 +1599,20 @@ class API(object):
                 "Unavailable because 'latest-enabled' not set by site admin"
             )
 
-        return self._latest(environ, request, "1")
+        mode = request.args.get('mode', "1")
+
+        if mode != "1" and mode != "2":
+            return BadRequest(
+                "Mode must either be '1' for accepted comments or '2' for pedning comments waiting moderation"
+            )
+
+        return self._latest(environ, request, mode)
 
 
     def check_auth(self, username, password):
         admin_password = self.isso.conf.get("admin", "password")
 
         return username == 'admin' and password == admin_password
-
-
-    """
-    @api {get} /pending pending
-    @apiGroup Comment
-    @apiName pending
-    @apiVersion 0.13.1
-    @apiDescription
-        Get the latest comments waiting moderation from the system, no matter which thread. Only available if `[general] pending-enabled` is set to `true` and `[admin] enabled is set to `true` in server config.
-
-    @apiHeader {String="Basic BASE64_CREDENTIALS"} authorization Base64 encoded "USERNAME:PASSWORD"
-
-    @apiQuery {Number} limit
-        The quantity of last comments to retrieve
-
-    @apiExample {curl} Get the latest 5 pending comments
-        curl -u 'admin:ADMIN_PASSWORD' 'https://comments.example.com/pending?limit=5'
-
-    @apiUse commentResponse
-
-    @apiSuccessExample Example result:
-        [
-            {
-                "website": null,
-                "uri": "/some",
-                "author": null,
-                "parent": null,
-                "created": 1464912312.123416,
-                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
-                "dislikes": 0,
-                "modified": null,
-                "mode": 2,
-                "id": 3,
-                "likes": 1
-            },
-            {
-                "website": null,
-                "uri": "/other",
-                "author": null,
-                "parent": null,
-                "created": 1464914341.312426,
-                "text": " &lt;p&gt;I want to use MySQL&lt;/p&gt;",
-                "dislikes": 0,
-                "modified": null,
-                "mode": 2,
-                "id": 4,
-                "likes": 0
-            }
-        ]
-    """
-	# If the admin interface is not enabled, people may have not changed
-	# the default password.  We therefore disallow the /pending endpoint,
-    # as well.
-    @requires_admin
-    @requires_auth
-    def pending(self, environ, request):
-        # if the feature is not allowed, don't present the endpoint
-        if not self.conf.getboolean("pending-enabled"):
-            return NotFound(
-                "Unavailable because 'pending-enabled' not set by site admin"
-            )
-
-        return self._latest(environ, request, "2")
 
 
     def _latest(self, environ, request, mode):
