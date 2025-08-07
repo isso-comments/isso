@@ -16,7 +16,7 @@ New Features
 - admin: Add log out button (`#870`_, bbaovanc)
 - Add support for environment variables in config (`#1037`_, pkvach)
 - Add Japanese localisation (`#1051`_, zurukumo)
-- Add server API endpoint /pending for moderation queue (`#1028`_, gflohr)
+- Allow access moderation queue (`#1028`_, gflohr)
 
 .. _#870: https://github.com/posativ/isso/pull/870
 .. _#966: https://github.com/posativ/isso/pull/966
@@ -59,6 +59,9 @@ Bugfixes & Improvements
 - Python 3.12 support (`#1015`_, ix5)
 - Disable Postbox submit button on click, enable after response (`#993`_, pkvach)
 - Document title parameter and improve error handling for /new API (`#1058`_, pkvach)
+- The `/latest` endpoint now has an optional parameter `mode`. The default value
+  of '1' retrieves published comments, the mode '2' retrieves posts waiting
+  moderation.
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
