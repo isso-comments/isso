@@ -1545,7 +1545,7 @@ class API(object):
     @apiName latest
     @apiVersion 0.12.6
     @apiDescription
-        Get the latest accepted comments from the system, no matter which thread. Only available if `[general] latest-enabled` is set to `true` in server config.
+        Get the latest comments from the system, no matter which thread. Only available if `[general] latest-enabled` is set to `true` in server config.
 
     @apiQuery {Number} limit
         The quantity of last comments to retrieve
