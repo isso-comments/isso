@@ -62,6 +62,7 @@ Bugfixes & Improvements
 - The `/latest` endpoint now has an optional parameter `mode`. The default value
   of '1' retrieves published comments, the mode '2' retrieves posts waiting
   moderation.
+- Set reply sorting to always be oldest (`#1035`_, ggtylerr)
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
@@ -76,6 +77,7 @@ Bugfixes & Improvements
 .. _#1019: https://github.com/isso-comments/isso/pull/1019
 .. _#1015: https://github.com/isso-comments/isso/pull/1015
 .. _#993: https://github.com/isso-comments/isso/pull/993
+.. _#1035: https://github.com/isso-comments/isso/pull/1035
 .. _#1058: https://github.com/isso-comments/isso/pull/1058
 
 0.13.1.dev0 (2023-02-05)

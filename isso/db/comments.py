@@ -217,16 +217,16 @@ class Comments:
 
         # custom sanitization
         if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'tid']:
-            sql.append('ORDER BY ')
-            sql.append("comments.created")
+            sql.append('ORDER BY CASE WHEN comments.parent IS NOT NULL THEN comments.created END, ')
+            sql.append('comments.created')
             if not asc:
                 sql.append(' DESC')
         else:
-            sql.append('ORDER BY ')
+            sql.append('ORDER BY CASE WHEN comments.parent IS NOT NULL THEN comments.created END, ')
             sql.append('comments.' + order_by)
             if not asc:
                 sql.append(' DESC')
-            sql.append(", comments.created")
+            sql.append(', comments.created')
 
         if limit:
             sql.append('LIMIT ?,?')
@@ -257,8 +257,8 @@ class Comments:
 
         # custom sanitization
         if order_by not in ['id', 'created', 'modified', 'likes', 'dislikes', 'karma']:
-            order_by = 'id'
-        sql.append('ORDER BY ')
+            order_by = 'created'
+        sql.append('ORDER BY CASE WHEN comments.parent IS NOT NULL THEN comments.created END, ')
         sql.append(order_by)
         if not asc:
             sql.append(' DESC')
