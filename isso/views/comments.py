@@ -153,7 +153,7 @@ def requires_admin(method):
         if not self.isso.conf.getboolean("admin", "enabled"):
             return NotFound(
                 "Unavailable because 'admin' not enabled by site admin"
-        )
+            )
 
         return method(self, *args, **kwargs)
     return decorated
@@ -1608,12 +1608,10 @@ class API(object):
 
         return self._latest(environ, request, mode)
 
-
     def check_auth(self, username, password):
         admin_password = self.isso.conf.get("admin", "password")
 
         return username == 'admin' and password == admin_password
-
 
     def _latest(self, environ, request, mode):
         # get and check the limit
