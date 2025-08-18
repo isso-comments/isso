@@ -132,6 +132,33 @@ def get_uri_from_url(url):
     return uri
 
 
+def requires_auth(method):
+    def decorated(self, *args, **kwargs):
+        request = args[1]
+        auth = request.authorization
+        if not auth:
+            return Response(
+                "Unauthorized", 401,
+                {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
+        if not self.check_auth(auth.username, auth.password):
+            return Response(
+                "Wrong username or password", 401,
+                {'WWW-Authenticate': 'Basic realm="Authentication Required"'})
+        return method(self, *args, **kwargs)
+    return decorated
+
+
+def requires_admin(method):
+    def decorated(self, *args, **kwargs):
+        if not self.isso.conf.getboolean("admin", "enabled"):
+            return NotFound(
+                "Unavailable because 'admin' not enabled by site admin"
+            )
+
+        return method(self, *args, **kwargs)
+    return decorated
+
+
 class API(object):
 
     FIELDS = set(['id', 'parent', 'text', 'author', 'website',
@@ -1523,7 +1550,14 @@ class API(object):
     @apiQuery {Number} limit
         The quantity of last comments to retrieve
 
-    @apiExample {curl} Get the latest 5 comments
+    @apiQuery {Number{1,2}} [mode=1]
+        The comments’ mode:
+        value | explanation
+         ---  | ---
+         `1`  | accepted: The comment was accepted by the server and is published.
+         `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
+
+    @apiExample {curl} Get the latest 5 accepted comments
         curl 'https://comments.example.com/latest?limit=5'
 
     @apiUse commentResponse
@@ -1565,6 +1599,21 @@ class API(object):
                 "Unavailable because 'latest-enabled' not set by site admin"
             )
 
+        mode = request.args.get('mode', "1")
+
+        if mode != "1" and mode != "2":
+            return BadRequest(
+                "Mode must either be '1' for accepted comments or '2' for pedning comments waiting moderation"
+            )
+
+        return self._latest(environ, request, mode)
+
+    def check_auth(self, username, password):
+        admin_password = self.isso.conf.get("admin", "password")
+
+        return username == 'admin' and password == admin_password
+
+    def _latest(self, environ, request, mode):
         # get and check the limit
         bad_limit_msg = "Query parameter 'limit' is mandatory (integer, >0)"
         try:
@@ -1575,7 +1624,7 @@ class API(object):
             return BadRequest(bad_limit_msg)
 
         # retrieve the latest N comments from the DB
-        all_comments_gen = self.comments.fetchall(limit=None, order_by='created', mode='1')
+        all_comments_gen = self.comments.fetchall(limit=None, order_by='created', mode=mode)
         comments = collections.deque(all_comments_gen, maxlen=limit)
 
         # prepare a special set of fields (except text which is rendered specifically)
