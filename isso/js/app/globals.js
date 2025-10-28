@@ -10,7 +10,7 @@ Offset.prototype.update = function(remoteTime) {
 
 Offset.prototype.localTime = function() {
     return new Date((new Date()).getTime() - this.values.reduce(
-        function(a, b) { return a + b; }) / this.values.length);
+        function(a, b) { return a + b; }, 0) / this.values.length);
 };
 
 var offset = new Offset();

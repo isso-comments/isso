@@ -58,6 +58,7 @@ Bugfixes & Improvements
 - Disable Postbox submit button on click, enable after response (`#993`_, pkvach)
 - Document title parameter and improve error handling for /new API (`#1058`_, pkvach)
 - Set reply sorting to always be oldest (`#1035`_, ggtylerr)
+- Fix ``Offset.localTime()`` failing if ``Offset.update()`` hasn't been called yet.
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
