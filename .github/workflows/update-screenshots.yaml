@@ -20,29 +20,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Switch testbed image to ${{ env.TESTBED_IMAGE }}
-        run: |
-          sed -i "s|isso-js-testbed|${{ env.TESTBED_IMAGE }}|g" docker-compose.yml
-          # Also remove the `build`: section so image is pulled, not built
-          sed -i '/container_name: isso-client/{n;N;N;d}' docker-compose.yml
-
       - name: Pull testbed from ${{ env.TESTBED_IMAGE }}
         run: docker pull ${{ env.TESTBED_IMAGE }}
 
-      - name: Tag testbed image for local use
-        run: docker tag ${{ env.TESTBED_IMAGE }} isso-js-testbed:latest
-
-      - name: Build the stack
+      - name: Build isso-server
         run: docker compose build isso-server
 
-      - name: Bring up containers
-        run: docker compose up -d
+      - name: Start isso-server
+        run: docker compose up -d isso-server
 
       - name: Wait for isso-server container to be ready
         run: 'for i in $(seq 1 30); do [ "$(docker inspect -f {{.State.Health.Status}} isso-server)" = "healthy" ] && s=0 && break || s=$? && sleep 0.3; done; (exit $s)'
 
       - name: Update screenshots
         run: make docker-update-screenshots
+        env:
+          TESTBED_IMAGE: ${{ env.TESTBED_IMAGE }}
 
       - name: Check for changes
         id: check-changes
