@@ -46,17 +46,14 @@ services:
 
   # Jest and puppeteer end-to-end integration test runner
   isso-client:
-    image: isso-js-testbed
+    image: ghcr.io/isso-comments/isso-js-testbed:latest
     container_name: isso-client
-    build:
-      context: .
-      dockerfile: docker/Dockerfile-js-testbed
     environment:
       ISSO_ENDPOINT: "http://isso-dev.local:8080"
     healthcheck:
       disable: true
     # Command may also run from outside docker compose, e.g.:
-    # $ docker run isso-js-testbed [mount, networks, ...] npm run test-integration
+    # $ docker run ghcr.io/isso-comments/isso-js-testbed:latest [mount, networks, ...] npm run test-integration
     #command: npm run test-integration
     networks:
       - test-net
