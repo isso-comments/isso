@@ -16,6 +16,7 @@ New Features
 - admin: Add log out button (`#870`_, bbaovanc)
 - Add support for environment variables in config (`#1037`_, pkvach)
 - Add Japanese localisation (`#1051`_, zurukumo)
+- Allow access moderation queue (`#1028`_, gflohr)
 
 .. _#870: https://github.com/posativ/isso/pull/870
 .. _#966: https://github.com/posativ/isso/pull/966
@@ -24,6 +25,7 @@ New Features
 .. _#1001: https://github.com/isso-comments/isso/pull/1001
 .. _#1020: https://github.com/isso-comments/isso/pull/1020
 .. _#1005: https://github.com/isso-comments/isso/pull/1005
+.. _#1028: https://github.com/isso-comments/isso/pull/1028
 .. _#1037: https://github.com/isso-comments/isso/pull/1037
 .. _#1051: https://github.com/isso-comments/isso/pull/1051
 
@@ -57,6 +59,9 @@ Bugfixes & Improvements
 - Python 3.12 support (`#1015`_, ix5)
 - Disable Postbox submit button on click, enable after response (`#993`_, pkvach)
 - Document title parameter and improve error handling for /new API (`#1058`_, pkvach)
+- The `/latest` endpoint now has an optional parameter `mode`. The default value
+  of '1' retrieves published comments, the mode '2' retrieves posts waiting
+  moderation.
 - Set reply sorting to always be oldest (`#1035`_, ggtylerr)
 - Fix ``Offset.localTime()`` failing if ``Offset.update()`` hasn't been called yet.
 
