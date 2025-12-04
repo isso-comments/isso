@@ -9,7 +9,9 @@ import time
 from _thread import start_new_thread
 from email.message import EmailMessage
 from email.utils import formatdate
-from urllib.parse import quote
+from urllib.parse import quote, urljoin
+from urllib.request import urlopen
+from urllib.error import URLError
 
 import logging
 logger = logging.getLogger("isso")
@@ -209,6 +211,58 @@ class SMTP(object):
             else:
                 break
 
+
+class Ntfy(object):
+
+    def __init__(self, isso):
+        self.isso = isso
+        self.conf = isso.conf.section('ntfy')
+        self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
+
+    def __iter__(self):
+
+        yield "comments.new:new-thread", self._new_thread
+        yield "comments.new:finish", self._new_comment
+        yield "comments.edit", self._edit_comment
+        yield "comments.delete", self._delete_comment
+        yield "comments.activate", self._activate_comment
+
+    def _new_thread(self, thread):
+        self.notify("new thread %(id)s: %(title)s" % thread)
+
+    def _new_comment(self, thread, comment):
+        response_strs = []
+        response_strs.append(f"comment created: {json.dumps(comment)}")
+        response_strs.append(f"Link to comment: {(local("origin") + thread["uri"] + "#isso-%i" % comment["id"])}")
+
+        uri = self.public_endpoint + "/id/%i" % comment["id"]
+        key = self.isso.sign(comment["id"])
+
+        response_strs.append(f"Delete comment: {create_comment_action_url(uri, "delete", key)}")
+
+        if comment["mode"] == 2:
+            response_strs.append(f"Activate comment: {create_comment_action_url(uri, "activate", key)}")
+        self.notify("\n".join(response_strs))
+
+    def _edit_comment(self, comment):
+        self.notify(f"comment {comment["id"]} edited: {json.dumps(comment)}")
+
+    def _delete_comment(self, id):
+        self.notify(f"comment {id} deleted")
+
+    def _activate_comment(self, thread, comment):
+        self.notify("comment %(id)s activated" % thread)
+
+    def notify(self, str):
+        topic_url = urljoin(self.conf.get("url"),self.conf.get("topic"))
+        try:
+            with urlopen(topic_url,str.encode(encoding='utf-8')) as response:
+                pass
+        except URLError as e:
+            if hasattr(e, 'reason'):
+                logger.exception(f"Failed to reach the ntfy server.\nError code: {e.code}" )
+            elif hasattr(e, 'code'):
+                logger.exception(f"The ntfy server couldn\'t fulfill the request.\nError code: {e.code}\n")
 
 class Stdout(object):
 

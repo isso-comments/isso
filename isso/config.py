@@ -8,6 +8,7 @@ import re
 
 from email.utils import parseaddr, formataddr
 from configparser import ConfigParser, NoOptionError, NoSectionError, DuplicateSectionError
+from urllib.parse import urlparse
 
 logger = logging.getLogger("isso")
 
