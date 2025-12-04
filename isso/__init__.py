@@ -67,7 +67,7 @@ from isso.wsgi import origin, urlsplit
 from isso.utils import http, JSONRequest, JSONResponse, html, hash
 from isso.views import comments
 
-from isso.ext.notifications import Stdout, SMTP
+from isso.ext.notifications import Stdout, SMTP, Ntfy
 
 LOG_FORMAT = "%(asctime)s:%(levelname)s: %(message)s"
 logging.getLogger('werkzeug').setLevel(logging.WARN)
@@ -109,15 +109,21 @@ class Isso(object):
 
         subscribers = []
         smtp_backend = False
+        ntfy_backend = False
         for backend in conf.getlist("general", "notify"):
             if backend == "stdout":
                 subscribers.append(Stdout(self))
             elif backend in ("smtp", "SMTP"):
                 smtp_backend = True
+            elif backend == "ntfy":
+                ntfy_backend = True
             else:
                 logger.warning("unknown notification backend '%s'", backend)
         if smtp_backend or conf.getboolean("general", "reply-notifications"):
             subscribers.append(SMTP(self))
+
+        if ntfy_backend:
+            subscribers.append(Ntfy(self))
 
         self.signal = ext.Signal(*subscribers)
 

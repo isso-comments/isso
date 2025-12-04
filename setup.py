@@ -40,7 +40,7 @@ setup(
     ],
     install_requires=[
         'itsdangerous', 'Jinja2', 'misaka>=2.0,<3.0', 'html5lib',
-        'werkzeug>=1.0', 'bleach', 'setuptools'],
+        'werkzeug>=1.0', 'bleach', 'setuptools', 'requests'],
     tests_require=['pytest', 'pytest-cov'],
     extras_require={
         'doc': ['Sphinx'],
