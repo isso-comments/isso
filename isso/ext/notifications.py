@@ -5,12 +5,13 @@ import json
 import smtplib
 import socket
 import time
-import requests
 
 from _thread import start_new_thread
 from email.message import EmailMessage
 from email.utils import formatdate
 from urllib.parse import quote, urljoin
+from urllib.request import urlopen
+from urllib.error import URLError
 
 import logging
 logger = logging.getLogger("isso")
@@ -253,9 +254,15 @@ class Ntfy(object):
         self.notify("comment %(id)s activated" % thread)
 
     def notify(self, str):
-        response = requests.post(urljoin(self.conf.get("url"),self.conf.get("topic")), data = str.encode(encoding='utf-8'))
-        if response.status_code != 200:
-            logger.exception("failed to push notifications to ntfy.sh with response \"%s\"" % response.text)
+        topic_url = urljoin(self.conf.get("url"),self.conf.get("topic"))
+        try:
+            with urlopen(topic_url,str.encode(encoding='utf-8')) as response:
+                pass
+        except URLError as e:
+            if hasattr(e, 'reason'):
+                logger.exception(f"Failed to reach the ntfy server.\nError code: {e.code}" )
+            elif hasattr(e, 'code'):
+                logger.exception(f"The ntfy server couldn\'t fulfill the request.\nError code: {e.code}\n")
 
 class Stdout(object):
 

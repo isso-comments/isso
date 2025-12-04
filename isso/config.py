@@ -168,13 +168,6 @@ def load(default, user=None):
         if item == ("general", "session-key"):
             logger.info("Your `session-key` has been stored in the "
                         "database itself, this option is now unused")
-    try:
-        parser.add_section('ntfy')
-    except DuplicateSectionError:
-        pass
-    # validate the ntfy.url field?
-
-
 
     try:
         parser.add_section('smtp')
