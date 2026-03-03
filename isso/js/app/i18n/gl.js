@@ -1,0 +1,38 @@
+module.exports = {
+    "postbox-text": "Escribe aquí (mínimo 3 caracteres)",
+    "postbox-author": "Nome (optativo)",
+    "postbox-author-placeholder": "Mar Bravo",
+    "postbox-email": "Correo-e (optativo)",
+    "postbox-email-placeholder": "xan@exemplo.com",
+    "postbox-website": "Páxina web (optativo)",
+    "postbox-website-placeholder": "https://exemplo.com",
+    "postbox-preview": "Vista previa",
+    "postbox-edit": "Editar",
+    "postbox-submit": "Enviar",
+    "postbox-notification": "Subscribirse por correo á notificación de respostas",
+
+    "num-comments": "Un comentario\n{{ n }} Comments",
+    "no-comments": "Sen comentarios",
+    "atom-feed": "Canle Atom",
+
+    "comment-reply": "Responder",
+    "comment-edit": "Editar",
+    "comment-save": "Gardar",
+    "comment-delete": "Eliminar",
+    "comment-confirm": "Confirmar",
+    "comment-close": "Fechar",
+    "comment-cancel": "Desbotar",
+    "comment-deleted": "Eliminouse o comentario.",
+    "comment-queued": "Comentario agardando a ser revisado.",
+    "comment-anonymous": "Anónimo",
+    "comment-hidden": "{{ n }} Oculto",
+    "comment-page-author-suffix": "Autoría",
+
+    "date-now": "xusto agora",
+    "date-minute": "hai un minuto\nhai {{ n }} minutos",
+    "date-hour": "hai unha hora\nhai {{ n }} horas",
+    "date-day": "onte\nhai {{ n }} días",
+    "date-week": "a semana pasada\nhai {{ n }} semanas",
+    "date-month": "hai un mes\nhai {{ n }} meses",
+    "date-year": "hai un ano\nhai {{ n }} anos"
+};
