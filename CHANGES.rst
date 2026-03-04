@@ -66,6 +66,7 @@ Bugfixes & Improvements
 - Document title parameter and improve error handling for /new API (`#1058`_, pkvach)
 - Set reply sorting to always be oldest (`#1035`_, ggtylerr)
 - Fix ``Offset.localTime()`` failing if ``Offset.update()`` hasn't been called yet.
+- Fix 'Log Out' button behavior in admin interface.
 
 .. _#951: https://github.com/posativ/isso/pull/951
 .. _#967: https://github.com/posativ/isso/pull/967
