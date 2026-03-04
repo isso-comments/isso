@@ -126,7 +126,7 @@ function send_edit(com_id, hash, isso_host_script) {
 }
 function log_out() {
     // Delete cookie
-    document.cookie = "admin-session=; Max-Age=0; domain=" + window.location.hostname + "; path=/";
+    document.cookie = "admin-session=; Max-Age=0; Path=/;"
     window.location.reload();
 }
 
