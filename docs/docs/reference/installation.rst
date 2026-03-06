@@ -100,6 +100,13 @@ Similar for Fedora (and derivates):
     $ sudo yum install python3-devel python3-virtualenv sqlite
     $ sudo yum groupinstall “Development Tools”
 
+For newer versions of Fedora (and derivatives) which use `dnf5`:
+
+.. code-block:: console
+
+    $ sudo dnf5 install python3-devel python3-virtualenv sqlite
+    $ sudo dnf5 group install development-tools
+
 Installation
 ^^^^^^^^^^^^
 
