@@ -80,3 +80,6 @@ Refer to the docs for
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+
+<!-- fix-issue-915: Import from commento -->
