@@ -71,6 +71,28 @@ Just embed the JavaScript including the new relative path, e.g.
 ``http://comments.example/foo/js/embed.min.js``. Make sure, you don't mix the
 URLs on both sites as it will most likely cause CORS-related errors.
 
+.. note::
+
+   **Multi-site support in Docker**
+
+   Multi-site support (using multiple config files separated by semicolons in ``ISSO_SETTINGS``) requires running Isso with the ``isso.dispatch`` entry point, not ``isso.run``.
+
+   The official Docker image runs Isso with ``isso.run`` by default, which only supports a single config file.
+
+   To enable multi-site in Docker, override the default command to use ``isso.dispatch``. For example, in your ``docker-compose.yml``:
+
+   .. code-block:: yaml
+
+      services:
+        isso-comments:
+          image: ghcr.io/isso-comments/isso:release
+          environment:
+            ISSO_SETTINGS: "/config/example1.com.cfg;/config/example2.com.cfg"
+          command: ["isso.dispatch"]
+          # ... other options ...
+
+   This will enable multi-site support as described above.
+
 .. _configure-sub-uri:
 
 Sub-URI
