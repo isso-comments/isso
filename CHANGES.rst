@@ -1,13 +1,15 @@
 Changelog for Isso
 ==================
 
-%(version)s (%(date)s)
-----------------------
+0.14.0 (2026-03-26)
+--------------------
 
 New Features
 ^^^^^^^^^^^^
 
 - Add Catalan localisation (`#966`_, welpo)
+- Add Arabic localisation (`#972`_)
+- Add Galician localisation (ghose)
 - Make <code class="language-$lang"> for syntax highlighting (`#998`_, pkvach)
 - Add search for comments by URL in the admin interface (`#1000`_, pkvach)
 - Add CSS variables for better organization and flexibility (`#1001`_, pkvach)
@@ -21,6 +23,7 @@ New Features
 
 .. _#870: https://github.com/posativ/isso/pull/870
 .. _#966: https://github.com/posativ/isso/pull/966
+.. _#972: https://github.com/isso-comments/isso/pull/972
 .. _#998: https://github.com/isso-comments/isso/pull/998
 .. _#1000: https://github.com/isso-comments/isso/pull/1000
 .. _#1001: https://github.com/isso-comments/isso/pull/1001
@@ -34,18 +37,28 @@ New Features
 Breaking Changes
 ^^^^^^^^^^^^^^^^
 
+- Drop support for Python 3.7 (`#974`_) and 3.8; add support for Python 3.13
+  and 3.14 (jelmer)
 - Rework the Docker image tagging scheme: ``isso:latest`` is now rebuilt on
   every push to ``master``, while ``isso:release`` points to the latest stable
   release (`#970`_, janw). Previously, ``:latest`` pointed to the latest stable
   (tagged) version
 - Disavow IE10 compatibility: (Not-so) recent changes mean that Isso is no
-  longer compatible (`#1022`, ix5)
+  longer compatible (`#1022`_, ix5)
 - The Markdown rendering engine Misaka has been deprecated. Please start using
   Mistune, see :doc:`Migration from Misaka to Mistune <guides/mistune>` for
   differences to Misaka.
+- Migrate from ``pkg_resources`` to ``importlib.metadata`` and
+  ``importlib.resources`` (jelmer)
 
 .. _#970: https://github.com/isso-comments/isso/pull/970
+.. _#974: https://github.com/isso-comments/isso/pull/974
 .. _#1022: https://github.com/isso-comments/isso/pull/1022
+
+Security Fixes
+^^^^^^^^^^^^^^
+
+- Fix stored XSS in website and author fields (jelmer)
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -65,6 +78,8 @@ Bugfixes & Improvements
 - Disable Postbox submit button on click, enable after response (`#993`_, pkvach)
 - Document title parameter and improve error handling for /new API (`#1058`_, pkvach)
 - Set reply sorting to always be oldest (`#1035`_, ggtylerr)
+- Apply the same validations when editing comments as when creating them
+  (`#1038`_, Lucas Cimon)
 - Fix ``Offset.localTime()`` failing if ``Offset.update()`` hasn't been called yet.
 - Fix 'Log Out' button behavior in admin interface.
 
@@ -82,6 +97,7 @@ Bugfixes & Improvements
 .. _#1015: https://github.com/isso-comments/isso/pull/1015
 .. _#993: https://github.com/isso-comments/isso/pull/993
 .. _#1035: https://github.com/isso-comments/isso/pull/1035
+.. _#1038: https://github.com/isso-comments/isso/pull/1038
 .. _#1058: https://github.com/isso-comments/isso/pull/1058
 
 0.13.1.dev0 (2023-02-05)
