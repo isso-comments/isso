@@ -120,8 +120,23 @@ originating from CORS_. Also, privacy-protecting browser addons such as
         }
     }
 
+.. important::
+
+   When using a sub-URI setup (e.g., serving Isso at ``/isso`` or any other path), you must ensure the Isso client can correctly detect the API endpoint.
+
+   **Recommended approach:** Explicitly set the ``data-isso`` attribute in your embed script to match your sub-URI:
+
+   .. code-block:: html
+
+      <script data-isso="/isso" src="/isso/js/embed.min.js"></script>
+
+   This ensures all API requests are correctly prefixed with your sub-URI (e.g., ``/isso/new``, ``/isso/config``).
+
+   If you omit this attribute, Isso will attempt to auto-detect the endpoint from the script's ``src`` path, which may fail or cause requests to be sent to the root path (``/``) instead of your sub-URI. This can result in broken comment functionality or 404 errors.
+
 Now, the website integration is just as described in
 :doc:`/docs/guides/quickstart` but with a different location.
 
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 .. _Request Policy: https://www.requestpolicy.com/
+
