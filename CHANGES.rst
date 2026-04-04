@@ -1,6 +1,17 @@
 Changelog for Isso
 ==================
 
+%(version)s (%(date)s)
+--------------------
+
+New Features
+^^^^^^^^^^^^
+
+- Client: Add ``data-isso-read-only`` client option to render threads in
+  read-only mode (hides postbox and disables reply/edit/delete UI). (`#1104`_, pkvach)
+
+.. _#1104: https://github.com/isso-comments/isso/pull/1104
+
 0.14.0 (2026-03-26)
 --------------------
 
