@@ -181,6 +181,50 @@ class TestDBMigration(unittest.TestCase):
             rv = con.execute("SELECT text FROM comments WHERE id IN (1, 2)").fetchall()
             self.assertEqual(rv, [("",), ("foo",)])
 
+    def _create_v5_schema(self, con):
+        con.execute("PRAGMA user_version = 5")
+        con.execute("CREATE TABLE threads (    id INTEGER PRIMARY KEY,    uri VARCHAR UNIQUE,    title VARCHAR)")
+        con.execute(
+            "CREATE TABLE comments ("
+            "    tid REFERENCES threads(id),"
+            "    id INTEGER PRIMARY KEY,"
+            "    parent INTEGER,"
+            "    created FLOAT NOT NULL, modified FLOAT,"
+            "    mode INTEGER,"
+            "    remote_addr VARCHAR,"
+            "    text VARCHAR NOT NULL,"
+            "    author VARCHAR, email VARCHAR, website VARCHAR,"
+            "    likes INTEGER DEFAULT 0,"
+            "    dislikes INTEGER DEFAULT 0,"
+            "    voters BLOB NOT NULL,"
+            "    notification INTEGER DEFAULT 0)"
+        )
+
+    def test_thread_add_read_only_column_migration(self):
+        with sqlite3.connect(self.path) as con:
+            self._create_v5_schema(con)
+
+        conf = config.new({"general": {"dbpath": "/dev/null", "max-age": "1h"}})
+
+        db = SQLite3(self.path, conf)
+
+        self.assertEqual(db.version, SQLite3.MAX_VERSION)
+
+        with sqlite3.connect(self.path) as con:
+            rv = con.execute("SELECT name FROM pragma_table_info('threads') WHERE name='read_only'").fetchone()
+            self.assertEqual(rv, ("read_only",))
+
+    def test_thread_add_read_only_column_migration_with_existing_column(self):
+        with sqlite3.connect(self.path) as con:
+            self._create_v5_schema(con)
+            con.execute("ALTER TABLE threads ADD COLUMN read_only INTEGER DEFAULT 0")
+
+        conf = config.new({"general": {"dbpath": "/dev/null", "max-age": "1h"}})
+
+        db = SQLite3(self.path, conf)
+
+        self.assertEqual(db.version, SQLite3.MAX_VERSION)
+
     def test_comment_text_not_null_migration_with_rollback_after_error(self):
         with sqlite3.connect(self.path) as con:
             con.execute("PRAGMA user_version = 4")
