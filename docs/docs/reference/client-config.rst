@@ -272,6 +272,30 @@ data-isso-sorting
 
     .. versionadded:: 0.13.1
 
+.. _data-isso-read-only:
+
+data-isso-read-only
+    Set to ``true`` to display the comment thread in read-only mode. This will
+    hide the main comment postbox and disable reply/edit/delete functionality,
+    showing only existing comments.
+
+    This is useful for archived content, closed discussions, or when you want
+    to display comments without allowing new submissions.
+
+    .. note::
+
+       This is a **client-side only** setting that affects the UI display but
+       does not prevent direct API calls. It disables the postbox, reply,
+       edit, and delete links while keeping voting and comment display active.
+
+    .. code-block:: html
+
+        <script src="..." data-isso-read-only="true"></script>
+
+    Default: ``false``
+
+    .. versionadded:: 0.14.1
+
 Deprecated Client Settings
 --------------------------
 

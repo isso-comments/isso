@@ -222,7 +222,17 @@ var insert = function({ comment, scrollIntoView, offset }) {
         text   = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-text");
 
     var form = null;  // XXX: probably a good place for a closure
-    $("a.isso-reply", footer).toggle("click",
+
+    // Helper function to attach toggle handlers to buttons with null checks
+    var attachToggleHandler = function(selector, onActivate, onDeactivate) {
+        var button = $(selector, footer);
+        if (button) {
+            button.toggle("click", onActivate, onDeactivate);
+        }
+    };
+
+    // Reply button handler
+    attachToggleHandler("a.isso-reply",
         function(toggler) {
             form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
             form.onsuccess = function() { toggler.next(); };
@@ -283,7 +293,8 @@ var insert = function({ comment, scrollIntoView, offset }) {
         votes(comment.likes - comment.dislikes);
     }
 
-    $("a.isso-edit", footer).toggle("click",
+    // Edit button handler
+    attachToggleHandler("a.isso-edit",
         function(toggler) {
             var edit = $("a.isso-edit", footer);
             var avatar = config["avatar"] || config["gravatar"] ? $(".isso-avatar", el, false)[0] : null;
@@ -346,7 +357,8 @@ var insert = function({ comment, scrollIntoView, offset }) {
         }
     );
 
-    $("a.isso-delete", footer).toggle("click",
+    // Delete button handler
+    attachToggleHandler("a.isso-delete",
         function(toggler) {
             var del = $("a.isso-delete", footer);
             var state = ! toggler.state;
