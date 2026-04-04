@@ -78,11 +78,13 @@ function init() {
             if (!$('h4.isso-thread-heading')) {
                 isso_thread.append(heading);
             }
-            postbox = new isso.Postbox(null);
-            if (!$('.isso-postbox')) {
-                isso_thread.append(postbox);
-            } else {
-                $('.isso-postbox').value = postbox;
+            if (!config["read-only"]) {
+                postbox = new isso.Postbox(null);
+                if (!$('.isso-postbox')) {
+                    isso_thread.append(postbox);
+                } else {
+                    $('.isso-postbox').value = postbox;
+                }
             }
             if (!$('#isso-root')) {
                 isso_thread.append('<div id="isso-root"></div>');
