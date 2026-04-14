@@ -8,8 +8,10 @@ New Features
 ^^^^^^^^^^^^
 
 - Add option to show/hide website field in comment form (`#1111`_, pkvach)
+- Animate comment insertion and deletion (fade-in/out, smooth scroll) (`#1105`_, pkvach)
 
 .. _#1111: https://github.com/isso-comments/isso/pull/1111
+.. _#1105: https://github.com/isso-comments/isso/pull/1105
 
 0.14.0 (2026-03-26)
 --------------------
