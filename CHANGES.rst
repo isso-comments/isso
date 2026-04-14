@@ -1,6 +1,16 @@
 Changelog for Isso
 ==================
 
+%(version)s (%(date)s)
+--------------------
+
+New Features
+^^^^^^^^^^^^
+
+- Animate comment insertion and deletion (fade-in/out, smooth scroll) (`#1105`_, pkvach)
+
+.. _#1105: https://github.com/isso-comments/isso/pull/1105
+
 0.14.0 (2026-03-26)
 --------------------
 
