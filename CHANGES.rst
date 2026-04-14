@@ -12,12 +12,14 @@ New Features
 - Add no-cache headers to fix stale comment display (`#1110`_, pkvach)
 - Add webhook support for comment events (`#1123`_, p1slave)
 - Update comment counts in the admin interface dynamically after moderation. (`#1113`_, pkvach)
+- Animate comment insertion and deletion (fade-in/out, smooth scroll) (`#1105`_, pkvach)
 
 .. _#1111: https://github.com/isso-comments/isso/pull/1111
 .. _#1117: https://github.com/isso-comments/isso/pull/1117
 .. _#1110: https://github.com/isso-comments/isso/pull/1110
 .. _#1123: https://github.com/isso-comments/isso/pull/1123
 .. _#1113: https://github.com/isso-comments/isso/pull/1113
+.. _#1105: https://github.com/isso-comments/isso/pull/1105
 
 0.14.0 (2026-03-26)
 --------------------

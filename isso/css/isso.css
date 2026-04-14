@@ -34,6 +34,11 @@
     --isso-comment-divider-color: rgba(0, 0, 0, 0.1);
     --isso-page-author-suffix-color: #2c2c2c;
     --isso-target-fade-background-color: #eee5a1;
+
+    /* Animation variables */
+    --isso-animation-duration: 0.3s;
+    --isso-animation-timing: ease-out;
+    --isso-comment-max-height: 1000px;
 }
 
 /* ========================================================================== */
@@ -331,6 +336,56 @@ h4.isso-thread-heading {
 /* ========================================================================== */
 /* Animations                                                                 */
 /* ========================================================================== */
+
+.isso-comment.isso-anim-initial {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+/* Animation for new comments appearing */
+@keyframes isso-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation for comments being removed */
+@keyframes isso-fade-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: var(--isso-comment-max-height);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+        max-height: 0;
+    }
+}
+
+/* Apply fade-in animation to new comments */
+.isso-comment.isso-anim-in {
+    animation: isso-fade-in var(--isso-animation-duration) var(--isso-animation-timing);
+}
+
+/* Apply fade-out animation to removed comments */
+.isso-comment.isso-anim-out {
+    animation: isso-fade-out var(--isso-animation-duration) var(--isso-animation-timing);
+    overflow: hidden;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .isso-comment.isso-anim-in,
+    .isso-comment.isso-anim-out {
+        animation: none;
+    }
+}
 
 /* "target" means the comment that's being linked to, for example:
  * https://example.com/blog/example/#isso-15
