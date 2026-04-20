@@ -47,13 +47,6 @@ If you want to have the same rendered result with Mistune, use underscores for e
 
 3. \*\*word1\*\*\_word2\_: Strong **word1** and emphasized *word2*
 
-Fenced code
-^^^^^^^^^^^
-
-In Misaka, fenced code can be marked by enclosing the code block in three backticks
-``````` or by putting four space characters in front of each code line. Mistune
-only understands three backticks.
-
 Plugins
 -------
 
