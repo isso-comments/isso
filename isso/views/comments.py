@@ -9,6 +9,7 @@ import json  # json.dumps to put URL in <script>
 from configparser import NoOptionError
 from importlib.resources import files
 from datetime import datetime, timedelta
+from functools import wraps
 from html import escape
 from io import BytesIO as StringIO
 from os import path as os_path
@@ -24,7 +25,7 @@ from werkzeug.wrappers import Response
 from werkzeug.wsgi import get_current_url
 
 from isso import utils, local
-from isso.utils import http, parse, JSONResponse as JSON, XMLResponse as XML, render_template
+from isso.utils import http, parse, JSONResponse as JSON, XMLResponse as XML, render_template, set_no_cache_headers
 from isso.utils.hash import md5, sha1
 from isso.views import requires
 
@@ -81,6 +82,25 @@ def xhr(func):
         return func(self, env, req, *args, **kwargs)
 
     return dec
+
+
+def no_cache_headers(func):
+    """Decorator that applies no-cache headers to successful responses.
+
+    Only applies headers when status_code < 400. Error responses (4xx/5xx)
+    are intentionally excluded, as their caching behavior is typically
+    controlled by the client or intermediary proxies rather than
+    the application itself.
+    """
+
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        resp = func(self, *args, **kwargs)
+        if self.prevent_cache and isinstance(resp, Response) and resp.status_code < 400:
+            set_no_cache_headers(resp)
+        return resp
+
+    return wrapper
 
 
 def get_comment_id_from_url(comment_url):
@@ -193,6 +213,10 @@ class API(object):
             self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
         except NoOptionError:
             self.trusted_proxies = []
+        try:
+            self.prevent_cache = isso.conf.getboolean("server", "prevent-cache")
+        except NoOptionError:
+            self.prevent_cache = True
 
         # These configuration records can be read out by client
         self.public_conf = {}
@@ -484,6 +508,7 @@ class API(object):
         }
     """
 
+    @no_cache_headers
     def view(self, environ, request, id):
         rv = self.comments.get(id)
         if rv is None:
@@ -938,6 +963,7 @@ class API(object):
     """
 
     @requires(str, "uri")
+    @no_cache_headers
     def fetch(self, environ, request, uri):
         args = {"uri": uri, "after": request.args.get("after", 0)}
 

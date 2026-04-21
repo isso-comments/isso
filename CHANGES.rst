@@ -8,8 +8,10 @@ New Features
 ^^^^^^^^^^^^
 
 - Add option to show/hide website field in comment form (`#1111`_, pkvach)
+- Add prevent-cache option to fix stale comment display (`#1110`_, pkvach)
 
 .. _#1111: https://github.com/isso-comments/isso/pull/1111
+.. _#1110: https://github.com/isso-comments/isso/pull/1110
 
 0.14.0 (2026-03-26)
 --------------------
