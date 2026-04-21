@@ -1,6 +1,16 @@
 Changelog for Isso
 ==================
 
+%(version)s (%(date)s)
+--------------------
+
+Bugfixes & Improvements
+^^^^^^^^^^^^
+
+- Add prevent-cache option to fix stale comment display (`#1110`_, pkvach)
+
+.. _#1110: https://github.com/isso-comments/isso/pull/1110
+
 0.14.0 (2026-03-26)
 --------------------
 
