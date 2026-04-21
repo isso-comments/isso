@@ -11,7 +11,7 @@ from urllib.parse import urlencode
 from werkzeug.wrappers import Response
 
 from isso import Isso, core, config
-from isso.utils import http
+from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
 
 from fixtures import curl, loads, FakeIP, FakeHost, JSONClient
@@ -664,6 +664,57 @@ class TestComments(unittest.TestCase):
 
         response = self.get("/latest?limit=5")
         self.assertEqual(response.status_code, 404)
+
+    def testFetchAddsNoCacheHeaders(self):
+        """Test that fetch endpoint adds no-cache headers by default."""
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+        r = self.get("/?uri=%2Fpath%2F")
+
+        self.assertEqual(r.status_code, 200)
+        for header, value in NO_CACHE_HEADERS.items():
+            self.assertIn(header, r.headers)
+            self.assertEqual(r.headers[header], value)
+
+    def testViewAddsNoCacheHeaders(self):
+        """Test that view endpoint adds no-cache headers by default."""
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+        r = self.get("/id/1")
+
+        self.assertEqual(r.status_code, 200)
+        for header, value in NO_CACHE_HEADERS.items():
+            self.assertIn(header, r.headers)
+            self.assertEqual(r.headers[header], value)
+
+    def testPreventCacheCanBeDisabled(self):
+        """Test that no-cache headers can be disabled via configuration."""
+        # Disable prevent-cache in configuration
+        self.conf.set("server", "prevent-cache", "false")
+
+        # Recreate app with updated config
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(self.conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        self.client = JSONClient(self.app, Response)
+
+        # Create a comment
+        rv = self.client.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+        self.assertEqual(rv.status_code, 201)
+
+        # Test fetch endpoint
+        r_fetch = self.client.get("/?uri=%2Fpath%2F")
+        self.assertEqual(r_fetch.status_code, 200)
+        # None of the no-cache headers should be present
+        for header in NO_CACHE_HEADERS:
+            self.assertNotIn(header, r_fetch.headers)
+
+        # Test view endpoint
+        r_view = self.client.get("/id/1")
+        self.assertEqual(r_view.status_code, 200)
+        # None of the no-cache headers should be present
+        for header in NO_CACHE_HEADERS:
+            self.assertNotIn(header, r_view.headers)
 
 
 class TestHostDependent(unittest.TestCase):
