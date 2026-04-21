@@ -9,9 +9,11 @@ New Features
 
 - Add option to show/hide website field in comment form (`#1111`_, pkvach)
 - Restrict maximum length of fields in ``comments.API.verify`` (`#1117`_, NicolaiSoeborg)
+- Add no-cache headers to fix stale comment display (`#1110`_, pkvach)
 
 .. _#1111: https://github.com/isso-comments/isso/pull/1111
 .. _#1117: https://github.com/isso-comments/isso/pull/1117
+.. _#1110: https://github.com/isso-comments/isso/pull/1110
 
 0.14.0 (2026-03-26)
 --------------------

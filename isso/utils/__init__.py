@@ -13,6 +13,11 @@ from werkzeug.exceptions import BadRequest
 from isso.wsgi import Request
 
 
+NO_CACHE_HEADERS = {
+    "Cache-Control": "no-store",
+}
+
+
 def anonymize(remote_addr):
     """
     Anonymize IPv4 and IPv6 :param remote_addr: to /24 (zero'd)
@@ -32,6 +37,21 @@ def anonymize(remote_addr):
             return "" + ipv6.exploded.rsplit(":", 5)[0] + ":" + ":".join(["0000"] * 5)
         except ipaddress.AddressValueError:
             return "0.0.0.0"
+
+
+def set_no_cache_headers(resp):
+    """
+    Set HTTP headers to prevent caching of dynamic content.
+
+    Args:
+        resp: A Response object to add headers to
+
+    Returns:
+        The same Response object with no-cache headers added
+    """
+    for key, value in NO_CACHE_HEADERS.items():
+        resp.headers[key] = value
+    return resp
 
 
 class Bloomfilter:
