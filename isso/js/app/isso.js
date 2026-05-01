@@ -17,7 +17,7 @@ var Postbox = function(parent) {
         el = $.htmlify(template.render("postbox", {
         "author":  JSON.parse(localStorage.getItem("isso-author")),
         "email":   JSON.parse(localStorage.getItem("isso-email")),
-        "website": JSON.parse(localStorage.getItem("isso-website")),
+        "website": config["website-field"] !== false ? JSON.parse(localStorage.getItem("isso-website")) : null,
         "preview": ''
     }));
 
@@ -103,7 +103,8 @@ var Postbox = function(parent) {
 
         var author = $("[name=author]", el).value || null,
             email = $("[name=email]", el).value || null,
-            website = $("[name=website]", el).value || null;
+            websiteEl = config["website-field"] !== false ? $('[name=website]', el) : null,
+            website = websiteEl ? websiteEl.value || null : null;
 
         try {
             localStorage.setItem("isso-author", JSON.stringify(author));

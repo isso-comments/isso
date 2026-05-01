@@ -199,6 +199,10 @@ class API(object):
         self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
         self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
         self.public_conf["require-author"] = isso.conf.getboolean("guard", "require-author")
+        try:
+            self.public_conf["website-field"] = isso.conf.getboolean("guard", "website-field")
+        except NoOptionError:
+            self.public_conf["website-field"] = True
         self.public_conf["reply-notifications"] = isso.conf.getboolean("general", "reply-notifications")
         self.public_conf["gravatar"] = isso.conf.getboolean("general", "gravatar")
 

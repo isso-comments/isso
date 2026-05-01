@@ -28,10 +28,10 @@ var html = function (globals) {
       + "<label for='isso-postbox-email'>" + i18n('postbox-email') + "</label>"
       + "<input id='isso-postbox-email' type='email' name='email' placeholder='" + i18n('postbox-email-placeholder') + "' value='" + (email ? email : '') + "' />"
     + "</p>"
-    + "<p class='isso-input-wrapper'>"
+    + (conf["website-field"] !== false ? "<p class='isso-input-wrapper'>"
       + "<label for='isso-postbox-website'>" + i18n('postbox-website') + "</label>"
       + "<input id='isso-postbox-website' type='text' name='website' placeholder='" + i18n('postbox-website-placeholder') + "' value='" + (website ? website : '') + "' />"
-    + "</p>"
+    + "</p>" : "")
     + "<p class='isso-post-action'>"
       + "<input type='submit' value='" + i18n('postbox-submit') + "' />"
     + "</p>"

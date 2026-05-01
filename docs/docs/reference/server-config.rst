@@ -348,6 +348,7 @@ for IPv4, ``/48`` for IPv6).
     reply-to-self = false
     require-author = false
     require-email = false
+    website-field = true
 
 enabled
     Enable guard, recommended in production. Not useful for debugging
@@ -384,6 +385,14 @@ require-email
     performed on the provided value.
 
     Default: ``false``
+
+website-field
+    Whether to show the website input field in the comment form. Set to
+    ``false`` to hide the website field entirely (no CSS hacks needed).
+
+    Default: ``true``
+
+    .. versionadded:: 0.14.1
 
 .. _configure-markup:
 
