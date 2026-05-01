@@ -1,6 +1,16 @@
 Changelog for Isso
 ==================
 
+%(version)s (%(date)s)
+--------------------
+
+New Features
+^^^^^^^^^^^^
+
+- Add option to show/hide website field in comment form (`#1111`_, pkvach)
+
+.. _#1111: https://github.com/isso-comments/isso/pull/1111
+
 0.14.0 (2026-03-26)
 --------------------
 
