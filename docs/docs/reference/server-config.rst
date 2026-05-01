@@ -261,6 +261,31 @@ samesite
 
     Default: (empty)
 
+prevent-cache
+    Add HTTP no-cache headers to dynamic JSON GET endpoints that serve comment
+    listings and individual comment views. This prevents browsers and proxy
+    servers from caching stale comment data.
+
+    When enabled, the following HTTP headers are added to responses from the
+    comment listing (``GET /``) and comment view (``GET /id/<id>``) endpoints:
+
+    - ``Cache-Control: no-cache, no-store, must-revalidate``
+    - ``Pragma: no-cache``
+    - ``Expires: 0``
+
+    This ensures that users always see the most up-to-date comments without
+    having to perform a hard refresh. The setting does not affect XML/Atom
+    feed endpoints, which use ETag-based caching.
+
+    You may want to disable this if you have an upstream caching layer (such
+    as a CDN or reverse proxy) that needs different caching behavior and is
+    configured to override or bypass origin cache headers. In such cases, you
+    should configure your caching layer appropriately.
+
+    Default: ``true``
+
+    .. versionadded:: 0.14.1
+
 .. _configure-smtp:
 
 SMTP
