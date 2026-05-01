@@ -40,9 +40,12 @@ var html = function (globals) {
           + "<span class='isso-spacer'>|</span>"
           + "<a class='isso-downvote' href='#'>" + svg['arrow-down'] + "</a>"
         : '')
-     + "<a class='isso-reply' href='#'>" + i18n('comment-reply') + "</a>"
-     + "<a class='isso-edit' href='#'>" + i18n('comment-edit') + "</a>"
-     + "<a class='isso-delete' href='#'>" + i18n('comment-delete') + "</a>"
+      + (conf["read-only"]
+        ? ''
+        : "<a class='isso-reply' href='#'>" + i18n('comment-reply') + "</a>"
+          + "<a class='isso-edit' href='#'>" + i18n('comment-edit') + "</a>"
+          + "<a class='isso-delete' href='#'>" + i18n('comment-delete') + "</a>"
+        )
   + "</div>" // .isso-comment-footer
 + "</div>" // .text-wrapper
 + "<div class='isso-follow-up'></div>"
