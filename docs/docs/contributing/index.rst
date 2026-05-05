@@ -28,7 +28,7 @@ Here are a few general rules to keep in mind when reporting issues:
 
 - **Disqus import fails** – if ``isso import /path/to/disqus.xml`` fails,
   please do *NOT* attach the raw dump file to GH:Issues. Please anonymize all
-  IP addresses inside the ``<ipAddress>`` tag first, as second step, replace
+  IP addresses inside the ``<ipAddress>`` tag first, and as a second step, replace
   all ``<email>`` addresses with a generic one.
 
 - **embed.min.js-related issues** –  if you get a cryptic JavaScript error in
