@@ -146,7 +146,7 @@ uncovered scenarios:
 Performance testing
 ^^^^^^^^^^^^^^^^^^^
 
-Find a way to have 100, 1,000, 10,000, 100k commments at once.
+Find a way to have 100, 1,000, 10,000, 100k comments at once.
 
 Then, test responsiveness, speed of insertion, the updating of all timestamps
 every minute, and whatever else might be performance-related.

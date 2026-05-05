@@ -6,7 +6,7 @@ Getting started
 Welcome to Isso's documentation. This documentation will help you get started
 fast. If you run into any problems when using Isso, you can find the answer in
 `troubleshooting guide <guides/troubleshooting>`_ or you can
-:ref:`get in contact <contact>`
+:ref:`get in contact <contact>`.
 
 **Start here:**
 
@@ -27,7 +27,7 @@ What's Isso?
 
 Isso is a lightweight commenting server similar to Disqus. It allows anonymous
 comments, maintains identity and is simple to administrate. It uses JavaScript
-and cross-origin ressource sharing for easy integration into (static) websites.
+and cross-origin resource sharing for easy integration into (static) websites.
 
 What's wrong with Disqus?
 -------------------------
