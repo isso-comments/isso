@@ -72,7 +72,7 @@ machines or a shared host (e.g. Uberspace.de).
 
 .. _Python Package Index: https://pypi.python.org/pypi
 .. _Why you should not use Python's easy_install carelessly on Debian:
-   https://workaround.org/easy-install-debian
+   https://web.archive.org/web/20230208164832/https://workaround.org/easy-install-debian
 
 .. _install-from-pypi:
 
