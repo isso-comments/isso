@@ -11,7 +11,7 @@ put a link to that comments thread anchor:
 
     <a href="/my-uri.html#isso-thread">Comments</a>
 
-The *isso js client* willl replace the content of this tag with a human readable
+The *isso js client* will replace the content of this tag with a human readable
 counter like *"5 comments"*.
 
 Alternatively, if guessing from `href` is not relevant, you could use a

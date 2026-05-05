@@ -45,7 +45,7 @@ Translations
 
 Isso supports multiple languages and it is fairly easy to add new translations.
 You can use the `english translation file`__ and `other translations`__ as a
-referece and open a Pull Request.
+reference and open a Pull Request.
 
 You may notice some "weird" newlines in translations -- that's the separator
 for pluralforms_ in the templating engine.

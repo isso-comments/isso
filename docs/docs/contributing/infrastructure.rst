@@ -130,7 +130,7 @@ write access (`link to package settings`_).
 Social
 ------
 
-There exists an IRC channel (``#isso``) on `Libera.chat`_ but it is seldomly
+There exists an IRC channel (``#isso``) on `Libera.chat`_ but it is seldom
 active and not used for coordination between maintainers. Most discussion
 happens in public on GitHub Issues; for private communication among each other
 regarding handover of project resources/keys (very rare) the maintainers have

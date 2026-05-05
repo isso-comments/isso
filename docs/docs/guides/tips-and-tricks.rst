@@ -58,7 +58,7 @@ Advanced Migration
 ------------------
 
 In quickstart we saw you can import comments from Disqus or WordPress. But there
-are a many other comments system and you could be using one of them.
+are many other comments system and you could be using one of them.
 
 Isso provides a way to import such comments, however it's up to you to to:
 

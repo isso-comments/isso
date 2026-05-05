@@ -100,7 +100,7 @@ Sub-URI
 
 You can run Isso on the same domain as your website, which circumvents issues
 originating from CORS_. Also, privacy-protecting browser addons such as
-`Request Policy`_ wont block comments.
+`Request Policy`_ won't block comments.
 
 .. code-block:: nginx
     :emphasize-lines: 9

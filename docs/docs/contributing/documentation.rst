@@ -123,7 +123,7 @@ Use section heading to divide page into sections
    ^^^^^^^^^^^^^^^^
 
 Use sub-heading only if necessary - if you need this many levels of headings,
-maybe the content chould better be spread out across multiple articles
+maybe the content would better be spread out across multiple articles
 
 **Referencing other sections:** (see `:ref:`__)
 

@@ -74,7 +74,7 @@ host
     your website, you have to "whitelist" your website(s).
 
     I recommend the first value to be a non-SSL website that is used as fallback
-    if Firefox users (and only those) supress their HTTP referer completely.
+    if Firefox users (and only those) suppress their HTTP referer completely.
 
     .. code-block:: ini
 

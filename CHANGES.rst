@@ -412,7 +412,7 @@ Bugs & features:
 - Add the possibility to set CORS Origin through ISSO_CORS_ORIGIN environ variable
 - Add preview button
 - Add Atom feed at /feed?uri={thread-id}
-- Add optionnal gravatar support
+- Add optional gravatar support
 - Add nofollow noopener on links inside comments
 - Add Dockerfile
 - Upgraded to Misaka 2
@@ -464,7 +464,7 @@ Translations:
 -------------------
 
 - fix wrapper attribute when using data-isso-require-mail="true", #238
-- fix reponse for OPTIONS response on Python 3, #242
+- fix response for OPTIONS response on Python 3, #242
 
 
 0.10.3 (2016-02-24)
@@ -752,7 +752,7 @@ optimizations, the JS client now weighs only 40kb (12kb gzipped) – 52kb resp.
 
 - new [markup] section to customize Misaka's Markdown generation (strikethrough,
   superscript and autolink enabled by default). Furthermore, you can now allow
-  certain HTML elemenets and attributes in the generated output, e.g. to enable
+  certain HTML elements and attributes in the generated output, e.g. to enable
   images, set
 
       [markup]
@@ -824,7 +824,7 @@ Major improvements:
 
 Minor improvements:
 
-- move `isso:application` to `isso.run:application` to avoid uneccessary
+- move `isso:application` to `isso.run:application` to avoid unnecessary
   initialization in some cases (change module if you use uWSGI or Gunicorn)
 - add Date header to email notifications, #42
 - check for blank text in new comment, #41
@@ -867,7 +867,7 @@ Major improvements:
 - fix a serious issue with the voters bloomfilter. During an Isso run, the
   ip addresses from all commenters accumulated into the voters bloomfilter
   for new comments. Thus, previous commenters could no longer vote other
-  comments. This fixes the rare occurences of #5.
+  comments. This fixes the rare occurrences of #5.
 
   In addition to this fix, the current voters bloomfilter will be re-initialized
   if you are using Isso 0.4 or below (this is not necessary, but on the
