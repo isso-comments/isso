@@ -24,18 +24,18 @@
       <div class="filters">
         <div class="mode">
           <a href="?mode=1&page={{page}}&order_by={{order_by}}">
-            <span class="label label-valid {% if mode == 1 %}active{% endif %}">
-              Valid ({{counts.get(1, 0)}})
+            <span id="count-mode-1" class="label label-valid {% if mode == 1 %}active{% endif %}">
+              Valid (<span class="count">{{counts.get(1, 0)}}</span>)
             </span>
           </a>
           <a href="?mode=2&page={{page}}&order_by={{order_by}}">
-            <span class="label label-pending {% if mode == 2 %}active{% endif %}">
-              Pending ({{counts.get(2, 0)}})
+            <span id="count-mode-2" class="label label-pending {% if mode == 2 %}active{% endif %}">
+              Pending (<span class="count">{{counts.get(2, 0)}}</span>)
             </span>
           </a>
           <a href="?mode=4&page={{page}}&order_by={{order_by}}">
-            <span class="label label-staled {% if mode == 4 %}active{% endif %}">
-              Staled ({{counts.get(4, 0)}})
+            <span id="count-mode-4" class="label label-staled {% if mode == 4 %}active{% endif %}">
+              Staled (<span class="count">{{counts.get(4, 0)}}</span>)
             </span>
           </a>
         </div>
