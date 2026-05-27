@@ -18,7 +18,7 @@ RUN npm install puppeteer
 # Skip downloading headless chromium again for future steps
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-RUN npm install --no-save jest jest-puppeteer jest-environment-jsdom
+RUN npm install --no-save jest@^29.7.0 jest-puppeteer jest-environment-jsdom@^29.7.0
 
 # Need to set $CI so that jest-puppeteer applies sensible launch params for
 # running headless chromium. Otherwise, chromium will fail with a "missing
