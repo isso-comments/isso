@@ -4,6 +4,9 @@
   <title>Isso admin</title>
   <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
   <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
+  {% if captcha_script_url %}
+  <script src="{{ captcha_script_url }}" async defer></script>
+  {% endif %}
 </head>
 <body>
   <div class="wrapper">
@@ -23,6 +26,22 @@
         Administration secured by password:
         <form method="POST" action="{{isso_host_script}}/login/">
           <input type="password" name="password" autofocus />
+
+          {% if captcha_error %}
+          <p class="error">Captcha verification failed.</p>
+          {% endif %}
+
+          {% if captcha_widget_html %}
+          <div class="captcha-widget">{{ captcha_widget_html | safe }}</div>
+          {% elif captcha_site_key and captcha_provider == "cap" %}
+          <cap-widget data-cap-api-endpoint="{{captcha_instance_url}}/{{captcha_site_key}}/"></cap-widget>
+          {% elif captcha_site_key and captcha_provider == "recaptcha" %}
+          <div class="g-recaptcha" data-sitekey="{{captcha_site_key}}"></div>
+          {% elif captcha_site_key and captcha_provider == "hcaptcha" %}
+          <div class="h-captcha" data-sitekey="{{captcha_site_key}}"></div>
+          {% endif %}
+
+          <input type="submit" value="Login" />
         </form>
       </div>
     </main>
