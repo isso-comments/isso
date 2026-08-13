@@ -8,8 +8,10 @@ New Features
 ^^^^^^^^^^^^
 
 - Add option to show/hide website field in comment form (`#1111`_, pkvach)
+- Restrict maximum length of fields in ``comments.API.verify`` (`#1117`_, NicolaiSoeborg)
 
 .. _#1111: https://github.com/isso-comments/isso/pull/1111
+.. _#1117: https://github.com/isso-comments/isso/pull/1117
 
 0.14.0 (2026-03-26)
 --------------------

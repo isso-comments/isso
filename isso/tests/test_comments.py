@@ -154,6 +154,11 @@ class TestComments(unittest.TestCase):
         for key in ("author", "website", "email"):
             self.assertFalse(verify({"text": True, key: 3.14}))
 
+        # value too long
+        self.assertTrue(verify({"text": "a" * 65535}))
+        self.assertFalse(verify({"text": "a" * 65536}))
+        self.assertFalse(verify({"text": "a", "random": "a" * 65536}))
+
         # text too short and/or blank
         for text in ("", "\n\n\n"):
             self.assertFalse(verify({"text": text}))

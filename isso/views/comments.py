@@ -233,11 +233,12 @@ class API(object):
             if not isinstance(comment.get(key), (str, type(None))):
                 return False, "%s must be a string or null" % key
 
+        for key, value in comment.items():
+            if value and len(str(value)) > 65535:
+                return False, f"{key} is too long (maximum length: 65535)"
+
         if len(comment["text"].rstrip()) < 3:
             return False, "text is too short (minimum length: 3)"
-
-        if len(comment["text"]) > 65535:
-            return False, "text is too long (maximum length: 65535)"
 
         if len(comment.get("email") or "") > 254:
             return False, "http://tools.ietf.org/html/rfc5321#section-4.5.3"
