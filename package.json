@@ -19,6 +19,8 @@
   },
   "optionalDependencies": {
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-puppeteer": "^10.1.4",
+    "puppeteer": "^25.7.0"
   }
 }
