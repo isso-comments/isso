@@ -4,11 +4,13 @@ on:
   push:
     paths:
       - "package.json"
+      - "package-lock.json"
       - "isso/js/**"
       - ".github/workflows/javascript-client.yml"
   pull_request:
     paths:
       - "package.json"
+      - "package-lock.json"
       - "isso/js/**"
       - ".github/workflows/javascript-client.yml"
 
