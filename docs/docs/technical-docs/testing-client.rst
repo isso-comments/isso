@@ -152,12 +152,13 @@ often and inadvertently have the wrong (incompatible) bundled client
 Skip downloading Chromium
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The downloaded browser will be saved to ``node_modules/puppeteer/.local-chromium/``.
-You can set ``PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`` in your environment to
+The downloaded browser will be saved to puppeteer's cache directory, by
+default ``~/.cache/puppeteer/``.
+You can set ``PUPPETEER_SKIP_DOWNLOAD=true`` in your environment to
 skip downloading the bundled browser and instead use the locally installed
 version of Chrome/Chromium via e.g. ``PUPPETEER_EXECUTABLE_PATH=$(which chromium)``.
 
-For further information, see `puppeteer docs: Environment variables`__.
+For further information, see `puppeteer docs: Configuration`__.
 
 .. warning:: Running ``puppeteer`` like this is discouraged as it cannot be
    guaranteed that the versions of Chromium and ``puppeteer`` are in sync. This
@@ -165,7 +166,7 @@ For further information, see `puppeteer docs: Environment variables`__.
    errors, please retry after clearing ``node_modules`` and re-installing the
    ``puppeteer``-related modules without those environment variables set.
 
-.. __: https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#environment-variables
+.. __: https://pptr.dev/guides/configuration
 
 Screenshot comparison
 ^^^^^^^^^^^^^^^^^^^^^

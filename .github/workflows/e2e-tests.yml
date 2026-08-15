@@ -5,6 +5,7 @@ on:
     paths:
       - "isso/**"
       - "package.json"
+      - "package-lock.json"
       - "docker/**"
       - "docker-compose.yml"
       - "Dockerfile"
@@ -13,6 +14,7 @@ on:
     paths:
       - "isso/**"
       - "package.json"
+      - "package-lock.json"
       - "docker/**"
       - "docker-compose.yml"
       - "Dockerfile"
@@ -27,15 +29,42 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Switch testbed image to ${{ env.TESTBED_IMAGE }}
-        # Just for faster CI runs, instead of re-building the image every time
-        # Especially useful to save the time+bandwidth to re-download puppeteer & chromium
+        # Point compose at $TESTBED_IMAGE and drop its `build:` section, so the
+        # image is taken as-is instead of being rebuilt by `docker compose up`.
         run: |
           sed -i "s|isso-js-testbed|${{ env.TESTBED_IMAGE }}|g" docker-compose.yml
           # Also remove the `build`: section so image is pulled, not built
           sed -i '/container_name: isso-client/{n;N;N;d}' docker-compose.yml
 
       - name: Pull testbed from ${{ env.TESTBED_IMAGE }}
+        # Just for faster CI runs, instead of re-building the image every time
+        # Especially useful to save the time+bandwidth to re-download puppeteer & chromium
         run: docker pull ${{ env.TESTBED_IMAGE }}
+
+      - name: Check testbed dependencies are up to date
+        # The image is only rebuilt weekly, so it can lag behind
+        # package-lock.json -- either because this branch changes it, or
+        # because the image predates a change on the base branch. Running the
+        # tests against stale dependencies produces failures unrelated to the
+        # change under test, so compare the lockfile `npm ci` ran against with
+        # the one checked out here.
+        id: testbed
+        run: |
+          set -eu
+          expected=$(sha256sum < package-lock.json)
+          actual=$(docker run --rm ${{ env.TESTBED_IMAGE }} \
+            sh -c 'sha256sum < /src/package-lock.json')
+          if [ "$expected" = "$actual" ]; then
+            echo "testbed lockfile is up to date"
+            echo "rebuild=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "testbed lockfile has drifted, rebuilding"
+            echo "rebuild=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rebuild testbed as ${{ env.TESTBED_IMAGE }}
+        if: steps.testbed.outputs.rebuild == 'true'
+        run: make docker-testbed TESTBED_IMAGE="${{ env.TESTBED_IMAGE }}"
 
       - name: Build the stack
         run: docker compose build isso-server

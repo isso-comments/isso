@@ -4,11 +4,13 @@ on:
   push:
     paths:
       - "package.json"
+      - "package-lock.json"
       - "isso/js/**"
       - ".github/workflows/javascript-client.yml"
   pull_request:
     paths:
       - "package.json"
+      - "package-lock.json"
       - "isso/js/**"
       - ".github/workflows/javascript-client.yml"
 
@@ -32,12 +34,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: package.json
+        cache-dependency-path: package-lock.json
 
     - name: Install Javascript test dependencies using npm
       env:
-        ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
-      run: npm install
+        # Unit tests run without a browser, so skip the ~400Mb chrome download
+        PUPPETEER_SKIP_DOWNLOAD: true
+      run: npm ci
 
     - name: Run Javascript Jest test suite - unit tests
       run: npm run test-unit
@@ -61,7 +64,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: package.json
+        cache-dependency-path: package-lock.json
 
     - name: Install Javascript dependencies using npm
       run: make init
