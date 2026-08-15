@@ -757,6 +757,19 @@ class TestModeratedComments(unittest.TestCase):
         self.app.db.comments.activate(1)
         self.assertEqual(self.client.get("/?uri=test").status_code, 200)
 
+    def testViewRejectsCookieIssuedForOtherComment(self):
+        """A cookie for one's own comment must not unlock a pending one."""
+        bob = JSONClient(self.app, Response)
+        bob.post("/new?uri=test", data=json.dumps({"text": "Bob's pending comment"}))
+
+        mallory = JSONClient(self.app, Response)
+        mallory.post("/new?uri=test", data=json.dumps({"text": "Mallory's comment"}))
+
+        cookie = mallory.get_cookie("2", domain="localhost").value
+        mallory.set_cookie("1", cookie, domain="localhost")
+
+        self.assertEqual(mallory.get("/id/1?plain=1").status_code, 403)
+
     def testModerateComment(self):
         id_ = 1
         signed = self.app.sign(id_)

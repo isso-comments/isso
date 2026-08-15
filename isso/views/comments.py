@@ -490,8 +490,11 @@ class API(object):
             raise NotFound
 
         try:
-            self.isso.unsign(request.cookies.get(str(id), ""))
+            signed = self.isso.unsign(request.cookies.get(str(id), ""))
         except (SignatureExpired, BadSignature):
+            raise Forbidden
+
+        if signed[0] != id:
             raise Forbidden
 
         for key in set(rv.keys()) - API.FIELDS:
