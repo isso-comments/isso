@@ -221,6 +221,28 @@ class API(object):
         for view, (method, path) in self.VIEWS:
             isso.urls.add(Rule(path, methods=[method], endpoint=getattr(self, view)))
 
+    def unsign_edit_cookie(self, request, id):
+        """
+        Unsign the edit cookie for comment :param:`id` and return its payload.
+
+        Raises Forbidden unless the cookie is a valid, unexpired `[id, checksum]`
+        pair issued for this very comment. The signer is shared with the admin
+        session, unsubscribe and moderation tokens, so a payload of the wrong
+        shape has to be rejected rather than indexed into.
+        """
+        try:
+            rv = self.isso.unsign(request.cookies.get(str(id), ""))
+        except (SignatureExpired, BadSignature):
+            raise Forbidden
+
+        if not isinstance(rv, list) or len(rv) != 2:
+            raise Forbidden
+
+        if rv[0] != id:
+            raise Forbidden
+
+        return rv
+
     @classmethod
     def verify(cls, comment):
         if comment.get("text") is None:
@@ -490,10 +512,7 @@ class API(object):
         if rv is None:
             raise NotFound
 
-        try:
-            self.isso.unsign(request.cookies.get(str(id), ""))
-        except (SignatureExpired, BadSignature):
-            raise Forbidden
+        self.unsign_edit_cookie(request, id)
 
         for key in set(rv.keys()) - API.FIELDS:
             rv.pop(key)
@@ -544,16 +563,14 @@ class API(object):
 
     @xhr
     def edit(self, environ, request, id):
-        try:
-            rv = self.isso.unsign(request.cookies.get(str(id), ""))
-        except (SignatureExpired, BadSignature):
-            raise Forbidden
+        rv = self.unsign_edit_cookie(request, id)
 
-        if rv[0] != id:
-            raise Forbidden
+        item = self.comments.get(id)
+        if item is None:
+            raise NotFound
 
         # verify checksum, mallory might skip cookie deletion when he deletes a comment
-        if rv[1] != sha1(self.comments.get(id)["text"]):
+        if rv[1] != sha1(item["text"]):
             raise Forbidden
 
         data = request.json
@@ -635,22 +652,16 @@ class API(object):
 
     @xhr
     def delete(self, environ, request, id):
-        try:
-            rv = self.isso.unsign(request.cookies.get(str(id), ""))
-        except (SignatureExpired, BadSignature):
-            raise Forbidden
-        else:
-            if rv[0] != id:
-                raise Forbidden
-
-            # verify checksum, mallory might skip cookie deletion when he deletes a comment
-            if rv[1] != sha1(self.comments.get(id)["text"]):
-                raise Forbidden
+        rv = self.unsign_edit_cookie(request, id)
 
         item = self.comments.get(id)
 
         if item is None:
             raise NotFound
+
+        # verify checksum, mallory might skip cookie deletion when he deletes a comment
+        if rv[1] != sha1(item["text"]):
+            raise Forbidden
 
         self.cache.delete("hash", (item["email"] or item["remote_addr"]).encode("utf-8"))
 
