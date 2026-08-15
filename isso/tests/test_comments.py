@@ -404,6 +404,26 @@ class TestComments(unittest.TestCase):
         r = self.get("/id/1?plain=1")
         self.assertEqual(r.status_code, 403)
 
+    def testCookieOfWrongTypeIsRejected(self):
+        """The signer is shared with admin session, moderation and unsubscribe
+        tokens, so payloads of a foreign shape must be refused, not indexed."""
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+
+        for payload in ({"logged": True}, 1, ["unsubscribe", "bob@example.org"], "nope", []):
+            value = self.app.sign(payload)
+            self.client.set_cookie("1", value, domain="localhost")
+
+            self.assertEqual(self.get("/id/1?plain=1").status_code, 403)
+            self.assertEqual(self.put("/id/1", data=json.dumps({"text": "Hijacked"})).status_code, 403)
+            self.assertEqual(self.delete("/id/1").status_code, 403)
+
+    def testEditCookieForMissingCommentIsRejected(self):
+        self.client.set_cookie("99", self.app.sign([99, "deadbeef"]), domain="localhost")
+
+        self.assertEqual(self.get("/id/99?plain=1").status_code, 404)
+        self.assertEqual(self.put("/id/99", data=json.dumps({"text": "Hijacked"})).status_code, 404)
+        self.assertEqual(self.delete("/id/99").status_code, 404)
+
     def testDeleteWithReference(self):
         client = JSONClient(self.app, Response)
         client.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "First"}))
