@@ -5,6 +5,19 @@ var html = function (globals) {
   var email = globals.email;
   var website = globals.website;
   var notify = conf["reply-notifications-default-enabled"] ? " checked" : '';
+  var captcha = "";
+
+  if (conf["captcha-enabled"]) {
+    if (conf["captcha-widget-html"]) {
+      captcha = "<div class='isso-captcha-widget'>" + conf["captcha-widget-html"] + "</div>";
+    } else if (conf["captcha-provider"] === "cap" && conf["captcha-site-key"] && conf["captcha-instance-url"]) {
+      captcha = "<cap-widget data-cap-api-endpoint='" + conf["captcha-instance-url"] + "/" + conf["captcha-site-key"] + "/'></cap-widget>";
+    } else if (conf["captcha-provider"] === "recaptcha" && conf["captcha-site-key"]) {
+      captcha = "<div class='g-recaptcha' data-sitekey='" + conf["captcha-site-key"] + "'></div>";
+    } else if (conf["captcha-provider"] === "hcaptcha" && conf["captcha-site-key"]) {
+      captcha = "<div class='h-captcha' data-sitekey='" + conf["captcha-site-key"] + "'></div>";
+    }
+  }
 
   return "" +
 "<div class='isso-postbox'>"
@@ -32,15 +45,21 @@ var html = function (globals) {
       + "<label for='isso-postbox-website'>" + i18n('postbox-website') + "</label>"
       + "<input id='isso-postbox-website' type='text' name='website' placeholder='" + i18n('postbox-website-placeholder') + "' value='" + (website ? website : '') + "' />"
     + "</p>" : "")
-    + "<p class='isso-post-action'>"
-      + "<input type='submit' value='" + i18n('postbox-submit') + "' />"
-    + "</p>"
-    + "<p class='isso-post-action'>"
-      + "<input type='button' name='preview' value='" + i18n('postbox-preview') + "' />"
-    + "</p>"
-    + "<p class='isso-post-action'>"
-      + "<input type='button' name='edit' value='" + i18n('postbox-edit') + "' />"
-    + "</p>"
+    + "<div class='isso-captcha-area'>"
+      + "<p class='isso-post-error' role='alert'></p>"
+      + captcha
+    + "</div>"
+    + "<div class='isso-post-actions'>"
+      + "<p class='isso-post-action'>"
+        + "<input type='submit' value='" + i18n('postbox-submit') + "' />"
+      + "</p>"
+      + "<p class='isso-post-action'>"
+        + "<input type='button' name='preview' value='" + i18n('postbox-preview') + "' />"
+      + "</p>"
+      + "<p class='isso-post-action'>"
+        + "<input type='button' name='edit' value='" + i18n('postbox-edit') + "' />"
+      + "</p>"
+    + "</div>"
   + "</div>"
   + "<div class='isso-notification-section'>"
     + "<label>"

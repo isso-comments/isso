@@ -23,6 +23,13 @@ var default_config = {
     "vote-levels": null,
     "feed": false,
     "page-author-hashes": "",
+    "captcha-enabled": true,
+    "captcha-provider": "none",
+    "captcha-script-url": "",
+    "captcha-instance-url": "",
+    "captcha-site-key": "",
+    "captcha-widget-html": "",
+    "captcha-response-field": "captcha-response",
 };
 Object.freeze(default_config);
 
