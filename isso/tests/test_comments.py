@@ -6,6 +6,7 @@ import re
 import tempfile
 import unittest
 
+from unittest.mock import patch
 from urllib.parse import urlencode
 
 from werkzeug.wrappers import Response
@@ -64,6 +65,117 @@ class TestComments(unittest.TestCase):
 
         self.assertEqual(rv["mode"], 1)
         self.assertEqual(rv["text"], "<p>Lorem ipsum ...</p>")
+
+    def enable_comment_captcha(self, provider="cap"):
+        self.conf.set("captcha", "captcha-provider", provider)
+        self.conf.set("captcha", "captcha-site-key", "site-key")
+        self.conf.set("captcha", "captcha-secret-key", "secret-key")
+        if provider == "cap":
+            self.conf.set("captcha", "captcha-instance-url", "https://captcha.example.com")
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(self.conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        self.client = JSONClient(self.app, Response)
+        self.get = self.client.get
+        self.post = self.client.post
+
+    def testCreateWithFailedCaptcha(self):
+        self.enable_comment_captcha(provider="cap")
+
+        rv = self.post(
+            "/new?uri=%2Fpath%2F",
+            data=json.dumps({"text": "Lorem ipsum ..."}),
+        )
+
+        self.assertEqual(rv.status_code, 400)
+        self.assertTrue(rv.content_type.startswith("text/html"))
+        self.assertIn(b"Captcha verification failed", rv.data)
+
+    def testCreateAcceptsVerifiedCapCaptcha(self):
+        self.enable_comment_captcha(provider="cap")
+
+        with patch("isso.captcha.requests.post") as post:
+            post.return_value.json.return_value = {"success": True}
+            rv = self.post(
+                "/new?uri=%2Fpath%2F",
+                data=json.dumps({"text": "Lorem ipsum ...", "cap-token": "token"}),
+            )
+
+        self.assertEqual(rv.status_code, 201)
+
+    def enable_admin_login(self, captcha=False, provider="cap", custom_widget=True):
+        self.conf.set("admin", "enabled", "true")
+        self.conf.set("admin", "password", "secret")
+        if captcha:
+            self.conf.set("captcha", "captcha-provider", provider)
+            self.conf.set("captcha", "captcha-site-key", "site-key")
+            self.conf.set("captcha", "captcha-secret-key", "secret-key")
+            if provider == "cap":
+                self.conf.set("captcha", "captcha-instance-url", "https://captcha.example.com")
+                self.conf.set("captcha", "captcha-response-field", "captcha-response")
+            if custom_widget:
+                self.conf.set("captcha", "captcha-script-url", "https://captcha.example.com/widget.js")
+                self.conf.set("captcha", "captcha-widget-html", '<div id="cap-widget"></div>')
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(self.conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        self.client = JSONClient(self.app, Response)
+        self.get = self.client.get
+        self.post = self.client.post
+
+    def testLoginWithoutCaptchaStillWorks(self):
+        self.enable_admin_login()
+
+        rv = self.post(
+            "/login/",
+            data={"password": "secret"},
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        self.assertEqual(rv.status_code, 302)
+        self.assertIn("admin-session", rv.headers.get("Set-Cookie", ""))
+
+    def testAdminLoginPageRendersCaptchaHook(self):
+        self.enable_admin_login(captcha=True)
+
+        rv = self.get("/admin/")
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn(b"captcha.example.com/widget.js", rv.data)
+        self.assertIn(b"cap-widget", rv.data)
+
+    def testLoginWithFailedCaptcha(self):
+        self.enable_admin_login(captcha=True)
+
+        rv = self.post(
+            "/login/",
+            data={"password": "secret"},
+            content_type="application/x-www-form-urlencoded",
+        )
+
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn(b"Captcha verification failed", rv.data)
+        self.assertNotIn("admin-session", rv.headers.get("Set-Cookie", ""))
+
+    def testLoginAcceptsVerifiedCaptcha(self):
+        self.enable_admin_login(captcha=True)
+
+        with patch("isso.captcha.requests.post") as post:
+            post.return_value.json.return_value = {"success": True}
+            rv = self.post(
+                "/login/",
+                data={"password": "secret", "captcha-response": "token"},
+                content_type="application/x-www-form-urlencoded",
+            )
+
+        self.assertEqual(rv.status_code, 302)
+        self.assertIn("admin-session", rv.headers.get("Set-Cookie", ""))
 
     def testWebsiteXSSPayloadIsEscaped(self):
         """Website field with XSS payload must have quotes HTML-escaped."""
