@@ -26,7 +26,7 @@ class CaptchaProvider(object):
 		return self.get("captcha-secret-key")
 
 	def widget_html(self):
-		return self.get("captcha-widget-html")
+		raise NotImplementedError()
 
 	def script_url(self):
 		configured = self.get("captcha-script-url")
@@ -92,6 +92,9 @@ class DisabledCaptchaProvider(CaptchaProvider):
 	def verify_token(self, token):
 		return True
 
+	def widget_html(self):
+		return self.get("captcha-widget-html")
+
 
 class CapCaptchaProvider(CaptchaProvider):
 	name = "cap"
@@ -114,6 +117,13 @@ class CapCaptchaProvider(CaptchaProvider):
 			},
 		)
 
+	def widget_html(self):
+		configured = self.get("captcha-widget-html")
+		if configured:
+			return configured
+
+		return "<cap-widget data-cap-api-endpoint=%s/%s/></cap-widget>" % (self.instance_url(), self.site_key())
+
 
 class RecaptchaProvider(CaptchaProvider):
 	name = "recaptcha"
@@ -130,6 +140,11 @@ class RecaptchaProvider(CaptchaProvider):
 			},
 		)
 
+	def widget_html(self):
+		configured = self.get("captcha-widget-html")
+		if configured:
+			return configured
+		return '<div class="g-recaptcha" data-sitekey=%s></div>' % self.site_key()
 
 class HcaptchaProvider(CaptchaProvider):
 	name = "hcaptcha"
@@ -146,6 +161,11 @@ class HcaptchaProvider(CaptchaProvider):
 			},
 		)
 
+	def widget_html(self):
+		configured = self.get("captcha-widget-html")
+		if configured:
+			return configured
+		return '<div class="h-captcha" data-sitekey=%s></div>' % self.site_key()
 
 def create_provider(conf):
 	provider_name = conf.get("captcha", "captcha-provider", fallback="").strip().lower()

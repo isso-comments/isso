@@ -288,7 +288,7 @@ h4.isso-thread-heading {
     height: 1.4em;
 }
 .isso-captcha-area {
-    float: right;
+    display: block;
     width: 304px;
     max-width: 100%;
     margin-left: 1em;
@@ -299,17 +299,13 @@ h4.isso-thread-heading {
     margin: 1em 0 0;
     text-align: right;
 }
-.isso-captcha-widget,
-.g-recaptcha,
-.h-captcha,
-cap-widget {
+.isso-captcha-widget {
     display: block;
-    clear: both;
     margin-top: .8em;
 }
 .isso-post-actions {
-    clear: both;
-    display: flow-root;
+    float: right;
+    text-align: right;
 }
 .isso-post-action {
     display: block;
