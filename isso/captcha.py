@@ -17,7 +17,9 @@ class CaptchaProvider(object):
 		return self.conf.get("captcha", key, fallback=fallback).strip()
 
 	def response_field(self):
-		return self.get("captcha-response-field", fallback=self.default_response_field)
+		# If `captcha-response-field` is defined in the config but left empty, `get()` will return an empty string, 
+		# so we need to use the default value in that case. fallback works only when the field is not defined at all.
+		return self.get("captcha-response-field", fallback=self.default_response_field) or self.default_response_field
 
 	def site_key(self):
 		return self.get("captcha-site-key")
@@ -32,7 +34,7 @@ class CaptchaProvider(object):
 		configured = self.get("captcha-script-url")
 		if configured:
 			return configured
-		if self.site_key() and self.default_script_url:
+		if self.is_configured() and self.default_script_url:
 			return self.default_script_url
 		return ""
 
@@ -150,7 +152,7 @@ class HcaptchaProvider(CaptchaProvider):
 	name = "hcaptcha"
 	default_script_url = "https://js.hcaptcha.com/1/api.js"
 	default_response_field = "h-captcha-response"
-	verify_url = "https://hcaptcha.com/siteverify"
+	verify_url = "https://api.hcaptcha.com/siteverify"
 
 	def verify_token(self, token):
 		return self.post_json_success(
