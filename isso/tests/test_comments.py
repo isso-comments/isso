@@ -11,7 +11,7 @@ from urllib.parse import urlencode
 from werkzeug.wrappers import Response
 
 from isso import Isso, core, config
-from isso.utils import http
+from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
 
 from fixtures import curl, loads, FakeIP, FakeHost, JSONClient
@@ -689,6 +689,26 @@ class TestComments(unittest.TestCase):
 
         response = self.get("/latest?limit=5")
         self.assertEqual(response.status_code, 404)
+
+    def testFetchAddsNoCacheHeaders(self):
+        """Test that fetch endpoint adds no-cache headers by default."""
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+        r = self.get("/?uri=%2Fpath%2F")
+
+        self.assertEqual(r.status_code, 200)
+        for header, value in NO_CACHE_HEADERS.items():
+            self.assertIn(header, r.headers)
+            self.assertEqual(r.headers[header], value)
+
+    def testViewAddsNoCacheHeaders(self):
+        """Test that view endpoint adds no-cache headers by default."""
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+        r = self.get("/id/1")
+
+        self.assertEqual(r.status_code, 200)
+        for header, value in NO_CACHE_HEADERS.items():
+            self.assertIn(header, r.headers)
+            self.assertEqual(r.headers[header], value)
 
 
 class TestHostDependent(unittest.TestCase):
