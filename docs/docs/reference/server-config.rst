@@ -103,7 +103,36 @@ notify
         Send notifications via SMTP on new comments with activation (if
         moderated) and deletion links.
 
+    webhook
+        POST a JSON event to an HTTP endpoint for every saved comment.
+
     Default: ``stdout``
+
+Webhook
+-------
+
+Add ``webhook`` to ``general.notify`` to receive a ``comment.created`` event
+after each comment is saved, including pending comments. The payload contains
+the event, thread ID/URI/title, and comment ID, parent, timestamps, mode,
+text, author, and website; it excludes email address, IP address, and voting
+data.
+
+.. code-block:: ini
+
+    [general]
+    notify = webhook
+
+    [webhook]
+    url =
+        https://example.com/hooks/isso
+        https://example.net/hooks/isso
+    secret = a-long-random-secret
+    timeout = 10
+
+Requests are POSTed as JSON with ``X-Isso-Event: comment.created``. When
+``secret`` is set, ``X-Isso-Signature`` is ``sha256=`` followed by the
+lowercase hexadecimal HMAC-SHA256 of the raw request body. Each configured
+URL receives the same event.
 
 reply-notifications
     Allow users to request E-mail notifications for replies to their post.

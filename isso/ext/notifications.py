@@ -2,6 +2,8 @@
 
 import io
 import json
+import hashlib
+import hmac
 import smtplib
 import socket
 import time
@@ -9,7 +11,9 @@ import time
 from _thread import start_new_thread
 from email.message import EmailMessage
 from email.utils import formatdate
+from urllib.error import URLError
 from urllib.parse import quote
+from urllib.request import Request, urlopen
 
 import logging
 
@@ -213,6 +217,46 @@ class SMTP(object):
                 time.sleep(60)
             else:
                 break
+
+
+class Webhook(object):
+    def __init__(self, isso):
+        self.conf = isso.conf.section("webhook")
+        self.urls = list(self.conf.getiter("url"))
+        self.secret = self.conf.get("secret")
+        self.timeout = self.conf.getint("timeout")
+
+        if not self.urls:
+            logger.warning("webhook notifications are enabled without webhook URLs")
+
+    def __iter__(self):
+        yield "comments.new:after-save", self.notify_new
+
+    def notify_new(self, thread, comment):
+        if not self.urls:
+            return
+
+        payload = {
+            "event": "comment.created",
+            "thread": {key: thread[key] for key in ("id", "uri", "title")},
+            "comment": {key: comment[key] for key in ("id", "parent", "created", "modified", "mode", "text", "author", "website")},
+        }
+        start_new_thread(self.send, (payload,))
+
+    def send(self, payload):
+        body = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+        headers = {"Content-Type": "application/json", "X-Isso-Event": payload["event"]}
+        if self.secret:
+            digest = hmac.new(self.secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
+            headers["X-Isso-Signature"] = "sha256=" + digest
+
+        for url in self.urls:
+            request = Request(url, data=body, headers=headers, method="POST")
+            try:
+                with urlopen(request, timeout=self.timeout):
+                    pass
+            except URLError:
+                logger.exception("unable to deliver comment webhook to %s", url)
 
 
 class Stdout(object):
