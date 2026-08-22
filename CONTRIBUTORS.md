@@ -117,6 +117,9 @@ In chronological order:
   * Update Polish translation
   * Redirect to comment after moderation
 
+* Julien Moura @Guts
+  * Notify through web hooks
+
 * fliiiix <l33t.name>
   * Import disqus posts without Email
   * Import disqus post without IP

@@ -1,0 +1,70 @@
+{
+  "blocks": [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": ":speech_balloon: New comment posted",
+        "emoji": true
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Author:* $AUTHOR_NAME $AUTHOR_EMAIL $AUTHOR_WEBSITE"
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*IP:* $COMMENT_IP_ADDRESS"
+      }
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*Comment:*\n$COMMENT_TEXT"
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "emoji": true,
+            "text": ":eye-in-speech-bubble: View comment"
+          },
+          "url": "$COMMENT_URL_VIEW"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "emoji": true,
+            "text": ":white_check_mark: Approve"
+          },
+          "style": "primary",
+          "url": "$COMMENT_URL_ACTIVATE"
+        },
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "emoji": true,
+            "text": ":wastebasket: Deny"
+          },
+          "style": "danger",
+          "url": "$COMMENT_URL_DELETE"
+        }
+      ]
+    }
+  ]
+}
