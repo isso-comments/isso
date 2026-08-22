@@ -1456,17 +1456,6 @@ class API(object):
         index = str(files("isso").joinpath("demo/index.html"))
         return send_from_directory(os_path.dirname(index), "index.html", env)
 
-    def admin_login_context(self, captcha_error=False):
-        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
-        context = self.captcha_provider.template_context()
-        context.update(
-            {
-                "isso_host_script": isso_host_script,
-                "captcha_error": captcha_error,
-            }
-        )
-        return context
-
     """
     @api {post} /login/ Log in
     @apiGroup Admin
@@ -1504,7 +1493,14 @@ class API(object):
             response.headers.add("X-Set-Cookie", cookie("isso-admin-session"))
             return response
         else:
-            return render_template("login.html", **self.admin_login_context(captcha_error=not captcha_ok))
+            isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+            return render_template(
+                "login.html", 
+                isso_host_script=isso_host_script, 
+                captcha_script_url=self.captcha_provider.script_url(),
+                captcha_widget_html=self.captcha_provider.widget_html(),
+                captcha_error=not captcha_ok
+            )
 
     """
     @api {get} /admin/ Admin interface
@@ -1545,9 +1541,17 @@ class API(object):
         try:
             data = self.isso.unsign(req.cookies.get("admin-session", ""), max_age=60 * 60 * 24)
         except BadSignature:
-            return render_template("login.html", **self.admin_login_context())
+            return render_template("login.html", 
+                isso_host_script=isso_host_script,
+                captcha_script_url=self.captcha_provider.script_url(),
+                captcha_widget_html=self.captcha_provider.widget_html()
+            )
         if not data or not data["logged"]:
-            return render_template("login.html", **self.admin_login_context())
+            return render_template("login.html", 
+                isso_host_script=isso_host_script,
+                captcha_script_url=self.captcha_provider.script_url(),
+                captcha_widget_html=self.captcha_provider.widget_html()
+            )
         page_size = 100
         page = int(req.args.get("page", 0))
         order_by = req.args.get("order_by", "created")
