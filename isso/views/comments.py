@@ -1376,7 +1376,7 @@ class API(object):
     @apiDescription
         Returns only the client configuration parameters that depend on server settings.
 
-    @apiSuccess {Object[]} config
+    @apiSuccess {Object} config
         The client configuration object.
     @apiSuccess {Boolean} config.reply-to-self
         Commenters can reply to their own comments.
@@ -1395,6 +1395,20 @@ class API(object):
     @apiSuccess {Boolean} config.feed
         Enable or disable the addition of a link to the feed for the comment
         thread.
+    @apiSuccess {Boolean} config.captcha-enabled
+        Whether CAPTCHA verification is enabled.
+    @apiSuccess {String} config.captcha-provider
+        The configured CAPTCHA provider: `cap`, `recaptcha`, `hcaptcha`, or `none`.
+    @apiSuccess {String} config.captcha-script-url
+        URL of the CAPTCHA provider script.
+    @apiSuccess {String} config.captcha-instance-url
+        CAPTCHA instance URL, used by the CAP provider.
+    @apiSuccess {String} config.captcha-site-key
+        Public CAPTCHA site key.
+    @apiSuccess {String} config.captcha-widget-html
+        HTML snippet used to render the CAPTCHA widget.
+    @apiSuccess {String} config.captcha-response-field
+        Request field containing the CAPTCHA response token.
 
     @apiExample {curl} get the client config:
         curl 'https://comments.example.com/config'
@@ -1408,7 +1422,14 @@ class API(object):
             "reply-notifications": false,
             "gravatar": true,
             "avatar": false,
-            "feed": false
+            "feed": false,
+            "captcha-enabled": false,
+            "captcha-provider": "none",
+            "captcha-script-url": "",
+            "captcha-instance-url": "",
+            "captcha-site-key": "",
+            "captcha-widget-html": "",
+            "captcha-response-field": "captcha-response"
           }
         }
     """
