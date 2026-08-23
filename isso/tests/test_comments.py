@@ -92,18 +92,22 @@ class TestComments(unittest.TestCase):
 
         self.assertEqual(rv.status_code, 400)
         self.assertTrue(rv.content_type.startswith("text/html"))
-        self.assertIn(b"Captcha verification failed", rv.data)
+        self.assertIn(b"CAPTCHA response is missing", rv.data)
 
     def testCreateAcceptsVerifiedCapCaptcha(self):
         self.enable_comment_captcha(provider="cap")
 
-        with patch("isso.captcha.requests.post") as post:
-            post.return_value.json.return_value = {"success": True}
+        with patch("isso.captcha.urlopen") as urlopen:
+            urlopen.return_value.__enter__.return_value.read.return_value = b'{"success": true}'
             rv = self.post(
                 "/new?uri=%2Fpath%2F",
                 data=json.dumps({"text": "Lorem ipsum ...", "cap-token": "token"}),
             )
 
+        request = urlopen.call_args.args[0]
+        self.assertEqual(request.get_method(), "POST")
+        self.assertEqual(request.get_header("Content-type"), "application/x-www-form-urlencoded")
+        self.assertEqual(request.data, urlencode({"secret": "secret-key", "response": "token"}).encode("utf-8"))
         self.assertEqual(rv.status_code, 201)
 
     def enable_admin_login(self, captcha=False, provider="cap", custom_widget=True):
@@ -160,14 +164,14 @@ class TestComments(unittest.TestCase):
         )
 
         self.assertEqual(rv.status_code, 200)
-        self.assertIn(b"Captcha verification failed", rv.data)
+        self.assertIn(b"CAPTCHA response is missing", rv.data)
         self.assertNotIn("admin-session", rv.headers.get("Set-Cookie", ""))
 
     def testLoginAcceptsVerifiedCaptcha(self):
         self.enable_admin_login(captcha=True)
 
-        with patch("isso.captcha.requests.post") as post:
-            post.return_value.json.return_value = {"success": True}
+        with patch("isso.captcha.urlopen") as urlopen:
+            urlopen.return_value.__enter__.return_value.read.return_value = b'{"success": true}'
             rv = self.post(
                 "/login/",
                 data={"password": "secret", "captcha-response": "token"},

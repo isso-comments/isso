@@ -167,7 +167,7 @@ var Postbox = function(parent) {
                 },
                 function(err) {
                     console.error(err);
-                    if (/captcha verification failed/i.test(err)) {
+                    if (/Bad Request/i.test(err)) {
                         var captcha_error = $(".isso-post-error", el);
                         captcha_error.setText("Captcha verification failed.");
                         captcha_error.show();
