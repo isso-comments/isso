@@ -1,5 +1,8 @@
 import logging
-import requests
+import json
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 
 logger = logging.getLogger("isso")
@@ -43,11 +46,11 @@ class CaptchaProvider(object):
 
 	def verify(self, data):
 		if not self.is_configured():
-			return True
+			return True, ""
 
 		token = data.get(self.response_field(), "")
 		if not token:
-			return False
+			return False, "CAPTCHA response is missing"
 
 		return self.verify_token(token)
 
@@ -79,10 +82,32 @@ class CaptchaProvider(object):
 
 	def post_json_success(self, url, payload):
 		try:
-			response = requests.post(url, data=payload, timeout=5)
-			return bool(response.json().get("success"))
-		except Exception:
-			return False
+			data = urlencode(payload).encode("utf-8")
+			request = Request(
+				url,
+				data=data,
+				headers={
+					"Content-Type": "application/x-www-form-urlencoded",
+					"Accept": "application/json",
+					"User-Agent": "python-requests/2.31.0",
+				},
+				method="POST",
+			)
+			with urlopen(request, timeout=5) as response:
+				result = json.loads(response.read().decode("utf-8"))
+				success = bool(result.get("success"))
+				message = result.get("error-codes") or result.get("error") or ""
+				if isinstance(message, list):
+					message = ", ".join(message)
+				return success, message
+
+		except HTTPError as e:
+			message = e.read().decode("utf-8", errors="replace")
+			logger.error("Captcha verification returned HTTP %s: %s", e.code, message)
+			return False, message or "HTTP %s" % e.code
+
+		except Exception as e:
+			return False, str(e)
 
 
 class DisabledCaptchaProvider(CaptchaProvider):

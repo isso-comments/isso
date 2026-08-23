@@ -28,7 +28,7 @@
           <input type="password" name="password" autofocus />
 
           {% if captcha_error %}
-          <p class="error">Captcha verification failed.</p>
+          <p class="error">{{ captcha_error }}</p>
           {% endif %}
 
           {% if captcha_widget_html %}

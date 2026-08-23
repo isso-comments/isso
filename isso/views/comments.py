@@ -386,8 +386,9 @@ class API(object):
     def new(self, environ, request, uri):
         data = request.json
 
-        if not self.captcha_provider.verify(data):
-            return BadRequest("Captcha verification failed")
+        captcha_ok, captcha_error = self.captcha_provider.verify(data)
+        if not captcha_ok:
+            return BadRequest(captcha_error or "Captcha verification failed")
 
         for field in set(data.keys()) - API.ACCEPT:
             data.pop(field)
@@ -1506,7 +1507,7 @@ class API(object):
             return render_template("disabled.html", isso_host_script=isso_host_script)
         data = req.form
         password = self.isso.conf.get("admin", "password")
-        captcha_ok = self.captcha_provider.verify(data)
+        captcha_ok, captcha_error = self.captcha_provider.verify(data)
         if data.get("password", "") and data["password"] == password and captcha_ok:
             response = redirect(re.sub(r"/login/$", "/admin/", get_current_url(env, strip_querystring=True)))
             cookie = self.create_cookie(value=self.isso.sign({"logged": True}), expires=datetime.now() + timedelta(1))
@@ -1520,7 +1521,7 @@ class API(object):
                 isso_host_script=isso_host_script, 
                 captcha_script_url=self.captcha_provider.script_url(),
                 captcha_widget_html=self.captcha_provider.widget_html(),
-                captcha_error=not captcha_ok
+                captcha_error=captcha_error or not captcha_ok
             )
 
     """

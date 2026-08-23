@@ -30,7 +30,6 @@ dependencies = [
     "werkzeug>=1.0",
     "bleach",
     "setuptools",
-    "requests",
 ]
 
 [project.optional-dependencies]
