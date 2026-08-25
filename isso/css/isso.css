@@ -287,6 +287,26 @@ h4.isso-thread-heading {
     line-height: 1.4em;
     height: 1.4em;
 }
+.isso-captcha-area {
+    display: block;
+    width: 304px;
+    max-width: 100%;
+    margin-left: 1em;
+}
+.isso-post-error {
+    display: none;
+    color: #b33;
+    margin: 1em 0 0;
+    text-align: right;
+}
+.isso-captcha-widget {
+    display: block;
+    margin-top: .8em;
+}
+.isso-post-actions {
+    float: right;
+    text-align: right;
+}
 .isso-post-action {
     display: block;
     float: right;
@@ -356,6 +376,14 @@ h4.isso-thread-heading {
     }
     .isso-input-wrapper input {
         width: 100%;
+    }
+    .isso-captcha-area {
+        float: none;
+        width: auto;
+        margin-left: 0;
+    }
+    .isso-post-error {
+        text-align: left;
     }
     .isso-post-action {
         margin-top: 0;

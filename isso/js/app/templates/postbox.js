@@ -5,6 +5,14 @@ var html = function (globals) {
   var email = globals.email;
   var website = globals.website;
   var notify = conf["reply-notifications-default-enabled"] ? " checked" : '';
+  var captcha = "";
+
+  if (conf["captcha-enabled"]) {
+    captcha = "<div class='isso-captcha-area'>"
+      + "<p class='isso-post-error' role='alert'></p>"
+      + "<div class='isso-captcha-widget'>" + conf["captcha-widget-html"] + "</div>"
+      + "</div>";
+  }
 
   return "" +
 "<div class='isso-postbox'>"
@@ -32,15 +40,18 @@ var html = function (globals) {
       + "<label for='isso-postbox-website'>" + i18n('postbox-website') + "</label>"
       + "<input id='isso-postbox-website' type='text' name='website' placeholder='" + i18n('postbox-website-placeholder') + "' value='" + (website ? website : '') + "' />"
     + "</p>" : "")
-    + "<p class='isso-post-action'>"
-      + "<input type='submit' value='" + i18n('postbox-submit') + "' />"
-    + "</p>"
-    + "<p class='isso-post-action'>"
-      + "<input type='button' name='preview' value='" + i18n('postbox-preview') + "' />"
-    + "</p>"
-    + "<p class='isso-post-action'>"
-      + "<input type='button' name='edit' value='" + i18n('postbox-edit') + "' />"
-    + "</p>"
+    + "<div class='isso-post-actions'>"
+      + captcha
+      + "<p class='isso-post-action'>"
+        + "<input type='submit' value='" + i18n('postbox-submit') + "' />"
+      + "</p>"
+      + "<p class='isso-post-action'>"
+        + "<input type='button' name='preview' value='" + i18n('postbox-preview') + "' />"
+      + "</p>"
+      + "<p class='isso-post-action'>"
+        + "<input type='button' name='edit' value='" + i18n('postbox-edit') + "' />"
+      + "</p>"
+    + "</div>"
   + "</div>"
   + "<div class='isso-notification-section'>"
     + "<label>"

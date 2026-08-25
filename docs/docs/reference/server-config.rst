@@ -141,6 +141,64 @@ latest-enabled
 .. _CORS: https://developer.mozilla.org/en/docs/HTTP/Access_control_CORS
 
 
+.. _configure-captcha:
+
+CAPTCHA
+-------
+
+Optional CAPTCHA protection for comment submission and admin login. CAPTCHA is
+enabled when the provider, site key, and secret key are configured. The CAP
+provider also requires an instance URL.
+
+.. code-block:: ini
+
+    [captcha]
+    captcha-provider =
+    captcha-site-key =
+    captcha-secret-key =
+    captcha-instance-url =
+    captcha-script-url =
+    captcha-widget-html =
+    captcha-response-field =
+
+captcha-provider
+    CAPTCHA provider to use. Supported values are ``cap``, ``recaptcha``, and
+    ``hcaptcha``. An empty or unknown value disables CAPTCHA.
+
+    Default: (empty)
+
+captcha-site-key
+    Public site key supplied by the CAPTCHA provider.
+
+    Default: (empty)
+
+captcha-secret-key
+    Secret key supplied by the CAPTCHA provider. Keep this value private.
+
+    Default: (empty)
+
+captcha-instance-url
+    CAPTCHA instance URL. Required when using the ``cap`` provider.
+
+    Default: (empty)
+
+captcha-script-url
+    URL of the CAPTCHA provider script. If empty, the provider's default URL
+    is used when available.
+
+    Default: (empty)
+
+captcha-widget-html
+    Custom HTML used to render the CAPTCHA widget. If empty, Isso generates
+    provider-specific widget HTML.
+
+    Default: (empty)
+
+captcha-response-field
+    Request field containing the CAPTCHA response token.
+
+    Default: provider-specific
+
 .. _configure-moderation:
 
 Moderation

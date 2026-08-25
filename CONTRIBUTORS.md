@@ -126,5 +126,8 @@ In chronological order:
 * Fabian Ritzmann @ritzmann
   * Add Mistune as new Markdown rendering engine
 
+* p1slave <p1slave@protonmail.com>
+  * Add captcha for login and comment submission
+
 * [Your name or handle] <[email or website]>
   * [Brief summary of your changes]

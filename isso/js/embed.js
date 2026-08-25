@@ -29,6 +29,23 @@ var postbox;
 // Track whether config has been fetched from server
 var config_fetched = utils.wait_for();
 
+function ensureCaptchaScript() {
+    if (!config["captcha-enabled"] || !config["captcha-script-url"]) {
+        return;
+    }
+
+    if ($("#isso-captcha-script") !== null) {
+        return;
+    }
+
+    var script = $.new("script");
+    script.id = "isso-captcha-script";
+    script.src = config["captcha-script-url"];
+    script.async = true;
+    script.defer = true;
+    $("head").append(script);
+}
+
 function init() {
     config_fetched.reset()
 
@@ -65,6 +82,8 @@ function init() {
                 }
                 config[setting] = rv.config[setting]
             }
+
+            ensureCaptchaScript();
 
             // Depends on whether feed is enabled on server
             if (config["feed"] && $(".isso-feedlink") === null) {

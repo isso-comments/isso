@@ -24,7 +24,7 @@ from werkzeug.utils import redirect, send_from_directory
 from werkzeug.wrappers import Response
 from werkzeug.wsgi import get_current_url
 
-from isso import utils, local
+from isso import captcha, utils, local
 from isso.utils import http, parse, JSONResponse as JSON, XMLResponse as XML, render_template, set_no_cache_headers
 from isso.utils.hash import md5, sha1
 from isso.views import requires
@@ -233,6 +233,9 @@ class API(object):
         if rss and rss.get("base"):
             self.public_conf["feed"] = True
 
+        self.captcha_provider = captcha.create_provider(isso.conf)
+        self.public_conf.update(self.captcha_provider.config())
+
         self.guard = isso.db.guard
         self.threads = isso.db.threads
         self.comments = isso.db.comments
@@ -382,6 +385,10 @@ class API(object):
     @requires(str, "uri")
     def new(self, environ, request, uri):
         data = request.json
+
+        captcha_ok, captcha_error = self.captcha_provider.verify(data)
+        if not captcha_ok:
+            return BadRequest(captcha_error or "Captcha verification failed")
 
         for field in set(data.keys()) - API.ACCEPT:
             data.pop(field)
@@ -1373,7 +1380,7 @@ class API(object):
     @apiDescription
         Returns only the client configuration parameters that depend on server settings.
 
-    @apiSuccess {Object[]} config
+    @apiSuccess {Object} config
         The client configuration object.
     @apiSuccess {Boolean} config.reply-to-self
         Commenters can reply to their own comments.
@@ -1392,6 +1399,20 @@ class API(object):
     @apiSuccess {Boolean} config.feed
         Enable or disable the addition of a link to the feed for the comment
         thread.
+    @apiSuccess {Boolean} config.captcha-enabled
+        Whether CAPTCHA verification is enabled.
+    @apiSuccess {String} config.captcha-provider
+        The configured CAPTCHA provider: `cap`, `recaptcha`, `hcaptcha`, or `none`.
+    @apiSuccess {String} config.captcha-script-url
+        URL of the CAPTCHA provider script.
+    @apiSuccess {String} config.captcha-instance-url
+        CAPTCHA instance URL, used by the CAP provider.
+    @apiSuccess {String} config.captcha-site-key
+        Public CAPTCHA site key.
+    @apiSuccess {String} config.captcha-widget-html
+        HTML snippet used to render the CAPTCHA widget.
+    @apiSuccess {String} config.captcha-response-field
+        Request field containing the CAPTCHA response token.
 
     @apiExample {curl} get the client config:
         curl 'https://comments.example.com/config'
@@ -1405,7 +1426,14 @@ class API(object):
             "reply-notifications": false,
             "gravatar": true,
             "avatar": false,
-            "feed": false
+            "feed": false,
+            "captcha-enabled": false,
+            "captcha-provider": "none",
+            "captcha-script-url": "",
+            "captcha-instance-url": "",
+            "captcha-site-key": "",
+            "captcha-widget-html": "",
+            "captcha-response-field": "captcha-response"
           }
         }
     """
@@ -1482,7 +1510,8 @@ class API(object):
             return render_template("disabled.html", isso_host_script=isso_host_script)
         data = req.form
         password = self.isso.conf.get("admin", "password")
-        if data["password"] and data["password"] == password:
+        captcha_ok, captcha_error = self.captcha_provider.verify(data)
+        if data.get("password", "") and data["password"] == password and captcha_ok:
             response = redirect(re.sub(r"/login/$", "/admin/", get_current_url(env, strip_querystring=True)))
             cookie = self.create_cookie(value=self.isso.sign({"logged": True}), expires=datetime.now() + timedelta(1))
             response.headers.add("Set-Cookie", cookie("admin-session"))
@@ -1490,7 +1519,13 @@ class API(object):
             return response
         else:
             isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
-            return render_template("login.html", isso_host_script=isso_host_script)
+            return render_template(
+                "login.html", 
+                isso_host_script=isso_host_script, 
+                captcha_script_url=self.captcha_provider.script_url(),
+                captcha_widget_html=self.captcha_provider.widget_html(),
+                captcha_error=captcha_error or not captcha_ok
+            )
 
     """
     @api {get} /admin/ Admin interface
@@ -1531,9 +1566,17 @@ class API(object):
         try:
             data = self.isso.unsign(req.cookies.get("admin-session", ""), max_age=60 * 60 * 24)
         except BadSignature:
-            return render_template("login.html", isso_host_script=isso_host_script)
+            return render_template("login.html", 
+                isso_host_script=isso_host_script,
+                captcha_script_url=self.captcha_provider.script_url(),
+                captcha_widget_html=self.captcha_provider.widget_html()
+            )
         if not data or not data["logged"]:
-            return render_template("login.html", isso_host_script=isso_host_script)
+            return render_template("login.html", 
+                isso_host_script=isso_host_script,
+                captcha_script_url=self.captcha_provider.script_url(),
+                captcha_widget_html=self.captcha_provider.widget_html()
+            )
         page_size = 100
         page = int(req.args.get("page", 0))
         order_by = req.args.get("order_by", "created")

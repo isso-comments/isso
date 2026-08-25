@@ -11,6 +11,28 @@ var globals = require("app/globals");
 
 "use strict";
 
+var resetCaptcha = function(el) {
+    if (!config["captcha-enabled"]) {
+        return;
+    }
+
+    var captcha_error = $(".isso-post-error", el);
+    captcha_error.hide();
+
+    if (config["captcha-provider"] === "recaptcha" && window.grecaptcha &&
+        window.grecaptcha.reset) {
+        window.grecaptcha.reset();
+    } else if (config["captcha-provider"] === "hcaptcha" && window.hcaptcha &&
+        window.hcaptcha.reset) {
+        window.hcaptcha.reset();
+    } else if (config["captcha-provider"] === "cap") {
+        var capWidget = $("cap-widget", el);
+        if (capWidget && capWidget.obj.reset) {
+            capWidget.obj.reset();
+        }
+    }
+};
+
 var Postbox = function(parent) {
 
     var localStorage = utils.localStorageImpl,
@@ -111,25 +133,45 @@ var Postbox = function(parent) {
             localStorage.setItem("isso-email", JSON.stringify(email));
             localStorage.setItem("isso-website", JSON.stringify(website));
 
-            api.create($("#isso-thread").getAttribute("data-isso-id"), {
+            var payload = {
                 author: author, email: email, website: website,
                 text: $(".isso-textarea", el).value,
                 parent: parent || null,
                 title: $("#isso-thread").getAttribute("data-title") || null,
                 notification: $("[name=notification]", el).checked() ? 1 : 0,
-            }).then(
+            };
+
+            if (config["captcha-enabled"] && config["captcha-response-field"]) {
+                var responseField = config["captcha-response-field"];
+                var captchaInput = $("[name='" + responseField + "']", el) || $("[name='" + responseField + "']");
+                if (captchaInput !== null && captchaInput.value) {
+                    payload[responseField] = captchaInput.value;
+                }
+            }
+
+            api.create($("#isso-thread").getAttribute("data-isso-id"), payload).then(
                 function(comment) {
+                    console.log(comment);
                     $(".isso-textarea", el).value = "";
+
+                    if(config["captcha-enabled"]) {
+                        resetCaptcha(el);
+                    }
+
                     insert({ comment, scrollIntoView: true, offset: 0 });
 
                     if (parent !== null) {
                         el.onsuccess();
                     }
-
                     submitButton.disabled = false;
                 },
                 function(err) {
                     console.error(err);
+                    if (/Bad Request/i.test(err)) {
+                        var captcha_error = $(".isso-post-error", el);
+                        captcha_error.setText("Captcha verification failed.");
+                        captcha_error.show();
+                    }
                     submitButton.disabled = false;
                 }
             );

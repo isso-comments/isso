@@ -4,6 +4,9 @@
   <title>Isso admin</title>
   <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
   <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
+  {% if captcha_script_url %}
+  <script src="{{ captcha_script_url }}" async defer></script>
+  {% endif %}
 </head>
 <body>
   <div class="wrapper">
@@ -23,6 +26,16 @@
         Administration secured by password:
         <form method="POST" action="{{isso_host_script}}/login/">
           <input type="password" name="password" autofocus />
+
+          {% if captcha_error %}
+          <p class="error">{{ captcha_error }}</p>
+          {% endif %}
+
+          {% if captcha_widget_html %}
+            {{ captcha_widget_html | safe }}
+          {% endif %}
+
+          <input type="submit" value="Login" />
         </form>
       </div>
     </main>
