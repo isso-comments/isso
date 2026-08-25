@@ -784,6 +784,9 @@ class API(object):
     @apiParam {String} key
         The moderation key to authenticate the moderation.
 
+    @apiSuccess {Object} counts
+        Number of comments per mode (`1`: accepted, `2`: in moderation queue, `4`: deleted, but referenced), after the moderation action was applied. A mode absent from `counts` has zero comments. Note that although mode is a `Number`, JSON object keys are always strings, so the mode keys in this object are strings (e.g. `"1"`, not `1`).
+
     @apiExample {curl} delete comment with id 13:
         curl -X POST 'https://comments.example.com/id/13/delete/MTM.CjL6Fg.REIdVXa-whJS_x8ojQL4RrXnuF4'
 
@@ -802,11 +805,11 @@ class API(object):
                     }
                 </script>
 
-    @apiSuccessExample Delete using POST:
-        Comment has been deleted
+    @apiSuccessExample {json} Delete using POST:
+        {"counts": {"1": 3, "4": 1}}
 
-    @apiSuccessExample Activate using POST:
-        Comment has been activated
+    @apiSuccessExample {json} Activate using POST:
+        {"counts": {"1": 4, "2": 1}}
     """
 
     def moderate(self, environ, request, id, action, key):
@@ -843,11 +846,11 @@ class API(object):
 
         if action == "activate":
             if item["mode"] == 1:
-                return Response("Already activated", 200)
+                return JSON({"counts": self.comments.count_modes()}, 200)
             with self.isso.lock:
                 self.comments.activate(id)
             self.signal("comments.activate", thread, item)
-            return Response("Comment has been activated", 200)
+            return JSON({"counts": self.comments.count_modes()}, 200)
         elif action == "edit":
             data = request.json
 
@@ -876,7 +879,7 @@ class API(object):
                 self.comments.delete(id)
             self.cache.delete("hash", (item["email"] or item["remote_addr"]).encode("utf-8"))
             self.signal("comments.delete", id)
-            return Response("Comment has been deleted", 200)
+            return JSON({"counts": self.comments.count_modes()}, 200)
 
     """
     @api {get} / Get comments

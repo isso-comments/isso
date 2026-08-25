@@ -24,12 +24,32 @@ function fade(element) {
         op -= op * 0.1;
     }, 10);
 }
+const modeCountIds = {1: 'count-mode-1', 2: 'count-mode-2', 4: 'count-mode-4'};
+
+function setCountBadge(modeId, count) {
+    const el = document.getElementById(modeId);
+    if (!el) return;
+    const countEl = el.querySelector('.count');
+    if (!countEl) return;
+    countEl.textContent = count;
+}
+
 function moderate(com_id, hash, action, isso_host_script) {
-  ajax({method: "POST",
-        url: isso_host_script + "/id/" + com_id + "/" + action + "/" + hash,
-        success: function(){
-            fade(document.getElementById("isso-" + com_id));
-        }});
+    ajax({method: "POST",
+          url: isso_host_script + "/id/" + com_id + "/" + action + "/" + hash,
+          success: function(responseText){
+              fade(document.getElementById("isso-" + com_id));
+              try {
+                  const data = JSON.parse(responseText);
+                  if (data.counts) {
+                      for (const [mode, modeId] of Object.entries(modeCountIds)) {
+                          setCountBadge(modeId, data.counts[mode] || 0);
+                      }
+                  }
+              } catch (e) {
+                  console.error("Failed to parse moderate response:", e);
+              }
+          }});
 }
 function edit(com_id, hash, author, email, website, comment, isso_host_script) {
   ajax({method: "POST",
@@ -133,4 +153,9 @@ function log_out() {
 function toggleTooltip(tooltipContainer) {
     const tooltipText = tooltipContainer.querySelector(".search-tooltip-text");
     tooltipText.classList.toggle("show");
+}
+
+// Guard needed: admin.js is served raw (not bundled), so module is undefined in browsers
+if (typeof module !== 'undefined') {
+    module.exports = { setCountBadge };
 }
