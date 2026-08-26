@@ -11,7 +11,6 @@ import time
 from _thread import start_new_thread
 from email.message import EmailMessage
 from email.utils import formatdate
-from urllib.error import URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
@@ -255,7 +254,7 @@ class Webhook(object):
             try:
                 with urlopen(request, timeout=self.timeout):
                     pass
-            except URLError:
+            except Exception:
                 logger.exception("unable to deliver comment webhook to %s", url)
 
 
