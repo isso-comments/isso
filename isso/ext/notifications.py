@@ -238,7 +238,9 @@ class Webhook(object):
         payload = {
             "event": "comment.created",
             "thread": {key: thread[key] for key in ("id", "uri", "title")},
-            "comment": {key: comment[key] for key in ("id", "parent", "created", "modified", "mode", "text", "author", "website")},
+            "comment": {
+                key: comment[key] for key in ("id", "parent", "created", "modified", "mode", "text", "author", "website")
+            },
         }
         start_new_thread(self.send, (payload,))
 
