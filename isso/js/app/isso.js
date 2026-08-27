@@ -8,6 +8,7 @@ var template = require("app/template");
 var i18n = require("app/i18n");
 var identicons = require("app/lib/identicons");
 var globals = require("app/globals");
+var animations = require("app/animations");
 
 "use strict";
 
@@ -120,7 +121,12 @@ var Postbox = function(parent) {
             }).then(
                 function(comment) {
                     $(".isso-textarea", el).value = "";
-                    insert({ comment, scrollIntoView: true, offset: 0 });
+                    insert({
+                        comment,
+                        scrollIntoView: true,
+                        offset: 0,
+                        animate: true // Animate new comment insertion
+                    });
 
                     if (parent !== null) {
                         el.onsuccess();
@@ -172,8 +178,12 @@ var insert_loader = function(comment, offset) {
                 }
 
                 rv.replies.forEach(function(commentObject) {
-                    insert({ comment: commentObject, scrollIntoView: false, offset: 0 });
-
+                    insert({
+                        comment: commentObject,
+                        scrollIntoView: false,
+                        offset: 0,
+                        animate: true // Animate when revealing hidden comments
+                    });
                 });
 
                 if(rv.hidden_replies > 0) {
@@ -187,7 +197,7 @@ var insert_loader = function(comment, offset) {
     });
 };
 
-var insert = function({ comment, scrollIntoView, offset }) {
+var insert = function({ comment, scrollIntoView, offset, animate = false }) {
     var el = $.htmlify(template.render("comment", {"comment": comment}));
 
     // update datetime every 60 seconds
@@ -211,10 +221,14 @@ var insert = function({ comment, scrollIntoView, offset }) {
         entrypoint = $("#isso-" + comment.parent + " > .isso-follow-up");
     }
 
-    entrypoint.append(el);
+    if (animate) {
+        animations.insertWithAnimation(el, entrypoint, scrollIntoView);
+    } else {
+        entrypoint.append(el);
 
-    if (scrollIntoView) {
-        el.scrollIntoView();
+        if (scrollIntoView) {
+            animations.scrollToElement(el);
+        }
     }
 
     var footer = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-comment-footer"),
@@ -362,7 +376,10 @@ var insert = function({ comment, scrollIntoView, offset }) {
             var del = $("a.isso-delete", footer);
             api.remove(comment.id).then(function(rv) {
                 if (rv) {
-                    el.remove();
+                    // Remove comment from DOM (with animation if enabled)
+                    animations.animateRemove(el, function() {
+                        el.remove();
+                    });
                 } else {
                     $("span.isso-note", header).textContent = i18n.translate("comment-deleted");
                     text.innerHTML = "<p>&nbsp;</p>";
