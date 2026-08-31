@@ -10,33 +10,24 @@ h1, h2, h3, h4, h5, h6 {
 input {
   text-align: center;
 }
-.header::before, .header::after {
-    content: " ";
-    display: table;
-}
-.header::after {
-    clear: both;
-}
-.header::before, .header::after {
-    content: " ";
-    display: table;
-}
 .header {
     margin-left: auto;
     margin-right: auto;
     max-width: 68em;
     padding-bottom: 1em;
     padding-top: 1em;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 2em;
+    row-gap: 0.5em;
 }
 .header header {
-    display: block;
-    float: left;
+    display: flex;
+    align-items: center;
     font-weight: normal;
-    margin-right: 16.0363%;
-    width: 41.9818%;
 }
 .header header .logo {
-    float: left;
     max-height: 60px;
     padding-right: 12px;
 }
@@ -52,7 +43,7 @@ input {
     text-decoration: none;
 }
 .header .logout {
-    float: right;
+    margin-left: auto;
 }
 .outer {
     background-color: #eeeeee;
@@ -124,6 +115,38 @@ a {
 }
 .thread-title {
   margin-left: 3em;
+}
+.admin-nav {
+  display: flex;
+  gap: 0.25em;
+}
+.admin-nav a {
+  padding: 0.4em 0.8em;
+  border-radius: 3px;
+}
+.admin-nav a:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+.admin-nav a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+.thread-table {
+  border-collapse: collapse;
+  margin: 1em auto;
+  max-width: 68em;
+  width: 100%;
+}
+.thread-table th, .thread-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.5em 1em;
+  text-align: left;
+}
+.thread-table td:nth-child(3),
+.thread-table th:nth-child(3),
+.thread-table td:nth-child(4),
+.thread-table th:nth-child(4) {
+  text-align: center;
 }
 .group {
   float: left;

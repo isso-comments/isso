@@ -641,6 +641,12 @@ Admin
 Isso has an optional web administration interface that can be used to moderate
 comments. The interface is available under ``/admin`` on your isso URL.
 
+The *Threads* page of the admin interface (``/admin/threads/``) lists every
+thread and lets you toggle its **read-only** state. A read-only thread still
+shows its existing comments and accepts votes, but the server rejects new
+comments as well as edits and deletions for that thread, and the embed client
+hides the comment form.
+
 .. code-block:: ini
 
    [admin]
