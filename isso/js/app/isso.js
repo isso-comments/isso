@@ -11,6 +11,14 @@ var globals = require("app/globals");
 
 "use strict";
 
+// Dispatch a bubbling CustomEvent on the #isso-thread element (falling back to
+// `document`), so that embedding pages can react to rendered markup, e.g. to
+// add their own CSS classes. See docs/guides/advanced-integration.
+var emit = function(name, detail) {
+    var thread = document.getElementById("isso-thread") || document;
+    thread.dispatchEvent(new CustomEvent(name, {bubbles: true, composed: true, detail: detail}));
+};
+
 var Postbox = function(parent) {
 
     var localStorage = utils.localStorageImpl,
@@ -138,6 +146,8 @@ var Postbox = function(parent) {
             submitButton.disabled = false;
         }
     });
+
+    emit("isso-postbox-rendered", {element: el.obj, parent: parent || null});
 
     return el;
 };
@@ -401,6 +411,8 @@ var insert = function({ comment, scrollIntoView, offset }) {
         show($("a.isso-reply", footer).detach());
     }
 
+    emit("isso-comment-rendered", {element: el.obj, comment: comment});
+
     if (comment.hasOwnProperty('replies')) {
         comment.replies.forEach(function (replyObject) {
             insert({ comment: replyObject, scrollIntoView: false, offset: offset + 1 });
@@ -413,6 +425,7 @@ var insert = function({ comment, scrollIntoView, offset }) {
 };
 
 module.exports = {
+    emit: emit,
     insert: insert,
     insert_loader: insert_loader,
     Postbox: Postbox,
