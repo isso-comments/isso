@@ -81,6 +81,10 @@ data-isso-css
 
     Default: ``true``
 
+    To restyle the generated markup instead of replacing the stylesheet, you can
+    also listen for the render events described in
+    :ref:`reacting-to-rendered-comments`.
+
 .. _data-isso-lang:
 
 data-isso-lang
