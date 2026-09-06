@@ -83,6 +83,16 @@ Now import the XML dump:
     (.venv) $ isso -c /path/to/isso.cfg import -t [disqus|wordpress] disqus-or-wordpress.xml
     [100%]  53 threads, 192 comments
 
+By default the Disqus importer keys each thread by its page URL path. If your
+Disqus site used a custom ``disqus_identifier`` (the ``<id>`` element in the
+export) and you set ``data-isso-id`` on your pages, pass ``--thread-id`` to
+key threads by that identifier instead, falling back to the URL path when a
+thread has no identifier:
+
+.. code-block:: console
+
+    (.venv) $ isso -c /path/to/isso.cfg import -t disqus --thread-id disqus.xml
+
 .. _Disqus: https://disqus.com/
 .. _WordPress: https://wordpress.org/
 

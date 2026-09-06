@@ -16,7 +16,9 @@ conf = config.new({"general": {"dbpath": "/dev/null", "max-age": "1h"}})
 class TestMigration(unittest.TestCase):
     def test_disqus_empty_id(self):
         """
-        Fails with empty thread id
+        Threads with a non-empty <id> import without the workaround; threads
+        with an empty <id> are still skipped unless --empty-id is given.
+        By default threads are keyed by the page URL path, not by <id>.
         """
 
         xml = join(dirname(__file__), "disqus.xml")
@@ -31,10 +33,12 @@ class TestMigration(unittest.TestCase):
         # def test_disqus_empty_id(self, capfd):
         # [...]
         # out, err = capfd.readouterr()
-        # assert out == \
-        #     "Isso couldn't import any thread, try again with --empty-id\n"
 
-        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 0)
+        # Only dsq:id="2" (<id>some-id</id>, <link>http://example.org/</link>)
+        # is imported, keyed by its URL path.
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 4)
+        self.assertEqual(db.threads["/"]["title"], "Hello, World!")
+        self.assertNotIn("some-id", db.threads)
 
     def test_disqus_empty_id_workaround(self):
         """
@@ -64,6 +68,28 @@ class TestMigration(unittest.TestCase):
 
         deleted_comment = db.comments.get(2)
         self.assertEqual(deleted_comment["text"], "")
+
+    def test_disqus_use_thread_id(self):
+        """
+        With use_thread_id, a thread with a non-empty <id> (disqus_identifier)
+        is keyed by that identifier instead of the page URL path; a thread with
+        an empty <id> still falls back to the URL path.
+        """
+
+        xml = join(dirname(__file__), "disqus.xml")
+        xxx = tempfile.NamedTemporaryFile()
+
+        db = SQLite3(xxx.name, conf)
+        Disqus(db, xml, empty_id=True, use_thread_id=True).migrate()
+
+        self.assertEqual(len(db.execute("SELECT id FROM comments").fetchall()), 5)
+
+        # dsq:id="2" has <id>some-id</id>, so it is keyed by that identifier.
+        self.assertEqual(db.threads["some-id"]["title"], "Hello, World!")
+        self.assertNotIn("/", db.threads)
+
+        # dsq:id="7" has an empty <id>, so it falls back to the URL path.
+        self.assertEqual(db.threads["/blog/2013/02/12/redacted/index.html"]["title"], "")
 
     def test_wordpress(self):
         xml = join(dirname(__file__), "wordpress.xml")

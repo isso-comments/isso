@@ -19,6 +19,17 @@ New Features
 .. _#1123: https://github.com/isso-comments/isso/pull/1123
 .. _#1113: https://github.com/isso-comments/isso/pull/1113
 
+Bugfixes & Improvements
+^^^^^^^^^^^^^^^^^^^^^^^
+
+- Disqus migration: add ``--thread-id`` to key imported threads by the
+  ``disqus_identifier`` (``<id>``) instead of the page URL path, with a URL
+  fallback for threads without an identifier. Also fix empty-``<id>`` detection
+  so threads that do have an identifier no longer require ``--empty-id``
+  (`#1127`_, pkvach)
+
+.. _#1127: https://github.com/isso-comments/isso/pull/1127
+
 0.14.0 (2026-03-26)
 --------------------
 
