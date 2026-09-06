@@ -56,16 +56,17 @@ class Disqus(object):
     ns = "{http://disqus.com}"
     internals = "{http://disqus.com/disqus-internals}"
 
-    def __init__(self, db, xmlfile, empty_id=False):
+    def __init__(self, db, xmlfile, empty_id=False, use_thread_id=False):
         self.threads = set([])
         self.comments = set([])
 
         self.db = db
         self.xmlfile = xmlfile
         self.empty_id = empty_id
+        self.use_thread_id = use_thread_id
 
-    def insert(self, thread, posts):
-        path = urlparse(thread.find("%slink" % Disqus.ns).text).path
+    def insert(self, thread, posts, thread_id=None):
+        path = thread_id or urlparse(thread.find("%slink" % Disqus.ns).text).path
         remap = dict()
 
         if path not in self.db.threads:
@@ -106,21 +107,23 @@ class Disqus(object):
 
         progress = Progress(len(tree.findall(Disqus.ns + "thread")))
         for i, thread in enumerate(tree.findall(Disqus.ns + "thread")):
-            # Workaround for not crashing with empty thread ids:
-            thread_id = thread.find(Disqus.ns + "id")
-            if not thread_id:
-                thread_id = dict(text="<empty thread id>", empty=True)
+            # Disqus <thread><id> holds the site-provided identifier
+            # (disqus_identifier), which is often empty.
+            id_element = thread.find(Disqus.ns + "id")
+            named_id = id_element.text.strip() if id_element is not None and id_element.text else None
 
-            progress.update(i, thread_id.get("text"))
+            progress.update(i, named_id or "<empty thread id>")
 
             # skip (possibly?) duplicate, but empty thread elements
-            if thread_id.get("empty") and not self.empty_id:
+            if not named_id and not self.empty_id:
                 continue
 
             id = thread.attrib.get(Disqus.internals + "id")
             if id in res:
                 self.threads.add(id)
-                self.insert(thread, res[id])
+                # With --thread-id, key the thread by disqus_identifier when
+                # set; otherwise fall back to the page URL path (the default).
+                self.insert(thread, res[id], named_id if self.use_thread_id else None)
 
         # in case a comment has been deleted (and no further childs)
         self.db.comments._remove_stale()
@@ -332,7 +335,7 @@ def autodetect(peek):
     return None
 
 
-def dispatch(type, db, dump, empty_id=False):
+def dispatch(type, db, dump, empty_id=False, use_thread_id=False):
     if db.execute("SELECT * FROM comments").fetchone():
         if input("Isso DB is not empty! Continue? [y/N]: ") not in ("y", "Y"):
             raise SystemExit("Abort.")
@@ -351,6 +354,6 @@ def dispatch(type, db, dump, empty_id=False):
         raise SystemExit("Unknown format, abort.")
 
     if cls is Disqus:
-        cls = functools.partial(cls, empty_id=empty_id)
+        cls = functools.partial(cls, empty_id=empty_id, use_thread_id=use_thread_id)
 
     cls(db, dump).migrate()

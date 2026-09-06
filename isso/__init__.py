@@ -250,6 +250,12 @@ def main():
     imprt.add_argument(
         "--empty-id", dest="empty_id", action="store_true", help="workaround for weird Disqus XML exports, #135"
     )
+    imprt.add_argument(
+        "--thread-id",
+        dest="use_thread_id",
+        action="store_true",
+        help="Disqus only: key threads by disqus_identifier (<id>) instead of the page URL, #563",
+    )
 
     # run Isso as stand-alone server
     subparser.add_parser("run", help="run server")
@@ -280,7 +286,7 @@ def main():
             dbpath = conf.get("general", "dbpath")
 
         mydb = db.SQLite3(dbpath, conf)
-        migrate.dispatch(args.type, mydb, args.dump, args.empty_id)
+        migrate.dispatch(args.type, mydb, args.dump, args.empty_id, args.use_thread_id)
 
         sys.exit(0)
 
