@@ -21,7 +21,9 @@ class TestGuard(unittest.TestCase):
     def setUp(self):
         self.path = tempfile.NamedTemporaryFile().name
 
-    def makeClient(self, ip, ratelimit=2, direct_reply=3, self_reply=False, require_email=False, require_author=False):
+    def makeClient(
+        self, ip, ratelimit=2, direct_reply=3, self_reply=False, require_email=False, require_author=False, moderation=False
+    ):
         conf = config.load(config.default_file())
         conf.set("general", "dbpath", self.path)
         conf.set("hash", "algorithm", "none")
@@ -31,6 +33,7 @@ class TestGuard(unittest.TestCase):
         conf.set("guard", "reply-to-self", "1" if self_reply else "0")
         conf.set("guard", "require-email", "1" if require_email else "0")
         conf.set("guard", "require-author", "1" if require_author else "0")
+        conf.set("moderation", "enabled", "1" if moderation else "0")
 
         class App(Isso, core.Mixin):
             pass
@@ -96,6 +99,50 @@ class TestGuard(unittest.TestCase):
         self.assertEqual(client.post("/new?uri=test", data=self.data).status_code, 201)
         self.assertEqual(client.post("/new?uri=test", data=payload(1)).status_code, 201)
         self.assertEqual(client.post("/new?uri=test", data=payload(2)).status_code, 201)
+
+    def testSelfReplyAfterOtherReply(self):
+        def payload(id):
+            return json.dumps({"text": "...", "parent": id})
+
+        alice = self.makeClient("127.0.0.1", ratelimit=5, self_reply=False)
+        bob = self.makeClient("128.0.0.1", ratelimit=5, self_reply=False)
+
+        # alice starts the (still editable) thread
+        self.assertEqual(alice.post("/new?uri=test", data=self.data).status_code, 201)
+
+        # replying to her own fresh comment is still blocked
+        self.assertEqual(alice.post("/new?uri=test", data=payload(1)).status_code, 403)
+
+        # bob replies to alice
+        self.assertEqual(bob.post("/new?uri=test", data=payload(1)).status_code, 201)
+
+        # now alice may reply again: it is a conversation, not self-padding
+        self.assertEqual(alice.post("/new?uri=test", data=payload(1)).status_code, 201)
+
+        # but a second consecutive self-reply is blocked again: alice's own reply
+        # is now the most recent one, so the gate is closed until bob replies once
+        # more
+        self.assertEqual(alice.post("/new?uri=test", data=payload(1)).status_code, 403)
+
+        # bob replies again, unlocking exactly one more self-reply for alice
+        self.assertEqual(bob.post("/new?uri=test", data=payload(1)).status_code, 201)
+        self.assertEqual(alice.post("/new?uri=test", data=payload(1)).status_code, 201)
+
+    def testSelfReplyAfterModeratedOtherReply(self):
+        def payload(id):
+            return json.dumps({"text": "...", "parent": id})
+
+        alice = self.makeClient("127.0.0.1", ratelimit=5, self_reply=False, moderation=True)
+        bob = self.makeClient("128.0.0.1", ratelimit=5, self_reply=False, moderation=True)
+
+        # alice starts the (still editable) thread
+        self.assertEqual(alice.post("/new?uri=test", data=self.data).status_code, 202)
+
+        # bob replies to alice, but it lands in the moderation queue (mode 2)
+        self.assertEqual(bob.post("/new?uri=test", data=payload(1)).status_code, 202)
+
+        # a pending foreign reply must not open the reply-to-self gate
+        self.assertEqual(alice.post("/new?uri=test", data=payload(1)).status_code, 403)
 
     def testRequireEmail(self):
         def payload(email):

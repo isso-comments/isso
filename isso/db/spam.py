@@ -73,7 +73,24 @@ class Guard:
             ).fetchall()
 
             if len(rv) > 0:
-                return False, "reply-to-self", "edit time frame is still open"
+                # Allow the reply anyway if someone else was the last to reply to
+                # that comment: this is a genuine back-and-forth (A comments,
+                # B replies to A, A replies to B), not the commenter padding
+                # their own still-editable comment. Gating on the most recent
+                # published reply (rather than "any foreign reply ever") means
+                # each foreign reply only unlocks a single self-reply, so the
+                # commenter cannot keep padding once they have answered.
+                last = self.db.execute(
+                    [
+                        "SELECT remote_addr FROM comments",
+                        "WHERE parent = ? AND mode = 1",
+                        "ORDER BY created DESC LIMIT 1;",
+                    ],
+                    (comment["parent"],),
+                ).fetchone()
+
+                if last is None or last[0] == comment["remote_addr"]:
+                    return False, "reply-to-self", "edit time frame is still open"
 
         # require email if :param:`require-email` is enabled
         if self.conf.getboolean("require-email") and not comment.get("email"):

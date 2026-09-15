@@ -24,9 +24,11 @@ Bugfixes & Improvements
 
 - Disqus migration: add ``--thread-id`` to key threads by identifier (`#1127`_, pkvach)
 - Show commenters why the spam guard rejected their comment (`#1129`_, pkvach)
+- Allow self-reply once another commenter replies to same comment. (`#1128`_, pkvach)
 
 .. _#1127: https://github.com/isso-comments/isso/pull/1127
 .. _#1129: https://github.com/isso-comments/isso/pull/1129
+.. _#1128: https://github.com/isso-comments/isso/pull/1128
 
 0.14.0 (2026-03-26)
 --------------------

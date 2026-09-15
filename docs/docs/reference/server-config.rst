@@ -402,6 +402,11 @@ reply-to-self
     the comment. After the editing timeframe is gone, commenters can reply to
     their own comments anyways.
 
+    Even when set to ``false``, a commenter may reply to their own comment when
+    someone else was the last to reply to it, so that a back-and-forth
+    conversation is not blocked during the editing timeframe. Each foreign reply
+    only unlocks a single self-reply.
+
     Default: ``false``
 
 require-author
