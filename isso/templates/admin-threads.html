@@ -1,0 +1,37 @@
+{% extends "admin-base.html" %}
+{% set active_page = "threads" %}
+{% block title %}Isso admin &ndash; threads{% endblock %}
+{% block content %}
+    <div class="outer">
+      <div class="filters">
+        Threads (<span class="count">{{ threads | length }}</span>)
+      </div>
+    </div>
+    <div id="isso-root">
+      <table class="thread-table">
+        <thead>
+          <tr>
+            <th>URI</th>
+            <th>Title</th>
+            <th>Comments</th>
+            <th>Read-only</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for thread in threads %}
+          <tr id="thread-row-{{ thread.id }}">
+            <td><a href="{{ thread.uri }}">{{ thread.uri }}</a></td>
+            <td>{{ thread.title }}</td>
+            <td>{{ thread.comment_count }}</td>
+            <td>
+              <input type="checkbox" {% if thread.read_only %}checked{% endif %}
+                onClick="javascript:set_thread_read_only(this, '{{ thread.hash }}', '{{ isso_host_script }}')" />
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="4">No threads yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

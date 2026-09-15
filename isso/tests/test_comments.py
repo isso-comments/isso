@@ -711,6 +711,120 @@ class TestComments(unittest.TestCase):
             self.assertEqual(r.headers[header], value)
 
 
+class TestReadOnlyThreads(unittest.TestCase):
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        conf = config.load(config.default_file())
+        conf.set("general", "dbpath", self.path)
+        conf.set("guard", "enabled", "off")
+        conf.set("hash", "algorithm", "none")
+        conf.set("admin", "enabled", "true")
+        conf.set("admin", "password", "s3cr3t")
+        self.conf = conf
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+
+        self.client = JSONClient(self.app, Response)
+        self.client.set_cookie("admin-session", self.app.sign({"logged": True}), domain="localhost")
+        self.get = self.client.get
+        self.put = self.client.put
+        self.post = self.client.post
+        self.delete = self.client.delete
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def close(self, uri):
+        key = self.app.sign(["thread", uri])
+        return self.post("/thread/%s/close" % key)
+
+    def testFetchReflectsReadOnlyState(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Lorem ipsum ..."}))
+
+        rv = loads(self.get("/?uri=%2Fpath%2F").data)
+        self.assertEqual(rv["read-only"], False)
+
+        self.assertEqual(self.close("/path/").status_code, 200)
+
+        rv = loads(self.get("/?uri=%2Fpath%2F").data)
+        self.assertEqual(rv["read-only"], True)
+
+    def testFetchUnknownThreadNotReadOnly(self):
+        rv = self.get("/?uri=%2Fdoes-not-exist%2F")
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data)["read-only"], False)
+
+    def testThreadStateRequiresAdminSession(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "..."}))
+        key = self.app.sign(["thread", "/path/"])
+
+        anon = JSONClient(self.app, Response)
+        self.assertEqual(anon.post("/thread/%s/close" % key).status_code, 403)
+
+        rv = loads(self.get("/?uri=%2Fpath%2F").data)
+        self.assertEqual(rv["read-only"], False)
+
+    def testThreadStateRejectsBadKey(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "..."}))
+        self.assertEqual(self.post("/thread/not-a-key/close").status_code, 403)
+        # a validly signed token of the wrong shape must be rejected
+        key = self.app.sign([1, "deadbeef"])
+        self.assertEqual(self.post("/thread/%s/close" % key).status_code, 403)
+
+    def testThreadStateUnknownThread(self):
+        key = self.app.sign(["thread", "/nope/"])
+        self.assertEqual(self.post("/thread/%s/close" % key).status_code, 404)
+
+    def testReadOnlyRejectsWrites(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "First comment"}))
+        self.close("/path/")
+
+        # new comment rejected
+        self.assertEqual(self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Blocked"})).status_code, 403)
+        # edit + delete of the existing comment rejected (client still holds the cookie)
+        self.assertEqual(self.put("/id/1", data=json.dumps({"text": "Edited text"})).status_code, 403)
+        self.assertEqual(self.delete("/id/1").status_code, 403)
+
+    def testReadOnlyAllowsReadsAndVotes(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "First comment"}))
+        self.close("/path/")
+
+        self.assertEqual(self.get("/?uri=%2Fpath%2F").status_code, 200)
+
+        bob = JSONClient(self.app, Response)
+        self.assertEqual(bob.post("/id/1/like").status_code, 200)
+
+    def testReopenRestoresWrites(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "First comment"}))
+        self.close("/path/")
+
+        key = self.app.sign(["thread", "/path/"])
+        self.assertEqual(self.post("/thread/%s/open" % key).status_code, 200)
+
+        self.assertEqual(self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Now allowed"})).status_code, 201)
+
+    def testAdminThreadsPageRequiresLogin(self):
+        anon = JSONClient(self.app, Response)
+        r = anon.get("/admin/threads/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("secured by password", r.get_data(as_text=True))
+
+    def testAdminThreadsPageListsThreads(self):
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "First"}))
+        self.post("/new?uri=%2Fpath%2F", data=json.dumps({"text": "Second"}))
+        self.close("/path/")
+
+        r = self.get("/admin/threads/")
+        self.assertEqual(r.status_code, 200)
+        body = r.get_data(as_text=True)
+        self.assertIn("/path/", body)
+        self.assertIn("thread-table", body)
+
+
 class TestHostDependent(unittest.TestCase):
     def setUp(self):
         fd, self.path = tempfile.mkstemp()

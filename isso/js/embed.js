@@ -78,12 +78,6 @@ function init() {
             if (!$('h4.isso-thread-heading')) {
                 isso_thread.append(heading);
             }
-            postbox = new isso.Postbox(null);
-            if (!$('.isso-postbox')) {
-                isso_thread.append(postbox);
-            } else {
-                $('.isso-postbox').value = postbox;
-            }
             if (!$('#isso-root')) {
                 isso_thread.append('<div id="isso-root"></div>');
             }
@@ -113,6 +107,24 @@ function init() {
     });
 }
 
+// Create or remove the comment form to match the thread's read-only state.
+// Kept out of init() because the state is only known once the comments have
+// been fetched from the server.
+function syncPostbox(isso_root) {
+    var existing = $('.isso-postbox');
+    if (config["read-only"]) {
+        if (existing) {
+            existing.remove();
+        }
+        return;
+    }
+    if (existing) {
+        return;
+    }
+    postbox = new isso.Postbox(null);
+    isso_thread.obj.insertBefore(postbox.obj, isso_root ? isso_root.obj : null);
+}
+
 function fetchComments() {
 
     var isso_root = $('#isso-root');
@@ -132,6 +144,13 @@ function fetchComments() {
         offset: 0
     }).then(
         function (rv) {
+
+            // The per-thread read-only state is the server's to decide and can
+            // change between loads (and between threads in a Single-Page-App),
+            // so re-sync it on every fetch. It gates the postbox here and the
+            // reply/edit/delete UI in the comment template.
+            config["read-only"] = Boolean(rv["read-only"]);
+            syncPostbox(isso_root);
 
             if (rv.total_replies === 0) {
                 heading.textContent = i18n.translate("no-comments");

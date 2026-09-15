@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}Isso admin{% endblock %}</title>
+  <link type="text/css" href="{{isso_host_script}}/css/isso.css" rel="stylesheet">
+  <link type="text/css" href="{{isso_host_script}}/css/admin.css" rel="stylesheet">
+  <script src="{{isso_host_script}}/js/admin.js"></script>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <header>
+        <img class="logo" src="{{isso_host_script}}/img/isso.svg" alt="Wynaut by @veekun"/>
+        <div class="title">
+          <a href="{{ isso_host_script }}/admin/">
+            <h1>Isso</h1>
+            <h2>Administration</h2>
+          </a>
+        </div>
+      </header>
+      <nav class="admin-nav">
+        <a href="{{ isso_host_script }}/admin/"{% if active_page == "comments" %} class="active"{% endif %}>Comments</a>
+        <a href="{{ isso_host_script }}/admin/threads/"{% if active_page == "threads" %} class="active"{% endif %}>Threads</a>
+      </nav>
+      <a id="logout" class="logout label" onClick="javascript:log_out()">Log Out</a>
+    </div>
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

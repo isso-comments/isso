@@ -2,7 +2,10 @@ function ajax(req) {
   var r = new XMLHttpRequest();
   r.open(req.method, req.url, true);
   r.onreadystatechange = function () {
-    if (r.readyState != 4 || r.status != 200) {
+    if (r.readyState != 4) {
+      return;
+    }
+    if (r.status != 200) {
       if (req.failure) {
         req.failure();
       }
@@ -64,6 +67,21 @@ function edit(com_id, hash, author, email, website, comment, isso_host_script) {
         error: function(ret){
           console.log("Error: ", ret); // TODO flash msg/notif
         }});
+}
+function set_thread_read_only(checkbox, hash, isso_host_script) {
+    var action = checkbox.checked ? "close" : "open";
+    checkbox.disabled = true;
+    ajax({method: "POST",
+          url: isso_host_script + "/thread/" + hash + "/" + action,
+          success: function () {
+              checkbox.disabled = false;
+          },
+          failure: function () {
+              checkbox.disabled = false;
+              // revert the checkbox to its previous state
+              checkbox.checked = !checkbox.checked;
+              console.error("Failed to change thread read-only state");
+          }});
 }
 function validate_com(com_id, hash, isso_host_script) {
     moderate(com_id, hash, "activate", isso_host_script);
