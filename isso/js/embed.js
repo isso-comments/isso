@@ -133,37 +133,42 @@ function fetchComments() {
     }).then(
         function (rv) {
 
-            if (rv.total_replies === 0) {
-                heading.textContent = i18n.translate("no-comments");
-                return;
-            }
-
             var count = rv.total_replies;
-            rv.replies.forEach(function(comment) {
-                isso.insert({ comment: comment, scrollIntoView: false, offset: 0 });
-            });
-            heading.textContent = i18n.pluralize("num-comments", count);
 
-            if (rv.hidden_replies > 0) {
-                isso.insert_loader(rv, rv.replies.length);
-            }
+            if (count === 0) {
+                heading.textContent = i18n.translate("no-comments");
+            } else {
+                rv.replies.forEach(function(comment) {
+                    isso.insert({ comment: comment, scrollIntoView: false, offset: 0 });
+                });
+                heading.textContent = i18n.pluralize("num-comments", count);
 
-            if (window.location.hash.length > 0 &&
-                window.location.hash.match("^#isso-[0-9]+$")) {
-                try {
-                    $(window.location.hash).scrollIntoView();
+                if (rv.hidden_replies > 0) {
+                    isso.insert_loader(rv, rv.replies.length);
+                }
 
-                    // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
-                    // So a class `.isso-target` has to be used instead, and then we can manually remove the
-                    // class from the old target comment in the `hashchange` listener.
-                    $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
-                } catch(ex) {
-                    // selector probably doesn't exist as element on page
+                if (window.location.hash.length > 0 &&
+                    window.location.hash.match("^#isso-[0-9]+$")) {
+                    try {
+                        $(window.location.hash).scrollIntoView();
+
+                        // We can't just set the id to `#isso-target` because it's already set to `#isso-[number]`
+                        // So a class `.isso-target` has to be used instead, and then we can manually remove the
+                        // class from the old target comment in the `hashchange` listener.
+                        $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
+                    } catch(ex) {
+                        // selector probably doesn't exist as element on page
+                    }
                 }
             }
+
+            isso.emit("isso-thread-rendered", {element: isso_thread.obj, count: count});
         },
         function(err) {
             console.log(err);
+            // Still notify listeners so they can react (e.g. clear a loading
+            // placeholder); `error` is set and `count` is 0 on this path.
+            isso.emit("isso-thread-rendered", {element: isso_thread.obj, count: 0, error: err});
         }
     );
 }
