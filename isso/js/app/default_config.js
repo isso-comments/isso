@@ -10,6 +10,7 @@ var default_config = {
     "require-author": false,
     "reply-notifications": false,
     "reply-notifications-default-enabled": false,
+    "thread-notifications": false,
     "max-comments-top": "inf",
     "max-comments-nested": 5,
     "reveal-on-click": 5,

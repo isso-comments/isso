@@ -11,6 +11,12 @@ logger = logging.getLogger("isso")
 
 MAX_LIKES_AND_DISLIKES = 142
 
+# Values of the "notification" column: no mail, mail on replies to one's own
+# comment, mail on every new comment in the same thread.
+NOTIFY_NONE = 0
+NOTIFY_REPLIES = 1
+NOTIFY_THREAD = 2
+
 
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
@@ -175,6 +181,30 @@ class Comments:
         self.db.execute(
             ["UPDATE comments SET", "    notification=0", "WHERE email=? AND (id=? OR parent=?);"], (email, id, id)
         )
+
+    def unsubscribe_thread(self, email, id):
+        """
+        Turn off email notifications for this email address in the whole
+        thread that comment :param:`id` belongs to.
+        """
+        self.db.execute(
+            [
+                "UPDATE comments SET",
+                "    notification=0",
+                "WHERE email=? AND tid=(SELECT tid FROM comments WHERE id=?);",
+            ],
+            (email, id),
+        )
+
+    def thread_subscribers(self, tid):
+        """
+        Return the approved comments in thread :param:`tid` whose authors
+        subscribed to all new comments in that thread.
+        """
+        rv = self.db.execute(
+            "SELECT * FROM comments WHERE tid=? AND mode=1 AND notification=? ORDER BY id;", (tid, NOTIFY_THREAD)
+        ).fetchall()
+        return [dict(zip(Comments.fields, row)) for row in rv]
 
     def update(self, id, data):
         """

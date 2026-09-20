@@ -48,6 +48,8 @@ Here are the **default values** for this section:
     host =
     max-age = 15m
     notify = stdout
+    reply-notifications = false
+    thread-notifications = false
     log-file =
     gravatar = false
     gravatar-url = https://www.gravatar.com/avatar/{}?d=identicon&s=55
@@ -141,6 +143,18 @@ reply-notifications
     setting, as Isso can otherwise be easily exploited for sending spam.
 
     Default: ``false``
+
+thread-notifications
+    Allow users to subscribe to all new comments on a page, not only to
+    replies to their own comment. Requires :ref:`SMTP <configure-smtp>` to be
+    configured.
+
+    It is highly recommended to also turn on moderation when enabling this
+    setting, as Isso can otherwise be easily exploited for sending spam.
+
+    Default: ``false``
+
+    .. versionadded:: 0.14.1
 
 log-file
     Log console messages to file instead of standard out.

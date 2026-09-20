@@ -10,6 +10,7 @@ module.exports = {
     "postbox-edit": "Edit",
     "postbox-submit": "Submit",
     "postbox-notification": "Subscribe to email notification of replies",
+    "postbox-notification-thread": "Subscribe to email notification of all new comments",
 
     "guard-error": "Your comment could not be posted.",
     "guard-ratelimit": "You are commenting too quickly. Please wait a moment and try again.",

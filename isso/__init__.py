@@ -47,6 +47,7 @@ import tempfile
 
 from os.path import abspath, dirname, exists, join
 from argparse import ArgumentParser
+from configparser import NoOptionError
 from functools import partial, reduce
 
 from itsdangerous import URLSafeTimedSerializer
@@ -115,7 +116,11 @@ class Isso(object):
                 subscribers.append(Webhook(self))
             else:
                 logger.warning("unknown notification backend '%s'", backend)
-        if smtp_backend or conf.getboolean("general", "reply-notifications"):
+        try:
+            thread_notify = conf.getboolean("general", "thread-notifications")
+        except NoOptionError:
+            thread_notify = False
+        if smtp_backend or conf.getboolean("general", "reply-notifications") or thread_notify:
             subscribers.append(SMTP(self))
 
         self.signal = ext.Signal(*subscribers)

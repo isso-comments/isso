@@ -44,9 +44,12 @@ var html = function (globals) {
     + "</p>"
   + "</div>"
   + "<div class='isso-notification-section'>"
-    + "<label>"
+    + "<label class='isso-notification-reply'>"
       + "<input type='checkbox'" + notify + " name='notification' />" + i18n('postbox-notification')
     + "</label>"
+    + (conf["thread-notifications"] ? "<label class='isso-notification-thread'>"
+      + "<input type='checkbox' name='notification-thread' />" + i18n('postbox-notification-thread')
+    + "</label>" : "")
   + "</div>"
 + "</div>"
 + "</div>"
