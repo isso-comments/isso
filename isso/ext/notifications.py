@@ -9,6 +9,7 @@ import socket
 import time
 
 from _thread import start_new_thread
+from configparser import NoOptionError
 from email.message import EmailMessage
 from email.utils import formatdate
 from urllib.parse import quote
@@ -61,6 +62,10 @@ class SMTP(object):
         self.public_endpoint = isso.conf.get("server", "public-endpoint") or local("host")
         self.admin_notify = any((n in ("smtp", "SMTP")) for n in isso.conf.getlist("general", "notify"))
         self.reply_notify = isso.conf.getboolean("general", "reply-notifications")
+        try:
+            self.thread_notify = isso.conf.getboolean("general", "thread-notifications")
+        except NoOptionError:
+            self.thread_notify = False
 
         # test SMTP connectivity
         try:
@@ -90,13 +95,18 @@ class SMTP(object):
         yield "comments.new:after-save", self.notify_new
         yield "comments.activate", self.notify_activated
 
-    # Add List-Unsubscribe email header
-    def create_headers(self, parent_comment, recipient):
-        uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
-        key = self.isso.sign(("unsubscribe", recipient))
-        return (("List-Unsubscribe", uri + "/unsubscribe/" + quote(recipient) + "/" + key),)
+    def unsubscribe_url(self, comment_id, recipient, thread_wide=False):
+        """
+        Link to stop notifications for :param:`recipient`. By default it
+        covers comment :param:`comment_id` and its replies; with
+        :param:`thread_wide` it covers the whole thread.
+        """
+        uri = self.public_endpoint + "/id/%i" % comment_id
+        payload = ("unsubscribe", recipient, "thread") if thread_wide else ("unsubscribe", recipient)
+        key = self.isso.sign(payload)
+        return uri + "/unsubscribe/" + quote(recipient) + "/" + key
 
-    def format(self, thread, comment, parent_comment, recipient=None, admin=False):
+    def format(self, thread, comment, admin=False, unsubscribe_url=None):
         rv = io.StringIO()
 
         author = comment["author"] or "Anonymous"
@@ -128,17 +138,14 @@ class SMTP(object):
                 rv.write("Activate comment: %s\n" % create_comment_action_url(uri, "activate", key))
 
         else:
-            uri = self.public_endpoint + "/id/%i" % parent_comment["id"]
-            key = self.isso.sign(("unsubscribe", recipient))
-
-            rv.write("Unsubscribe from this conversation: %s\n" % (uri + "/unsubscribe/" + quote(recipient) + "/" + key))
+            rv.write("Unsubscribe from this conversation: %s\n" % unsubscribe_url)
 
         rv.seek(0)
         return rv.read()
 
     def notify_new(self, thread, comment):
         if self.admin_notify:
-            body = self.format(thread, comment, None, admin=True)
+            body = self.format(thread, comment, admin=True)
             subject = "New comment posted"
             if thread["title"]:
                 subject = "%s on %s" % (subject, thread["title"])
@@ -150,27 +157,59 @@ class SMTP(object):
     def notify_activated(self, thread, comment):
         self.notify_users(thread, comment)
 
-    def notify_users(self, thread, comment):
-        if self.reply_notify and "parent" in comment and comment["parent"] is not None:
-            # Notify interested authors that a new comment is posted
-            notified = []
+    def subscribers(self, thread, comment, thread_subscribers):
+        """
+        Yield ``(comment, is_reply)`` pairs for every comment whose author may
+        want to know about :param:`comment`. Reply subscribers come first, so
+        that somebody subscribed to both gets the reply wording.
+        """
+        if self.reply_notify and comment.get("parent") is not None:
             parent_comment = self.isso.db.comments.get(comment["parent"])
-            comments_to_notify = [parent_comment] if parent_comment is not None else []
-            comments_to_notify += self.isso.db.comments.fetch(thread["uri"], mode=1, parent=comment["parent"])
-            for comment_to_notify in comments_to_notify:
-                email = comment_to_notify["email"]
-                if (
-                    "email" in comment_to_notify
-                    and comment_to_notify["notification"]
-                    and email not in notified
-                    and comment_to_notify["id"] != comment["id"]
-                    and email != comment["email"]
-                ):
-                    body = self.format(thread, comment, parent_comment, email, admin=False)
-                    headers = self.create_headers(parent_comment, email)
-                    subject = "Re: New comment posted on %s" % thread["title"]
-                    self.sendmail(subject, body, thread, comment, to=email, headers=headers)
-                    notified.append(email)
+            if parent_comment is not None:
+                yield parent_comment, True
+            for sibling in self.isso.db.comments.fetch(thread["uri"], mode=1, parent=comment["parent"]):
+                yield sibling, True
+
+        for other in thread_subscribers:
+            yield other, False
+
+    def notify_users(self, thread, comment):
+        # Notify interested authors that a new comment is posted
+        notified = set()
+        thread_subscribers = self.isso.db.comments.thread_subscribers(thread["id"]) if self.thread_notify else []
+        # a reply link would also cancel the thread-wide subscription, so
+        # thread subscribers always get the thread-wide link
+        thread_subscriptions = {}
+        for subscriber in thread_subscribers:
+            thread_subscriptions.setdefault(subscriber["email"], subscriber["id"])
+
+        for comment_to_notify, is_reply in self.subscribers(thread, comment, thread_subscribers):
+            email = comment_to_notify["email"]
+            if (
+                not email
+                or not comment_to_notify["notification"]
+                or email in notified
+                or comment_to_notify["id"] == comment["id"]
+                or email == comment["email"]
+            ):
+                continue
+
+            if email in thread_subscriptions:
+                unsubscribe_url = self.unsubscribe_url(thread_subscriptions[email], email, thread_wide=True)
+            else:
+                # same link as before thread notifications existed: covers
+                # the parent comment and all replies to it
+                unsubscribe_url = self.unsubscribe_url(comment["parent"], email)
+
+            if is_reply:
+                subject = "Re: New comment posted on %s" % thread["title"]
+            else:
+                subject = "New comment posted on %s" % thread["title"]
+
+            body = self.format(thread, comment, unsubscribe_url=unsubscribe_url)
+            headers = (("List-Unsubscribe", unsubscribe_url),)
+            self.sendmail(subject, body, thread, comment, to=email, headers=headers)
+            notified.add(email)
 
     def sendmail(self, subject, body, thread, comment, to=None, headers=None):
         to = to or self.conf.get("to")

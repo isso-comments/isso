@@ -44,9 +44,16 @@ var Postbox = function(parent) {
         return true;
     };
 
-    // only display notification checkbox if email is filled in
+    // the reply checkbox is always rendered, hide it if the server disabled it
+    if (!config["reply-notifications"]) {
+        $(".isso-notification-reply", el).hide();
+    }
+
+    // only display notification checkboxes if email is filled in
     var email_edit = function() {
-        if (config["reply-notifications"] && $("[name='email']", el).value.length > 0) {
+        if ((config["reply-notifications"] || config["thread-notifications"]) &&
+            $("[name='email']", el).value.length > 0)
+        {
             $(".isso-notification-section", el).show();
         } else {
             $(".isso-notification-section", el).hide();
@@ -114,7 +121,16 @@ var Postbox = function(parent) {
         var author = $("[name=author]", el).value || null,
             email = $("[name=email]", el).value || null,
             websiteEl = config["website-field"] !== false ? $('[name=website]', el) : null,
-            website = websiteEl ? websiteEl.value || null : null;
+            website = websiteEl ? websiteEl.value || null : null,
+            threadEl = $("[name=notification-thread]", el),
+            notification = 0;
+
+        // 2 = every new comment in this thread, 1 = replies to this comment
+        if (threadEl && threadEl.checked()) {
+            notification = 2;
+        } else if (config["reply-notifications"] && $("[name=notification]", el).checked()) {
+            notification = 1;
+        }
 
         try {
             localStorage.setItem("isso-author", JSON.stringify(author));
@@ -126,7 +142,7 @@ var Postbox = function(parent) {
                 text: $(".isso-textarea", el).value,
                 parent: parent || null,
                 title: $("#isso-thread").getAttribute("data-title") || null,
-                notification: $("[name=notification]", el).checked() ? 1 : 0,
+                notification: notification,
             }).then(
                 function(comment) {
                     $(".isso-textarea", el).value = "";
