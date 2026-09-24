@@ -208,6 +208,14 @@ as ``isso:latest``.
 
 Then, you can use a reverse proxy to expose port 8080.
 
+c) Deploy with Easypanel
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+`Easypanel <https://easypanel.io>`_ is a self-hosted Docker deployment
+platform, and Isso has a one-click deployment template there:
+https://easypanel.io/templates/isso. The template sets up persistent volumes
+for the config and comments database automatically.
+
 .. _install-from-source:
 
 Install from Source
