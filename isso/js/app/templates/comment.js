@@ -27,6 +27,10 @@ var html = function (globals) {
      + "<a class='isso-permalink' href='#isso-" + comment.id + "'>"
        + "<time title='" + humanize(comment.created) + "' datetime='" + datetime(comment.created) + "'>" + humanize(comment.created) + "</time>"
      + "</a>"
+     + (conf.collapsible
+         ? "<a class='isso-collapse' href='#' aria-expanded='true' title='" + i18n('comment-collapse') + "'>[&minus;]</a>"
+           + "<span class='isso-collapsed-note'></span>"
+         : '')
      + "<span class='isso-note'>"
          + (comment.mode == 2 ? i18n('comment-queued') : (comment.mode == 4 ? i18n('comment-deleted') : ''))
      + "</span>"

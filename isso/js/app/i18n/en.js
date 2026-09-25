@@ -34,6 +34,9 @@ module.exports = {
     "comment-anonymous": "Anonymous",
     "comment-hidden": "{{ n }} Hidden",
     "comment-page-author-suffix": "Author",
+    "comment-collapse": "Collapse",
+    "comment-expand": "Expand",
+    "comment-collapsed-replies": "{{ n }} reply\n{{ n }} replies",
 
     "date-now": "right now",
     "date-minute": "a minute ago\n{{ n }} minutes ago",
