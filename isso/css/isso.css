@@ -138,6 +138,26 @@ h4.isso-thread-heading {
 .isso-note {
     float: right;
 }
+.isso-collapse {
+    margin-left: .25em;
+    padding: 0 .25em;
+    color: var(--isso-secondary-text-color);
+    font-family: monospace;
+}
+.isso-collapse:hover,
+.isso-collapsed-note:hover {
+    color: var(--isso-hover-color);
+}
+.isso-collapsed-note {
+    color: var(--isso-secondary-text-color);
+    cursor: pointer;
+}
+/* Collapsed comment: only the header stays visible */
+.isso-comment.isso-collapsed > .isso-avatar,
+.isso-comment.isso-collapsed > .isso-follow-up,
+.isso-comment.isso-collapsed > .isso-text-wrapper > :not(.isso-comment-header) {
+    display: none;
+}
 .isso-author {
     font-weight: bold;
     color: var(--isso-primary-text-color);
