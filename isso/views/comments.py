@@ -215,7 +215,7 @@ class API(object):
             )
         except NoOptionError:
             self.approve_if_email_previously_approved = False
-        self.require_email_verification = isso.conf.getboolean("moderation", "require-email-verification")
+        self.require_email_verification = isso.conf.getboolean("general", "require-email-verification")
         try:
             self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
         except NoOptionError:
@@ -319,7 +319,7 @@ class API(object):
          `1`  | accepted: The comment was accepted by the server and is published.
          `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
          `4`  | deleted, but referenced: The comment was deleted on the server but is still referenced by replies.
-         `8`  | unverified: The comment awaits confirmation by email. See `[moderation] require-email-verification`.
+         `8`  | unverified: The comment awaits confirmation by email. See `[general] require-email-verification`.
     @apiSuccess {String} author
         The comments’s author’s name or `null`.
     @apiSuccess {String} website
@@ -345,7 +345,7 @@ class API(object):
         Creates a new comment. The server issues a cookie per new comment which acts as
         an authentication token to modify or delete the comment.
         The token is cryptographically signed and expires automatically after 900 seconds (=15min) by default.
-        If `[moderation] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`). It must be a plain address such as `name@example.org`, without a name, comments, quotes or spaces (else `403` with `{"reason": "invalid-email"}`). The comment is stored unverified (mode `8`) and the status is `202`. If the same email, compared without case, already has a comment from the last hour waiting for confirmation, the request fails with `403` and `{"reason": "verification-pending"}`.
+        If `[general] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`). It must be a plain address such as `name@example.org`, without a name, comments, quotes or spaces (else `403` with `{"reason": "invalid-email"}`). The comment is stored unverified (mode `8`) and the status is `202`. If the same email, compared without case, already has a comment from the last hour waiting for confirmation, the request fails with `403` and `{"reason": "verification-pending"}`.
     @apiUse csrf
 
     @apiQuery {String} uri
@@ -918,7 +918,7 @@ class API(object):
     @apiName verify_email
     @apiVersion 0.14.1
     @apiDescription
-        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[moderation] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: while a newer comment with the same email address (compared without case) exists, older keys are invalid. If that newer comment is deleted, an older key can work again until it expires.
+        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[general] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: while a newer comment with the same email address (compared without case) exists, older keys are invalid. If that newer comment is deleted, an older key can work again until it expires.
         The comment changes to mode `1`, or to mode `2` if moderation is enabled. With moderation, `approve-if-email-previously-approved` is applied here: if the email address has a previously approved comment, the comment changes to mode `1`. If the comment is already confirmed, nothing changes.
         This endpoint can also be used with a `GET` request. A `GET` request changes nothing. It returns a html page that asks the user whether they want to confirm the comment. If they select “OK”, the query is repeated using `POST`, and the page then opens the comment’s thread.
         If the key is not valid, has expired or was replaced, or the comment cannot be confirmed, both methods return `403` and a short html page.
@@ -1545,7 +1545,7 @@ class API(object):
     @apiSuccess {Boolean} config.require-author
         Commenters must enter valid Name.
     @apiSuccess {Boolean} config.require-email
-        Commenters must enter valid email. Also `true` if `[moderation] require-email-verification` is set.
+        Commenters must enter valid email. Also `true` if `[general] require-email-verification` is set.
     @apiSuccess {Boolean} config.reply-notifications
         Enable reply notifications via E-mail.
     @apiSuccess {Boolean} config.gravatar
@@ -1676,7 +1676,7 @@ class API(object):
          `1`  | accepted: The comment was accepted by the server and is published.
          `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
          `4`  | deleted, but referenced: The comment was deleted on the server but is still referenced by replies.
-         `8`  | unverified: The comment awaits confirmation by email. See `[moderation] require-email-verification`.
+         `8`  | unverified: The comment awaits confirmation by email. See `[general] require-email-verification`.
     @apiQuery {String{id,created,modified,likes,dislikes,tid}} [order_by=created]
         Comment ordering
     @apiQuery {Number{0,1}} [asc=0]

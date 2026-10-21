@@ -28,7 +28,7 @@ def purge_schedule(conf):
     than ``max_age`` seconds are deleted every ``interval`` seconds.
     """
     max_age = conf.getint("moderation", "purge-after")
-    if conf.getboolean("moderation", "require-email-verification"):
+    if conf.getboolean("general", "require-email-verification"):
         return max_age, min(max_age, UNVERIFIED_PURGE_INTERVAL)
     return max_age, max_age
 
@@ -75,7 +75,7 @@ class ThreadedMixin(Mixin):
     def __init__(self, conf):
         super(ThreadedMixin, self).__init__(conf)
 
-        if conf.getboolean("moderation", "enabled") or conf.getboolean("moderation", "require-email-verification"):
+        if conf.getboolean("moderation", "enabled") or conf.getboolean("general", "require-email-verification"):
             self.purge(*purge_schedule(conf))
 
         self.cache = Cache(SimpleCache(threshold=1024, default_timeout=3600))

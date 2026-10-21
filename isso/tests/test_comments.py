@@ -1061,14 +1061,14 @@ class TestPurgeJob(unittest.TestCase):
         return sleeps
 
     def testEmailVerificationAloneStartsHourlyPurge(self):
-        self.conf.set("moderation", "require-email-verification", "true")
+        self.conf.set("general", "require-email-verification", "true")
         expired = self._add_comment(mode=8, age=VERIFICATION_LINK_MAX_AGE + 60)
 
         self.assertEqual(self._run_purge_job_once(), [3600])
         self.assertIsNone(self.app.db.comments.get(expired))
 
     def testEmailVerificationKeepsShorterPurgeAfter(self):
-        self.conf.set("moderation", "require-email-verification", "true")
+        self.conf.set("general", "require-email-verification", "true")
         self.conf.set("moderation", "purge-after", "10m")
 
         self.assertEqual(self._run_purge_job_once(), [600])
@@ -1088,7 +1088,7 @@ class TestEmailVerification(unittest.TestCase):
         self.conf = config.load(config.default_file())
         self.conf.set("general", "dbpath", self.path)
         self.conf.set("general", "latest-enabled", "true")
-        self.conf.set("moderation", "require-email-verification", "true")
+        self.conf.set("general", "require-email-verification", "true")
         self.conf.set("guard", "enabled", "off")
         self.conf.set("hash", "algorithm", "none")
         self.conf.set("rss", "base", "https://example.org")
@@ -1481,7 +1481,7 @@ class TestEmailVerification(unittest.TestCase):
         self._assert_auto_approved_reply_emails_pending_parent()
 
     def testAutoApprovedReplyEmailsPendingParentWithOptionOff(self):
-        self.conf.set("moderation", "require-email-verification", "false")
+        self.conf.set("general", "require-email-verification", "false")
         self._assert_auto_approved_reply_emails_pending_parent()
 
     def testAdminActivatesUnverifiedComment(self):
@@ -1565,7 +1565,7 @@ class TestEmailVerification(unittest.TestCase):
         self.assertIn("validate_com(1, '%s'" % self.app.sign(1), page)
 
     def testAdminShowsUnverifiedTabWithOptionOffOnlyIfNeeded(self):
-        self.conf.set("moderation", "require-email-verification", "false")
+        self.conf.set("general", "require-email-verification", "false")
         self._log_in_as_admin()
         self._post("bob@example.org")
         self.assertNotIn('id="count-mode-8"', self._admin_page(1))
