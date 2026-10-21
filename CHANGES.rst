@@ -26,6 +26,7 @@ Bugfixes & Improvements
 
 - Disqus migration: add ``--thread-id`` to key threads by identifier (`#1127`_, pkvach)
 - Show commenters why the spam guard rejected their comment (`#1129`_, pkvach)
+- Fix XSS on the page that opens from a moderation link: escape the thread URI in its script
 
 .. _#1127: https://github.com/isso-comments/isso/pull/1127
 .. _#1129: https://github.com/isso-comments/isso/pull/1129

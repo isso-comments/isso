@@ -907,6 +907,16 @@ class TestModeratedComments(unittest.TestCase):
         self.assertNotIn("<script>", stored["author"])
         self.assertEqual(stored["author"], "&lt;script&gt;alert(1)&lt;/script&gt;")
 
+    def testModeratePageEscapesThreadUri(self):
+        uri = "/</script><script>alert(1)</script>"
+        self.client.post("/new?" + urlencode({"uri": uri}), data=json.dumps({"text": "...", "title": "Title"}))
+
+        rv = self.client.get("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertNotIn(b"<script>alert(1)", rv.data)
+        link = re.search(rb'window\.location\.href = ("[^"]*");', rv.data).group(1)
+        self.assertEqual(json.loads(link), "http://invalid.local" + uri + "#isso-1")
+
 
 class TestUnsubscribe(unittest.TestCase):
     def setUp(self):

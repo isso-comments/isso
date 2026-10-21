@@ -4,7 +4,6 @@ import collections
 import re
 import time
 import functools
-import json  # json.dumps to put URL in <script>
 
 from configparser import NoOptionError
 from importlib.resources import files
@@ -855,23 +854,7 @@ class API(object):
         link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
 
         if request.method == "GET":
-            modal = (
-                "<!DOCTYPE html>"
-                "<html>"
-                "<head>"
-                "<script>"
-                "  if (confirm('%s: Are you sure?')) {"
-                "      xhr = new XMLHttpRequest;"
-                "      xhr.open('POST', window.location.href);"
-                "      xhr.send(null);"
-                "      xhr.onload = function() {"
-                "          window.location.href = %s;"
-                "      };"
-                "  }"
-                "</script>" % (action.capitalize(), json.dumps(link))
-            )
-
-            return Response(modal, 200, content_type="text/html")
+            return render_template("moderate.html", action=action, link=link)
 
         if action == "activate":
             if item["mode"] == 1:
