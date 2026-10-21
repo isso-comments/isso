@@ -17,6 +17,21 @@ from isso.utils.cache import SimpleCache
 
 logger = logging.getLogger("isso")
 
+# With email verification on, unverified comments expire long before the
+# default `purge-after`, so the purge job must run at least this often.
+UNVERIFIED_PURGE_INTERVAL = 3600
+
+
+def purge_schedule(conf):
+    """
+    Return ``(max_age, interval)`` for the purge job: pending comments older
+    than ``max_age`` seconds are deleted every ``interval`` seconds.
+    """
+    max_age = conf.getint("moderation", "purge-after")
+    if conf.getboolean("moderation", "require-email-verification"):
+        return max_age, min(max_age, UNVERIFIED_PURGE_INTERVAL)
+    return max_age, max_age
+
 
 class Cache:
     """Wrapper around werkzeug's cache class, to make it compatible to
@@ -60,17 +75,17 @@ class ThreadedMixin(Mixin):
     def __init__(self, conf):
         super(ThreadedMixin, self).__init__(conf)
 
-        if conf.getboolean("moderation", "enabled"):
-            self.purge(conf.getint("moderation", "purge-after"))
+        if conf.getboolean("moderation", "enabled") or conf.getboolean("moderation", "require-email-verification"):
+            self.purge(*purge_schedule(conf))
 
         self.cache = Cache(SimpleCache(threshold=1024, default_timeout=3600))
 
     @threaded
-    def purge(self, delta):
+    def purge(self, max_age, interval):
         while True:
             with self.lock:
-                self.db.comments.purge(delta)
-            time.sleep(delta)
+                self.db.comments.purge(max_age)
+            time.sleep(interval)
 
 
 class ProcessMixin(ThreadedMixin):
@@ -108,13 +123,13 @@ class uWSGIMixin(Mixin):
         self.lock = multiprocessing.Lock()
         self.cache = uWSGICache
 
-        timedelta = conf.getint("moderation", "purge-after")
+        max_age, interval = purge_schedule(conf)
 
         def purge(signum):
-            return self.db.comments.purge(timedelta)
+            return self.db.comments.purge(max_age)
 
         uwsgi.register_signal(1, "", purge)
-        uwsgi.add_timer(1, timedelta)
+        uwsgi.add_timer(1, interval)
 
         # run purge once
         purge(1)

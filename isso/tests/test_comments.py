@@ -15,6 +15,7 @@ from itsdangerous.timed import TimestampSigner
 from werkzeug.wrappers import Response
 
 from isso import Isso, core, config
+from isso.db import SQLite3
 from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
 from isso.db.comments import VERIFICATION_LINK_MAX_AGE, VERIFICATION_RATE_WINDOW
@@ -1025,6 +1026,73 @@ class TestPurgeComments(unittest.TestCase):
         id_ = self._post_comment(8, 0)
         self.app.db.comments.activate(id_)
         self.assertEqual(self.app.db.comments.get(id_)["mode"], 1)
+
+
+class TestPurgeJob(unittest.TestCase):
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        self.addCleanup(os.unlink, self.path)
+        self.conf = config.load(config.default_file())
+        self.conf.set("general", "dbpath", self.path)
+        self.conf.set("moderation", "purge-after", "30d")
+
+        smtp_connection = mock.patch("isso.ext.notifications.SMTPConnection")
+        smtp_connection.start()
+        self.addCleanup(smtp_connection.stop)
+
+    def _add_comment(self, mode, age):
+        database = SQLite3(self.path, self.conf)
+        database.threads.new("/", None)
+        comment = {"mode": mode, "remote_addr": "127.0.0.1", "text": "...", "created": time.time() - age}
+        return database.comments.add("/", comment)["id"]
+
+    def _run_purge_job_once(self):
+        """Start a threaded app and run one pass of its purge job in this
+        thread. Return the sleep intervals (empty if no job was started)."""
+
+        class StopPurgeJob(Exception):
+            pass
+
+        sleeps = []
+
+        def sleep(seconds):
+            sleeps.append(seconds)
+            raise StopPurgeJob
+
+        def start_new_thread(function, args, kwargs):
+            with self.assertRaises(StopPurgeJob):
+                function(*args, **kwargs)
+
+        class App(Isso, core.ThreadedMixin):
+            pass
+
+        with (
+            mock.patch.object(core.thread, "start_new_thread", start_new_thread),
+            mock.patch.object(core.time, "sleep", sleep),
+        ):
+            self.app = App(self.conf)
+        return sleeps
+
+    def testEmailVerificationAloneStartsHourlyPurge(self):
+        self.conf.set("moderation", "require-email-verification", "true")
+        expired = self._add_comment(mode=8, age=VERIFICATION_LINK_MAX_AGE + 60)
+
+        self.assertEqual(self._run_purge_job_once(), [3600])
+        self.assertIsNone(self.app.db.comments.get(expired))
+
+    def testEmailVerificationKeepsShorterPurgeAfter(self):
+        self.conf.set("moderation", "require-email-verification", "true")
+        self.conf.set("moderation", "purge-after", "10m")
+
+        self.assertEqual(self._run_purge_job_once(), [600])
+
+    def testModerationAlonePurgesEveryPurgeAfter(self):
+        self.conf.set("moderation", "enabled", "true")
+
+        self.assertEqual(self._run_purge_job_once(), [30 * 24 * 3600])
+
+    def testNoPurgeJobWithoutModerationOrEmailVerification(self):
+        self.assertEqual(self._run_purge_job_once(), [])
 
 
 class TestEmailVerification(unittest.TestCase):
