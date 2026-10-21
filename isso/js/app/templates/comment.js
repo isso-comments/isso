@@ -28,7 +28,10 @@ var html = function (globals) {
        + "<time title='" + humanize(comment.created) + "' datetime='" + datetime(comment.created) + "'>" + humanize(comment.created) + "</time>"
      + "</a>"
      + "<span class='isso-note'>"
-         + (comment.mode == 2 ? i18n('comment-queued') : (comment.mode == 4 ? i18n('comment-deleted') : ''))
+         + (comment.mode == 2 ? i18n('comment-queued')
+            : comment.mode == 4 ? i18n('comment-deleted')
+            : comment.mode == 8 ? i18n('comment-unverified')
+            : '')
      + "</span>"
   + "</div>" // .text-wrapper
   + "<div class='isso-text'>"
