@@ -930,7 +930,7 @@ class API(object):
     @apiName verify_email
     @apiVersion 0.14.1
     @apiDescription
-        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[moderation] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: a newer comment with the same email address (compared without case) makes older keys invalid.
+        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[moderation] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: while a newer comment with the same email address (compared without case) exists, older keys are invalid. If that newer comment is deleted, an older key can work again until it expires.
         The comment changes to mode `1`, or to mode `2` if moderation is enabled. With moderation, `approve-if-email-previously-approved` is applied here: if the email address has a previously approved comment, the comment changes to mode `1`. If the comment is already confirmed, nothing changes.
         This endpoint can also be used with a `GET` request. A `GET` request changes nothing. It returns a html page that asks the user whether they want to confirm the comment. If they select “OK”, the query is repeated using `POST`, and the page then opens the comment’s thread.
         If the key is not valid, has expired or was replaced, or the comment cannot be confirmed, both methods return `403` and a short html page.
@@ -1018,7 +1018,9 @@ class API(object):
 
         Only the newest key for an email address can confirm: every new
         comment with an email gets its own confirmation email, so a newer
-        comment with this email means a newer key was sent.
+        comment with this email means a newer key was sent. The check uses the
+        rows that exist now, so an older key works again if the newer comment
+        is removed from the database.
         """
         try:
             rv = self.isso.unsign(key, max_age=VERIFICATION_LINK_MAX_AGE)

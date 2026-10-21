@@ -226,8 +226,9 @@ require-email-verification
       ``require-email`` option is off. It must be a plain address such as
       ``name@example.org``, without a name, comments, quotes or spaces. Isso
       does not check the address in any other way.
-    - A link is valid for 48 hours. It stops working when a newer comment with
-      the same email address is posted.
+    - A link is valid for 48 hours. When a newer comment with the same email
+      address is posted, the older link stops working. If that newer comment
+      is deleted later, the older link can work again until its 48 hours end.
     - An email address can have only one comment waiting for confirmation per
       hour. Isso rejects a second comment in that hour, and the commenter sees
       a message that tells them to check their email.
