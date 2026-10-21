@@ -1168,6 +1168,32 @@ class TestEmailVerification(unittest.TestCase):
 
         self.assertEqual(self.app.db.comments.count_modes(), {})
 
+    def testEmailMustBePlainAddress(self):
+        # smtplib mails most of these to the bare address, so each spelling
+        # would count as a new address for the one-per-hour limit.
+        for email in (
+            "bob@example.org (1)",
+            " bob@example.org",
+            "Bob <bob@example.org>",
+            '"bob"@example.org',
+            "bob@example.org, alice@example.org",
+            "bob@example.org.",
+            "bob",
+            "@example.org",
+            "bob@",
+        ):
+            with self.subTest(email=email):
+                rv = self._post(email)
+                self.assertEqual(rv.status_code, 403)
+                self.assertEqual(loads(rv.data)["reason"], "invalid-email")
+
+        self.assertEqual(self.app.db.comments.count_modes(), {})
+        self.assertEqual(self._sent_mails(), [])
+
+        for email in ("bob.o'neil+isso@example.org", "jörg@bücher.example"):
+            with self.subTest(email=email):
+                self.assertEqual(self._post(email).status_code, 202)
+
     def testOnePendingConfirmationPerEmailPerHour(self):
         self.assertEqual(self._post("bob@example.org").status_code, 202)
 
@@ -1181,6 +1207,13 @@ class TestEmailVerification(unittest.TestCase):
 
         self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
         self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+    def testCaseVariantsOfEmailShareTheLimit(self):
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+        for email in ("Bob@example.org", "bob@EXAMPLE.ORG"):
+            with self.subTest(email=email):
+                self.assertEqual(self._post(email).status_code, 429)
 
     def testUnverifiedCommentsAreHidden(self):
         self._post("published@example.org")
@@ -1302,6 +1335,14 @@ class TestEmailVerification(unittest.TestCase):
         self.assertEqual(self.client.post(self._verify_url(2)).status_code, 200)
         self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
         self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testCaseVariantOfEmailReplacesOldKey(self):
+        self._post("bob@example.org")
+        self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
+        self.assertEqual(self._post("BOB@Example.org").status_code, 202)
+
+        self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.client.post(self._verify_url(2)).status_code, 200)
 
     def testKeyOfDeletedCommentDoesNotConfirmNewCommentWithSameId(self):
         self._post("attacker@example.org")

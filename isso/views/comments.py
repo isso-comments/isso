@@ -56,6 +56,17 @@ def normalize(url):
     return url
 
 
+# A plain address such as "name@example.org". RFC 5322 also allows display
+# names, comments, quotes and spaces, but smtplib sends mail for such forms to
+# the bare address, so one mailbox could appear under many different strings.
+# "&" is left out because isso stores the address HTML-escaped ("&amp;").
+__plain_email_re = re.compile(r"[\w.!#$%'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)*")
+
+
+def is_plain_email(text):
+    return __plain_email_re.fullmatch(text) is not None
+
+
 def xhr(func):
     """A decorator to check for CSRF on POST/PUT/DELETE using a <form>
     element and JS to execute automatically (see #40 for a proof-of-concept).
@@ -344,7 +355,7 @@ class API(object):
         Creates a new comment. The server issues a cookie per new comment which acts as
         an authentication token to modify or delete the comment.
         The token is cryptographically signed and expires automatically after 900 seconds (=15min) by default.
-        If `[moderation] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`), the comment is stored unverified (mode `8`) and the status is `202`. If the same email already has a comment from the last hour waiting for confirmation, the request fails with `429` and `{"reason": "verification-pending"}`.
+        If `[moderation] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`). It must be a plain address such as `name@example.org`, without a name, comments, quotes or spaces (else `403` with `{"reason": "invalid-email"}`). The comment is stored unverified (mode `8`) and the status is `202`. If the same email, compared without case, already has a comment from the last hour waiting for confirmation, the request fails with `429` and `{"reason": "verification-pending"}`.
     @apiUse csrf
 
     @apiQuery {String} uri
@@ -414,6 +425,8 @@ class API(object):
         if self.require_email_verification:
             if not data["email"]:
                 return JSON({"reason": "require-email"}, 403)
+            if not is_plain_email(data["email"]):
+                return JSON({"reason": "invalid-email"}, 403)
             data["mode"] = 8
         else:
             data["mode"] = 2 if self.moderated else 1
@@ -911,7 +924,7 @@ class API(object):
     @apiName verify_email
     @apiVersion 0.14.1
     @apiDescription
-        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[moderation] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: a newer comment with the same email address makes older keys invalid.
+        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[moderation] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: a newer comment with the same email address (compared without case) makes older keys invalid.
         The comment changes to mode `1`, or to mode `2` if moderation is enabled. With moderation, `approve-if-email-previously-approved` is applied here: if the email address has a previously approved comment, the comment changes to mode `1`. If the comment is already confirmed, nothing changes.
         This endpoint can also be used with a `GET` request. A `GET` request changes nothing. It returns a html page that asks the user whether they want to confirm the comment. If they select “OK”, the query is repeated using `POST`, and the page then opens the comment’s thread.
         If the key is not valid, has expired or was replaced, or the comment cannot be confirmed, both methods return `403` and a short html page.

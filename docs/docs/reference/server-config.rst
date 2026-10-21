@@ -216,13 +216,18 @@ require-email-verification
       comment only after it is confirmed. Reply notifications also wait for
       the confirmation.
     - Commenters must enter an email address, even if the guard or its
-      ``require-email`` option is off. Isso does not check the address in any
-      other way.
+      ``require-email`` option is off. It must be a plain address such as
+      ``name@example.org``, without a name, comments, quotes or spaces. Isso
+      does not check the address in any other way.
     - A link is valid for 48 hours. It stops working when a newer comment with
       the same email address is posted.
     - An email address can have only one comment waiting for confirmation per
       hour. Isso rejects a second comment in that hour, and the commenter sees
       a message that tells them to check their email.
+    - Isso compares email addresses without case, but it cannot know all
+      spellings of one mailbox (for example ``name+1@example.org``). So keep
+      the :ref:`guard <configure-guard>` and its ``ratelimit`` on, to limit
+      how many confirmation emails one client can make Isso send.
     - Isso deletes comments that are not confirmed after 48 hours.
     - In the admin interface, the "Unverified" tab lists the comments that wait
       for confirmation. Click "Validate" to publish one by hand. The tab shows
@@ -395,6 +400,8 @@ timeout
 
     Default: ``10``
 
+
+.. _configure-guard:
 
 Guard
 -----

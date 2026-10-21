@@ -161,13 +161,14 @@ class Comments:
 
     def has_recent_unverified(self, email):
         """
-        Return True if a comment with this email has waited for email
-        confirmation for less than :data:`VERIFICATION_RATE_WINDOW` seconds.
+        Return True if a comment with this email (compared without case) has
+        waited for email confirmation for less than
+        :data:`VERIFICATION_RATE_WINDOW` seconds.
         """
         rv = self.db.execute(
             [
                 "SELECT CASE WHEN EXISTS(",
-                "    SELECT * FROM comments WHERE email=? AND mode=8 AND created > ?",
+                "    SELECT * FROM comments WHERE LOWER(email)=LOWER(?) AND mode=8 AND created > ?",
                 ") THEN 1 ELSE 0 END;",
             ],
             (email, time.time() - VERIFICATION_RATE_WINDOW),
@@ -176,14 +177,14 @@ class Comments:
 
     def has_newer_with_email(self, id, email):
         """
-        Return True if a comment newer than comment id has this email, in
-        any mode. A new row gets an id above every existing row, so a higher
-        id is a newer comment.
+        Return True if a comment newer than comment id has this email
+        (compared without case), in any mode. A new row gets an id above every
+        existing row, so a higher id is a newer comment.
         """
         rv = self.db.execute(
             [
                 "SELECT CASE WHEN EXISTS(",
-                "    SELECT * FROM comments WHERE email=? AND id > ?",
+                "    SELECT * FROM comments WHERE LOWER(email)=LOWER(?) AND id > ?",
                 ") THEN 1 ELSE 0 END;",
             ],
             (email, id),
