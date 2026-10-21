@@ -1357,3 +1357,49 @@ class TestEmailVerification(unittest.TestCase):
 
         self.client.post(self._verify_url(2))
         self.assertEqual(self._sent_mails(), [])
+
+    def testAdminActivatesUnverifiedComment(self):
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("alice@example.org", notification=1)
+        self.client.post(self._verify_url(1))
+        self._post("bob@example.org", parent=1)
+        self._sent_mails()
+
+        rv = self.client.post("/id/2/activate/%s" % self.app.sign(2))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data)["counts"], {"1": 2})
+        self.assertEqual(self.app.db.comments.get(2)["mode"], 1)
+        self.assertEqual([to for to, _, _ in self._sent_mails()], ["alice@example.org"])
+
+    def _log_in_as_admin(self):
+        self.conf.set("admin", "enabled", "true")
+        self.conf.set("admin", "password", "secret")
+        self._start_app()
+        self.client.post("/login/", data={"password": "secret"}, content_type="application/x-www-form-urlencoded")
+
+    def _admin_page(self, mode):
+        rv = self.client.get("/admin/?mode=%d" % mode)
+        self.assertEqual(rv.status_code, 200)
+        page = rv.get_data(as_text=True)
+        self.assertIn('id="count-mode-1"', page, "not logged in")
+        return page
+
+    def testAdminListsUnverifiedComments(self):
+        self._log_in_as_admin()
+        self._post("bob@example.org")
+        page = self._admin_page(8)
+
+        self.assertRegex(page, r'id="count-mode-8"[^>]*>\s*Unverified \(<span class="count">1</span>\)')
+        self.assertIn("id='isso-1'", page)
+        self.assertIn('<span class="label label-unverified">Unverified</span>', page)
+        self.assertIn("validate_com(1, '%s'" % self.app.sign(1), page)
+
+    def testAdminShowsUnverifiedTabWithOptionOffOnlyIfNeeded(self):
+        self.conf.set("moderation", "require-email-verification", "false")
+        self._log_in_as_admin()
+        self._post("bob@example.org")
+        self.assertNotIn('id="count-mode-8"', self._admin_page(1))
+
+        self.app.db.comments.update(1, {"mode": 8})
+        self.assertIn('id="count-mode-8"', self._admin_page(1))

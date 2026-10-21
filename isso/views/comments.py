@@ -1720,6 +1720,7 @@ class API(object):
             conf=self.conf,
             max_page=max_page,
             counts=comment_mode_count,
+            show_unverified_tab=self.require_email_verification or 8 in comment_mode_count,
             order_by=order_by,
             asc=asc,
             comment_search_url=comment_search_url,
