@@ -116,10 +116,10 @@ require-email-verification
     sends notifications only after this confirmation.
 
     Commenters must enter an email address. Isso sends the email with the
-    :ref:`SMTP <configure-smtp>` settings, so set at least ``from``. Links
-    expire after 48 hours, and unconfirmed comments are deleted then. Keep the
-    :ref:`guard <configure-guard>` on, so that one client cannot make Isso send
-    many emails.
+    :ref:`SMTP <configure-smtp>` settings, and does not start if
+    ``[smtp] from`` is not set. Links expire after 48 hours, and unconfirmed
+    comments are deleted then. Keep the :ref:`guard <configure-guard>` on, so
+    that one client cannot make Isso send many emails.
 
     Default: ``false``
 

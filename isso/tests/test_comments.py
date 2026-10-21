@@ -14,7 +14,7 @@ from itsdangerous import URLSafeTimedSerializer
 from itsdangerous.timed import TimestampSigner
 from werkzeug.wrappers import Response
 
-from isso import Isso, core, config
+from isso import Isso, core, config, make_app
 from isso.ext.notifications import create_verify_key
 from isso.db import SQLite3
 from isso.utils import http, NO_CACHE_HEADERS
@@ -1139,6 +1139,12 @@ class TestEmailVerification(unittest.TestCase):
         mails = [(msg["To"], msg["Subject"], msg.get_content()) for (msg, _, _), _ in send_message.call_args_list]
         send_message.reset_mock()
         return mails
+
+    def testStartupFailsWithoutSmtpFrom(self):
+        with self.assertLogs("isso", "ERROR") as logs, self.assertRaises(SystemExit):
+            make_app(self.conf)
+        # The first error, so Isso stops before it tries to connect to SMTP.
+        self.assertIn("[smtp] from", logs.output[0])
 
     def testNewCommentIsUnverified(self):
         rv = self._post("bob@example.org")

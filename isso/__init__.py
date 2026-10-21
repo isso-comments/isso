@@ -116,10 +116,11 @@ class Isso(object):
                 subscribers.append(Webhook(self))
             else:
                 logger.warning("unknown notification backend '%s'", backend)
-        require_email_verification = conf.getboolean("general", "require-email-verification")
-        if require_email_verification and not parseaddr(conf.get("smtp", "from"))[1]:
-            logger.error("require-email-verification is on, but [smtp] from has no address")
-        if smtp_backend or conf.getboolean("general", "reply-notifications") or require_email_verification:
+        if (
+            smtp_backend
+            or conf.getboolean("general", "reply-notifications")
+            or conf.getboolean("general", "require-email-verification")
+        ):
             subscribers.append(SMTP(self))
 
         self.signal = ext.Signal(*subscribers)
@@ -172,6 +173,10 @@ class Isso(object):
 def make_app(conf=None, threading=True, multiprocessing=False, uwsgi=False):
     if not any((threading, multiprocessing, uwsgi)):
         raise RuntimeError("either set threading, multiprocessing or uwsgi")
+
+    if conf.getboolean("general", "require-email-verification") and not parseaddr(conf.get("smtp", "from"))[1]:
+        logger.error("[general] require-email-verification is on, but [smtp] from has no address. Exiting.")
+        sys.exit(1)
 
     if threading:
 
