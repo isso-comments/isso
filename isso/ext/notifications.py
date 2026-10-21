@@ -186,9 +186,9 @@ class SMTP(object):
             # Notify interested authors that a new comment is posted
             notified = []
             parent_comment = self.isso.db.comments.get(comment["parent"])
-            # Email only a published parent. A pending or unverified parent
-            # can have an address that its owner never confirmed.
-            comments_to_notify = [parent_comment] if parent_comment is not None and parent_comment["mode"] == 1 else []
+            # Do not email an unverified parent: nobody has confirmed its address
+            # yet. Comments.delete stops the emails to a deleted unverified one.
+            comments_to_notify = [parent_comment] if parent_comment is not None and parent_comment["mode"] != 8 else []
             comments_to_notify += self.isso.db.comments.fetch(thread["uri"], mode=1, parent=comment["parent"])
             for comment_to_notify in comments_to_notify:
                 email = comment_to_notify["email"]

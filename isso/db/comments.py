@@ -394,6 +394,9 @@ class Comments:
             self._remove_stale()
             return None
 
+        # The row stays for its replies. Nobody confirmed the address of an
+        # unverified comment, so its replies must not email that address.
+        self.db.execute("UPDATE comments SET notification=0 WHERE id=? AND mode=8", (id,))
         self.db.execute("UPDATE comments SET text=? WHERE id=?", ("", id))
         self.db.execute("UPDATE comments SET mode=? WHERE id=?", (4, id))
         for field in ("author", "website"):

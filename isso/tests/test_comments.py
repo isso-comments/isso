@@ -1418,6 +1418,50 @@ class TestEmailVerification(unittest.TestCase):
         self.client.post(self._verify_url(2))
         self.assertEqual(self._sent_mails(), [])
 
+    def testReplyToDeletedUnverifiedCommentDoesNotEmailParent(self):
+        # The reply keeps the deleted row, with its address that nobody confirmed.
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("victim@example.org", notification=1)
+        self._post("attacker@example.org", parent=1)
+        self.assertEqual(self.client.delete("/id/1").status_code, 200)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 4)
+        self._sent_mails()
+
+        self.client.post(self._verify_url(2))
+        self.assertEqual(self._sent_mails(), [])
+
+    def _post_confirmed(self, email, **extra):
+        id_ = loads(self._post(email, **extra).data)["id"]
+        if self.app.db.comments.get(id_)["mode"] == 8:
+            self.client.post(self._verify_url(id_))
+        return id_
+
+    def _assert_auto_approved_reply_emails_pending_parent(self):
+        # The reply is published while its parent waits for the admin. Nothing
+        # sends the reply email when the admin activates the parent later.
+        self.conf.set("moderation", "enabled", "true")
+        self.conf.set("moderation", "approve-if-email-previously-approved", "true")
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        bob = self._post_confirmed("bob@example.org")
+        self.client.post("/id/%d/activate/%s" % (bob, self.app.sign(bob)))
+        alice = self._post_confirmed("alice@example.org", notification=1)
+        self._sent_mails()
+
+        reply = self._post_confirmed("bob@example.org", parent=alice)
+        self.assertEqual(self.app.db.comments.get(alice)["mode"], 2)
+        self.assertEqual(self.app.db.comments.get(reply)["mode"], 1)
+        replies = [to for to, subject, _ in self._sent_mails() if subject.startswith("Re: ")]
+        self.assertEqual(replies, ["alice@example.org"])
+
+    def testAutoApprovedReplyEmailsPendingParent(self):
+        self._assert_auto_approved_reply_emails_pending_parent()
+
+    def testAutoApprovedReplyEmailsPendingParentWithOptionOff(self):
+        self.conf.set("moderation", "require-email-verification", "false")
+        self._assert_auto_approved_reply_emails_pending_parent()
+
     def testAdminActivatesUnverifiedComment(self):
         self.conf.set("general", "reply-notifications", "true")
         self._start_app()
