@@ -15,6 +15,7 @@ from itsdangerous.timed import TimestampSigner
 from werkzeug.wrappers import Response
 
 from isso import Isso, core, config
+from isso.ext.notifications import create_verify_key
 from isso.db import SQLite3
 from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
@@ -910,7 +911,7 @@ class TestModeratedComments(unittest.TestCase):
         """The signer is shared: only a bare comment id is a moderation key."""
         self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
 
-        payloads = [("verify", 1), ("unsubscribe", "a@example.org"), [1, "checksum"], {"logged": True}, True]
+        payloads = [("verify", 1, time.time()), ("unsubscribe", "a@example.org"), [1, "checksum"], {"logged": True}, True]
         for payload in payloads:
             key = self.app.sign(payload)
             for action in ("activate", "edit", "delete"):
@@ -1131,12 +1132,15 @@ class TestEmailVerification(unittest.TestCase):
     def _post(self, email, **extra):
         return self.client.post("/new?uri=test", data=json.dumps({"text": "...", "email": email, **extra}))
 
+    def _verify_key(self, id_):
+        return create_verify_key(self.app, self.app.db.comments.get(id_))
+
     def _verify_url(self, id_, key=None):
-        return "/id/%d/verify/%s" % (id_, key or self.app.sign(("verify", id_)))
+        return "/id/%d/verify/%s" % (id_, key or self._verify_key(id_))
 
     def _verify_key_signed_ago(self, id_, age):
         with mock.patch.object(TimestampSigner, "get_timestamp", return_value=int(time.time()) - age):
-            return self.app.sign(("verify", id_))
+            return self._verify_key(id_)
 
     def _record_verified(self):
         verified = []
@@ -1267,15 +1271,17 @@ class TestEmailVerification(unittest.TestCase):
         self._post("bob@example.org")
         self._post("alice@example.org")
         expired = self._verify_key_signed_ago(1, VERIFICATION_LINK_MAX_AGE + 60)
+        created = self.app.db.comments.get(1)["created"]
 
         urls = {
             "expired": self._verify_url(1, expired),
-            "bad signature": self._verify_url(1, URLSafeTimedSerializer("not the session key").dumps(("verify", 1))),
+            "bad signature": self._verify_url(1, URLSafeTimedSerializer("not the session key").dumps(("verify", 1, created))),
             "not a key": self._verify_url(1, "invalid"),
-            "wrong tag": self._verify_url(1, self.app.sign(("unsubscribe", 1))),
-            "key of other comment": self._verify_url(1, self.app.sign(("verify", 2))),
+            "wrong tag": self._verify_url(1, self.app.sign(("unsubscribe", 1, created))),
+            "key without created": self._verify_url(1, self.app.sign(("verify", 1))),
+            "key of other comment": self._verify_url(1, self._verify_key(2)),
             "moderation key": self._verify_url(1, self.app.sign(1)),
-            "no such comment": self._verify_url(99),
+            "no such comment": self._verify_url(99, self.app.sign(("verify", 99, created))),
         }
         for name, url in urls.items():
             for method in (self.client.get, self.client.post):
@@ -1295,6 +1301,19 @@ class TestEmailVerification(unittest.TestCase):
         self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
         self.assertEqual(self.client.post(self._verify_url(2)).status_code, 200)
         self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testKeyOfDeletedCommentDoesNotConfirmNewCommentWithSameId(self):
+        self._post("attacker@example.org")
+        [(_, _, body)] = self._sent_mails()
+        attacker_link = re.search(r"(/id/1/verify/\S+)$", body, re.MULTILINE).group(1)
+        self.assertEqual(self.client.delete("/id/1").status_code, 200)
+
+        # SQLite gives the id of the deleted newest row to the next new row.
+        self.assertEqual(loads(self._post("victim@example.org").data)["id"], 1)
+
+        self.assertEqual(self.client.get(attacker_link).status_code, 403)
+        self.assertEqual(self.client.post(attacker_link).status_code, 403)
         self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
 
     def testConfirmedEmailCanPostAgain(self):

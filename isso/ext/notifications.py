@@ -30,6 +30,12 @@ def create_comment_action_url(uri, action, key):
     return uri + "/" + action + "/" + key
 
 
+def create_verify_key(isso, comment):
+    # Include "created": SQLite gives the id of a deleted newest row to the
+    # next new row, so the id alone does not identify one comment.
+    return isso.sign(("verify", comment["id"], comment["created"]))
+
+
 class SMTPConnection(object):
     def __init__(self, conf):
         self.conf = conf
@@ -160,7 +166,7 @@ class SMTP(object):
         # client can choose: no comment text, thread title or thread URI.
         site = local("origin")
         uri = self.public_endpoint + "/id/%i" % comment["id"]
-        key = self.isso.sign(("verify", comment["id"]))
+        key = create_verify_key(self.isso, comment)
         body = (
             "Someone just posted a comment on %s using your email address.\n"
             "\n"
@@ -315,7 +321,7 @@ class Stdout(object):
         if comment["mode"] == 2:
             logger.info("Activate comment: %s" % create_comment_action_url(uri, "activate", key))
         elif comment["mode"] == 8:
-            verify_key = self.isso.sign(("verify", comment["id"]))
+            verify_key = create_verify_key(self.isso, comment)
             logger.info("Confirm comment: %s" % create_comment_action_url(uri, "verify", verify_key))
 
     def _edit_comment(self, comment):

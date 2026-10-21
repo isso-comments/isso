@@ -927,7 +927,7 @@ class API(object):
         The comment’s mode after confirmation: `1` (accepted) or `2` (in moderation queue).
 
     @apiExample {curl} Confirm the comment with id 13:
-        curl -X POST 'https://comments.example.com/id/13/verify/WyJ2ZXJpZnkiLDEzXQ.atgizw.IrpqSqIlJXARhZapvy69OYi2NMo'
+        curl -X POST 'https://comments.example.com/id/13/verify/WyJ2ZXJpZnkiLDEzLDE0NjQ5NDA4MzguMjU0MzkzXQ.atgtrA.sOETesEXl5SdsoEyylkHr8TJQsA'
 
     @apiSuccessExample {json} Confirm using POST:
         {"id": 13, "mode": 1}
@@ -1006,12 +1006,14 @@ class API(object):
         except (BadSignature, SignatureExpired):
             return None
 
-        # bool is a subclass of int, so compare the exact type of the id.
-        if rv != ["verify", id] or type(rv[1]) is not int:
+        # bool is a subclass of int, so compare the exact type of the id. The
+        # key also holds "created", because SQLite gives the id of a deleted
+        # newest row to the next new row (see create_verify_key).
+        if not (isinstance(rv, list) and len(rv) == 3 and rv[:2] == ["verify", id] and type(rv[1]) is int):
             return None
 
         item = self.comments.get(id)
-        if item is None:
+        if item is None or item["created"] != rv[2]:
             return None
         if item["mode"] in (1, 2):
             return item
