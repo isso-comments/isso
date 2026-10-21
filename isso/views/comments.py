@@ -4,7 +4,6 @@ import collections
 import re
 import time
 import functools
-import json  # json.dumps to put URL in <script>
 
 from configparser import NoOptionError
 from importlib.resources import files
@@ -17,6 +16,7 @@ from urllib.parse import unquote, urlparse, urlsplit
 from xml.etree import ElementTree as ET
 
 from itsdangerous import SignatureExpired, BadSignature
+from jinja2.utils import htmlsafe_json_dumps
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.http import dump_cookie
 from werkzeug.routing import Rule
@@ -839,7 +839,7 @@ class API(object):
                 "          window.location.href = %s;"
                 "      };"
                 "  }"
-                "</script>" % (action.capitalize(), json.dumps(link))
+                "</script>" % (action.capitalize(), htmlsafe_json_dumps(link))
             )
 
             return Response(modal, 200, content_type="text/html")
