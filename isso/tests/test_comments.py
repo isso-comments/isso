@@ -1184,7 +1184,7 @@ class TestEmailVerification(unittest.TestCase):
         self.assertEqual(self._post("bob@example.org").status_code, 202)
 
         rv = self._post("bob@example.org")
-        self.assertEqual(rv.status_code, 429)
+        self.assertEqual(rv.status_code, 403)
         self.assertEqual(loads(rv.data)["reason"], "verification-pending")
         self.assertEqual(self.app.db.comments.count_modes(), {8: 1})
         self.assertEqual([to for to, _, _ in self._sent_mails()], ["bob@example.org"])
@@ -1199,7 +1199,9 @@ class TestEmailVerification(unittest.TestCase):
 
         for email in ("Bob@example.org", "bob@EXAMPLE.ORG"):
             with self.subTest(email=email):
-                self.assertEqual(self._post(email).status_code, 429)
+                rv = self._post(email)
+                self.assertEqual(rv.status_code, 403)
+                self.assertEqual(loads(rv.data)["reason"], "verification-pending")
 
     def testDeletingUnverifiedCommentDoesNotFreeTheEmail(self):
         self._post("bob@example.org")
@@ -1210,7 +1212,9 @@ class TestEmailVerification(unittest.TestCase):
         self.assertEqual(loads(rv.data)["reason"], "unverified")
         self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
 
-        self.assertEqual(self._post("bob@example.org").status_code, 429)
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "verification-pending")
         self.assertEqual(self._sent_mails(), [])
 
     def testDeletingUnverifiedCommentsKeepsGuardRatelimit(self):

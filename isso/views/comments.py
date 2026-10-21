@@ -345,7 +345,7 @@ class API(object):
         Creates a new comment. The server issues a cookie per new comment which acts as
         an authentication token to modify or delete the comment.
         The token is cryptographically signed and expires automatically after 900 seconds (=15min) by default.
-        If `[moderation] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`). It must be a plain address such as `name@example.org`, without a name, comments, quotes or spaces (else `403` with `{"reason": "invalid-email"}`). The comment is stored unverified (mode `8`) and the status is `202`. If the same email, compared without case, already has a comment from the last hour waiting for confirmation, the request fails with `429` and `{"reason": "verification-pending"}`.
+        If `[moderation] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`). It must be a plain address such as `name@example.org`, without a name, comments, quotes or spaces (else `403` with `{"reason": "invalid-email"}`). The comment is stored unverified (mode `8`) and the status is `202`. If the same email, compared without case, already has a comment from the last hour waiting for confirmation, the request fails with `403` and `{"reason": "verification-pending"}`.
     @apiUse csrf
 
     @apiQuery {String} uri
@@ -457,7 +457,7 @@ class API(object):
                 # One pending confirmation per address, so nobody can flood a
                 # mailbox with confirmation emails.
                 if self.comments.has_recent_unverified(data["email"]):
-                    return JSON({"reason": "verification-pending"}, 429)
+                    return JSON({"reason": "verification-pending"}, 403)
             # if email-based auto-moderation enabled, check for previously approved author
             # right before approval. With email verification, this check runs at confirmation.
             elif self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data["email"]):
