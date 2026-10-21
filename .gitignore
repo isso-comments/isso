@@ -76,3 +76,6 @@ ENV/
 
 # PyCharm/IntelliJ IDEA project files
 .idea/
+
+# Agents related
+.agents/
