@@ -4,6 +4,7 @@ import json
 import os
 import re
 import tempfile
+import time
 import unittest
 
 from urllib.parse import urlencode
@@ -13,6 +14,7 @@ from werkzeug.wrappers import Response
 from isso import Isso, core, config
 from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
+from isso.db.comments import VERIFICATION_LINK_MAX_AGE
 
 from fixtures import curl, loads, FakeIP, FakeHost, JSONClient
 
@@ -975,3 +977,34 @@ class TestPurgeComments(unittest.TestCase):
         self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
         self.app.db.comments.purge(3600)
         self.assertEqual(self.client.get("/id/1").status_code, 200)
+
+    def _post_comment(self, mode, age):
+        rv = self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
+        id_ = loads(rv.data)["id"]
+        self.app.db.comments.update(id_, {"mode": mode, "created": time.time() - age})
+        return id_
+
+    def testPurgeUnverifiedAfterLinkExpires(self):
+        expired = self._post_comment(8, VERIFICATION_LINK_MAX_AGE + 60)
+        fresh = self._post_comment(8, VERIFICATION_LINK_MAX_AGE - 60)
+        pending = self._post_comment(2, VERIFICATION_LINK_MAX_AGE + 60)
+
+        self.app.db.comments.purge(30 * 24 * 3600)
+
+        self.assertIsNone(self.app.db.comments.get(expired))
+        self.assertIsNotNone(self.app.db.comments.get(fresh))
+        self.assertIsNotNone(self.app.db.comments.get(pending))
+
+    def testPurgeKeepsUnverifiedYoungerThanLinkAge(self):
+        fresh = self._post_comment(8, 60)
+        pending = self._post_comment(2, 60)
+
+        self.app.db.comments.purge(0)
+
+        self.assertIsNotNone(self.app.db.comments.get(fresh))
+        self.assertIsNone(self.app.db.comments.get(pending))
+
+    def testActivateUnverified(self):
+        id_ = self._post_comment(8, 0)
+        self.app.db.comments.activate(id_)
+        self.assertEqual(self.app.db.comments.get(id_)["mode"], 1)

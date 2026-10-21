@@ -11,6 +11,13 @@ logger = logging.getLogger("isso")
 
 MAX_LIKES_AND_DISLIKES = 142
 
+# Lifetime of an email confirmation link, and age at which unconfirmed
+# (mode 8) comments are purged.
+VERIFICATION_LINK_MAX_AGE = 48 * 3600
+
+# An email address can have only one new unconfirmed comment per window.
+VERIFICATION_RATE_WINDOW = 3600
+
 
 class Comments:
     """Hopefully DB-independend SQL to store, modify and retrieve all
@@ -32,7 +39,8 @@ class Comments:
         "created",
         "modified",
         "mode",  # status of the comment 1 = valid, 2 = pending,
-        # 4 = soft-deleted (cannot hard delete because of replies)
+        # 4 = soft-deleted (cannot hard delete because of replies),
+        # 8 = unverified (waiting for email confirmation)
         "remote_addr",
         "text",
         "author",
@@ -141,9 +149,46 @@ class Comments:
 
     def activate(self, id):
         """
-        Activate comment id if pending.
+        Activate comment id if pending or unverified.
         """
-        self.db.execute(["UPDATE comments SET", "    mode=1", "WHERE id=? AND mode=2"], (id,))
+        self.db.execute(["UPDATE comments SET", "    mode=1", "WHERE id=? AND mode IN (2, 8)"], (id,))
+
+    def mark_verified(self, id, mode):
+        """
+        Set comment id to :param:`mode` if it waits for email confirmation.
+        """
+        self.db.execute(["UPDATE comments SET", "    mode=?", "WHERE id=? AND mode=8"], (mode, id))
+
+    def has_recent_unverified(self, email):
+        """
+        Return True if a comment with this email has waited for email
+        confirmation for less than :data:`VERIFICATION_RATE_WINDOW` seconds.
+        """
+        rv = self.db.execute(
+            [
+                "SELECT CASE WHEN EXISTS(",
+                "    SELECT * FROM comments WHERE email=? AND mode=8 AND created > ?",
+                ") THEN 1 ELSE 0 END;",
+            ],
+            (email, time.time() - VERIFICATION_RATE_WINDOW),
+        ).fetchone()
+        return rv[0] == 1
+
+    def has_newer_with_email(self, id, email):
+        """
+        Return True if a comment newer than comment id has this email, in
+        any mode. A new row gets an id above every existing row, so a higher
+        id is a newer comment.
+        """
+        rv = self.db.execute(
+            [
+                "SELECT CASE WHEN EXISTS(",
+                "    SELECT * FROM comments WHERE email=? AND id > ?",
+                ") THEN 1 ELSE 0 END;",
+            ],
+            (email, id),
+        ).fetchone()
+        return rv[0] == 1
 
     def is_previously_approved_author(self, email):
         """
@@ -431,7 +476,16 @@ class Comments:
 
     def purge(self, delta):
         """
-        Remove stale pending comments older than :param:`delta`.
+        Remove stale pending comments older than :param:`delta` and
+        unverified comments older than :data:`VERIFICATION_LINK_MAX_AGE`.
         """
-        self.db.execute(["DELETE FROM comments WHERE mode = 2 AND ? - created > ?;"], (time.time(), delta))
+        now = time.time()
+        self.db.execute(
+            [
+                "DELETE FROM comments WHERE",
+                "    (mode = 2 AND ? - created > ?) OR",
+                "    (mode = 8 AND ? - created > ?);",
+            ],
+            (now, delta, now, VERIFICATION_LINK_MAX_AGE),
+        )
         self._remove_stale()
