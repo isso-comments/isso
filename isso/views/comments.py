@@ -16,6 +16,7 @@ from os import path as os_path
 from urllib.parse import unquote, urlparse, urlsplit
 from xml.etree import ElementTree as ET
 
+from email_validator import EmailNotValidError, validate_email
 from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.http import dump_cookie
@@ -54,17 +55,6 @@ def normalize(url):
     if not url.startswith(("http://", "https://")):
         return "http://" + url
     return url
-
-
-# A plain address such as "name@example.org". RFC 5322 also allows display
-# names, comments, quotes and spaces, but smtplib sends mail for such forms to
-# the bare address, so one mailbox could appear under many different strings.
-# "&" is left out because isso stores the address HTML-escaped ("&amp;").
-__plain_email_re = re.compile(r"[\w.!#$%'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)*")
-
-
-def is_plain_email(text):
-    return __plain_email_re.fullmatch(text) is not None
 
 
 def xhr(func):
@@ -425,7 +415,11 @@ class API(object):
         if self.require_email_verification:
             if not data["email"]:
                 return JSON({"reason": "require-email"}, 403)
-            if not is_plain_email(data["email"]):
+            # The address is HTML-escaped by now, so an "&" turns into "&amp;"
+            # and is rejected. Mail to the escaped form would go elsewhere.
+            try:
+                validate_email(data["email"], check_deliverability=False)
+            except EmailNotValidError:
                 return JSON({"reason": "invalid-email"}, 403)
             data["mode"] = 8
         else:

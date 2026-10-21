@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
+    "email-validator",
     "itsdangerous",
     "Jinja2",
     "misaka>=2.0,<3.0",

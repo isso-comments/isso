@@ -12,6 +12,7 @@ Isso uses some of the following dependencies:
   and optional, being replaced by mistune, see next point
 - `mistune <https://mistune.lepture.com/>`_ – a fast yet powerful Python Markdown parser
 - `html5lib <https://github.com/html5lib/html5lib-python>`_ – HTML(5) parser and sanitizer
+- `email-validator <https://github.com/JoshData/python-email-validator>`_ – checks the email address when ``require-email-verification`` is on
 
 Security
 --------

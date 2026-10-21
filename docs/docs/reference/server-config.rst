@@ -225,7 +225,7 @@ require-email-verification
     - Commenters must enter an email address, even if the guard or its
       ``require-email`` option is off. It must be a plain address such as
       ``name@example.org``, without a name, comments, quotes or spaces. Isso
-      does not check the address in any other way.
+      checks it with ``email-validator``, but does not look up the domain.
     - A link is valid for 48 hours. When a newer comment with the same email
       address is posted, the older link stops working. If that newer comment
       is deleted later, the older link can work again until its 48 hours end.
