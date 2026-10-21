@@ -1215,6 +1215,38 @@ class TestEmailVerification(unittest.TestCase):
             with self.subTest(email=email):
                 self.assertEqual(self._post(email).status_code, 429)
 
+    def testDeletingUnverifiedCommentDoesNotFreeTheEmail(self):
+        self._post("bob@example.org")
+        self._sent_mails()
+
+        rv = self.client.delete("/id/1")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "unverified")
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+        self.assertEqual(self._post("bob@example.org").status_code, 429)
+        self.assertEqual(self._sent_mails(), [])
+
+    def testDeletingUnverifiedCommentsKeepsGuardRatelimit(self):
+        # Spelling variants of one mailbox pass the per-address limit, so the
+        # guard's ratelimit is the limit for them.
+        self.conf.set("guard", "enabled", "true")
+        self._start_app()
+        for email in ("bob+1@example.org", "bob+2@example.org"):
+            id_ = loads(self._post(email).data)["id"]
+            self.assertEqual(self.client.delete("/id/%d" % id_).status_code, 403)
+
+        rv = self._post("bob+3@example.org")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "ratelimit")
+
+    def testCommenterCanDeleteConfirmedComment(self):
+        self._post("bob@example.org")
+        self.client.post(self._verify_url(1))
+
+        self.assertEqual(self.client.delete("/id/1").status_code, 200)
+        self.assertIsNone(self.app.db.comments.get(1))
+
     def testUnverifiedCommentsAreHidden(self):
         self._post("published@example.org")
         self.app.db.comments.activate(1)
@@ -1348,7 +1380,7 @@ class TestEmailVerification(unittest.TestCase):
         self._post("attacker@example.org")
         [(_, _, body)] = self._sent_mails()
         attacker_link = re.search(r"(/id/1/verify/\S+)$", body, re.MULTILINE).group(1)
-        self.assertEqual(self.client.delete("/id/1").status_code, 200)
+        self.assertEqual(self.client.post("/id/1/delete/%s" % self.app.sign(1)).status_code, 200)
 
         # SQLite gives the id of the deleted newest row to the next new row.
         self.assertEqual(loads(self._post("victim@example.org").data)["id"], 1)
@@ -1424,7 +1456,7 @@ class TestEmailVerification(unittest.TestCase):
         self._start_app()
         self._post("victim@example.org", notification=1)
         self._post("attacker@example.org", parent=1)
-        self.assertEqual(self.client.delete("/id/1").status_code, 200)
+        self.assertEqual(self.client.post("/id/1/delete/%s" % self.app.sign(1)).status_code, 200)
         self.assertEqual(self.app.db.comments.get(1)["mode"], 4)
         self._sent_mails()
 

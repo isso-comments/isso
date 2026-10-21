@@ -34,6 +34,7 @@ module.exports = {
     "comment-deleted": "Comment deleted.",
     "comment-queued": "Comment in queue for moderation.",
     "comment-unverified": "Check your email to confirm this comment.",
+    "comment-delete-unverified": "To prevent spam, unconfirmed comments cannot be deleted. Please confirm your comment first with the link in your email.",
     "comment-anonymous": "Anonymous",
     "comment-hidden": "{{ n }} Hidden",
     "comment-page-author-suffix": "Author",

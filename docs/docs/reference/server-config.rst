@@ -235,6 +235,10 @@ require-email-verification
       spellings of one mailbox (for example ``name+1@example.org``). So keep
       the :ref:`guard <configure-guard>` and its ``ratelimit`` on, to limit
       how many confirmation emails one client can make Isso send.
+    - Commenters cannot delete a comment before it is confirmed. Otherwise
+      they could delete it and post again at once, and make Isso send a new
+      confirmation email each time. You can still delete such a comment in
+      the admin interface.
     - Isso deletes comments that are not confirmed after 48 hours.
     - In the admin interface, the "Unverified" tab lists the comments that wait
       for confirmation. Click "Validate" to publish one by hand. The tab shows

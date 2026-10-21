@@ -667,6 +667,7 @@ class API(object):
     @apiDescription
         Delete an existing comment. Deleting a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://isso-comments.de/docs/reference/server-config/) for details.
         Returns either `null` or a comment with an empty text value when the comment is still referenced by other comments.
+        A comment that waits for email confirmation (mode `8`) cannot be deleted: the request fails with `403` and `{"reason": "unverified"}`. Only an admin can delete such a comment.
     @apiUse csrf
 
     @apiParam {Number} id
@@ -713,6 +714,11 @@ class API(object):
         # verify checksum, mallory might skip cookie deletion when he deletes a comment
         if rv[1] != sha1(item["text"]):
             raise Forbidden
+
+        # The guard and the one-confirmation-per-hour limit count existing rows.
+        # Deleting an unconfirmed row would let the next post send another email.
+        if item["mode"] == 8:
+            return JSON({"reason": "unverified"}, 403)
 
         self.cache.delete("hash", (item["email"] or item["remote_addr"]).encode("utf-8"))
 
