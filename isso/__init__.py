@@ -48,6 +48,7 @@ import tempfile
 from os.path import abspath, dirname, exists, join
 from argparse import ArgumentParser
 from functools import partial, reduce
+from email.utils import parseaddr
 
 from itsdangerous import URLSafeTimedSerializer
 
@@ -115,7 +116,10 @@ class Isso(object):
                 subscribers.append(Webhook(self))
             else:
                 logger.warning("unknown notification backend '%s'", backend)
-        if smtp_backend or conf.getboolean("general", "reply-notifications"):
+        require_email_verification = conf.getboolean("moderation", "require-email-verification")
+        if require_email_verification and not parseaddr(conf.get("smtp", "from"))[1]:
+            logger.error("require-email-verification is on, but [smtp] from has no address")
+        if smtp_backend or conf.getboolean("general", "reply-notifications") or require_email_verification:
             subscribers.append(SMTP(self))
 
         self.signal = ext.Signal(*subscribers)

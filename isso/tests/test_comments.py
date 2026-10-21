@@ -1037,6 +1037,16 @@ class TestEmailVerification(unittest.TestCase):
         self.conf.set("guard", "enabled", "off")
         self.conf.set("hash", "algorithm", "none")
         self.conf.set("rss", "base", "https://example.org")
+        self.conf.set("smtp", "to", "admin@example.org")
+
+        # Send mail at once, to a fake SMTP server.
+        smtp_connection = mock.patch("isso.ext.notifications.SMTPConnection")
+        self.smtp_connection = smtp_connection.start()
+        self.addCleanup(smtp_connection.stop)
+        start_new_thread = mock.patch("isso.ext.notifications.start_new_thread", lambda function, args: function(*args))
+        start_new_thread.start()
+        self.addCleanup(start_new_thread.stop)
+
         self._start_app()
 
     def tearDown(self):
@@ -1065,6 +1075,13 @@ class TestEmailVerification(unittest.TestCase):
         self.app.signal.subscriptions["comments.verified"].append(lambda thread, comment: verified.append(comment))
         return verified
 
+    def _sent_mails(self):
+        """Return the mails sent since the last call, as (to, subject, body) tuples."""
+        send_message = self.smtp_connection.return_value.__enter__.return_value.send_message
+        mails = [(msg["To"], msg["Subject"], msg.get_content()) for (msg, _, _), _ in send_message.call_args_list]
+        send_message.reset_mock()
+        return mails
+
     def testNewCommentIsUnverified(self):
         rv = self._post("bob@example.org")
         self.assertEqual(rv.status_code, 202)
@@ -1086,6 +1103,7 @@ class TestEmailVerification(unittest.TestCase):
         self.assertEqual(rv.status_code, 429)
         self.assertEqual(loads(rv.data)["reason"], "verification-pending")
         self.assertEqual(self.app.db.comments.count_modes(), {8: 1})
+        self.assertEqual([to for to, _, _ in self._sent_mails()], ["bob@example.org"])
 
         self.assertEqual(self._post("alice@example.org").status_code, 202)
 
@@ -1229,3 +1247,45 @@ class TestEmailVerification(unittest.TestCase):
         self.assertNotIn(b"<script>alert(1)", rv.data)
         link = re.search(rb'window\.location\.href = ("[^"]*");', rv.data).group(1)
         self.assertEqual(json.loads(link), "http://invalid.local" + uri + "#isso-1")
+
+    def testConfirmationEmail(self):
+        self.conf.set("server", "public-endpoint", "https://comments.example.org")
+        self._start_app()
+        self.client.post(
+            "/new?uri=%2Fthread-uri",
+            data=json.dumps({"text": "Comment text", "email": "bob@example.org", "title": "Thread title"}),
+        )
+
+        [(to, subject, body)] = self._sent_mails()
+        self.assertEqual(to, "bob@example.org")
+        self.assertEqual(subject, "Confirm your comment on http://invalid.local")
+        for chosen_by_client in ("Comment text", "Thread title", "thread-uri"):
+            self.assertNotIn(chosen_by_client, body)
+
+        link = re.search(r"^https://comments\.example\.org(/id/1/verify/\S+)$", body, re.MULTILINE)
+        self.assertIsNotNone(link)
+        self.assertEqual(loads(self.client.post(link.group(1)).data), {"id": 1, "mode": 1})
+
+    def testAdminAndReplyEmailsWaitForConfirmation(self):
+        self.conf.set("general", "notify", "smtp")
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("alice@example.org", notification=1)
+        self.client.post(self._verify_url(1))
+        self._sent_mails()
+
+        self._post("bob@example.org", parent=1)
+        self.assertEqual([to for to, _, _ in self._sent_mails()], ["bob@example.org"])
+
+        self.client.post(self._verify_url(2))
+        self.assertEqual(sorted(to for to, _, _ in self._sent_mails()), ["admin@example.org", "alice@example.org"])
+
+    def testReplyToUnverifiedCommentDoesNotEmailParent(self):
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("victim@example.org", notification=1)
+        self._post("attacker@example.org", parent=1)
+        self._sent_mails()
+
+        self.client.post(self._verify_url(2))
+        self.assertEqual(self._sent_mails(), [])

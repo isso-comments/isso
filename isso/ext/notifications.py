@@ -88,6 +88,7 @@ class SMTP(object):
 
     def __iter__(self):
         yield "comments.new:after-save", self.notify_new
+        yield "comments.verified", self.notify_admin_and_users
         yield "comments.activate", self.notify_activated
 
     # Add List-Unsubscribe email header
@@ -137,6 +138,13 @@ class SMTP(object):
         return rv.read()
 
     def notify_new(self, thread, comment):
+        if comment["mode"] == 8:
+            # The admin and reply emails wait until the author confirms.
+            self.send_confirmation(thread, comment)
+        else:
+            self.notify_admin_and_users(thread, comment)
+
+    def notify_admin_and_users(self, thread, comment):
         if self.admin_notify:
             body = self.format(thread, comment, None, admin=True)
             subject = "New comment posted"
@@ -147,6 +155,23 @@ class SMTP(object):
         if comment["mode"] == 1:
             self.notify_users(thread, comment)
 
+    def send_confirmation(self, thread, comment):
+        # Nobody has confirmed this address yet, so send no text that a
+        # client can choose: no comment text, thread title or thread URI.
+        site = local("origin")
+        uri = self.public_endpoint + "/id/%i" % comment["id"]
+        key = self.isso.sign(("verify", comment["id"]))
+        body = (
+            "Someone just posted a comment on %s using your email address.\n"
+            "\n"
+            "If you did not do this, you can safely ignore this email. The comment will\n"
+            "not be posted.\n"
+            "\n"
+            "If you did, click this link to approve the comment:\n"
+            "%s\n" % (site, create_comment_action_url(uri, "verify", key))
+        )
+        self.sendmail("Confirm your comment on %s" % site, body, thread, comment, to=comment["email"])
+
     def notify_activated(self, thread, comment):
         self.notify_users(thread, comment)
 
@@ -155,7 +180,9 @@ class SMTP(object):
             # Notify interested authors that a new comment is posted
             notified = []
             parent_comment = self.isso.db.comments.get(comment["parent"])
-            comments_to_notify = [parent_comment] if parent_comment is not None else []
+            # Email only a published parent. A pending or unverified parent
+            # can have an address that its owner never confirmed.
+            comments_to_notify = [parent_comment] if parent_comment is not None and parent_comment["mode"] == 1 else []
             comments_to_notify += self.isso.db.comments.fetch(thread["uri"], mode=1, parent=comment["parent"])
             for comment_to_notify in comments_to_notify:
                 email = comment_to_notify["email"]
@@ -271,6 +298,7 @@ class Stdout(object):
         yield "comments.edit", self._edit_comment
         yield "comments.delete", self._delete_comment
         yield "comments.activate", self._activate_comment
+        yield "comments.verified", self._verified_comment
 
     def _new_thread(self, thread):
         logger.info("new thread %(id)s: %(title)s" % thread)
@@ -286,6 +314,9 @@ class Stdout(object):
 
         if comment["mode"] == 2:
             logger.info("Activate comment: %s" % create_comment_action_url(uri, "activate", key))
+        elif comment["mode"] == 8:
+            verify_key = self.isso.sign(("verify", comment["id"]))
+            logger.info("Confirm comment: %s" % create_comment_action_url(uri, "verify", verify_key))
 
     def _edit_comment(self, comment):
         logger.info("comment %i edited: %s", comment["id"], json.dumps(comment))
@@ -295,3 +326,6 @@ class Stdout(object):
 
     def _activate_comment(self, thread, comment):
         logger.info("comment %(id)s activated" % thread)
+
+    def _verified_comment(self, thread, comment):
+        logger.info("comment %i verified (mode %i)", comment["id"], comment["mode"])
