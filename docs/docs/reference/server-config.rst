@@ -209,41 +209,15 @@ approve-if-email-previously-approved
 
 require-email-verification
     Hide each new comment until the commenter clicks a link that Isso sends to
-    their email address. The link opens a page that asks the commenter to
-    confirm the comment. After that, the comment is published, or it goes to
-    the moderation queue if ``enabled`` is on.
+    their email address. Then the comment is published, or it goes to the
+    moderation queue if ``enabled`` is on. Isso sends notifications only after
+    this confirmation.
 
-    - Isso sends the confirmation emails with the :ref:`SMTP <configure-smtp>`
-      settings. Set at least ``from``. You do not need ``notify = smtp`` for
-      the confirmation emails. With ``notify = smtp``, Isso emails you about a
-      comment only after it is confirmed. Reply notifications also wait for
-      the confirmation.
-    - With ``notify = webhook``, Isso sends the ``comment.created`` event for a
-      comment only after it is confirmed, or after you click "Validate" in the
-      admin interface. Isso sends no event for a comment that is never
-      confirmed.
-    - Commenters must enter an email address, even if the guard or its
-      ``require-email`` option is off. It must be a plain address such as
-      ``name@example.org``, without a name, comments, quotes or spaces. Isso
-      checks it with ``email-validator``, but does not look up the domain.
-    - A link is valid for 48 hours. When a newer comment with the same email
-      address is posted, the older link stops working. If that newer comment
-      is deleted later, the older link can work again until its 48 hours end.
-    - An email address can have only one comment waiting for confirmation per
-      hour. Isso rejects a second comment in that hour, and the commenter sees
-      a message that tells them to check their email.
-    - Isso compares email addresses without case, but it cannot know all
-      spellings of one mailbox (for example ``name+1@example.org``). So keep
-      the :ref:`guard <configure-guard>` and its ``ratelimit`` on, to limit
-      how many confirmation emails one client can make Isso send.
-    - Commenters cannot delete a comment before it is confirmed. Otherwise
-      they could delete it and post again at once, and make Isso send a new
-      confirmation email each time. You can still delete such a comment in
-      the admin interface.
-    - Isso deletes comments that are not confirmed after 48 hours.
-    - In the admin interface, the "Unverified" tab lists the comments that wait
-      for confirmation. Click "Validate" to publish one by hand. The tab shows
-      when this option is on, or when such comments exist.
+    Commenters must enter an email address. Isso sends the email with the
+    :ref:`SMTP <configure-smtp>` settings, so set at least ``from``. Links
+    expire after 48 hours, and unconfirmed comments are deleted then. Keep the
+    :ref:`guard <configure-guard>` on, so that one client cannot make Isso send
+    many emails.
 
     Default: ``false``
 
