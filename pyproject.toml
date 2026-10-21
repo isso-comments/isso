@@ -66,6 +66,7 @@ isso = [
     "templates/admin.html",
     "templates/disabled.html",
     "templates/login.html",
+    "templates/verify.html",
     "css/admin.css",
     "css/isso.css",
     "img/isso.svg",

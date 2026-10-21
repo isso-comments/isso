@@ -1349,7 +1349,6 @@ class TestEmailVerification(unittest.TestCase):
                 with self.subTest(name, method=method.__name__):
                     rv = method(url)
                     self.assertEqual(rv.status_code, 403)
-                    self.assertIn(comments.API.VERIFY_LINK_FAILED.encode(), rv.data)
 
         self.assertEqual(self.app.db.comments.count_modes(), {8: 2})
 

@@ -198,8 +198,6 @@ class API(object):
         ("admin", ("GET", "/admin/")),
     ]
 
-    VERIFY_LINK_FAILED = "This link has expired or was replaced by a newer one."
-
     def __init__(self, isso, hasher):
         self.isso = isso
         self.hash = hasher.uhash
@@ -948,35 +946,7 @@ class API(object):
 
             thread = self.threads.get(item["tid"])
             link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
-            # json.dumps() does not escape "</script>", and a client can choose
-            # the thread URI, so escape the HTML characters too.
-            script_link = json.dumps(link).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
-            modal = (
-                "<!DOCTYPE html>"
-                "<html>"
-                "<head>"
-                "  <title>Confirm your comment</title>"
-                "</head>"
-                "<body>"
-                "  <p id='failed' hidden>%s</p>"
-                "<script>"
-                "  if (confirm('Confirm your comment?')) {"
-                "      var xhr = new XMLHttpRequest();"
-                "      xhr.open('POST', window.location.href);"
-                "      xhr.onload = function() {"
-                "          if (xhr.status === 200) {"
-                "              window.location.href = %s;"
-                "          } else {"
-                "              document.getElementById('failed').hidden = false;"
-                "          }"
-                "      };"
-                "      xhr.send(null);"
-                "  }"
-                "</script>"
-                "</body>"
-                "</html>" % (API.VERIFY_LINK_FAILED, script_link)
-            )
-            return Response(modal, 200, content_type="text/html")
+            return render_template("verify.html", failed=False, link=link)
 
         with self.isso.lock:
             item = self._comment_for_verify_key(id, key)
@@ -1033,18 +1003,9 @@ class API(object):
     def _verify_link_failed(self):
         # The same page for every failed check, so it tells nothing about
         # the comment.
-        modal = (
-            "<!DOCTYPE html>"
-            "<html>"
-            "<head>"
-            "  <title>Comment not confirmed</title>"
-            "</head>"
-            "<body>"
-            "  <p>%s</p>"
-            "</body>"
-            "</html>" % API.VERIFY_LINK_FAILED
-        )
-        return Response(modal, 403, content_type="text/html")
+        rv = render_template("verify.html", failed=True)
+        rv.status_code = 403
+        return rv
 
     """
     @api {get} / Get comments
