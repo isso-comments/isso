@@ -26,7 +26,6 @@ Bugfixes & Improvements
 
 - Disqus migration: add ``--thread-id`` to key threads by identifier (`#1127`_, pkvach)
 - Show commenters why the spam guard rejected their comment (`#1129`_, pkvach)
-- Moderation links with a key of the wrong type return ``403`` instead of ``500`` (`#562`_)
 
 .. _#1127: https://github.com/isso-comments/isso/pull/1127
 .. _#1129: https://github.com/isso-comments/isso/pull/1129

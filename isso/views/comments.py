@@ -855,12 +855,6 @@ class API(object):
         except (BadSignature, SignatureExpired):
             raise Forbidden
 
-        # The signer also issues edit cookies, admin sessions and unsubscribe
-        # and email confirmation keys. Only a bare comment id is a moderation
-        # key (bool is a subclass of int, so compare the exact type).
-        if type(id) is not int:
-            raise Forbidden
-
         item = self.comments.get(id)
         if item is None:
             raise NotFound

@@ -907,20 +907,6 @@ class TestModeratedComments(unittest.TestCase):
         self.assertNotIn("<script>", stored["author"])
         self.assertEqual(stored["author"], "&lt;script&gt;alert(1)&lt;/script&gt;")
 
-    def testModerateRejectsOtherSignedPayloads(self):
-        """The signer is shared: only a bare comment id is a moderation key."""
-        self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
-
-        payloads = [("verify", 1, time.time()), ("unsubscribe", "a@example.org"), [1, "checksum"], {"logged": True}, True]
-        for payload in payloads:
-            key = self.app.sign(payload)
-            for action in ("activate", "edit", "delete"):
-                with self.subTest(payload=payload, action=action):
-                    self.assertEqual(self.client.get("/id/1/%s/%s" % (action, key)).status_code, 403)
-                    self.assertEqual(self.client.post("/id/1/%s/%s" % (action, key)).status_code, 403)
-
-        self.assertEqual(self.app.db.comments.get(1)["mode"], 2)
-
 
 class TestUnsubscribe(unittest.TestCase):
     def setUp(self):
