@@ -12,18 +12,22 @@ New Features
 - Add no-cache headers to fix stale comment display (`#1110`_, pkvach)
 - Add webhook support for comment events (`#1123`_, p1slave)
 - Update comment counts in the admin interface dynamically after moderation. (`#1113`_, pkvach)
+- Add ``[moderation] require-email-verification`` to hide new comments until the commenter confirms them with a link sent by email (`#562`_)
 
 .. _#1111: https://github.com/isso-comments/isso/pull/1111
 .. _#1117: https://github.com/isso-comments/isso/pull/1117
 .. _#1110: https://github.com/isso-comments/isso/pull/1110
 .. _#1123: https://github.com/isso-comments/isso/pull/1123
 .. _#1113: https://github.com/isso-comments/isso/pull/1113
+.. _#562: https://github.com/isso-comments/isso/issues/562
 
 Bugfixes & Improvements
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 - Disqus migration: add ``--thread-id`` to key threads by identifier (`#1127`_, pkvach)
 - Show commenters why the spam guard rejected their comment (`#1129`_, pkvach)
+- Send reply notifications to the author of the parent comment only when the parent comment is published (`#562`_)
+- Moderation links with a key of the wrong type return ``403`` instead of ``500`` (`#562`_)
 
 .. _#1127: https://github.com/isso-comments/isso/pull/1127
 .. _#1129: https://github.com/isso-comments/isso/pull/1129

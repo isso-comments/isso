@@ -182,6 +182,7 @@ Enable moderation queue and handling of comments still in moderation queue
     [moderation]
     enabled = false
     approve-if-email-previously-approved = false
+    require-email-verification = false
     purge-after = 30d
 
 enabled
@@ -198,10 +199,43 @@ approve-if-email-previously-approved
     to guess correctly the email address used by a previously approved author,
     they will be able to have their new comment auto-approved.
 
+    With ``require-email-verification`` on, this check runs when the commenter
+    confirms the comment, not when they post it.
+
+    Default: ``false``
+
+require-email-verification
+    Hide each new comment until the commenter clicks a link that Isso sends to
+    their email address. The link opens a page that asks the commenter to
+    confirm the comment. After that, the comment is published, or it goes to
+    the moderation queue if ``enabled`` is on.
+
+    - Isso sends the confirmation emails with the :ref:`SMTP <configure-smtp>`
+      settings. Set at least ``from``. You do not need ``notify = smtp`` for
+      the confirmation emails. With ``notify = smtp``, Isso emails you about a
+      comment only after it is confirmed. Reply notifications also wait for
+      the confirmation.
+    - Commenters must enter an email address, even if the guard or its
+      ``require-email`` option is off. Isso does not check the address in any
+      other way.
+    - A link is valid for 48 hours. It stops working when a newer comment with
+      the same email address is posted.
+    - An email address can have only one comment waiting for confirmation per
+      hour. Isso rejects a second comment in that hour, and the commenter sees
+      a message that tells them to check their email.
+    - Isso deletes comments that are not confirmed after 48 hours.
+    - In the admin interface, the "Unverified" tab lists the comments that wait
+      for confirmation. Click "Validate" to publish one by hand. The tab shows
+      when this option is on, or when such comments exist.
+
     Default: ``false``
 
 purge-after
     Remove unprocessed comments in moderation queue after given time.
+
+    With ``require-email-verification`` on, this cleanup runs every hour, or
+    every ``purge-after`` if that is shorter. Comments that are not confirmed
+    are deleted after 48 hours, whatever this value is.
 
     Default: ``30d``
 
