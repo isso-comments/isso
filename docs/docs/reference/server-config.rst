@@ -117,6 +117,9 @@ the event, thread ID/URI/title, and comment ID, parent, timestamps, mode,
 text, author, and website; it excludes email address, IP address, and voting
 data.
 
+With ``require-email-verification`` on (see :ref:`configure-moderation`), the
+event for a comment waits until the comment is confirmed.
+
 .. code-block:: ini
 
     [general]
@@ -215,6 +218,10 @@ require-email-verification
       the confirmation emails. With ``notify = smtp``, Isso emails you about a
       comment only after it is confirmed. Reply notifications also wait for
       the confirmation.
+    - With ``notify = webhook``, Isso sends the ``comment.created`` event for a
+      comment only after it is confirmed, or after you click "Validate" in the
+      admin interface. Isso sends no event for a comment that is never
+      confirmed.
     - Commenters must enter an email address, even if the guard or its
       ``require-email`` option is off. It must be a plain address such as
       ``name@example.org``, without a name, comments, quotes or spaces. Isso

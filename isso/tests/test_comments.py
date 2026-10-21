@@ -1476,6 +1476,49 @@ class TestEmailVerification(unittest.TestCase):
         self.assertEqual(self.app.db.comments.get(2)["mode"], 1)
         self.assertEqual([to for to, _, _ in self._sent_mails()], ["alice@example.org"])
 
+    def _start_app_with_webhook(self):
+        self.conf.set("general", "notify", "webhook")
+        self.conf.add_section("webhook")
+        self.conf.set("webhook", "url", "https://hooks.example.org/isso")
+        self.conf.set("webhook", "secret", "")
+        self.conf.set("webhook", "timeout", "5")
+        urlopen = mock.patch("isso.ext.notifications.urlopen")
+        self.urlopen = urlopen.start()
+        self.addCleanup(urlopen.stop)
+        self._start_app()
+
+    def _webhook_comments(self):
+        """Return (id, mode) of the comments posted to the webhook since the last call."""
+        payloads = [json.loads(request.data) for (request,), _ in self.urlopen.call_args_list]
+        self.urlopen.reset_mock()
+        self.assertTrue(all(payload["event"] == "comment.created" for payload in payloads))
+        return [(payload["comment"]["id"], payload["comment"]["mode"]) for payload in payloads]
+
+    def testWebhookWaitsForConfirmation(self):
+        self._start_app_with_webhook()
+        self._post("bob@example.org")
+        self.client.get(self._verify_url(1))
+        self.assertEqual(self._webhook_comments(), [])
+
+        self.client.post(self._verify_url(1))
+        self.client.post(self._verify_url(1))
+        self.assertEqual(self._webhook_comments(), [(1, 1)])
+
+    def testWebhookReportsUnverifiedCommentValidatedByAdmin(self):
+        self._start_app_with_webhook()
+        self._post("bob@example.org")
+        self.client.post("/id/1/activate/%s" % self.app.sign(1))
+        self.client.post("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(self._webhook_comments(), [(1, 1)])
+
+    def testWebhookReportsConfirmedPendingCommentOnce(self):
+        self.conf.set("moderation", "enabled", "true")
+        self._start_app_with_webhook()
+        self._post("bob@example.org")
+        self.client.post(self._verify_url(1))
+        self.client.post("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(self._webhook_comments(), [(1, 2)])
+
     def _log_in_as_admin(self):
         self.conf.set("admin", "enabled", "true")
         self.conf.set("admin", "password", "secret")

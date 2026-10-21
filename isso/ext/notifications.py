@@ -263,8 +263,22 @@ class Webhook(object):
 
     def __iter__(self):
         yield "comments.new:after-save", self.notify_new
+        yield "comments.verified", self.notify_created
+        yield "comments.activate", self.notify_activated
 
     def notify_new(self, thread, comment):
+        # Report an unverified comment only after it is confirmed or validated
+        # by the admin, so that unconfirmed spam does not reach the endpoint.
+        if comment["mode"] != 8:
+            self.notify_created(thread, comment)
+
+    def notify_activated(self, thread, comment):
+        # `comment` is the row before activation. A pending comment was
+        # reported when it was saved; an unverified one was not.
+        if comment["mode"] == 8:
+            self.notify_created(thread, dict(comment, mode=1))
+
+    def notify_created(self, thread, comment):
         if not self.urls:
             return
 
