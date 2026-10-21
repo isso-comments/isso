@@ -14,7 +14,7 @@ from werkzeug.wrappers import Response
 from isso import Isso, core, config
 from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
-from isso.db.comments import VERIFICATION_LINK_MAX_AGE
+from isso.db.comments import VERIFICATION_LINK_MAX_AGE, VERIFICATION_RATE_WINDOW
 
 from fixtures import curl, loads, FakeIP, FakeHost, JSONClient
 
@@ -1008,3 +1008,87 @@ class TestPurgeComments(unittest.TestCase):
         id_ = self._post_comment(8, 0)
         self.app.db.comments.activate(id_)
         self.assertEqual(self.app.db.comments.get(id_)["mode"], 1)
+
+
+class TestEmailVerification(unittest.TestCase):
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        self.conf = config.load(config.default_file())
+        self.conf.set("general", "dbpath", self.path)
+        self.conf.set("general", "latest-enabled", "true")
+        self.conf.set("moderation", "require-email-verification", "true")
+        self.conf.set("guard", "enabled", "off")
+        self.conf.set("hash", "algorithm", "none")
+        self.conf.set("rss", "base", "https://example.org")
+        self._start_app()
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def _start_app(self):
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(self.conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        self.client = JSONClient(self.app, Response)
+
+    def _post(self, email, **extra):
+        return self.client.post("/new?uri=test", data=json.dumps({"text": "...", "email": email, **extra}))
+
+    def testNewCommentIsUnverified(self):
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 202)
+        self.assertEqual(loads(rv.data)["mode"], 8)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testEmailRequiredWithGuardOff(self):
+        for email in (None, ""):
+            rv = self._post(email)
+            self.assertEqual(rv.status_code, 403)
+            self.assertEqual(loads(rv.data)["reason"], "require-email")
+
+        self.assertEqual(self.app.db.comments.count_modes(), {})
+
+    def testOnePendingConfirmationPerEmailPerHour(self):
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 429)
+        self.assertEqual(loads(rv.data)["reason"], "verification-pending")
+        self.assertEqual(self.app.db.comments.count_modes(), {8: 1})
+
+        self.assertEqual(self._post("alice@example.org").status_code, 202)
+
+        self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+    def testUnverifiedCommentsAreHidden(self):
+        self._post("published@example.org")
+        self.app.db.comments.activate(1)
+        self._post("top@example.org")
+        self._post("reply@example.org", parent=1)
+
+        data = loads(self.client.get("/?uri=test").data)
+        self.assertEqual([c["id"] for c in data["replies"]], [1])
+        self.assertEqual(data["replies"][0]["total_replies"], 0)
+
+        self.assertEqual(loads(self.client.post("/count", data=json.dumps(["test"])).data), [1])
+        self.assertEqual(self.client.get("/feed?uri=test").headers["ETag"], '"1-1"')
+        self.assertEqual([c["id"] for c in loads(self.client.get("/latest?limit=5").data)], [1])
+
+    def testConfigRequiresEmail(self):
+        self.assertFalse(self.conf.getboolean("guard", "require-email"))
+        self.assertTrue(loads(self.client.get("/config").data)["config"]["require-email"])
+
+    def testPreviouslyApprovedEmailStillNeedsConfirmation(self):
+        self.conf.set("moderation", "enabled", "true")
+        self.conf.set("moderation", "approve-if-email-previously-approved", "true")
+        self._start_app()
+
+        self._post("bob@example.org")
+        self.app.db.comments.activate(1)
+
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 202)
+        self.assertEqual(self.app.db.comments.get(2)["mode"], 8)

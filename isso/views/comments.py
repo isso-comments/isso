@@ -209,6 +209,7 @@ class API(object):
             )
         except NoOptionError:
             self.approve_if_email_previously_approved = False
+        self.require_email_verification = isso.conf.getboolean("moderation", "require-email-verification")
         try:
             self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
         except NoOptionError:
@@ -216,7 +217,7 @@ class API(object):
         # These configuration records can be read out by client
         self.public_conf = {}
         self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
-        self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
+        self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email") or self.require_email_verification
         self.public_conf["require-author"] = isso.conf.getboolean("guard", "require-author")
         try:
             self.public_conf["website-field"] = isso.conf.getboolean("guard", "website-field")
@@ -337,6 +338,7 @@ class API(object):
         Creates a new comment. The server issues a cookie per new comment which acts as
         an authentication token to modify or delete the comment.
         The token is cryptographically signed and expires automatically after 900 seconds (=15min) by default.
+        If `[moderation] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`), the comment is stored unverified (mode `8`) and the status is `202`. If the same email already has a comment from the last hour waiting for confirmation, the request fails with `429` and `{"reason": "verification-pending"}`.
     @apiUse csrf
 
     @apiQuery {String} uri
@@ -403,7 +405,12 @@ class API(object):
         if data.get("website"):
             data["website"] = normalize(data["website"])
 
-        data["mode"] = 2 if self.moderated else 1
+        if self.require_email_verification:
+            if not data["email"]:
+                return JSON({"reason": "require-email"}, 403)
+            data["mode"] = 8
+        else:
+            data["mode"] = 2 if self.moderated else 1
         data["remote_addr"] = self._remote_addr(request)
 
         with self.isso.lock:
@@ -433,9 +440,14 @@ class API(object):
             return JSON({"reason": reason}, 403)
 
         with self.isso.lock:
+            if self.require_email_verification:
+                # One pending confirmation per address, so nobody can flood a
+                # mailbox with confirmation emails.
+                if self.comments.has_recent_unverified(data["email"]):
+                    return JSON({"reason": "verification-pending"}, 429)
             # if email-based auto-moderation enabled, check for previously approved author
-            # right before approval.
-            if self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data["email"]):
+            # right before approval. With email verification, this check runs at confirmation.
+            elif self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data["email"]):
                 data["mode"] = 1
 
             rv = self.comments.add(uri, data)
@@ -458,7 +470,7 @@ class API(object):
         # success!
         self.signal("comments.new:finish", thread, rv)
 
-        resp = JSON(rv, 202 if rv["mode"] == 2 else 201)
+        resp = JSON(rv, 202 if rv["mode"] in (2, 8) else 201)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
@@ -1380,7 +1392,7 @@ class API(object):
     @apiSuccess {Boolean} config.require-author
         Commenters must enter valid Name.
     @apiSuccess {Boolean} config.require-email
-        Commenters must enter valid email.
+        Commenters must enter valid email. Also `true` if `[moderation] require-email-verification` is set.
     @apiSuccess {Boolean} config.reply-notifications
         Enable reply notifications via E-mail.
     @apiSuccess {Boolean} config.gravatar
