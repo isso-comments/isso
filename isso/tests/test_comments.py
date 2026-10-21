@@ -7,8 +7,11 @@ import tempfile
 import time
 import unittest
 
+from unittest import mock
 from urllib.parse import urlencode
 
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.timed import TimestampSigner
 from werkzeug.wrappers import Response
 
 from isso import Isso, core, config
@@ -902,6 +905,20 @@ class TestModeratedComments(unittest.TestCase):
         self.assertNotIn("<script>", stored["author"])
         self.assertEqual(stored["author"], "&lt;script&gt;alert(1)&lt;/script&gt;")
 
+    def testModerateRejectsOtherSignedPayloads(self):
+        """The signer is shared: only a bare comment id is a moderation key."""
+        self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
+
+        payloads = [("verify", 1), ("unsubscribe", "a@example.org"), [1, "checksum"], {"logged": True}, True]
+        for payload in payloads:
+            key = self.app.sign(payload)
+            for action in ("activate", "edit", "delete"):
+                with self.subTest(payload=payload, action=action):
+                    self.assertEqual(self.client.get("/id/1/%s/%s" % (action, key)).status_code, 403)
+                    self.assertEqual(self.client.post("/id/1/%s/%s" % (action, key)).status_code, 403)
+
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 2)
+
 
 class TestUnsubscribe(unittest.TestCase):
     def setUp(self):
@@ -1036,6 +1053,18 @@ class TestEmailVerification(unittest.TestCase):
     def _post(self, email, **extra):
         return self.client.post("/new?uri=test", data=json.dumps({"text": "...", "email": email, **extra}))
 
+    def _verify_url(self, id_, key=None):
+        return "/id/%d/verify/%s" % (id_, key or self.app.sign(("verify", id_)))
+
+    def _verify_key_signed_ago(self, id_, age):
+        with mock.patch.object(TimestampSigner, "get_timestamp", return_value=int(time.time()) - age):
+            return self.app.sign(("verify", id_))
+
+    def _record_verified(self):
+        verified = []
+        self.app.signal.subscriptions["comments.verified"].append(lambda thread, comment: verified.append(comment))
+        return verified
+
     def testNewCommentIsUnverified(self):
         rv = self._post("bob@example.org")
         self.assertEqual(rv.status_code, 202)
@@ -1092,3 +1121,111 @@ class TestEmailVerification(unittest.TestCase):
         rv = self._post("bob@example.org")
         self.assertEqual(rv.status_code, 202)
         self.assertEqual(self.app.db.comments.get(2)["mode"], 8)
+
+    def testVerifyGetChangesNothing(self):
+        self._post("bob@example.org")
+        verified = self._record_verified()
+
+        rv = self.client.get(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn(b"confirm(", rv.data)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+        self.assertEqual(verified, [])
+
+    def testVerifyPublishesComment(self):
+        self._post("bob@example.org")
+        verified = self._record_verified()
+
+        rv = self.client.post(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data), {"id": 1, "mode": 1})
+        self.assertEqual([(c["id"], c["mode"]) for c in verified], [(1, 1)])
+        self.assertEqual([c["id"] for c in loads(self.client.get("/?uri=test").data)["replies"]], [1])
+
+    def testVerifyTwiceChangesNothing(self):
+        self._post("bob@example.org")
+        verified = self._record_verified()
+        self.client.post(self._verify_url(1))
+
+        rv = self.client.post(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data), {"id": 1, "mode": 1})
+        self.assertEqual(len(verified), 1)
+        self.assertEqual(self.client.get(self._verify_url(1)).status_code, 200)
+
+    def testVerifyWithModeration(self):
+        self.conf.set("moderation", "enabled", "true")
+        self.conf.set("moderation", "approve-if-email-previously-approved", "true")
+        self._start_app()
+
+        self._post("bob@example.org")
+        self.assertEqual(loads(self.client.post(self._verify_url(1)).data)["mode"], 2)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 2)
+        self.app.db.comments.activate(1)
+
+        # The auto-approve check runs at confirmation.
+        self._post("bob@example.org")
+        self.assertEqual(loads(self.client.post(self._verify_url(2)).data)["mode"], 1)
+        self.assertEqual(self.app.db.comments.get(2)["mode"], 1)
+
+        self._post("alice@example.org")
+        self.assertEqual(loads(self.client.post(self._verify_url(3)).data)["mode"], 2)
+
+    def testVerifyKeyLastsTwoDays(self):
+        self._post("bob@example.org")
+        key = self._verify_key_signed_ago(1, VERIFICATION_LINK_MAX_AGE - 60)
+
+        self.assertEqual(self.client.post(self._verify_url(1, key)).status_code, 200)
+
+    def testVerifyRejectsInvalidKeys(self):
+        self._post("bob@example.org")
+        self._post("alice@example.org")
+        expired = self._verify_key_signed_ago(1, VERIFICATION_LINK_MAX_AGE + 60)
+
+        urls = {
+            "expired": self._verify_url(1, expired),
+            "bad signature": self._verify_url(1, URLSafeTimedSerializer("not the session key").dumps(("verify", 1))),
+            "not a key": self._verify_url(1, "invalid"),
+            "wrong tag": self._verify_url(1, self.app.sign(("unsubscribe", 1))),
+            "key of other comment": self._verify_url(1, self.app.sign(("verify", 2))),
+            "moderation key": self._verify_url(1, self.app.sign(1)),
+            "no such comment": self._verify_url(99),
+        }
+        for name, url in urls.items():
+            for method in (self.client.get, self.client.post):
+                with self.subTest(name, method=method.__name__):
+                    rv = method(url)
+                    self.assertEqual(rv.status_code, 403)
+                    self.assertIn(comments.API.VERIFY_LINK_FAILED.encode(), rv.data)
+
+        self.assertEqual(self.app.db.comments.count_modes(), {8: 2})
+
+    def testNewerCommentReplacesOldKey(self):
+        self._post("bob@example.org")
+        self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+        self.assertEqual(self.client.get(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.client.post(self._verify_url(2)).status_code, 200)
+        self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testConfirmedEmailCanPostAgain(self):
+        self._post("bob@example.org")
+        self.client.post(self._verify_url(1))
+
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+    def testConfirmPageEscapesThreadUri(self):
+        uri = "/</script><script>alert(1)</script>"
+        self.client.post(
+            "/new?" + urlencode({"uri": uri}),
+            data=json.dumps({"text": "...", "email": "bob@example.org", "title": "Title"}),
+        )
+
+        rv = self.client.get(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertNotIn(b"<script>alert(1)", rv.data)
+        link = re.search(rb'window\.location\.href = ("[^"]*");', rv.data).group(1)
+        self.assertEqual(json.loads(link), "http://invalid.local" + uri + "#isso-1")
