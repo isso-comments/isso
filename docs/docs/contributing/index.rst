@@ -223,6 +223,32 @@ Regarding fancy new CI tools
 - Nothing too "chatty" - it will just be ignored and increase the burden on
   maintainers even more
 
+AI Usage
+^^^^^^^^
+
+Rather than coming up with our own policy, we follow the
+excellent `attrs Generative AI / LLM Policy <https://github.com/python-attrs/attrs/blob/main/.github/AI_POLICY.md>`_. In short:
+
+* We take the responsibility for this project very seriously and we expect you to take your responsibility for your contributions seriously, too. This used to be a given, but it changed now that a pull request is just one prompt away.
+
+* Every contribution has to be backed by a human who unequivocally owns the copyright for all changes. No LLM bots in Co-authored-by:s.
+
+* DoS-by-slop leads to a permanent ban.
+
+* Absolutely no unsupervised agentic tools like OpenClaw.
+
+Do not trigger bots like Copilot on this repository. GitHub won't let us block Copilot, but it's a great way to tell you didn't read this.
+
+By submitting a pull request, you certify that:
+
+* You are the author of the contribution or have the legal right to submit it.
+
+* You either hold the copyright to the changes or have explicit legal authorization to contribute them under this project's license.
+
+* You understand the code.
+
+* You accept full responsibility for it.
+
 Complexity
 ^^^^^^^^^^
 
