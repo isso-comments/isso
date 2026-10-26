@@ -127,11 +127,21 @@ var modify = function(id, data) {
     return deferred.promise;
 };
 
+// Rejections with a reason have a `{"reason": ...}` body; others are HTML.
+var jsonReason = function(body) {
+    try {
+        return JSON.parse(body).reason;
+    } catch (e) {
+        return undefined;
+    }
+};
+
 var remove = function(id) {
     var deferred = Q.defer();
     curl("DELETE", endpoint + "/id/" + id, null, function(rv) {
         if (rv.status === 403) {
-            deferred.reject("Not authorized to remove this comment!");
+            var reason = jsonReason(rv.body);
+            deferred.reject(reason ? { status: rv.status, reason: reason } : "Not authorized to remove this comment!");
         } else if (rv.status === 200) {
             deferred.resolve(JSON.parse(rv.body) === null);
         } else {

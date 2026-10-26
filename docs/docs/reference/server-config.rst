@@ -48,6 +48,7 @@ Here are the **default values** for this section:
     host =
     max-age = 15m
     notify = stdout
+    require-email-verification = false
     log-file =
     gravatar = false
     gravatar-url = https://www.gravatar.com/avatar/{}?d=identicon&s=55
@@ -108,6 +109,20 @@ notify
 
     Default: ``stdout``
 
+require-email-verification
+    Hide each new comment until the commenter clicks a link that Isso sends to
+    their email address. Then the comment is published, or it goes to the
+    moderation queue if :ref:`moderation <configure-moderation>` is on. Isso
+    sends notifications only after this confirmation.
+
+    Commenters must enter an email address. Isso sends the email with the
+    :ref:`SMTP <configure-smtp>` settings, and does not start if
+    ``[smtp] from`` is not set. Links expire after 48 hours, and unconfirmed
+    comments are deleted then. Keep the :ref:`guard <configure-guard>` on, so
+    that one client cannot make Isso send many emails.
+
+    Default: ``false``
+
 Webhook
 -------
 
@@ -116,6 +131,9 @@ after each comment is saved, including pending comments. The payload contains
 the event, thread ID/URI/title, and comment ID, parent, timestamps, mode,
 text, author, and website; it excludes email address, IP address, and voting
 data.
+
+With ``[general] require-email-verification`` on, the event for a comment
+waits until the comment is confirmed.
 
 .. code-block:: ini
 
@@ -198,10 +216,17 @@ approve-if-email-previously-approved
     to guess correctly the email address used by a previously approved author,
     they will be able to have their new comment auto-approved.
 
+    With ``[general] require-email-verification`` on, this check runs when the
+    commenter confirms the comment, not when they post it.
+
     Default: ``false``
 
 purge-after
     Remove unprocessed comments in moderation queue after given time.
+
+    With ``[general] require-email-verification`` on, this cleanup runs every
+    hour, or every ``purge-after`` if that is shorter. Comments that are not
+    confirmed are deleted after 48 hours, whatever this value is.
 
     Default: ``30d``
 
@@ -361,6 +386,8 @@ timeout
 
     Default: ``10``
 
+
+.. _configure-guard:
 
 Guard
 -----

@@ -38,6 +38,13 @@
               Staled (<span class="count">{{counts.get(4, 0)}}</span>)
             </span>
           </a>
+          {% if show_unverified_tab %}
+            <a href="?mode=8&page={{page}}&order_by={{order_by}}">
+              <span id="count-mode-8" class="label label-unverified {% if mode == 8 %}active{% endif %}">
+                Unverified (<span class="count">{{counts.get(8, 0)}}</span>)
+              </span>
+            </a>
+          {% endif %}
         </div>
         <div class="group">
           Group by thread: <input type="checkbox" {% if order_by == "tid" %}checked{% endif %} onClick="javascript:window.location='?mode={{mode}}&page={{page}}&order_by={% if order_by == "tid" %}id{% else %}tid{% endif %}';" />
@@ -135,6 +142,8 @@
             <span class="label label-pending">Pending</span>
           {% elif comment.mode == 4 %}
             <span class="label label-staled">Staled</span>
+          {% elif comment.mode == 8 %}
+            <span class="label label-unverified">Unverified</span>
           {% endif %}
         </span>
       </div>
@@ -158,7 +167,7 @@
             Delete
           </a>
         {% endif %}
-        {% if comment.mode == 2 %}
+        {% if comment.mode in (2, 8) %}
           <a class='validate'
              onClick="javascript:validate_com({{comment.id}}, '{{comment.hash}}', '{{isso_host_script}}')">Validate</a>
         {% endif %}

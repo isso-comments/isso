@@ -4,15 +4,22 @@ import json
 import os
 import re
 import tempfile
+import time
 import unittest
 
+from unittest import mock
 from urllib.parse import urlencode
 
+from itsdangerous import URLSafeTimedSerializer
+from itsdangerous.timed import TimestampSigner
 from werkzeug.wrappers import Response
 
-from isso import Isso, core, config
+from isso import Isso, core, config, make_app
+from isso.ext.notifications import create_verify_key
+from isso.db import SQLite3
 from isso.utils import http, NO_CACHE_HEADERS
 from isso.views import comments
+from isso.db.comments import VERIFICATION_LINK_MAX_AGE, VERIFICATION_RATE_WINDOW
 
 from fixtures import curl, loads, FakeIP, FakeHost, JSONClient
 
@@ -900,6 +907,16 @@ class TestModeratedComments(unittest.TestCase):
         self.assertNotIn("<script>", stored["author"])
         self.assertEqual(stored["author"], "&lt;script&gt;alert(1)&lt;/script&gt;")
 
+    def testModeratePageEscapesThreadUri(self):
+        uri = "/</script><script>alert(1)</script>"
+        self.client.post("/new?" + urlencode({"uri": uri}), data=json.dumps({"text": "...", "title": "Title"}))
+
+        rv = self.client.get("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertNotIn(b"<script>alert(1)", rv.data)
+        link = re.search(rb'window\.location\.href = ("[^"]*");', rv.data).group(1)
+        self.assertEqual(json.loads(link), "http://invalid.local" + uri + "#isso-1")
+
 
 class TestUnsubscribe(unittest.TestCase):
     def setUp(self):
@@ -975,3 +992,598 @@ class TestPurgeComments(unittest.TestCase):
         self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
         self.app.db.comments.purge(3600)
         self.assertEqual(self.client.get("/id/1").status_code, 200)
+
+    def _post_comment(self, mode, age):
+        rv = self.client.post("/new?uri=test", data=json.dumps({"text": "..."}))
+        id_ = loads(rv.data)["id"]
+        self.app.db.comments.update(id_, {"mode": mode, "created": time.time() - age})
+        return id_
+
+    def testPurgeUnverifiedAfterLinkExpires(self):
+        expired = self._post_comment(8, VERIFICATION_LINK_MAX_AGE + 60)
+        fresh = self._post_comment(8, VERIFICATION_LINK_MAX_AGE - 60)
+        pending = self._post_comment(2, VERIFICATION_LINK_MAX_AGE + 60)
+
+        self.app.db.comments.purge(30 * 24 * 3600)
+
+        self.assertIsNone(self.app.db.comments.get(expired))
+        self.assertIsNotNone(self.app.db.comments.get(fresh))
+        self.assertIsNotNone(self.app.db.comments.get(pending))
+
+    def testPurgeKeepsUnverifiedYoungerThanLinkAge(self):
+        fresh = self._post_comment(8, 60)
+        pending = self._post_comment(2, 60)
+
+        self.app.db.comments.purge(0)
+
+        self.assertIsNotNone(self.app.db.comments.get(fresh))
+        self.assertIsNone(self.app.db.comments.get(pending))
+
+    def testActivateUnverified(self):
+        id_ = self._post_comment(8, 0)
+        self.app.db.comments.activate(id_)
+        self.assertEqual(self.app.db.comments.get(id_)["mode"], 1)
+
+
+class TestPurgeJob(unittest.TestCase):
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        self.addCleanup(os.unlink, self.path)
+        self.conf = config.load(config.default_file())
+        self.conf.set("general", "dbpath", self.path)
+        self.conf.set("moderation", "purge-after", "30d")
+
+        smtp_connection = mock.patch("isso.ext.notifications.SMTPConnection")
+        smtp_connection.start()
+        self.addCleanup(smtp_connection.stop)
+
+    def _add_comment(self, mode, age):
+        database = SQLite3(self.path, self.conf)
+        database.threads.new("/", None)
+        comment = {"mode": mode, "remote_addr": "127.0.0.1", "text": "...", "created": time.time() - age}
+        return database.comments.add("/", comment)["id"]
+
+    def _run_purge_job_once(self):
+        """Start a threaded app and run one pass of its purge job in this
+        thread. Return the sleep intervals (empty if no job was started)."""
+
+        class StopPurgeJob(Exception):
+            pass
+
+        sleeps = []
+
+        def sleep(seconds):
+            sleeps.append(seconds)
+            raise StopPurgeJob
+
+        def start_new_thread(function, args, kwargs):
+            with self.assertRaises(StopPurgeJob):
+                function(*args, **kwargs)
+
+        class App(Isso, core.ThreadedMixin):
+            pass
+
+        with (
+            mock.patch.object(core.thread, "start_new_thread", start_new_thread),
+            mock.patch.object(core.time, "sleep", sleep),
+        ):
+            self.app = App(self.conf)
+        return sleeps
+
+    def testEmailVerificationAloneStartsHourlyPurge(self):
+        self.conf.set("general", "require-email-verification", "true")
+        expired = self._add_comment(mode=8, age=VERIFICATION_LINK_MAX_AGE + 60)
+
+        self.assertEqual(self._run_purge_job_once(), [3600])
+        self.assertIsNone(self.app.db.comments.get(expired))
+
+    def testEmailVerificationKeepsShorterPurgeAfter(self):
+        self.conf.set("general", "require-email-verification", "true")
+        self.conf.set("moderation", "purge-after", "10m")
+
+        self.assertEqual(self._run_purge_job_once(), [600])
+
+    def testModerationAlonePurgesEveryPurgeAfter(self):
+        self.conf.set("moderation", "enabled", "true")
+
+        self.assertEqual(self._run_purge_job_once(), [30 * 24 * 3600])
+
+    def testNoPurgeJobWithoutModerationOrEmailVerification(self):
+        self.assertEqual(self._run_purge_job_once(), [])
+
+
+class TestEmailVerification(unittest.TestCase):
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        self.conf = config.load(config.default_file())
+        self.conf.set("general", "dbpath", self.path)
+        self.conf.set("general", "latest-enabled", "true")
+        self.conf.set("general", "require-email-verification", "true")
+        self.conf.set("guard", "enabled", "off")
+        self.conf.set("hash", "algorithm", "none")
+        self.conf.set("rss", "base", "https://example.org")
+        self.conf.set("smtp", "to", "admin@example.org")
+
+        # Send mail at once, to a fake SMTP server.
+        smtp_connection = mock.patch("isso.ext.notifications.SMTPConnection")
+        self.smtp_connection = smtp_connection.start()
+        self.addCleanup(smtp_connection.stop)
+        start_new_thread = mock.patch("isso.ext.notifications.start_new_thread", lambda function, args: function(*args))
+        start_new_thread.start()
+        self.addCleanup(start_new_thread.stop)
+
+        self._start_app()
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def _start_app(self):
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(self.conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        self.client = JSONClient(self.app, Response)
+
+    def _post(self, email, **extra):
+        return self.client.post("/new?uri=test", data=json.dumps({"text": "...", "email": email, **extra}))
+
+    def _verify_key(self, id_):
+        return create_verify_key(self.app, self.app.db.comments.get(id_))
+
+    def _verify_url(self, id_, key=None):
+        return "/id/%d/verify/%s" % (id_, key or self._verify_key(id_))
+
+    def _verify_key_signed_ago(self, id_, age):
+        with mock.patch.object(TimestampSigner, "get_timestamp", return_value=int(time.time()) - age):
+            return self._verify_key(id_)
+
+    def _record_verified(self):
+        verified = []
+        self.app.signal.subscriptions["comments.verified"].append(lambda thread, comment: verified.append(comment))
+        return verified
+
+    def _sent_mails(self):
+        """Return the mails sent since the last call, as (to, subject, body) tuples."""
+        send_message = self.smtp_connection.return_value.__enter__.return_value.send_message
+        mails = [(msg["To"], msg["Subject"], msg.get_content()) for (msg, _, _), _ in send_message.call_args_list]
+        send_message.reset_mock()
+        return mails
+
+    def testStartupFailsWithoutSmtpFrom(self):
+        with self.assertLogs("isso", "ERROR") as logs, self.assertRaises(SystemExit):
+            make_app(self.conf)
+        # The first error, so Isso stops before it tries to connect to SMTP.
+        self.assertIn("[smtp] from", logs.output[0])
+
+    def testNewCommentIsUnverified(self):
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 202)
+        self.assertEqual(loads(rv.data)["mode"], 8)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testEmailRequiredWithGuardOff(self):
+        for email in (None, ""):
+            rv = self._post(email)
+            self.assertEqual(rv.status_code, 403)
+            self.assertEqual(loads(rv.data)["reason"], "require-email")
+
+        self.assertEqual(self.app.db.comments.count_modes(), {})
+
+    def testEmailMustBePlainAddress(self):
+        # smtplib mails most of these to the bare address, so each spelling
+        # would count as a new address for the one-per-hour limit.
+        for email in (
+            "bob@example.org (1)",
+            " bob@example.org",
+            "Bob <bob@example.org>",
+            '"bob"@example.org',
+            "bob@example.org, alice@example.org",
+            "bob@example.org.",
+            "bob",
+            "@example.org",
+            "bob@",
+        ):
+            with self.subTest(email=email):
+                rv = self._post(email)
+                self.assertEqual(rv.status_code, 403)
+                self.assertEqual(loads(rv.data)["reason"], "invalid-email")
+
+        self.assertEqual(self.app.db.comments.count_modes(), {})
+        self.assertEqual(self._sent_mails(), [])
+
+        for email in ("bob.o'neil+isso@example.org", "jörg@bücher.example"):
+            with self.subTest(email=email):
+                self.assertEqual(self._post(email).status_code, 202)
+
+    def testOnePendingConfirmationPerEmailPerHour(self):
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "verification-pending")
+        self.assertEqual(self.app.db.comments.count_modes(), {8: 1})
+        self.assertEqual([to for to, _, _ in self._sent_mails()], ["bob@example.org"])
+
+        self.assertEqual(self._post("alice@example.org").status_code, 202)
+
+        self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+    def testCaseVariantsOfEmailShareTheLimit(self):
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+        for email in ("Bob@example.org", "bob@EXAMPLE.ORG"):
+            with self.subTest(email=email):
+                rv = self._post(email)
+                self.assertEqual(rv.status_code, 403)
+                self.assertEqual(loads(rv.data)["reason"], "verification-pending")
+
+    def testDeletingUnverifiedCommentDoesNotFreeTheEmail(self):
+        self._post("bob@example.org")
+        self._sent_mails()
+
+        rv = self.client.delete("/id/1")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "unverified")
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "verification-pending")
+        self.assertEqual(self._sent_mails(), [])
+
+    def testDeletingUnverifiedCommentsKeepsGuardRatelimit(self):
+        # Spelling variants of one mailbox pass the per-address limit, so the
+        # guard's ratelimit is the limit for them.
+        self.conf.set("guard", "enabled", "true")
+        self._start_app()
+        for email in ("bob+1@example.org", "bob+2@example.org"):
+            id_ = loads(self._post(email).data)["id"]
+            self.assertEqual(self.client.delete("/id/%d" % id_).status_code, 403)
+
+        rv = self._post("bob+3@example.org")
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(loads(rv.data)["reason"], "ratelimit")
+
+    def testCommenterCanDeleteConfirmedComment(self):
+        self._post("bob@example.org")
+        self.client.post(self._verify_url(1))
+
+        self.assertEqual(self.client.delete("/id/1").status_code, 200)
+        self.assertIsNone(self.app.db.comments.get(1))
+
+    def testUnverifiedCommentsAreHidden(self):
+        self._post("published@example.org")
+        self.app.db.comments.activate(1)
+        self._post("top@example.org")
+        self._post("reply@example.org", parent=1)
+
+        data = loads(self.client.get("/?uri=test").data)
+        self.assertEqual([c["id"] for c in data["replies"]], [1])
+        self.assertEqual(data["replies"][0]["total_replies"], 0)
+
+        self.assertEqual(loads(self.client.post("/count", data=json.dumps(["test"])).data), [1])
+        self.assertEqual(self.client.get("/feed?uri=test").headers["ETag"], '"1-1"')
+        self.assertEqual([c["id"] for c in loads(self.client.get("/latest?limit=5").data)], [1])
+
+    def testConfigRequiresEmail(self):
+        self.assertFalse(self.conf.getboolean("guard", "require-email"))
+        self.assertTrue(loads(self.client.get("/config").data)["config"]["require-email"])
+
+    def testPreviouslyApprovedEmailStillNeedsConfirmation(self):
+        self.conf.set("moderation", "enabled", "true")
+        self.conf.set("moderation", "approve-if-email-previously-approved", "true")
+        self._start_app()
+
+        self._post("bob@example.org")
+        self.app.db.comments.activate(1)
+
+        rv = self._post("bob@example.org")
+        self.assertEqual(rv.status_code, 202)
+        self.assertEqual(self.app.db.comments.get(2)["mode"], 8)
+
+    def testVerifyGetChangesNothing(self):
+        self._post("bob@example.org")
+        verified = self._record_verified()
+
+        rv = self.client.get(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn(b"confirm(", rv.data)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+        self.assertEqual(verified, [])
+
+    def testVerifyPublishesComment(self):
+        self._post("bob@example.org")
+        verified = self._record_verified()
+
+        rv = self.client.post(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data), {"id": 1, "mode": 1})
+        self.assertEqual([(c["id"], c["mode"]) for c in verified], [(1, 1)])
+        self.assertEqual([c["id"] for c in loads(self.client.get("/?uri=test").data)["replies"]], [1])
+
+    def testVerifyTwiceChangesNothing(self):
+        self._post("bob@example.org")
+        verified = self._record_verified()
+        self.client.post(self._verify_url(1))
+
+        rv = self.client.post(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data), {"id": 1, "mode": 1})
+        self.assertEqual(len(verified), 1)
+        self.assertEqual(self.client.get(self._verify_url(1)).status_code, 200)
+
+    def testVerifyWithModeration(self):
+        self.conf.set("moderation", "enabled", "true")
+        self.conf.set("moderation", "approve-if-email-previously-approved", "true")
+        self._start_app()
+
+        self._post("bob@example.org")
+        self.assertEqual(loads(self.client.post(self._verify_url(1)).data)["mode"], 2)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 2)
+        self.app.db.comments.activate(1)
+
+        # The auto-approve check runs at confirmation.
+        self._post("bob@example.org")
+        self.assertEqual(loads(self.client.post(self._verify_url(2)).data)["mode"], 1)
+        self.assertEqual(self.app.db.comments.get(2)["mode"], 1)
+
+        self._post("alice@example.org")
+        self.assertEqual(loads(self.client.post(self._verify_url(3)).data)["mode"], 2)
+
+    def testVerifyKeyLastsTwoDays(self):
+        self._post("bob@example.org")
+        key = self._verify_key_signed_ago(1, VERIFICATION_LINK_MAX_AGE - 60)
+
+        self.assertEqual(self.client.post(self._verify_url(1, key)).status_code, 200)
+
+    def testVerifyRejectsInvalidKeys(self):
+        self._post("bob@example.org")
+        self._post("alice@example.org")
+        expired = self._verify_key_signed_ago(1, VERIFICATION_LINK_MAX_AGE + 60)
+        created = self.app.db.comments.get(1)["created"]
+
+        urls = {
+            "expired": self._verify_url(1, expired),
+            "bad signature": self._verify_url(1, URLSafeTimedSerializer("not the session key").dumps(("verify", 1, created))),
+            "not a key": self._verify_url(1, "invalid"),
+            "wrong tag": self._verify_url(1, self.app.sign(("unsubscribe", 1, created))),
+            "key without created": self._verify_url(1, self.app.sign(("verify", 1))),
+            "key of other comment": self._verify_url(1, self._verify_key(2)),
+            "moderation key": self._verify_url(1, self.app.sign(1)),
+            "no such comment": self._verify_url(99, self.app.sign(("verify", 99, created))),
+        }
+        for name, url in urls.items():
+            for method in (self.client.get, self.client.post):
+                with self.subTest(name, method=method.__name__):
+                    rv = method(url)
+                    self.assertEqual(rv.status_code, 403)
+
+        self.assertEqual(self.app.db.comments.count_modes(), {8: 2})
+
+    def testNewerCommentReplacesOldKey(self):
+        self._post("bob@example.org")
+        self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+        self.assertEqual(self.client.get(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.client.post(self._verify_url(2)).status_code, 200)
+        self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testCaseVariantOfEmailReplacesOldKey(self):
+        self._post("bob@example.org")
+        self.app.db.execute("UPDATE comments SET created=? WHERE id=1", (time.time() - VERIFICATION_RATE_WINDOW - 60,))
+        self.assertEqual(self._post("BOB@Example.org").status_code, 202)
+
+        self.assertEqual(self.client.post(self._verify_url(1)).status_code, 403)
+        self.assertEqual(self.client.post(self._verify_url(2)).status_code, 200)
+
+    def testKeyOfDeletedCommentDoesNotConfirmNewCommentWithSameId(self):
+        self._post("attacker@example.org")
+        [(_, _, body)] = self._sent_mails()
+        attacker_link = re.search(r"(/id/1/verify/\S+)$", body, re.MULTILINE).group(1)
+        self.assertEqual(self.client.post("/id/1/delete/%s" % self.app.sign(1)).status_code, 200)
+
+        # SQLite gives the id of the deleted newest row to the next new row.
+        self.assertEqual(loads(self._post("victim@example.org").data)["id"], 1)
+
+        self.assertEqual(self.client.get(attacker_link).status_code, 403)
+        self.assertEqual(self.client.post(attacker_link).status_code, 403)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 8)
+
+    def testConfirmedEmailCanPostAgain(self):
+        self._post("bob@example.org")
+        self.client.post(self._verify_url(1))
+
+        self.assertEqual(self._post("bob@example.org").status_code, 202)
+
+    def testConfirmPageEscapesThreadUri(self):
+        uri = "/</script><script>alert(1)</script>"
+        self.client.post(
+            "/new?" + urlencode({"uri": uri}),
+            data=json.dumps({"text": "...", "email": "bob@example.org", "title": "Title"}),
+        )
+
+        rv = self.client.get(self._verify_url(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertNotIn(b"<script>alert(1)", rv.data)
+        link = re.search(rb'window\.location\.href = ("[^"]*");', rv.data).group(1)
+        self.assertEqual(json.loads(link), "http://invalid.local" + uri + "#isso-1")
+
+    def testConfirmationEmail(self):
+        self.conf.set("server", "public-endpoint", "https://comments.example.org")
+        self._start_app()
+        self.client.post(
+            "/new?uri=%2Fthread-uri",
+            data=json.dumps({"text": "Comment text", "email": "bob@example.org", "title": "Thread title"}),
+        )
+
+        [(to, subject, body)] = self._sent_mails()
+        self.assertEqual(to, "bob@example.org")
+        self.assertEqual(subject, "Confirm your comment on http://invalid.local")
+        for chosen_by_client in ("Comment text", "Thread title", "thread-uri"):
+            self.assertNotIn(chosen_by_client, body)
+
+        link = re.search(r"^https://comments\.example\.org(/id/1/verify/\S+)$", body, re.MULTILINE)
+        self.assertIsNotNone(link)
+        self.assertEqual(loads(self.client.post(link.group(1)).data), {"id": 1, "mode": 1})
+
+    def testAdminAndReplyEmailsWaitForConfirmation(self):
+        self.conf.set("general", "notify", "smtp")
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("alice@example.org", notification=1)
+        self.client.post(self._verify_url(1))
+        self._sent_mails()
+
+        self._post("bob@example.org", parent=1)
+        self.assertEqual([to for to, _, _ in self._sent_mails()], ["bob@example.org"])
+
+        self.client.post(self._verify_url(2))
+        self.assertEqual(sorted(to for to, _, _ in self._sent_mails()), ["admin@example.org", "alice@example.org"])
+
+    def testReplyToUnverifiedCommentDoesNotEmailParent(self):
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("victim@example.org", notification=1)
+        self._post("attacker@example.org", parent=1)
+        self._sent_mails()
+
+        self.client.post(self._verify_url(2))
+        self.assertEqual(self._sent_mails(), [])
+
+    def testReplyToDeletedUnverifiedCommentDoesNotEmailParent(self):
+        # The reply keeps the deleted row, with its address that nobody confirmed.
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("victim@example.org", notification=1)
+        self._post("attacker@example.org", parent=1)
+        self.assertEqual(self.client.post("/id/1/delete/%s" % self.app.sign(1)).status_code, 200)
+        self.assertEqual(self.app.db.comments.get(1)["mode"], 4)
+        self._sent_mails()
+
+        self.client.post(self._verify_url(2))
+        self.assertEqual(self._sent_mails(), [])
+
+    def _post_confirmed(self, email, **extra):
+        id_ = loads(self._post(email, **extra).data)["id"]
+        if self.app.db.comments.get(id_)["mode"] == 8:
+            self.client.post(self._verify_url(id_))
+        return id_
+
+    def _assert_auto_approved_reply_emails_pending_parent(self):
+        # The reply is published while its parent waits for the admin. Nothing
+        # sends the reply email when the admin activates the parent later.
+        self.conf.set("moderation", "enabled", "true")
+        self.conf.set("moderation", "approve-if-email-previously-approved", "true")
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        bob = self._post_confirmed("bob@example.org")
+        self.client.post("/id/%d/activate/%s" % (bob, self.app.sign(bob)))
+        alice = self._post_confirmed("alice@example.org", notification=1)
+        self._sent_mails()
+
+        reply = self._post_confirmed("bob@example.org", parent=alice)
+        self.assertEqual(self.app.db.comments.get(alice)["mode"], 2)
+        self.assertEqual(self.app.db.comments.get(reply)["mode"], 1)
+        replies = [to for to, subject, _ in self._sent_mails() if subject.startswith("Re: ")]
+        self.assertEqual(replies, ["alice@example.org"])
+
+    def testAutoApprovedReplyEmailsPendingParent(self):
+        self._assert_auto_approved_reply_emails_pending_parent()
+
+    def testAutoApprovedReplyEmailsPendingParentWithOptionOff(self):
+        self.conf.set("general", "require-email-verification", "false")
+        self._assert_auto_approved_reply_emails_pending_parent()
+
+    def testAdminActivatesUnverifiedComment(self):
+        self.conf.set("general", "reply-notifications", "true")
+        self._start_app()
+        self._post("alice@example.org", notification=1)
+        self.client.post(self._verify_url(1))
+        self._post("bob@example.org", parent=1)
+        self._sent_mails()
+
+        rv = self.client.post("/id/2/activate/%s" % self.app.sign(2))
+        self.assertEqual(rv.status_code, 200)
+        self.assertEqual(loads(rv.data)["counts"], {"1": 2})
+        self.assertEqual(self.app.db.comments.get(2)["mode"], 1)
+        self.assertEqual([to for to, _, _ in self._sent_mails()], ["alice@example.org"])
+
+    def _start_app_with_webhook(self):
+        self.conf.set("general", "notify", "webhook")
+        self.conf.add_section("webhook")
+        self.conf.set("webhook", "url", "https://hooks.example.org/isso")
+        self.conf.set("webhook", "secret", "")
+        self.conf.set("webhook", "timeout", "5")
+        urlopen = mock.patch("isso.ext.notifications.urlopen")
+        self.urlopen = urlopen.start()
+        self.addCleanup(urlopen.stop)
+        self._start_app()
+
+    def _webhook_comments(self):
+        """Return (id, mode) of the comments posted to the webhook since the last call."""
+        payloads = [json.loads(request.data) for (request,), _ in self.urlopen.call_args_list]
+        self.urlopen.reset_mock()
+        self.assertTrue(all(payload["event"] == "comment.created" for payload in payloads))
+        return [(payload["comment"]["id"], payload["comment"]["mode"]) for payload in payloads]
+
+    def testWebhookWaitsForConfirmation(self):
+        self._start_app_with_webhook()
+        self._post("bob@example.org")
+        self.client.get(self._verify_url(1))
+        self.assertEqual(self._webhook_comments(), [])
+
+        self.client.post(self._verify_url(1))
+        self.client.post(self._verify_url(1))
+        self.assertEqual(self._webhook_comments(), [(1, 1)])
+
+    def testWebhookReportsUnverifiedCommentValidatedByAdmin(self):
+        self._start_app_with_webhook()
+        self._post("bob@example.org")
+        self.client.post("/id/1/activate/%s" % self.app.sign(1))
+        self.client.post("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(self._webhook_comments(), [(1, 1)])
+
+    def testWebhookReportsConfirmedPendingCommentOnce(self):
+        self.conf.set("moderation", "enabled", "true")
+        self._start_app_with_webhook()
+        self._post("bob@example.org")
+        self.client.post(self._verify_url(1))
+        self.client.post("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(self._webhook_comments(), [(1, 2)])
+
+    def _log_in_as_admin(self):
+        self.conf.set("admin", "enabled", "true")
+        self.conf.set("admin", "password", "secret")
+        self._start_app()
+        self.client.post("/login/", data={"password": "secret"}, content_type="application/x-www-form-urlencoded")
+
+    def _admin_page(self, mode):
+        rv = self.client.get("/admin/?mode=%d" % mode)
+        self.assertEqual(rv.status_code, 200)
+        page = rv.get_data(as_text=True)
+        self.assertIn('id="count-mode-1"', page, "not logged in")
+        return page
+
+    def testAdminListsUnverifiedComments(self):
+        self._log_in_as_admin()
+        self._post("bob@example.org")
+        page = self._admin_page(8)
+
+        self.assertRegex(page, r'id="count-mode-8"[^>]*>\s*Unverified \(<span class="count">1</span>\)')
+        self.assertIn("id='isso-1'", page)
+        self.assertIn('<span class="label label-unverified">Unverified</span>', page)
+        self.assertIn("validate_com(1, '%s'" % self.app.sign(1), page)
+
+    def testAdminShowsUnverifiedTabWithOptionOffOnlyIfNeeded(self):
+        self.conf.set("general", "require-email-verification", "false")
+        self._log_in_as_admin()
+        self._post("bob@example.org")
+        self.assertNotIn('id="count-mode-8"', self._admin_page(1))
+
+        self.app.db.comments.update(1, {"mode": 8})
+        self.assertIn('id="count-mode-8"', self._admin_page(1))

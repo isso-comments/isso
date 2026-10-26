@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    if (confirm({{ (action|capitalize ~ ": Are you sure?")|tojson }})) {
+      xhr = new XMLHttpRequest;
+      xhr.open("POST", window.location.href);
+      xhr.send(null);
+      xhr.onload = function() {
+        window.location.href = {{ link|tojson }};
+      };
+    }
+  </script>
+</head>
+</html>

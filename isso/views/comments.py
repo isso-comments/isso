@@ -4,7 +4,6 @@ import collections
 import re
 import time
 import functools
-import json  # json.dumps to put URL in <script>
 
 from configparser import NoOptionError
 from importlib.resources import files
@@ -16,6 +15,7 @@ from os import path as os_path
 from urllib.parse import unquote, urlparse, urlsplit
 from xml.etree import ElementTree as ET
 
+from email_validator import EmailNotValidError, validate_email
 from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 from werkzeug.http import dump_cookie
@@ -25,6 +25,7 @@ from werkzeug.wrappers import Response
 from werkzeug.wsgi import get_current_url
 
 from isso import utils, local
+from isso.db.comments import VERIFICATION_LINK_MAX_AGE
 from isso.utils import http, parse, JSONResponse as JSON, XMLResponse as XML, render_template, set_no_cache_headers
 from isso.utils.hash import md5, sha1
 from isso.views import requires
@@ -185,6 +186,8 @@ class API(object):
         ("unsubscribe", ("GET", "/id/<int:id>/unsubscribe/<string:email>/<string:key>")),
         ("moderate", ("GET", "/id/<int:id>/<any(edit,activate,delete):action>/<string:key>")),
         ("moderate", ("POST", "/id/<int:id>/<any(edit,activate,delete):action>/<string:key>")),
+        ("verify_email", ("GET", "/id/<int:id>/verify/<string:key>")),
+        ("verify_email", ("POST", "/id/<int:id>/verify/<string:key>")),
         ("like", ("POST", "/id/<int:id>/like")),
         ("dislike", ("POST", "/id/<int:id>/dislike")),
         ("demo", ("GET", "/demo/")),
@@ -209,6 +212,7 @@ class API(object):
             )
         except NoOptionError:
             self.approve_if_email_previously_approved = False
+        self.require_email_verification = isso.conf.getboolean("general", "require-email-verification")
         try:
             self.trusted_proxies = list(isso.conf.getiter("server", "trusted-proxies"))
         except NoOptionError:
@@ -216,7 +220,7 @@ class API(object):
         # These configuration records can be read out by client
         self.public_conf = {}
         self.public_conf["reply-to-self"] = isso.conf.getboolean("guard", "reply-to-self")
-        self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email")
+        self.public_conf["require-email"] = isso.conf.getboolean("guard", "require-email") or self.require_email_verification
         self.public_conf["require-author"] = isso.conf.getboolean("guard", "require-author")
         try:
             self.public_conf["website-field"] = isso.conf.getboolean("guard", "website-field")
@@ -305,13 +309,14 @@ class API(object):
         The comment’s id (assigned by the server).
     @apiSuccess {Number} parent
         Id of the comment this comment is a reply to. `null` if this is a top-level-comment.
-    @apiSuccess {Number=1,2,4} mode
+    @apiSuccess {Number=1,2,4,8} mode
         The comment’s mode:
         value | explanation
          ---  | ---
          `1`  | accepted: The comment was accepted by the server and is published.
          `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
          `4`  | deleted, but referenced: The comment was deleted on the server but is still referenced by replies.
+         `8`  | unverified: The comment awaits confirmation by email. See `[general] require-email-verification`.
     @apiSuccess {String} author
         The comments’s author’s name or `null`.
     @apiSuccess {String} website
@@ -337,6 +342,7 @@ class API(object):
         Creates a new comment. The server issues a cookie per new comment which acts as
         an authentication token to modify or delete the comment.
         The token is cryptographically signed and expires automatically after 900 seconds (=15min) by default.
+        If `[general] require-email-verification` is set, an email is required (else `403` with `{"reason": "require-email"}`). It must be a plain address such as `name@example.org`, without a name, comments, quotes or spaces (else `403` with `{"reason": "invalid-email"}`). The comment is stored unverified (mode `8`) and the status is `202`. If the same email, compared without case, already has a comment from the last hour waiting for confirmation, the request fails with `403` and `{"reason": "verification-pending"}`.
     @apiUse csrf
 
     @apiQuery {String} uri
@@ -403,7 +409,18 @@ class API(object):
         if data.get("website"):
             data["website"] = normalize(data["website"])
 
-        data["mode"] = 2 if self.moderated else 1
+        if self.require_email_verification:
+            if not data["email"]:
+                return JSON({"reason": "require-email"}, 403)
+            # The address is HTML-escaped by now, so an "&" turns into "&amp;"
+            # and is rejected. Mail to the escaped form would go elsewhere.
+            try:
+                validate_email(data["email"], check_deliverability=False)
+            except EmailNotValidError:
+                return JSON({"reason": "invalid-email"}, 403)
+            data["mode"] = 8
+        else:
+            data["mode"] = 2 if self.moderated else 1
         data["remote_addr"] = self._remote_addr(request)
 
         with self.isso.lock:
@@ -433,9 +450,14 @@ class API(object):
             return JSON({"reason": reason}, 403)
 
         with self.isso.lock:
+            if self.require_email_verification:
+                # One pending confirmation per address, so nobody can flood a
+                # mailbox with confirmation emails.
+                if self.comments.has_recent_unverified(data["email"]):
+                    return JSON({"reason": "verification-pending"}, 403)
             # if email-based auto-moderation enabled, check for previously approved author
-            # right before approval.
-            if self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data["email"]):
+            # right before approval. With email verification, this check runs at confirmation.
+            elif self.approve_if_email_previously_approved and self.comments.is_previously_approved_author(data["email"]):
                 data["mode"] = 1
 
             rv = self.comments.add(uri, data)
@@ -458,7 +480,7 @@ class API(object):
         # success!
         self.signal("comments.new:finish", thread, rv)
 
-        resp = JSON(rv, 202 if rv["mode"] == 2 else 201)
+        resp = JSON(rv, 202 if rv["mode"] in (2, 8) else 201)
         resp.headers.add("Set-Cookie", cookie(str(rv["id"])))
         resp.headers.add("X-Set-Cookie", cookie("isso-%i" % rv["id"]))
         return resp
@@ -636,6 +658,7 @@ class API(object):
     @apiDescription
         Delete an existing comment. Deleting a comment is only possible for a short period of time (15min by default) after it was created and only if the requestor has a valid cookie for it. See the [Isso server documentation](https://isso-comments.de/docs/reference/server-config/) for details.
         Returns either `null` or a comment with an empty text value when the comment is still referenced by other comments.
+        A comment that waits for email confirmation (mode `8`) cannot be deleted: the request fails with `403` and `{"reason": "unverified"}`. Only an admin can delete such a comment.
     @apiUse csrf
 
     @apiParam {Number} id
@@ -682,6 +705,11 @@ class API(object):
         # verify checksum, mallory might skip cookie deletion when he deletes a comment
         if rv[1] != sha1(item["text"]):
             raise Forbidden
+
+        # The guard and the one-confirmation-per-hour limit count existing rows.
+        # Deleting an unconfirmed row would let the next post send another email.
+        if item["mode"] == 8:
+            return JSON({"reason": "unverified"}, 403)
 
         self.cache.delete("hash", (item["email"] or item["remote_addr"]).encode("utf-8"))
 
@@ -771,7 +799,7 @@ class API(object):
     @apiName moderate
     @apiVersion 0.12.6
     @apiDescription
-        Publish or delete a comment that is in the moderation queue (mode `2`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by Isso or provided in the admin interface.
+        Publish or delete a comment that is in the moderation queue (mode `2`) or that awaits confirmation by email (mode `8`). In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by Isso or provided in the admin interface.
         This endpoint can also be used with a `GET` request. In that case, a html page is returned that asks the user whether they are sure to perform the selected action. If they select “yes”, the query is repeated using `POST`.
 
     @apiParam {Number} id
@@ -785,7 +813,7 @@ class API(object):
         The moderation key to authenticate the moderation.
 
     @apiSuccess {Object} counts
-        Number of comments per mode (`1`: accepted, `2`: in moderation queue, `4`: deleted, but referenced), after the moderation action was applied. A mode absent from `counts` has zero comments. Note that although mode is a `Number`, JSON object keys are always strings, so the mode keys in this object are strings (e.g. `"1"`, not `1`).
+        Number of comments per mode (`1`: accepted, `2`: in moderation queue, `4`: deleted, but referenced, `8`: unverified), after the moderation action was applied. A mode absent from `counts` has zero comments. Note that although mode is a `Number`, JSON object keys are always strings, so the mode keys in this object are strings (e.g. `"1"`, not `1`).
 
     @apiExample {curl} delete comment with id 13:
         curl -X POST 'https://comments.example.com/id/13/delete/MTM.CjL6Fg.REIdVXa-whJS_x8ojQL4RrXnuF4'
@@ -826,23 +854,7 @@ class API(object):
         link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
 
         if request.method == "GET":
-            modal = (
-                "<!DOCTYPE html>"
-                "<html>"
-                "<head>"
-                "<script>"
-                "  if (confirm('%s: Are you sure?')) {"
-                "      xhr = new XMLHttpRequest;"
-                "      xhr.open('POST', window.location.href);"
-                "      xhr.send(null);"
-                "      xhr.onload = function() {"
-                "          window.location.href = %s;"
-                "      };"
-                "  }"
-                "</script>" % (action.capitalize(), json.dumps(link))
-            )
-
-            return Response(modal, 200, content_type="text/html")
+            return render_template("moderate.html", action=action, link=link)
 
         if action == "activate":
             if item["mode"] == 1:
@@ -880,6 +892,103 @@ class API(object):
             self.cache.delete("hash", (item["email"] or item["remote_addr"]).encode("utf-8"))
             self.signal("comments.delete", id)
             return JSON({"counts": self.comments.count_modes()}, 200)
+
+    """
+    @api {post} /id/:id/verify/:key verify email
+    @apiGroup Comment
+    @apiName verify_email
+    @apiVersion 0.14.1
+    @apiDescription
+        Confirm a comment that waits for email confirmation (mode `8`). Only used when `[general] require-email-verification` is set. The `key` comes from the confirmation email that Isso sends to the comment’s email address. A key expires after 48 hours. Only the newest key for an email address works: while a newer comment with the same email address (compared without case) exists, older keys are invalid. If that newer comment is deleted, an older key can work again until it expires.
+        The comment changes to mode `1`, or to mode `2` if moderation is enabled. With moderation, `approve-if-email-previously-approved` is applied here: if the email address has a previously approved comment, the comment changes to mode `1`. If the comment is already confirmed, nothing changes.
+        This endpoint can also be used with a `GET` request. A `GET` request changes nothing. It returns a html page that asks the user whether they want to confirm the comment. If they select “OK”, the query is repeated using `POST`, and the page then opens the comment’s thread.
+        If the key is not valid, has expired or was replaced, or the comment cannot be confirmed, both methods return `403` and a short html page.
+
+    @apiParam {Number} id
+        The id of the comment to confirm.
+    @apiParam {String} key
+        The confirmation key from the email.
+
+    @apiSuccess {Number} id
+        The comment’s id.
+    @apiSuccess {Number=1,2} mode
+        The comment’s mode after confirmation: `1` (accepted) or `2` (in moderation queue).
+
+    @apiExample {curl} Confirm the comment with id 13:
+        curl -X POST 'https://comments.example.com/id/13/verify/WyJ2ZXJpZnkiLDEzLDE0NjQ5NDA4MzguMjU0MzkzXQ.atgtrA.sOETesEXl5SdsoEyylkHr8TJQsA'
+
+    @apiSuccessExample {json} Confirm using POST:
+        {"id": 13, "mode": 1}
+    """
+
+    def verify_email(self, environ, request, id, key):
+        if request.method == "GET":
+            item = self._comment_for_verify_key(id, key)
+            if item is None:
+                return self._verify_link_failed()
+
+            thread = self.threads.get(item["tid"])
+            link = local("origin") + thread["uri"] + "#isso-%i" % item["id"]
+            return render_template("verify.html", failed=False, link=link)
+
+        with self.isso.lock:
+            item = self._comment_for_verify_key(id, key)
+            if item is None:
+                return self._verify_link_failed()
+            if item["mode"] != 8:
+                return JSON({"id": id, "mode": item["mode"]}, 200)
+
+            mode = 2 if self.moderated else 1
+            if (
+                mode == 2
+                and self.approve_if_email_previously_approved
+                and self.comments.is_previously_approved_author(item["email"])
+            ):
+                mode = 1
+            self.comments.mark_verified(id, mode)
+            item = self.comments.get(id)
+
+        thread = self.threads.get(item["tid"])
+        self.signal("comments.verified", thread, item)
+        return JSON({"id": id, "mode": mode}, 200)
+
+    def _comment_for_verify_key(self, id, key):
+        """
+        Return comment :param:`id` if :param:`key` is its confirmation key and
+        the comment is confirmed or can be confirmed now, else None.
+
+        Only the newest key for an email address can confirm: every new
+        comment with an email gets its own confirmation email, so a newer
+        comment with this email means a newer key was sent. The check uses the
+        rows that exist now, so an older key works again if the newer comment
+        is removed from the database.
+        """
+        try:
+            rv = self.isso.unsign(key, max_age=VERIFICATION_LINK_MAX_AGE)
+        except (BadSignature, SignatureExpired):
+            return None
+
+        # bool is a subclass of int, so compare the exact type of the id. The
+        # key also holds "created", because SQLite gives the id of a deleted
+        # newest row to the next new row (see create_verify_key).
+        if not (isinstance(rv, list) and len(rv) == 3 and rv[:2] == ["verify", id] and type(rv[1]) is int):
+            return None
+
+        item = self.comments.get(id)
+        if item is None or item["created"] != rv[2]:
+            return None
+        if item["mode"] in (1, 2):
+            return item
+        if item["mode"] != 8 or self.comments.has_newer_with_email(id, item["email"]):
+            return None
+        return item
+
+    def _verify_link_failed(self):
+        # The same page for every failed check, so it tells nothing about
+        # the comment.
+        rv = render_template("verify.html", failed=True)
+        rv.status_code = 403
+        return rv
 
     """
     @api {get} / Get comments
@@ -1380,7 +1489,7 @@ class API(object):
     @apiSuccess {Boolean} config.require-author
         Commenters must enter valid Name.
     @apiSuccess {Boolean} config.require-email
-        Commenters must enter valid email.
+        Commenters must enter valid email. Also `true` if `[general] require-email-verification` is set.
     @apiSuccess {Boolean} config.reply-notifications
         Enable reply notifications via E-mail.
     @apiSuccess {Boolean} config.gravatar
@@ -1504,13 +1613,14 @@ class API(object):
 
     @apiQuery {Number} [page=0]
         Page number
-    @apiQuery {Number{1,2,4}} [mode=2]
+    @apiQuery {Number{1,2,4,8}} [mode=2]
         The comment’s mode:
         value | explanation
          ---  | ---
          `1`  | accepted: The comment was accepted by the server and is published.
          `2`  | in moderation queue: The comment was accepted by the server but awaits moderation.
          `4`  | deleted, but referenced: The comment was deleted on the server but is still referenced by replies.
+         `8`  | unverified: The comment awaits confirmation by email. See `[general] require-email-verification`.
     @apiQuery {String{id,created,modified,likes,dislikes,tid}} [order_by=created]
         Comment ordering
     @apiQuery {Number{0,1}} [asc=0]
@@ -1565,6 +1675,7 @@ class API(object):
             conf=self.conf,
             max_page=max_page,
             counts=comment_mode_count,
+            show_unverified_tab=self.require_email_verification or 8 in comment_mode_count,
             order_by=order_by,
             asc=asc,
             comment_search_url=comment_search_url,

@@ -383,6 +383,13 @@ var insert = function({ comment, scrollIntoView, offset }) {
                     $("a.isso-delete", footer).remove();
                 }
                 del.textContent = i18n.translate("comment-delete");
+            }, function(err) {
+                if (err && err.reason === "unverified") {
+                    del.textContent = i18n.translate("comment-delete");
+                    window.alert(i18n.translate("comment-delete-unverified"));
+                } else {
+                    console.log(err);
+                }
             });
         }
     );

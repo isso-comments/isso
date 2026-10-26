@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% if failed %}Comment not confirmed{% else %}Confirm your comment{% endif %}</title>
+</head>
+<body>
+  <p id="failed"{% if not failed %} hidden{% endif %}>This link has expired or was replaced by a newer one.</p>
+  {%- if not failed %}
+  <script>
+    if (confirm("Confirm your comment?")) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", window.location.href);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          window.location.href = {{ link|tojson }};
+        } else {
+          document.getElementById("failed").hidden = false;
+        }
+      };
+      xhr.send(null);
+    }
+  </script>
+  {%- endif %}
+</body>
+</html>

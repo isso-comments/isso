@@ -16,7 +16,9 @@ module.exports = {
     "guard-direct-reply": "You have posted too many top-level comments on this thread.",
     "guard-reply-to-self": "You can't reply to your own comment while it can still be edited.",
     "guard-require-email": "Please provide your email address to post this comment.",
+    "guard-invalid-email": "Please enter a valid email address, such as name@example.org.",
     "guard-require-author": "Please provide your name to post this comment.",
+    "guard-verification-pending": "A comment with this email address is already waiting for confirmation. Check your email, or try again later.",
 
     "num-comments": "One Comment\n{{ n }} Comments",
     "no-comments": "No Comments Yet",
@@ -31,6 +33,8 @@ module.exports = {
     "comment-cancel": "Cancel",
     "comment-deleted": "Comment deleted.",
     "comment-queued": "Comment in queue for moderation.",
+    "comment-unverified": "Check your email to confirm this comment.",
+    "comment-delete-unverified": "To prevent spam, unconfirmed comments cannot be deleted. Please confirm your comment first with the link in your email.",
     "comment-anonymous": "Anonymous",
     "comment-hidden": "{{ n }} Hidden",
     "comment-page-author-suffix": "Author",

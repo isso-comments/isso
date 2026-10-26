@@ -24,7 +24,7 @@ function fade(element) {
         op -= op * 0.1;
     }, 10);
 }
-const modeCountIds = {1: 'count-mode-1', 2: 'count-mode-2', 4: 'count-mode-4'};
+const modeCountIds = {1: 'count-mode-1', 2: 'count-mode-2', 4: 'count-mode-4', 8: 'count-mode-8'};
 
 function setCountBadge(modeId, count) {
     const el = document.getElementById(modeId);
