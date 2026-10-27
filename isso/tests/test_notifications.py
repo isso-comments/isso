@@ -5,7 +5,7 @@ import hmac
 import json
 import unittest
 
-from isso import config
+from isso import config, local
 from isso.ext import notifications
 
 
@@ -100,3 +100,168 @@ class TestWebhook(unittest.TestCase):
         self.assertNotIn("email", payload["comment"])
         self.assertNotIn("remote_addr", payload["comment"])
         self.assertNotIn("voters", payload["comment"])
+
+
+class FakeComments(object):
+    def __init__(self, rows):
+        self.rows = rows
+
+    def get(self, id):
+        for row in self.rows:
+            if row["id"] == id:
+                return row
+        return None
+
+    def fetch(self, uri, mode=5, parent="any", **kwargs):
+        for row in self.rows:
+            if parent != "any" and row["parent"] != parent:
+                continue
+            yield row
+
+    def thread_subscribers(self, tid):
+        return [row for row in self.rows if row["notification"] == 2]
+
+
+def comment(id, parent=None, email=None, notification=0, mode=1):
+    return {
+        "id": id,
+        "parent": parent,
+        "mode": mode,
+        "text": "Comment %i" % id,
+        "author": "Author %i" % id,
+        "website": None,
+        "email": email,
+        "remote_addr": "192.0.2.1",
+        "notification": notification,
+    }
+
+
+class TestSMTPNotifyUsers(unittest.TestCase):
+    """Who gets an email for a new comment, and with which subject."""
+
+    def setUp(self):
+        local.origin = "https://example.test"
+
+    def smtp(self, rows, reply_notify=True, thread_notify=True):
+        smtp = notifications.SMTP.__new__(notifications.SMTP)
+        smtp.isso = type(
+            "Isso",
+            (),
+            {
+                "db": type("DB", (), {"comments": FakeComments(rows)})(),
+                # tell the two unsubscribe scopes apart in the generated links
+                "sign": staticmethod(lambda payload: "thread-key" if len(payload) == 3 else "reply-key"),
+            },
+        )()
+        smtp.public_endpoint = "https://comments.example.test"
+        smtp.reply_notify = reply_notify
+        smtp.thread_notify = thread_notify
+
+        self.sent = []
+
+        def sendmail(subject, body, thread, comment, to=None, headers=None):
+            self.sent.append({"subject": subject, "body": body, "to": to, "headers": headers})
+
+        smtp.sendmail = sendmail
+        return smtp
+
+    thread = {"id": 1, "uri": "/post", "title": "A post"}
+
+    def test_thread_subscriber_notified_about_top_level_comment(self):
+        subscriber = comment(1, email="alice@example.test", notification=2)
+        new = comment(2, email="bob@example.test")
+        smtp = self.smtp([subscriber, new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual([mail["to"] for mail in self.sent], ["alice@example.test"])
+        self.assertEqual(self.sent[0]["subject"], "New comment posted on A post")
+        # thread-wide unsubscribe link pointing at the subscriber's own comment
+        url = "https://comments.example.test/id/1/unsubscribe/alice%40example.test/thread-key"
+        self.assertIn(url, self.sent[0]["body"])
+        self.assertEqual(self.sent[0]["headers"], (("List-Unsubscribe", url),))
+
+    def test_reply_subscriber_not_notified_about_unrelated_comment(self):
+        subscriber = comment(1, email="alice@example.test", notification=1)
+        new = comment(2, email="bob@example.test")
+        smtp = self.smtp([subscriber, new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual(self.sent, [])
+
+    def test_reply_subscriber_notified_about_reply(self):
+        subscriber = comment(1, email="alice@example.test", notification=1)
+        new = comment(2, parent=1, email="bob@example.test")
+        smtp = self.smtp([subscriber, new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual([mail["to"] for mail in self.sent], ["alice@example.test"])
+        self.assertEqual(self.sent[0]["subject"], "Re: New comment posted on A post")
+        # unchanged reply-scoped unsubscribe link pointing at the parent
+        url = "https://comments.example.test/id/1/unsubscribe/alice%40example.test/reply-key"
+        self.assertIn(url, self.sent[0]["body"])
+        self.assertEqual(self.sent[0]["headers"], (("List-Unsubscribe", url),))
+
+    def test_sibling_reply_subscriber_link_points_at_parent(self):
+        parent = comment(1, email="carol@example.test")
+        subscriber = comment(2, parent=1, email="alice@example.test", notification=1)
+        new = comment(3, parent=1, email="bob@example.test")
+        smtp = self.smtp([parent, subscriber, new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual([mail["to"] for mail in self.sent], ["alice@example.test"])
+        self.assertIn("/id/1/unsubscribe/alice%40example.test/reply-key", self.sent[0]["body"])
+
+    def test_subscriber_notified_once_per_email(self):
+        first = comment(1, email="alice@example.test", notification=2)
+        second = comment(2, parent=1, email="alice@example.test", notification=2)
+        new = comment(3, parent=1, email="bob@example.test")
+        smtp = self.smtp([first, second, new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual([mail["to"] for mail in self.sent], ["alice@example.test"])
+        self.assertEqual(self.sent[0]["subject"], "Re: New comment posted on A post")
+
+    def test_thread_subscriber_gets_thread_link_for_reply(self):
+        subscriber = comment(1, email="alice@example.test", notification=2)
+        new = comment(2, parent=1, email="bob@example.test")
+        smtp = self.smtp([subscriber, new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual([mail["to"] for mail in self.sent], ["alice@example.test"])
+        self.assertEqual(self.sent[0]["subject"], "Re: New comment posted on A post")
+        # a reply-scoped link would silently cancel the thread subscription too
+        url = "https://comments.example.test/id/1/unsubscribe/alice%40example.test/thread-key"
+        self.assertEqual(self.sent[0]["headers"], (("List-Unsubscribe", url),))
+
+    def test_reply_link_when_thread_notifications_disabled(self):
+        subscriber = comment(1, email="alice@example.test", notification=2)
+        new = comment(2, parent=1, email="bob@example.test")
+        smtp = self.smtp([subscriber, new], thread_notify=False)
+
+        smtp.notify_users(self.thread, new)
+
+        url = "https://comments.example.test/id/1/unsubscribe/alice%40example.test/reply-key"
+        self.assertEqual(self.sent[0]["headers"], (("List-Unsubscribe", url),))
+
+    def test_author_not_notified_about_own_comment(self):
+        new = comment(1, email="alice@example.test", notification=2)
+        smtp = self.smtp([new])
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual(self.sent, [])
+
+    def test_thread_notifications_disabled(self):
+        subscriber = comment(1, email="alice@example.test", notification=2)
+        new = comment(2, email="bob@example.test")
+        smtp = self.smtp([subscriber, new], thread_notify=False)
+
+        smtp.notify_users(self.thread, new)
+
+        self.assertEqual(self.sent, [])

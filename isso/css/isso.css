@@ -271,6 +271,9 @@ h4.isso-thread-heading {
     display: none;
     padding-bottom: 10px;
 }
+.isso-notification-section label {
+    display: block;
+}
 .isso-auth-section {
     display: block;
 }

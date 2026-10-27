@@ -27,6 +27,7 @@ from werkzeug.wsgi import get_current_url
 from isso import utils, local
 from isso.utils import http, parse, JSONResponse as JSON, XMLResponse as XML, render_template, set_no_cache_headers
 from isso.utils.hash import md5, sha1
+from isso.db.comments import NOTIFY_NONE, NOTIFY_REPLIES, NOTIFY_THREAD
 from isso.views import requires
 
 
@@ -223,6 +224,10 @@ class API(object):
         except NoOptionError:
             self.public_conf["website-field"] = True
         self.public_conf["reply-notifications"] = isso.conf.getboolean("general", "reply-notifications")
+        try:
+            self.public_conf["thread-notifications"] = isso.conf.getboolean("general", "thread-notifications")
+        except NoOptionError:
+            self.public_conf["thread-notifications"] = False
         self.public_conf["gravatar"] = isso.conf.getboolean("general", "gravatar")
 
         if self.public_conf["gravatar"]:
@@ -269,6 +274,9 @@ class API(object):
 
         if not isinstance(comment.get("parent"), (int, type(None))):
             return False, "parent must be an integer or null"
+
+        if comment.get("notification") not in (None, NOTIFY_NONE, NOTIFY_REPLIES, NOTIFY_THREAD):
+            return False, "notification must be 0, 1 or 2"
 
         for key in ("text", "author", "website", "email"):
             if not isinstance(comment.get(key), (str, type(None))):
@@ -392,6 +400,12 @@ class API(object):
         valid, reason = API.verify(data)
         if not valid:
             return BadRequest(reason)
+
+        data["notification"] = int(data.get("notification") or NOTIFY_NONE)
+        # Do not trust the client: subscribing to a whole thread is only
+        # possible if the server allows it.
+        if data["notification"] == NOTIFY_THREAD and not self.public_conf["thread-notifications"]:
+            data["notification"] = NOTIFY_REPLIES
 
         for field in ("author", "email"):
             if data.get(field) is not None:
@@ -707,10 +721,10 @@ class API(object):
     @apiName unsubscribe
     @apiVersion 0.12.6
     @apiDescription
-        Opt out from getting any further email notifications about replies to a particular comment. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
+        Opt out from getting any further email notifications about replies to a particular comment, or about the whole thread if the `key` was issued for that. In order to use this endpoint, the requestor needs a `key` that is usually obtained from an email sent out by isso.
 
     @apiParam {Number} id
-        The id of the comment to unsubscribe from replies to.
+        The id of the comment to unsubscribe from replies to (or any comment in the thread, for a thread-wide `key`).
     @apiParam {String} email
         The email address of the subscriber.
     @apiParam {String} key
@@ -737,11 +751,12 @@ class API(object):
         except (BadSignature, SignatureExpired):
             raise Forbidden
 
-        if not isinstance(rv, list) or len(rv) != 2:
+        # ["unsubscribe", email] covers a comment and its replies,
+        # ["unsubscribe", email, "thread"] the whole thread
+        if rv not in (["unsubscribe", email], ["unsubscribe", email, "thread"]):
             raise Forbidden
 
-        if rv[0] != "unsubscribe" or rv[1] != email:
-            raise Forbidden
+        thread_wide = len(rv) == 3
 
         item = self.comments.get(id)
 
@@ -749,7 +764,12 @@ class API(object):
             raise NotFound
 
         with self.isso.lock:
-            self.comments.unsubscribe(email, id)
+            if thread_wide:
+                self.comments.unsubscribe_thread(email, id)
+                message = "You have been unsubscribed from all new comments in the given conversation."
+            else:
+                self.comments.unsubscribe(email, id)
+                message = "You have been unsubscribed from replies in the given conversation."
 
         modal = (
             "<!DOCTYPE html>"
@@ -758,7 +778,7 @@ class API(object):
             "  <title>Successfully unsubscribed</title>"
             "</head>"
             "<body>"
-            "  <p>You have been unsubscribed from replies in the given conversation.</p>"
+            "  <p>" + message + "</p>"
             "</body>"
             "</html>"
         )
@@ -1383,6 +1403,8 @@ class API(object):
         Commenters must enter valid email.
     @apiSuccess {Boolean} config.reply-notifications
         Enable reply notifications via E-mail.
+    @apiSuccess {Boolean} config.thread-notifications
+        Allow commenters to subscribe to all new comments on a page via E-mail.
     @apiSuccess {Boolean} config.gravatar
         Load images from Gravatar service instead of generating them. Also disables regular avatars (see below).
     @apiSuccess {Boolean} config.avatar
@@ -1403,6 +1425,7 @@ class API(object):
             "require-email": false,
             "require-author": false,
             "reply-notifications": false,
+            "thread-notifications": false,
             "gravatar": true,
             "avatar": false,
             "feed": false

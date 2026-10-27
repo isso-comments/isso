@@ -945,6 +945,108 @@ class TestUnsubscribe(unittest.TestCase):
         self.assertEqual(rv_wrong_key_type.status_code, 403)
 
 
+class TestNotificationLevel(unittest.TestCase):
+    """The "notification" field of a new comment: 0 = off, 1 = replies, 2 = thread."""
+
+    def setUp(self):
+        fd, self.path = tempfile.mkstemp()
+        self.conf = config.load(config.default_file())
+        self.conf.set("general", "dbpath", self.path)
+        self.conf.set("guard", "enabled", "off")
+        self.conf.set("hash", "algorithm", "none")
+        # enabling notifications instantiates the SMTP backend, which probes
+        # the (absent) mail server on startup
+        self.conf.set("smtp", "timeout", "1")
+
+    def tearDown(self):
+        os.unlink(self.path)
+
+    def client(self, thread_notifications):
+        self.conf.set("general", "thread-notifications", thread_notifications)
+
+        class App(Isso, core.Mixin):
+            pass
+
+        self.app = App(self.conf)
+        self.app.wsgi_app = FakeIP(self.app.wsgi_app, "192.168.1.1")
+        return JSONClient(self.app, Response)
+
+    def post(self, client, notification):
+        return client.post(
+            "/new?uri=test",
+            data=json.dumps({"text": "Lorem ipsum ...", "email": "test@test.example", "notification": notification}),
+        )
+
+    def testDefaultsToZero(self):
+        client = self.client("false")
+        rv = client.post("/new?uri=test", data=json.dumps({"text": "Lorem ipsum ..."}))
+        self.assertEqual(rv.status_code, 201)
+        self.assertEqual(loads(rv.data)["notification"], 0)
+
+    def testThreadLevelStored(self):
+        rv = self.post(self.client("true"), 2)
+        self.assertEqual(rv.status_code, 201)
+        self.assertEqual(loads(rv.data)["notification"], 2)
+
+    def testThreadLevelDowngradedIfDisabled(self):
+        rv = self.post(self.client("false"), 2)
+        self.assertEqual(rv.status_code, 201)
+        self.assertEqual(loads(rv.data)["notification"], 1)
+
+    def testInvalidLevelRejected(self):
+        rv = self.post(self.client("true"), 3)
+        self.assertEqual(rv.status_code, 400)
+
+    def testConfigIsPublic(self):
+        rv = self.client("true").get("/config")
+        self.assertEqual(loads(rv.data)["config"]["thread-notifications"], True)
+
+    def subscribe(self, client):
+        """Subscribe test@test.example in two branches of one thread."""
+        for parent in (None, None, 1, 2):
+            data = {"text": "Lorem ipsum ...", "email": "test@test.example", "notification": 2, "parent": parent}
+            rv = client.post("/new?uri=test", data=json.dumps(data))
+            self.assertEqual(rv.status_code, 201)
+
+    def notifications(self):
+        return [self.app.db.comments.get(id)["notification"] for id in (1, 2, 3, 4)]
+
+    def testUnsubscribeFromReplies(self):
+        client = self.client("true")
+        self.subscribe(client)
+        email = "test@test.example"
+
+        key = self.app.sign(("unsubscribe", email))
+        rv = client.get("/id/1/unsubscribe/%s/%s" % (email, key))
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn(b"unsubscribed from replies", rv.data)
+
+        # only the first branch (comment 1 and its reply 3) is affected
+        self.assertEqual(self.notifications(), [0, 2, 0, 2])
+
+    def testUnsubscribeFromThread(self):
+        client = self.client("true")
+        self.subscribe(client)
+        email = "test@test.example"
+
+        key = self.app.sign(("unsubscribe", email, "thread"))
+        rv = client.get("/id/1/unsubscribe/%s/%s" % (email, key))
+        self.assertEqual(rv.status_code, 200)
+        self.assertIn(b"unsubscribed from all new comments", rv.data)
+
+        self.assertEqual(self.notifications(), [0, 0, 0, 0])
+
+    def testUnsubscribeUnknownScopeRejected(self):
+        client = self.client("true")
+        self.subscribe(client)
+        email = "test@test.example"
+
+        key = self.app.sign(("unsubscribe", email, "everything"))
+        rv = client.get("/id/1/unsubscribe/%s/%s" % (email, key))
+        self.assertEqual(rv.status_code, 403)
+        self.assertEqual(self.notifications(), [2, 2, 2, 2])
+
+
 class TestPurgeComments(unittest.TestCase):
     def setUp(self):
         fd, self.path = tempfile.mkstemp()
