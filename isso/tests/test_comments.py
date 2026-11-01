@@ -6,7 +6,7 @@ import re
 import tempfile
 import unittest
 
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 from werkzeug.wrappers import Response
 
@@ -869,6 +869,20 @@ class TestModeratedComments(unittest.TestCase):
 
         # Comment should no longer exist
         self.assertEqual(self.app.db.comments.get(id_), None)
+
+    def testModerateConfirmPageEscapesThreadUri(self):
+        """A thread URI must not be able to close the <script> on the confirm page."""
+        uri = "/</script><script>alert(1)</script>"
+        rv = self.client.post("/new?uri=" + quote(uri, safe=""), data=json.dumps({"text": "...", "title": "t"}))
+        self.assertEqual(rv.status_code, 202)
+
+        rv = self.client.get("/id/1/activate/%s" % self.app.sign(1))
+        self.assertEqual(rv.status_code, 200)
+        self.assertNotIn(b"<script>alert(1)", rv.data)
+        self.assertIn(
+            b'"http://invalid.local/\\u003c/script\\u003e\\u003cscript\\u003ealert(1)\\u003c/script\\u003e#isso-1"',
+            rv.data,
+        )
 
     def testModerateEditXSSPayloadIsEscaped(self):
         """XSS payloads in author/website via moderate edit endpoint must be HTML-escaped."""
