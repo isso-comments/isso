@@ -272,6 +272,21 @@ data-isso-sorting
 
     .. versionadded:: 0.13.1
 
+.. _data-isso-animations:
+
+data-isso-animations
+    Enable or disable animations for comment insertion and deletion.
+    When enabled, new comments will fade in and deleted comments will fade out.
+    Animations automatically respect the user's ``prefers-reduced-motion`` setting.
+
+    .. code-block:: html
+
+        <script src="..." data-isso-animations="true"></script>
+
+    Default: ``false``
+
+    .. versionadded:: 0.14.1
+
 Deprecated Client Settings
 --------------------------
 
