@@ -22,7 +22,7 @@ class SQLite3:
     a trigger for automated orphan removal.
     """
 
-    MAX_VERSION = 5
+    MAX_VERSION = 6
 
     def __init__(self, path, conf):
         self.path = os.path.expanduser(path)
@@ -187,21 +187,44 @@ class SQLite3:
                     logger.error("Migrating DB version 4 to 5 failed: %s", e)
                     raise RuntimeError("Migrating DB version 4 to 5 failed: %s" % e)
 
-    def migrate_to_version_4(self, con):
-        # check if "notification" column exists in "comments" table
-        rv = con.execute("PRAGMA table_info(comments)").fetchall()
-        if any([row[1] == "notification" for row in rv]):
-            logger.info("Migrating DB version 3 to 4 skipped, 'notification' field already exists in comments")
-            con.execute("PRAGMA user_version = 4")
+        # add read_only field to threads
+        if self.version == 5:
+            with sqlite3.connect(self.path) as con:
+                self.migrate_to_version_6(con)
+
+    def _migrate_add_column(self, con, table, column, column_type, from_version, to_version):
+        """Add a column to *table* and bump ``user_version`` to *to_version*.
+
+        Idempotent: if the column already exists (e.g. a partially applied
+        migration) only the version is bumped.
+        """
+        rv = con.execute("PRAGMA table_info(%s)" % table).fetchall()
+        if any(row[1] == column for row in rv):
+            logger.info(
+                "Migrating DB version %d to %d skipped, '%s' field already exists in %s",
+                from_version,
+                to_version,
+                column,
+                table,
+            )
+            con.execute("PRAGMA user_version = %d" % to_version)
             return
 
         con.execute("BEGIN TRANSACTION")
         try:
-            con.execute("ALTER TABLE comments ADD COLUMN notification INTEGER DEFAULT 0;")
-            con.execute("PRAGMA user_version = 4")
+            con.execute("ALTER TABLE %s ADD COLUMN %s %s;" % (table, column, column_type))
+            con.execute("PRAGMA user_version = %d" % to_version)
             con.execute("COMMIT")
-            logger.info("Migrating DB version 3 to 4 by adding 'notification' field to comments")
+            logger.info("Migrating DB version %d to %d by adding '%s' field to %s", from_version, to_version, column, table)
         except sqlite3.Error as e:
             con.execute("ROLLBACK")
-            logger.error("Migrating DB version 3 to 4 failed: %s", e)
-            raise RuntimeError("Migrating DB version 3 to 4 failed: %s" % e)
+            logger.error("Migrating DB version %d to %d failed: %s", from_version, to_version, e)
+            raise RuntimeError("Migrating DB version %d to %d failed: %s" % (from_version, to_version, e))
+
+    def migrate_to_version_4(self, con):
+        # add "notification" column to "comments" table
+        self._migrate_add_column(con, "comments", "notification", "INTEGER DEFAULT 0", 3, 4)
+
+    def migrate_to_version_6(self, con):
+        # add "read_only" column to "threads" table
+        self._migrate_add_column(con, "threads", "read_only", "INTEGER DEFAULT 0", 5, 6)

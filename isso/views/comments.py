@@ -176,6 +176,7 @@ class API(object):
     VIEWS = [
         ("fetch", ("GET", "/")),
         ("new", ("POST", "/new")),
+        ("thread_state", ("POST", "/thread/<string:key>/<any(open,close):action>")),
         ("counts", ("POST", "/count")),
         ("feed", ("GET", "/feed")),
         ("latest", ("GET", "/latest")),
@@ -192,6 +193,7 @@ class API(object):
         ("config", ("GET", "/config")),
         ("login", ("POST", "/login/")),
         ("admin", ("GET", "/admin/")),
+        ("admin_threads", ("GET", "/admin/threads/")),
     ]
 
     def __init__(self, isso, hasher):
@@ -261,6 +263,12 @@ class API(object):
             raise Forbidden
 
         return rv
+
+    @staticmethod
+    def _reject_read_only_thread(thread):
+        """Raise ``Forbidden`` if the thread is closed for new comments, edits and deletions."""
+        if thread["read_only"]:
+            raise Forbidden("thread is read-only")
 
     @classmethod
     def verify(cls, comment):
@@ -423,6 +431,7 @@ class API(object):
                 self.signal("comments.new:new-thread", thread)
             else:
                 thread = self.threads[uri]
+                self._reject_read_only_thread(thread)
 
         # notify extensions that the new comment is about to save
         self.signal("comments.new:before-save", thread, data)
@@ -493,6 +502,53 @@ class API(object):
             secure = False
             samesite = samesite or "Lax"
         return functools.partial(dump_cookie, **kwargs, secure=secure, samesite=samesite)
+
+    """
+    @api {post} /thread/:key/:action Set thread status
+    @apiGroup Thread
+    @apiName thread_state
+    @apiVersion 0.14.1
+    @apiPrivate
+    @apiPermission admin
+    @apiDescription
+        Open or close a thread for new comments. Requires a valid `admin-session`
+        cookie from a logged-in admin plus a `key` obtained from the admin
+        interface (a signed token bound to the thread uri).
+
+    @apiParam {String} key
+        Signed token authorising the change, minted by the admin interface.
+    @apiParam {String=open,close} action
+        `close` marks the thread read-only, `open` reverts it.
+
+    @apiSuccessExample {json} Example result:
+        {"uri": "/demo/", "read-only": true}
+
+    @apiUse csrf
+    """
+
+    @xhr
+    def thread_state(self, environ, request, key, action):
+        if not self._is_admin(request):
+            raise Forbidden
+
+        try:
+            payload = self.isso.unsign(key, max_age=2**32)
+        except (BadSignature, SignatureExpired):
+            raise Forbidden
+
+        if not isinstance(payload, list) or len(payload) != 2 or payload[0] != "thread":
+            raise Forbidden
+
+        uri = payload[1]
+        if uri not in self.threads:
+            raise NotFound
+
+        read_only = action == "close"
+        with self.isso.lock:
+            self.threads.set_read_only(uri, read_only)
+
+        self.signal("comments.thread-state", {"uri": uri, "read_only": read_only})
+        return JSON({"uri": uri, "read-only": read_only}, 200)
 
     """
     @api {get} /id/:id view
@@ -593,6 +649,8 @@ class API(object):
         if rv[1] != sha1(item["text"]):
             raise Forbidden
 
+        self._reject_read_only_thread(self.threads.get(item["tid"]))
+
         data = request.json
 
         for key in set(data.keys()) - set(["text", "author", "website"]):
@@ -682,6 +740,8 @@ class API(object):
         # verify checksum, mallory might skip cookie deletion when he deletes a comment
         if rv[1] != sha1(item["text"]):
             raise Forbidden
+
+        self._reject_read_only_thread(self.threads.get(item["tid"]))
 
         self.cache.delete("hash", (item["email"] or item["remote_addr"]).encode("utf-8"))
 
@@ -914,6 +974,10 @@ class API(object):
         The list of comments. Each comment also has the `total_replies`, `replies`, `id` and `hidden_replies` properties to represent nested comments.
     @apiSuccess {Object[]} config
         Object holding only the client configuration parameters that depend on server settings. Will be dropped in a future version of Isso. Use the dedicated `/config` endpoint instead.
+    @apiSuccess {Boolean} read-only
+        Whether the thread is read-only (closed for new comments, edits and
+        deletions). The embed client uses this to hide the comment form and the
+        reply/edit/delete UI.
 
     @apiExample {curl} Get 2 comments with 5 responses:
         curl 'https://comments.example.com/?uri=/thread/&limit=2&nested_limit=5'
@@ -1046,6 +1110,7 @@ class API(object):
             "hidden_replies": reply_counts[root_id] - len(root_list) - args["offset"],
             "replies": self._process_fetched_list(root_list, plain),
             "config": self.public_conf,
+            "read-only": self.threads.get_read_only(uri),
         }
         # We are only checking for one level deep comments
         if root_id is None:
@@ -1524,16 +1589,36 @@ class API(object):
         curl 'https://comments.example.com/admin/?mode=1&page=0&order_by=modified&asc=1' -b cookie.txt
     """
 
-    def admin(self, env, req):
-        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+    def _is_admin(self, req):
+        """Return ``True`` when the request carries a valid ``admin-session``
+        cookie from a logged-in site admin.
+        """
         if not self.isso.conf.getboolean("admin", "enabled"):
-            return render_template("disabled.html", isso_host_script=isso_host_script)
+            return False
         try:
             data = self.isso.unsign(req.cookies.get("admin-session", ""), max_age=60 * 60 * 24)
         except BadSignature:
+            return False
+        return bool(isinstance(data, dict) and data.get("logged"))
+
+    def _admin_gate(self, req, isso_host_script):
+        """Shared auth preamble for the admin pages.
+
+        Returns a rendered ``disabled.html``/``login.html`` response when the
+        request must not proceed, or ``None`` when the caller holds a valid
+        ``admin-session`` cookie.
+        """
+        if not self.isso.conf.getboolean("admin", "enabled"):
+            return render_template("disabled.html", isso_host_script=isso_host_script)
+        if not self._is_admin(req):
             return render_template("login.html", isso_host_script=isso_host_script)
-        if not data or not data["logged"]:
-            return render_template("login.html", isso_host_script=isso_host_script)
+        return None
+
+    def admin(self, env, req):
+        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+        gate = self._admin_gate(req, isso_host_script)
+        if gate is not None:
+            return gate
         page_size = 100
         page = int(req.args.get("page", 0))
         order_by = req.args.get("order_by", "created")
@@ -1568,6 +1653,35 @@ class API(object):
             order_by=order_by,
             asc=asc,
             comment_search_url=comment_search_url,
+            isso_host_script=isso_host_script,
+        )
+
+    """
+    @api {get} /admin/threads/ Thread admin interface
+    @apiGroup Admin
+    @apiName admin_threads
+    @apiVersion 0.14.1
+    @apiPrivate
+    @apiPermission admin
+    @apiDescription
+         List all threads and toggle their read-only state. Redirects to
+         `/login` if not already logged in.
+    """
+
+    def admin_threads(self, env, req):
+        isso_host_script = self.isso.conf.get("server", "public-endpoint") or local.host
+        gate = self._admin_gate(req, isso_host_script)
+        if gate is not None:
+            return gate
+
+        threads = []
+        for thread in self.threads.fetchall():
+            thread["hash"] = self.isso.sign(["thread", thread["uri"]])
+            threads.append(thread)
+
+        return render_template(
+            "admin-threads.html",
+            threads=threads,
             isso_host_script=isso_host_script,
         )
 

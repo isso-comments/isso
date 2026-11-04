@@ -235,7 +235,11 @@ var insert = function({ comment, scrollIntoView, offset }) {
         text   = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-text");
 
     var form = null;  // XXX: probably a good place for a closure
-    $("a.isso-reply", footer).toggle("click",
+
+    // The reply/edit/delete links are omitted from the template when the thread
+    // is read-only, so guard every lookup before wiring up its handler.
+    var replyButton = $("a.isso-reply", footer);
+    if (replyButton) { replyButton.toggle("click",
         function(toggler) {
             form = footer.insertAfter(new Postbox(comment.parent === null ? comment.id : comment.parent));
             form.onsuccess = function() { toggler.next(); };
@@ -246,7 +250,7 @@ var insert = function({ comment, scrollIntoView, offset }) {
             form.remove();
             $("a.isso-reply", footer).textContent = i18n.translate("comment-reply");
         }
-    );
+    ); }
 
     if (config.vote) {
         var voteLevels = config['vote-levels'];
@@ -296,7 +300,8 @@ var insert = function({ comment, scrollIntoView, offset }) {
         votes(comment.likes - comment.dislikes);
     }
 
-    $("a.isso-edit", footer).toggle("click",
+    var editButton = $("a.isso-edit", footer);
+    if (editButton) { editButton.toggle("click",
         function(toggler) {
             var edit = $("a.isso-edit", footer);
             var avatar = config["avatar"] || config["gravatar"] ? $(".isso-avatar", el, false)[0] : null;
@@ -357,9 +362,10 @@ var insert = function({ comment, scrollIntoView, offset }) {
             $("a.isso-cancel", footer).remove();
             $("a.isso-edit", footer).textContent = i18n.translate("comment-edit");
         }
-    );
+    ); }
 
-    $("a.isso-delete", footer).toggle("click",
+    var deleteButton = $("a.isso-delete", footer);
+    if (deleteButton) { deleteButton.toggle("click",
         function(toggler) {
             var del = $("a.isso-delete", footer);
             var state = ! toggler.state;
@@ -385,7 +391,7 @@ var insert = function({ comment, scrollIntoView, offset }) {
                 del.textContent = i18n.translate("comment-delete");
             });
         }
-    );
+    ); }
 
     // remove edit and delete buttons when cookie is gone
     var clear = function(button) {
@@ -398,8 +404,11 @@ var insert = function({ comment, scrollIntoView, offset }) {
         }
     };
 
-    clear("a.isso-edit");
-    clear("a.isso-delete");
+    // No edit/delete links to reap in a read-only thread; skip the polling loop.
+    if (! config["read-only"]) {
+        clear("a.isso-edit");
+        clear("a.isso-delete");
+    }
 
     // show direct reply to own comment when cookie is max aged
     var show = function(el) {
@@ -410,8 +419,8 @@ var insert = function({ comment, scrollIntoView, offset }) {
         }
     };
 
-    if (! config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
-        show($("a.isso-reply", footer).detach());
+    if (replyButton && ! config["reply-to-self"] && utils.cookie("isso-" + comment.id)) {
+        show(replyButton.detach());
     }
 
     if (comment.hasOwnProperty('replies')) {
