@@ -106,6 +106,12 @@ function init() {
         }
 
         try {
+            // The browser can't scroll to a comment hidden inside a
+            // collapsed one, so scroll again once it is expanded.
+            var target = $(window.location.hash);
+            if (isso.expand_ancestors(target.obj)) {
+                target.scrollIntoView();
+            }
             $(window.location.hash + " > .isso-text-wrapper").classList.add("isso-target");
         } catch(ex) {
             // selector probably doesn't exist as element on page

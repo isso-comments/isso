@@ -155,6 +155,53 @@ var Postbox = function(parent) {
     return el;
 };
 
+// Collapse or expand a comment (the `.isso-comment` DOM node). CSS hides the
+// body and replies of `.isso-collapsed` comments, here we only keep the
+// header toggle and the reply count note in sync.
+var set_collapsed = function(node, collapsed) {
+    var header = $("#" + node.id + " > .isso-text-wrapper > .isso-comment-header"),
+        toggle = $("a.isso-collapse", header);
+
+    if (collapsed) {
+        node.classList.add("isso-collapsed");
+    } else {
+        node.classList.remove("isso-collapsed");
+    }
+
+    toggle.innerHTML = collapsed ? "[+]" : "[&minus;]";
+    toggle.setAttribute("title", i18n.translate(collapsed ? "comment-expand" : "comment-collapse"));
+    toggle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+
+    // Count loaded replies plus those still hidden behind "N Hidden" loaders.
+    // Match direct children only, so an open reply form's preview (also an
+    // .isso-comment) is not counted as a reply.
+    var count = 0;
+    if (collapsed) {
+        var followUp = "#" + node.id + " > .isso-follow-up",
+            replies = $(followUp + " > .isso-comment", null, false),
+            loaders = $(followUp + " > .isso-comment-loader", null, false);
+        count += (replies || []).length;
+        (loaders || []).forEach(function(loader) {
+            count += parseInt(loader.getAttribute("data-isso-hidden"), 10) || 0;
+        });
+    }
+    $(".isso-collapsed-note", header).textContent =
+        count > 0 ? i18n.pluralize("comment-collapsed-replies", count) : "";
+};
+
+// Expand all collapsed comments containing :param node:, e.g. so that a
+// linked comment (#isso-<id>) is visible. Returns true if any was expanded.
+var expand_ancestors = function(node) {
+    var expanded = false;
+    for (var parent = node.parentNode; parent; parent = parent.parentNode) {
+        if (parent.classList && parent.classList.contains("isso-collapsed")) {
+            set_collapsed(parent, false);
+            expanded = true;
+        }
+    }
+    return expanded;
+};
+
 var insert_loader = function(comment, offset) {
     var entrypoint;
     if (comment.id === null) {
@@ -165,6 +212,7 @@ var insert_loader = function(comment, offset) {
         comment.name = comment.id;
     }
     var el = $.htmlify(template.render("comment-loader", {"comment": comment}));
+    el.setAttribute("data-isso-hidden", comment.hidden_replies);
 
     entrypoint.append(el);
 
@@ -233,6 +281,17 @@ var insert = function({ comment, scrollIntoView, offset }) {
     var footer = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-comment-footer"),
         header = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-comment-header"),
         text   = $("#isso-" + comment.id + " > .isso-text-wrapper > .isso-text");
+
+    var collapse = $("a.isso-collapse", header);
+    if (collapse !== null) {
+        var toggle_collapsed = function() {
+            set_collapsed(el.obj, ! el.classList.contains("isso-collapsed"));
+        };
+        collapse.on("click", toggle_collapsed);
+        // The reply count note is only filled in while collapsed, so
+        // clicking it expands the comment again
+        $(".isso-collapsed-note", header).on("click", toggle_collapsed);
+    }
 
     var form = null;  // XXX: probably a good place for a closure
     $("a.isso-reply", footer).toggle("click",
@@ -428,5 +487,6 @@ var insert = function({ comment, scrollIntoView, offset }) {
 module.exports = {
     insert: insert,
     insert_loader: insert_loader,
+    expand_ancestors: expand_ancestors,
     Postbox: Postbox,
 };

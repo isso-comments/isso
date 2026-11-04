@@ -13,6 +13,7 @@ preferably in the script tag which embeds the JS:
             data-isso-max-comments-top="10"
             data-isso-max-comments-nested="5"
             data-isso-reveal-on-click="5"
+            data-isso-collapsible="true"
             data-isso-sorting="newest"
             data-isso-avatar="true"
             data-isso-avatar-bg="#f0f0f0"
@@ -145,6 +146,17 @@ data-isso-reveal-on-click
     Number of comments to reveal on clicking the "X Hidden" link.
 
     Default: ``5``
+
+.. _data-isso-collapsible:
+
+data-isso-collapsible
+    Show a ``[−]`` toggle in each comment header. Clicking it collapses the
+    comment to its header, hiding the text and all replies (useful for long
+    comments such as pasted logs). Clicking ``[+]`` expands it again.
+
+    Default: ``true``
+
+    .. versionadded:: 0.14.1
 
 .. _data-isso-avatar:
 
