@@ -59,6 +59,11 @@ The maintainers recommend pinning the image to a
 [release tag](https://github.com/isso-comments/isso/pkgs/container/isso), e.g.
 `isso:0.13.0`.
 
+## One-Click Deploy
+
+<a href="https://repocloud.io/details/Isso/"><img src="https://d16t0pc4846x52.cloudfront.net/deploylobe.svg" alt="Deploy on RepoCloud" height="42"></a>
+<a href="https://railway.com/deploy/isso"><img src="https://railway.com/button.svg" alt="Deploy on Railway" height="42"></a>
+
 ## Contributing
 
 - Pull requests are very much welcome! These might be
