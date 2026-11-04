@@ -54,3 +54,68 @@ with same TagName and ID in which you wish comments to be placed, then call the
 
 Then Isso will initialize the comment section and fetch comments, as if the page
 was loaded.
+
+.. _reacting-to-rendered-comments:
+
+Reacting to rendered comments
+-----------------------------
+
+.. versionadded:: 0.14.1
+
+Isso dispatches DOM events after it renders parts of the widget, so that you can
+manipulate the generated markup from your own JavaScript, for example to add
+CSS framework classes without overriding Isso's stylesheet.
+
+All events bubble and are dispatched on the ``#isso-thread`` element, so you may
+listen on ``#isso-thread`` or on ``document``. Each event's ``detail.element``
+is the DOM node that was just rendered.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 40 30
+
+   * - Event
+     - Fired when
+     - ``event.detail``
+   * - ``isso-postbox-rendered``
+     - A comment form (the main postbox and every reply form) has been built.
+       The element is not attached to the document yet at this point.
+     - ``{ element, parent }``: ``parent`` is the id of the comment being
+       replied to, or ``null`` for the main postbox.
+   * - ``isso-comment-rendered``
+     - A comment has been inserted into the thread (initial load, newly posted
+       comment, replies, and comments revealed via the "N Hidden" link).
+     - ``{ element, comment }`` — ``comment`` is the comment object returned by
+       the API.
+   * - ``isso-thread-rendered``
+     - ``fetchComments()`` has finished (or failed). Fires with ``count: 0``
+       when there are no comments, and also on the error path (when the API
+       request fails) with ``count: 0`` and ``detail.error`` set.
+     - ``{ element, count[, error] }`` — ``element`` is ``#isso-thread``,
+       ``count`` is the number of top-level comments in the thread (the API's
+       ``total_replies``); it excludes nested replies and any not-yet-loaded
+       comments behind the "N Hidden" link. ``error`` is present only when the
+       fetch failed and holds the rejection reason.
+
+Example: give the postbox buttons Bootstrap classes and log rendered comments:
+
+.. code-block:: js
+
+    document.addEventListener('isso-postbox-rendered', function (e) {
+        e.detail.element.querySelector(".isso-postbox-submit")
+            .classList.add('btn', 'btn-primary');
+        e.detail.element.querySelector(".isso-postbox-preview")
+            .classList.add('btn', 'btn-secondary');
+    });
+
+    document.addEventListener('isso-comment-rendered', function (e) {
+        console.log('rendered comment', e.detail.comment.id, e.detail.element);
+    });
+
+Place the listeners before ``embed.min.js`` runs (or before calling
+``window.Isso.init()``) so that they are registered when the first elements are
+rendered.
+
+The postbox buttons also carry dedicated classes
+(``isso-postbox-submit``, ``isso-postbox-preview`` and ``isso-postbox-edit``)
+that you can target directly from CSS or from an event listener.
